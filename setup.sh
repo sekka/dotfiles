@@ -35,6 +35,17 @@ brew install ruby-build
 brew install tmux
 brew install tree
 brew install wget
+brew install node
+
+
+# ==========================================================
+# 
+# nodebrewとnode.jsを導入する
+# 
+# ==========================================================
+
+# brew install nodebrew
+# nodebrew install-binary stable
 
 
 # ==========================================================

@@ -342,7 +342,7 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
 # nodebrew (install by Homebrew)
-export PATH=$HOME/.nodebrew/current/bin:$PATH
+# export PATH=$HOME/.nodebrew/current/bin:$PATH
 
 # SSH
 # 参考：http://iwashi.co/2014/05/06/digital-oceanvagrant-upssl-errorrbenv/
