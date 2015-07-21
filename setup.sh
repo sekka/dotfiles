@@ -1,5 +1,29 @@
 # ==========================================================
 # 
+# homebrewを導入する
+# 
+# ==========================================================
+
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+
+# ==========================================================
+# 
+# homebrewを導入する
+# 
+# ==========================================================
+
+brew install zsh
+brew install vim
+brew install rbenv
+brew install ruby-build
+brew install tmux
+brew install tree
+brew install wget
+
+
+# ==========================================================
+# 
 # pecoを導入する
 # 
 # ==========================================================
