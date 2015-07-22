@@ -256,8 +256,9 @@ alias sudo='sudo '
 
 # tmux
 alias t='tmux'
-alias ta='tmux attach'
 alias td='tmux detach'
+alias ta='tmux attach'
+alias tat='tmux attach -t'
 
 # cd
 alias ..='cd ..'
