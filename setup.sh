@@ -37,6 +37,11 @@ brew install tree
 brew install wget
 brew install node
 brew install pstree
+brew install git
+brew install tig
+brew install wget
+brew install curl
+brew install reattach-to-user-namespace
 
 
 # ==========================================================
