@@ -58,6 +58,7 @@ brew cask install vagrant-manager
 brew cask install chefdk
 brew cask install alfred
 brew cask install appcleaner
+brew cask install androidtool
 brew cask install ccleaner
 brew cask install charles
 brew cask install coteditor
@@ -78,6 +79,7 @@ brew cask install opera
 brew cask install pingendo
 brew cask install processing
 brew cask install p5
+brew cask install quicktime-player7
 brew cask install reggy
 brew cask install sequel-pro
 brew cask install shupapan
