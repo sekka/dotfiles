@@ -50,8 +50,7 @@ echo "# HomebrewでGUIアプリも色々入れる"
 echo "#"
 echo "# =========================================================="
 
-brew tap phinze/homebrew-cask
-brew install brew-cask
+brew install caskroom/cask/brew-cask
 
 brew cask install virtualbox
 brew cask install vagrant
