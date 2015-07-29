@@ -109,7 +109,7 @@ echo "# dotdilesにシンボリックリンクを貼る"
 echo "#"
 echo "# =========================================================="
 
-DOT_FILES=(.gitignore .gitignore_global .tmux.conf .zshrc .vimrc)
+DOT_FILES=(.gitignore .gitignore_global .tigrc .tmux.conf .zshrc .vimrc)
 
 for file in ${DOT_FILES[@]}
 
