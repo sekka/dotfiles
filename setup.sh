@@ -1,17 +1,17 @@
-# ==========================================================
-# 
-# homebrewを導入する
-# 
-# ==========================================================
+echo "# =========================================================="
+echo "#"
+echo "# Homebrewを導入する"
+echo "#"
+echo "# =========================================================="
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
 
-# ==========================================================
-# 
-# zshを導入する
-# 
-# ==========================================================
+echo "# =========================================================="
+echo "#"
+echo "# zshを導入する"
+echo "#"
+echo "# =========================================================="
 
 brew install zsh
 
@@ -23,11 +23,11 @@ sudo sh -c 'echo $(which zsh) >> /etc/shells'
 chsh -s /usr/local/bin/zsh
 
 
-# ==========================================================
-# 
-# homebrewで色々入れる
-# 
-# ==========================================================
+echo "# =========================================================="
+echo "#"
+echo "# Homebrewで色々入れる"
+echo "#"
+echo "# =========================================================="
 
 brew install vim
 brew install rbenv
@@ -44,21 +44,69 @@ brew install curl
 brew install reattach-to-user-namespace
 
 
-# ==========================================================
-# 
-# pecoを導入する
-# 
-# ==========================================================
+echo "# =========================================================="
+echo "#"
+echo "# HomebrewでGUIアプリも色々入れる"
+echo "#"
+echo "# =========================================================="
+
+brew tap phinze/homebrew-cask
+brew install brew-cask
+
+brew cask install virtualbox
+brew cask install vagrant
+brew cask install vagrant-manager
+brew cask install chefdk
+brew cask install alfred
+brew cask install appcleaner
+brew cask install ccleaner
+brew cask install charles
+brew cask install coteditor
+brew cask install couleurs
+brew cask install dash
+brew cask install dropbox
+brew cask install firefox
+brew cask install fontexplorer-x-pro
+brew cask install google-chrome
+brew cask install imagealpha
+brew cask install imageoptim
+brew cask install intellij-idea
+brew cask install iterm2
+brew cask install kaleidoscope
+brew cask install ksdiff
+brew cask install onyx
+brew cask install opera
+brew cask install pingendo
+brew cask install processing
+brew cask install p5
+brew cask install reggy
+brew cask install sequel-pro
+brew cask install shupapan
+brew cask install skype
+brew cask install slack
+brew cask install sourcetree
+brew cask install caskroom/versions/sublime-text3
+brew cask install transmit
+
+# Alfredの検索対象にいれる
+brew cask alfred link
+
+
+echo "# =========================================================="
+echo "#"
+echo "# pecoを導入する"
+echo "#"
+echo "# =========================================================="
 
 brew tap peco/peco
 brew install peco
 
 
-# ==========================================================
-# 
-# dotdilesにシンボリックリンクを貼る
-# 
-# ==========================================================
+echo "# =========================================================="
+echo "#"
+echo "# dotdilesにシンボリックリンクを貼る"
+echo "#"
+echo "# =========================================================="
 
 DOT_FILES=(.gitignore .gitignore_global .tmux.conf .zshrc .vimrc)
 
@@ -72,3 +120,27 @@ do
 			echo "シンボリックリンクを貼りました: $file"
 	fi
 done
+
+
+echo "# =========================================================="
+echo "#"
+echo "# Dockerを導入する"
+echo "#"
+echo "# =========================================================="
+
+#brew tap homebrew/binary
+brew install docker
+brew install boot2docker
+brew cask install kitematic
+boot2docker init
+
+
+echo "# =========================================================="
+echo "#"
+echo "# Homebrewをメンテナンス"
+echo "#"
+echo "# =========================================================="
+
+brew update
+brew upgrade
+brew doctor
