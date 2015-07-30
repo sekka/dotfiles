@@ -429,6 +429,11 @@ export PGDATA=/usr/local/var/postgres
 # Sublime Text 3
 # export PATH="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl:$PATH"
 
+# Docker
+export DOCKER_HOST=tcp://192.168.59.103:2376
+export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
+export DOCKER_TLS_VERIFY=1
+
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
 
@@ -438,3 +443,4 @@ path=(
     /usr/local/sbin(N-/)
     $path
 )
+

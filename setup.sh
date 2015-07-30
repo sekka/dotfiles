@@ -68,6 +68,7 @@ brew cask install dropbox
 brew cask install firefox
 brew cask install fontexplorer-x-pro
 brew cask install google-chrome
+brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
@@ -132,8 +133,10 @@ echo "# =========================================================="
 #brew tap homebrew/binary
 brew install docker
 brew install boot2docker
-brew cask install kitematic
+#brew cask install kitematic
 boot2docker init
+boot2docker up
+boot2docker status
 
 
 echo "# =========================================================="
@@ -145,3 +148,17 @@ echo "# =========================================================="
 brew update
 brew upgrade
 brew doctor
+
+
+echo "# =========================================================="
+echo "#"
+echo "# npmで色々入れる"
+echo "#"
+echo "# =========================================================="
+
+npm install -g tmux-cpu
+npm install -g tmux-mem
+npm install -g electron-packager
+npm install -g electron-prebuild
+npm install -g gulp
+
