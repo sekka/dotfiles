@@ -163,4 +163,5 @@ npm install -g tmux-mem
 npm install -g electron-packager
 npm install -g electron-prebuild
 npm install -g gulp
+npm install -g caniuse-cmd
 
