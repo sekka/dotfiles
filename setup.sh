@@ -131,7 +131,7 @@ echo "# Dockerを導入する"
 echo "#"
 echo "# =========================================================="
 
-#brew tap homebrew/binary
+brew tap homebrew/binary
 brew install docker
 brew install boot2docker
 #brew cask install kitematic
