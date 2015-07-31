@@ -43,6 +43,7 @@ brew install wget
 brew install curl
 brew install reattach-to-user-namespace
 brew install hugo
+brew install mycli
 
 
 echo "# =========================================================="
