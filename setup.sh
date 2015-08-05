@@ -54,7 +54,7 @@ echo "# =========================================================="
 
 brew install caskroom/cask/brew-cask
 
-brew cask install virtualbox
+brew cask install virtualbox4330101610
 brew cask install vagrant
 brew cask install vagrant-manager
 brew cask install chefdk
@@ -67,9 +67,9 @@ brew cask install coteditor
 brew cask install couleurs
 brew cask install dash
 brew cask install dropbox
-brew cask install firefox
+#brew cask install firefox
 brew cask install fontexplorer-x-pro
-brew cask install google-chrome
+#brew cask install google-chrome
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
@@ -79,7 +79,7 @@ brew cask install iterm2
 brew cask install ksdiff
 brew cask install numi
 brew cask install onyx
-brew cask install opera
+#brew cask install opera
 brew cask install pingendo
 brew cask install processing
 brew cask install psequel
