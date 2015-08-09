@@ -29,6 +29,9 @@ echo "# Homebrewで色々入れる"
 echo "#"
 echo "# =========================================================="
 
+brew update
+brew upgrade
+
 brew install vim
 brew install rbenv
 brew install ruby-build
@@ -44,6 +47,8 @@ brew install curl
 brew install reattach-to-user-namespace
 brew install hugo
 brew install mycli
+brew install ffmpeg
+brew install youtube-dl
 
 
 echo "# =========================================================="
@@ -65,7 +70,7 @@ brew cask install ccleaner
 brew cask install charles
 brew cask install coteditor
 brew cask install couleurs
-brew cask install dash
+#brew cask install dash
 brew cask install dropbox
 #brew cask install firefox
 brew cask install fontexplorer-x-pro
@@ -150,8 +155,6 @@ echo "# Homebrewをメンテナンス"
 echo "#"
 echo "# =========================================================="
 
-brew update
-brew upgrade
 brew doctor
 
 
