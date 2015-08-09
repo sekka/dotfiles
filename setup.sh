@@ -66,6 +66,7 @@ brew cask install chefdk
 brew cask install alfred
 brew cask install appcleaner
 brew cask install androidtool
+brew cask install cactus
 brew cask install ccleaner
 brew cask install charles
 brew cask install coteditor
@@ -86,6 +87,7 @@ brew cask install numi
 brew cask install onyx
 #brew cask install opera
 brew cask install pingendo
+brew cask install pixate-studio
 brew cask install processing
 brew cask install psequel
 brew cask install p5
