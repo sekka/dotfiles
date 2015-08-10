@@ -58,6 +58,7 @@ echo "#"
 echo "# =========================================================="
 
 brew install caskroom/cask/brew-cask
+brew cask update
 
 brew cask install virtualbox4330101610
 brew cask install vagrant
@@ -105,6 +106,8 @@ brew cask install transmit
 # Alfredの検索対象にいれる
 brew cask alfred link
 
+brew cask cleanup
+brew cask doctor
 
 echo "# =========================================================="
 echo "#"
