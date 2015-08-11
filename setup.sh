@@ -67,6 +67,7 @@ brew cask install chefdk
 brew cask install alfred
 brew cask install appcleaner
 brew cask install androidtool
+brew cask install blender
 brew cask install cactus
 brew cask install ccleaner
 brew cask install charles
