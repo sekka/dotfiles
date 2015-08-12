@@ -161,6 +161,7 @@ echo "# Homebrewをメンテナンス"
 echo "#"
 echo "# =========================================================="
 
+brew cleanup
 brew doctor
 
 
