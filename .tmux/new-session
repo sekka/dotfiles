@@ -1,0 +1,23 @@
+# 一番初めのpaneを選択
+select-pane -t 0
+# 上下にウィンドウを分割する
+split-window -v
+# 1番目(上側)のペインを選択
+select-pane -t 1
+# 左右にペインを分割
+split-window -h
+# 3番目(下側)のペインを選択
+select-pane -t 3
+# 左右にペインを分割
+split-window -h
+# 1番目のペインを選択
+select-pane -t 1
+
+# メインとなるウィンドウの高さを35行に設定
+#setw main-pane-height 35
+# 上下分割レイアウトを反映
+#select-layout main-horizontal
+#display-panes
+
+# 2番目(右下)のpaneの横幅（境界)を右に22文字幅移動する
+#resize-pane -R -t 2 22
