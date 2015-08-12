@@ -85,6 +85,7 @@ brew cask install intellij-idea
 brew cask install iterm2
 #brew cask install kaleidoscope
 brew cask install ksdiff
+brew cask install night-owl
 brew cask install numi
 brew cask install onyx
 #brew cask install opera
