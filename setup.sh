@@ -5,6 +5,7 @@ echo "#"
 echo "# =========================================================="
 
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+brew tap homebrew/versions
 
 
 echo "# =========================================================="
@@ -35,12 +36,16 @@ brew upgrade
 brew install vim
 brew install rbenv
 brew install ruby-build
+brew install pyenv
+#brew install pyenv-virtualenv
+brew install homebrew/boneyard/pyenv-pip-rehash
 brew install tmux
 brew install tree
 brew install wget
 brew install node
 brew install pstree
 brew install git
+brew install hub
 brew install tig
 brew install wget
 brew install curl
@@ -58,6 +63,7 @@ echo "#"
 echo "# =========================================================="
 
 brew install caskroom/cask/brew-cask
+brew tap caskroom/versions
 brew cask update
 
 brew cask install virtualbox4330101610
@@ -111,6 +117,7 @@ brew cask alfred link
 brew cask cleanup
 brew cask doctor
 
+
 echo "# =========================================================="
 echo "#"
 echo "# pecoを導入する"
@@ -130,6 +137,87 @@ echo "# =========================================================="
 DOT_FILES=(.gitignore .gitignore_global .tigrc .tmux.conf .zshrc .vimrc)
 
 for file in ${DOT_FILES[@]}
+
+do
+	if [ -a $HOME/$file ]; then
+			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+	else
+		ln -s $HOME/dotfiles/$file $HOME/$file
+			echo "シンボリックリンクを貼りました: $file"
+	fi
+done
+
+
+echo "# =========================================================="
+echo "#"
+echo "# Rubyを導入する"
+echo "#"
+echo "# =========================================================="
+
+# 最新版を確認
+brew upgrade ruby-build --HEAD
+#rbenv install -l
+
+# インストール
+rbenv install -s 2.2.2
+rbenv versions
+
+# グローバルで使用するバージョンを設定してリンク更新
+rbenv global 2.2.2
+rbenv rehash
+ruby -v
+rbenv which ruby
+rbenv which gem
+
+# 必須のgemをインストール
+gem update --system
+gem install bundler
+gem install rbenv-rehash
+gem update 
+
+
+echo "# =========================================================="
+echo "#"
+echo "# Pythonを導入する"
+echo "#"
+echo "# =========================================================="
+
+# 最新版を確認
+#pyenv install -l
+
+# インストール
+pyenv install -s 3.4.3
+pyenv versions
+
+# グローバルで使用するバージョンを設定してリンク更新
+pyenv global 3.4.3
+pyenv rehash
+python -V
+pip3 -V
+pyenv which python
+
+# 必須のパッケージをインストール
+pip install virtualenv
+
+
+echo "# =========================================================="
+echo "#"
+echo "# rainbowstreamを導入する"
+echo "#"
+echo "# =========================================================="
+
+#cd ~
+#mkdir .rainbowstream
+#virtualenv venv
+#source venv/bin/activate
+#pip install rainbowstream
+#rainbowstream
+#deactivate
+pip install rainbowstream
+
+RAINBOW_CONFIG=(.rainbow_config.json)
+
+for file in ${RAINBOW_CONFIG[@]}
 
 do
 	if [ -a $HOME/$file ]; then
