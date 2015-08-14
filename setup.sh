@@ -84,6 +84,7 @@ brew cask install dropbox
 #brew cask install firefox
 brew cask install fontexplorer-x-pro
 #brew cask install google-chrome
+brew cask install github-desktop
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
