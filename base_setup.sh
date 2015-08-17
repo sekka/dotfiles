@@ -8,6 +8,7 @@ xcode-select --install
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew tap homebrew/versions
 brew doctor
+echo insecure >> ~/.curlrc
 
 
 echo "# =========================================================="

@@ -1,6 +1,6 @@
 echo "# =========================================================="
 echo "#"
-echo "# Homebrewで色々入れる"
+echo "# HomebrewでCUIツールを導入する"
 echo "#"
 echo "# =========================================================="
 
@@ -32,7 +32,7 @@ brew install youtube-dl
 
 echo "# =========================================================="
 echo "#"
-echo "# HomebrewでGUIアプリも色々入れる"
+echo "# Homebrew CaskでGUIツールを導入する"
 echo "#"
 echo "# =========================================================="
 
@@ -40,10 +40,6 @@ brew install caskroom/cask/brew-cask
 brew tap caskroom/versions
 brew cask update
 
-brew cask install virtualbox4330101610
-brew cask install vagrant
-brew cask install vagrant-manager
-brew cask install chefdk
 brew cask install alfred
 brew cask install appcleaner
 brew cask install androidtool
@@ -153,7 +149,7 @@ pyenv versions
 pyenv global 3.4.3
 pyenv rehash
 python -V
-pip3 -V
+pip -V
 pyenv which python
 
 # 必須のパッケージをインストール
@@ -196,12 +192,25 @@ echo "#"
 echo "# =========================================================="
 
 brew tap homebrew/binary
-brew install docker
-brew install boot2docker
-#brew cask install kitematic
-boot2docker init
-boot2docker up
-boot2docker status
+brew cask install dockertoolbox
+docker-machine create --driver virtualbox default
+docker-machine upgrade default
+docker-machine ls
+docker-machine ip default
+docker version
+docker images
+docker ps -a
+
+
+echo "# =========================================================="
+echo "#"
+echo "# Vagrantを導入する"
+echo "#"
+echo "# =========================================================="
+
+brew cask install vagrant
+brew cask install vagrant-manager
+brew cask install chefdk
 
 
 echo "# =========================================================="
@@ -216,7 +225,7 @@ brew doctor
 
 echo "# =========================================================="
 echo "#"
-echo "# npmで色々入れる"
+echo "# npmで色々導入する"
 echo "#"
 echo "# =========================================================="
 
