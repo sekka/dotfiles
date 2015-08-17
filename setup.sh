@@ -50,26 +50,21 @@ brew cask install charles
 brew cask install coteditor
 brew cask install cookie
 brew cask install couleurs
-#brew cask install dash
 brew cask install dropbox
 brew cask install droplr
-#brew cask install firefox
 brew cask install fontexplorer-x-pro
-#brew cask install google-chrome
 brew cask install github-desktop
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
 brew cask install iterm2
-#brew cask install kaleidoscope
 brew cask install ksdiff
 brew cask install limechat
 brew cask install night-owl
 brew cask install numi
 brew cask install mplayerx
 brew cask install onyx
-#brew cask install opera
 brew cask install pingendo
 brew cask install pixate-studio
 brew cask install processing
@@ -194,8 +189,9 @@ echo "# =========================================================="
 brew tap homebrew/binary
 brew cask install dockertoolbox
 docker-machine create --driver virtualbox default
-docker-machine upgrade default
+#docker-machine upgrade default
 docker-machine ls
+docker-machine start default
 docker-machine ip default
 docker version
 docker images
