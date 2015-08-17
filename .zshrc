@@ -441,10 +441,10 @@ export PGDATA=/usr/local/var/postgres
 # export PATH="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl:$PATH"
 
 # Docker
-export DOCKER_HOST="tcp://192.168.99.100:2376"
-export DOCKER_CERT_PATH="$HOME/.docker/machine/machines/default"
-export DOCKER_TLS_VERIFY="1"
-export DOCKER_MACHINE_NAME="default"
+#export DOCKER_HOST="tcp://192.168.99.100:2376"
+#export DOCKER_CERT_PATH="$HOME/.docker/machine/machines/default"
+#export DOCKER_TLS_VERIFY="1"
+#export DOCKER_MACHINE_NAME="default"
 eval "$(docker-machine env default)"
 
 # 重複する要素を自動的に削除
