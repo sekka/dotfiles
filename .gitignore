@@ -1,13 +1,3 @@
 .gitconfig
-
 .DS_Store
-*.orig
-
-.sass-cache/
-*.css.map
-
-.idea/
-*.iml
-
-node_modules/
-bower_components/
+completer.hist
