@@ -227,3 +227,33 @@ npm install -g electron-prebuild
 npm install -g gulp
 npm install -g caniuse-cmd
 
+
+echo "# =========================================================="
+echo "#"
+echo "# Sublime Text 3を設定する"
+echo "#"
+echo "# =========================================================="
+
+# 設定ファイルにシンボリックリンクを貼る
+SETTING_FILES=("Package Control.sublime-settings" Preferences.sublime-settings)
+
+for file in "${SETTING_FILES[@]}"
+
+do
+	if [ -a $HOME/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/"$file" ]; then
+		echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+	else
+		ln -s $HOME/dotfiles/"$file" $HOME/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/"$file"
+		echo "シンボリックリンクを貼りました: $file"
+	fi
+done
+
+
+# sublにシンボリックリンクを貼る
+if [ -a /usr/local/bin/subl ]; then
+	echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: subl"
+else
+	ln -s $HOME/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/subl
+	echo "シンボリックリンクを貼りました: subl"
+fi
+
