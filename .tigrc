@@ -1,5 +1,5 @@
 # main viewの左端にコミットIDを表示する
-set main-view = date id author commit-title:graph=yes,refs=yes
+set main-view = line-number:true,interval=10 date id author commit-title:graph=yes,refs=yes
 # デフォルト
 # set main-view = date author commit-title:graph=yes,refs=yes
 
@@ -15,4 +15,3 @@ set vertical-split = auto
 
 # 差分の前後の表示行数（diff-context)を指定 
 set diff-context = 6
-

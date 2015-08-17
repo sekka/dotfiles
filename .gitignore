@@ -1,7 +1,13 @@
-.DS_Store
 .gitconfig
-.idea
-.sass-cache
+
+.DS_Store
 *.orig
+
+.sass-cache/
+*.css.map
+
+.idea/
 *.iml
-node_modules
+
+node_modules/
+bower_components/
