@@ -231,6 +231,7 @@ npm install -g electron-packager
 npm install -g electron-prebuild
 npm install -g gulp
 npm install -g caniuse-cmd
+npm install -g npm-check-updates
 
 
 echo "# =========================================================="
