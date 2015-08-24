@@ -81,6 +81,7 @@ brew cask install sourcetree
 brew cask install caskroom/versions/sublime-text3
 brew cask install transmit
 brew cask install the-unarchiver
+brew cask install vlc
 
 # Alfredの検索対象にいれる
 brew cask alfred link
