@@ -47,6 +47,7 @@ brew cask install blender
 brew cask install cactus
 brew cask install ccleaner
 brew cask install charles
+brew cask install coccinellida
 brew cask install coteditor
 brew cask install cookie
 brew cask install couleurs
@@ -54,6 +55,8 @@ brew cask install dropbox
 brew cask install droplr
 brew cask install fontexplorer-x-pro
 brew cask install github-desktop
+brew cask install glyphs
+brew cask install gyazo
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
