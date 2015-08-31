@@ -24,6 +24,7 @@ brew install tig
 brew install wget
 brew install curl
 brew install reattach-to-user-namespace
+brew install xhyve
 brew install hugo
 brew install mycli
 brew install ffmpeg
