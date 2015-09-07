@@ -440,6 +440,9 @@ export PGDATA=/usr/local/var/postgres
 # Sublime Text 3
 # export PATH="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl:$PATH"
 
+# golang
+export GOPATH="$HOME/.go"
+
 # Docker
 #export DOCKER_HOST="tcp://192.168.99.100:2376"
 #export DOCKER_CERT_PATH="$HOME/.docker/machine/machines/default"
