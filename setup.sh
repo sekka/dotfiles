@@ -1,12 +1,14 @@
-echo "# =========================================================="
-echo "#"
-echo "# HomebrewでCUIツールを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# HomebrewでCUIツールを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
+echo "\033[0;34m==Homebrewをアップデート＆アップグレード==\033[0;39m"
 brew update
 brew upgrade
 
+echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
 brew install vim
 brew install rbenv
 brew install ruby-build
@@ -32,16 +34,18 @@ brew install ffmpeg
 brew install youtube-dl
 
 
-echo "# =========================================================="
-echo "#"
-echo "# Homebrew CaskでGUIツールを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Homebrew CaskでGUIツールを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
+echo "\033[0;34m==brew caskを導入==\033[0;39m"
 brew install caskroom/cask/brew-cask
 brew tap caskroom/versions
 brew cask update
 
+echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
 brew cask install appcleaner
 brew cask install androidtool
@@ -88,72 +92,73 @@ brew cask install transmit
 brew cask install the-unarchiver
 brew cask install vlc
 
-# Alfredの検索対象にいれる
+echo "\033[0;34m==Alfredの検索対象にいれる==\033[0;39m"
 brew cask alfred link
 
+echo "\033[0;34m==メンテナンス==\033[0;39m"
 brew cask cleanup
 brew cask doctor
 
 
-echo "# =========================================================="
-echo "#"
-echo "# pecoを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# pecoを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew tap peco/peco
 brew install peco
 
 
-echo "# =========================================================="
-echo "#"
-echo "# Rubyを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Rubyを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
-# 最新版を確認
+echo "\033[0;34m==最新版を確認==\033[0;39m"
 brew upgrade ruby-build --HEAD
 #rbenv install -l
 
-# インストール
+echo "\033[0;34m==インストール==\033[0;39m"
 rbenv install -s 2.2.2
 rbenv versions
 
-# グローバルで使用するバージョンを設定してリンク更新
+echo "\033[0;34m==グローバルで使用するバージョンを設定してリンク更新==\033[0;39m"
 rbenv global 2.2.2
 rbenv rehash
 ruby -v
 rbenv which ruby
 rbenv which gem
 
-# 必須のgemをインストール
+echo "\033[0;34m==必須のgemをインストール==\033[0;39m"
 gem update --system
 gem install bundler
 gem install rbenv-rehash
 gem update 
 
 
-echo "# =========================================================="
-echo "#"
-echo "# Pythonを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Pythonを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 # 最新版を確認
 #pyenv install -l
 
-# インストール
+echo "\033[0;34m==インストール==\033[0;39m"
 pyenv install -s 3.4.3
 pyenv versions
 
-# グローバルで使用するバージョンを設定してリンク更新
+echo "\033[0;34m==グローバルで使用するバージョンを設定してリンク更新==\033[0;39m"
 pyenv global 3.4.3
 pyenv rehash
 python -V
 pip -V
 pyenv which python
 
-# 必須のパッケージをインストール
+echo "\033[0;34m==必須のパッケージをインストール==\033[0;39m"
 pip install virtualenv
 
 
@@ -186,19 +191,35 @@ do
 done
 
 
-echo "# =========================================================="
-echo "#"
-echo "# Dockerを導入する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Dockerを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew tap homebrew/binary
 brew cask install dockertoolbox
+
+echo "\033[0;34m==Dockor Machineで仮想マシンを作成する==\033[0;39m"
 docker-machine create --driver virtualbox default
 #docker-machine upgrade default
+
+echo "\033[0;34m==作成した仮想マシンをリストアップする==\033[0;39m"
 docker-machine ls
+
+echo "\033[0;34m==作成した仮想マシンを起動する==\033[0;39m"
 docker-machine start default
+
+echo "\033[0;34m==起動した仮想マシンのIPアドレスを確認する==\033[0;39m"
 docker-machine ip default
+
+echo "\033[0;34m==起動した仮想マシンの各種環境変数を確認する==\033[0;39m"
+docker-machine env default
+
+echo "\033[0;34m==envコマンドで得られる環境変数をexport==\033[0;39m"
+eval "$(docker-machine env default)"
+
+#
 docker version
 docker images
 docker ps -a
