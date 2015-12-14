@@ -125,13 +125,17 @@ echo "\033[0;31m# npmで色々インストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
+echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g tmux-cpu
 npm install -g tmux-mem
-npm install -g electron-packager
-npm install -g electron-prebuild
 npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check-updates
+
+echo "\033[0;34m==メンテナンス==\033[0;39m"
+npm cache clean
+npm update
+npm upgrade
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
