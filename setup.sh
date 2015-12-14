@@ -1,6 +1,6 @@
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# HomebrewでCUIツールを導入する\033[0;39m"
+echo "\033[0;31m# HomebrewでCUIツールをインストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
@@ -8,35 +8,43 @@ echo "\033[0;34m==Homebrewをアップデート＆アップグレード==\033[0;
 brew update
 brew upgrade
 
-echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
-brew install vim
+echo "\033[0;34m==Ruby環境をインストール==\033[0;39m"
 brew install rbenv
 brew install ruby-build
+
+echo "\033[0;34m==Python環境をインストール==\033[0;39m"
 brew install pyenv
 #brew install pyenv-virtualenv
 brew install homebrew/boneyard/pyenv-pip-rehash
+
+echo "\033[0;34m==pecoをインストール==\033[0;39m"
+brew tap peco/peco
+brew install peco
+
+echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
+brew install curl
+brew install ffmpeg
+brew install git
+brew install go
+brew install hub
+brew install hugo
+brew install node
+brew install mycli
+brew install pstree
+brew install reattach-to-user-namespace
+brew install tig
 brew install tmux
 brew install tree
+brew install vim
 brew install wget
-brew install node
-brew install pstree
-brew install git
-brew install hub
-brew install tig
-brew install wget
-brew install curl
-brew install reattach-to-user-namespace
 brew install xhyve
-brew install go
-brew install hugo
-brew install mycli
-brew install ffmpeg
 brew install youtube-dl
+brew install zsh
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Homebrew CaskでGUIツールを導入する\033[0;39m"
+echo "\033[0;31m# Homebrew CaskでGUIツールをインストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
@@ -44,6 +52,15 @@ echo "\033[0;34m==brew caskを導入==\033[0;39m"
 brew install caskroom/cask/brew-cask
 brew tap caskroom/versions
 brew cask update
+
+echo "\033[0;34m==Vagrantをインストール==\033[0;39m"
+brew cask install vagrant
+brew cask install vagrant-manager
+brew cask install chefdk
+
+echo "\033[0;34m==Dockerをインストール==\033[0;39m"
+brew tap homebrew/binary
+brew cask install dockertoolbox
 
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
@@ -104,12 +121,17 @@ brew cask doctor
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# pecoを導入する\033[0;39m"
+echo "\033[0;31m# npmで色々インストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-brew tap peco/peco
-brew install peco
+npm install -g tmux-cpu
+npm install -g tmux-mem
+npm install -g electron-packager
+npm install -g electron-prebuild
+npm install -g gulp
+npm install -g caniuse-cmd
+npm install -g npm-check-updates
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -170,75 +192,45 @@ echo "\033[0;31m# Dockerを導入する\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-brew tap homebrew/binary
-brew cask install dockertoolbox
-
 echo "\033[0;34m==Dockor Machineで仮想マシンを作成する==\033[0;39m"
-docker-machine create --driver virtualbox default
+##docker-machine create --driver virtualbox default
 #docker-machine upgrade default
 
 echo "\033[0;34m==作成した仮想マシンをリストアップする==\033[0;39m"
-docker-machine ls
+##docker-machine ls
 
 echo "\033[0;34m==作成した仮想マシンを起動する==\033[0;39m"
-docker-machine start default
+##docker-machine start default
 
 echo "\033[0;34m==起動した仮想マシンのIPアドレスを確認する==\033[0;39m"
-docker-machine ip default
+##docker-machine ip default
 
 echo "\033[0;34m==起動した仮想マシンの各種環境変数を確認する==\033[0;39m"
-docker-machine env default
+##docker-machine env default
 
 echo "\033[0;34m==envコマンドで得られる環境変数をexport==\033[0;39m"
-eval "$(docker-machine env default)"
+##eval "$(docker-machine env default)"
 
-#
 docker version
 docker images
 docker ps -a
 
 
-echo "# =========================================================="
-echo "#"
-echo "# Vagrantを導入する"
-echo "#"
-echo "# =========================================================="
-
-brew cask install vagrant
-brew cask install vagrant-manager
-brew cask install chefdk
-
-
-echo "# =========================================================="
-echo "#"
-echo "# Homebrewをメンテナンス"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Homebrewをメンテナンス\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew cleanup
 brew doctor
 
 
-echo "# =========================================================="
-echo "#"
-echo "# npmで色々導入する"
-echo "#"
-echo "# =========================================================="
-
-npm install -g tmux-cpu
-npm install -g tmux-mem
-npm install -g electron-packager
-npm install -g electron-prebuild
-npm install -g gulp
-npm install -g caniuse-cmd
-npm install -g npm-check-updates
-
-
-echo "# =========================================================="
-echo "#"
-echo "# Sublime Text 3を設定する"
-echo "#"
-echo "# =========================================================="
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# Sublime Text 3を設定する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 # 設定ファイルにシンボリックリンクを貼る
 SETTING_FILES=("Package Control.sublime-settings" Preferences.sublime-settings)
@@ -262,4 +254,3 @@ else
 	ln -s $HOME/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/subl
 	echo "シンボリックリンクを貼りました: subl"
 fi
-
