@@ -22,14 +22,21 @@ brew tap peco/peco
 brew install peco
 
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
+brew install ag
 brew install curl
+brew install devd
+brew install direnv
 brew install ffmpeg
+brew install fpp
+brew install ghq
 brew install git
 brew install go
 brew install hub
 brew install hugo
+brew install httpie
 brew install node
 brew install mycli
+brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
 brew install tig
@@ -49,8 +56,7 @@ echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
 echo "\033[0;34m==brew caskを導入==\033[0;39m"
-brew install caskroom/cask/brew-cask
-brew tap caskroom/versions
+brew tap caskroom/cask
 brew cask update
 
 echo "\033[0;34m==Vagrantをインストール==\033[0;39m"
@@ -111,8 +117,8 @@ brew cask install vlc
 brew cask install visual-studio-code
 brew cask install xld
 
-echo "\033[0;34m==Alfredの検索対象にいれる==\033[0;39m"
-brew cask alfred link
+##echo "\033[0;34m==Alfredの検索対象にいれる==\033[0;39m"
+##brew cask alfred link
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 brew cask cleanup
@@ -196,28 +202,28 @@ echo "\033[0;31m# Dockerを導入する\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-echo "\033[0;34m==Dockor Machineで仮想マシンを作成する==\033[0;39m"
+##echo "\033[0;34m==Dockor Machineで仮想マシンを作成する==\033[0;39m"
 ##docker-machine create --driver virtualbox default
 #docker-machine upgrade default
 
-echo "\033[0;34m==作成した仮想マシンをリストアップする==\033[0;39m"
+##echo "\033[0;34m==作成した仮想マシンをリストアップする==\033[0;39m"
 ##docker-machine ls
 
-echo "\033[0;34m==作成した仮想マシンを起動する==\033[0;39m"
+##echo "\033[0;34m==作成した仮想マシンを起動する==\033[0;39m"
 ##docker-machine start default
 
-echo "\033[0;34m==起動した仮想マシンのIPアドレスを確認する==\033[0;39m"
+##echo "\033[0;34m==起動した仮想マシンのIPアドレスを確認する==\033[0;39m"
 ##docker-machine ip default
 
-echo "\033[0;34m==起動した仮想マシンの各種環境変数を確認する==\033[0;39m"
+##echo "\033[0;34m==起動した仮想マシンの各種環境変数を確認する==\033[0;39m"
 ##docker-machine env default
 
-echo "\033[0;34m==envコマンドで得られる環境変数をexport==\033[0;39m"
+##echo "\033[0;34m==envコマンドで得られる環境変数をexport==\033[0;39m"
 ##eval "$(docker-machine env default)"
 
 docker version
-docker images
-docker ps -a
+##docker images
+##docker ps -a
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
