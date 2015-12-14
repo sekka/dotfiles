@@ -164,35 +164,6 @@ echo "\033[0;34m==必須のパッケージをインストール==\033[0;39m"
 pip install virtualenv
 
 
-echo "# =========================================================="
-echo "#"
-echo "# rainbowstreamを導入する"
-echo "#"
-echo "# =========================================================="
-
-#cd ~
-#mkdir .rainbowstream
-#virtualenv venv
-#source venv/bin/activate
-#pip install rainbowstream
-#rainbowstream
-#deactivate
-pip install rainbowstream
-
-RAINBOW_CONFIG=(.rainbow_config.json)
-
-for file in ${RAINBOW_CONFIG[@]}
-
-do
-	if [ -a $HOME/$file ]; then
-			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-	else
-		ln -s $HOME/dotfiles/$file $HOME/$file
-			echo "シンボリックリンクを貼りました: $file"
-	fi
-done
-
-
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# Dockerを導入する\033[0;39m"
