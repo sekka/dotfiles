@@ -92,6 +92,7 @@ brew cask install transmit
 brew cask install the-unarchiver
 brew cask install vlc
 brew cask install visual-studio-code
+brew cask install xld
 
 echo "\033[0;34m==Alfredの検索対象にいれる==\033[0;39m"
 brew cask alfred link
