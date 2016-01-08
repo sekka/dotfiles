@@ -29,6 +29,7 @@ brew install direnv
 brew install ffmpeg
 brew install fpp
 brew install ghq
+brew install gibo
 brew install git
 brew install go
 brew install hub
@@ -236,6 +237,7 @@ echo "\033[0;31m# ==========================================================\033
 
 brew cleanup
 brew doctor
+gibo -u
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
