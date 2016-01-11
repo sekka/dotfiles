@@ -36,6 +36,7 @@ brew install hub
 brew install hugo
 brew install httpie
 brew install node
+brew install --with-bundle --HEAD mpv
 brew install mycli
 brew install pt
 brew install pstree
