@@ -73,6 +73,7 @@ brew cask install dockertoolbox
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
 brew cask install appcleaner
+brew cask install atom
 brew cask install androidtool
 brew cask install blender
 brew cask install cactus
@@ -112,6 +113,7 @@ brew cask install shupapan
 brew cask install sketch
 brew cask install skype
 brew cask install slack
+brew cask install soundnode
 brew cask install sourcetree
 brew cask install caskroom/versions/sublime-text3
 brew cask install transmit
