@@ -102,6 +102,7 @@ brew cask install mplayerx
 brew cask install onyx
 brew cask install pingendo
 brew cask install pixate-studio
+brew cask install pngyu
 brew cask install processing
 brew cask install psequel
 brew cask install p5
