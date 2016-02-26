@@ -254,9 +254,6 @@ alias mkdir='mkdir -p'
 # bundler
 alias be='bundle exec'
 
-# rainbowstream
-alias rs='rainbowstream'
-
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
@@ -427,9 +424,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PYENV_ROOT/bin:$PATH
 eval "$(pyenv init -)"
 
-# nodebrew (install by Homebrew)
-# export PATH=$HOME/.nodebrew/current/bin:$PATH
-
 # SSH
 # 参考：http://iwashi.co/2014/05/06/digital-oceanvagrant-upssl-errorrbenv/
 export SSL_CERT_FILE=/usr/local/etc/openssl/cert.pem
@@ -437,11 +431,10 @@ export SSL_CERT_FILE=/usr/local/etc/openssl/cert.pem
 # PostgreSQL
 export PGDATA=/usr/local/var/postgres
 
-# Sublime Text 3
-# export PATH="/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl:$PATH"
-
 # golang
 export GOPATH="$HOME/.go"
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 # Docker
 #export DOCKER_HOST="tcp://192.168.99.100:2376"
@@ -459,4 +452,3 @@ path=(
     /usr/local/sbin(N-/)
     $path
 )
-

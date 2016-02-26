@@ -177,7 +177,7 @@ echo "\033[0;34m==必須のgemをインストール==\033[0;39m"
 gem update --system
 gem install bundler
 gem install rbenv-rehash
-gem update 
+gem update
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -232,6 +232,9 @@ echo "\033[0;31m# ==========================================================\033
 docker version
 ##docker images
 ##docker ps -a
+
+echo "\033[0;34m==関連ツールをインストール==\033[0;39m"
+go get github.com/pottava/docker-webui
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
