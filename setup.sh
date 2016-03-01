@@ -146,6 +146,9 @@ npm install -g tmux-mem
 npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check-updates
+npm install -g yo
+npm install -g coffee-script
+npm install -g generator-hubot
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
