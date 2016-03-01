@@ -41,6 +41,7 @@ brew install mycli
 brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
+brew install redis
 brew install tig
 brew install tmux
 brew install tree
