@@ -89,6 +89,7 @@ brew cask install fontexplorer-x-pro
 ##brew cask install github-desktop
 brew cask install glyphs
 brew cask install gyazo
+brew cask install heroku-toolbelt
 ##brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
@@ -116,7 +117,7 @@ brew cask install skype
 brew cask install slack
 ##brew cask install soundnode
 brew cask install sourcetree
-brew cask install caskroom/versions/sublime-text3
+##brew cask install caskroom/versions/sublime-text3
 brew cask install transmit
 brew cask install the-unarchiver
 brew cask install vlc
@@ -246,33 +247,3 @@ echo "\033[0;31m# ==========================================================\033
 brew cleanup
 brew doctor
 gibo -u
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Sublime Text 3を設定する\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-# 設定ファイルにシンボリックリンクを貼る
-SETTING_FILES=("Package Control.sublime-settings" Preferences.sublime-settings)
-
-for file in "${SETTING_FILES[@]}"
-
-do
-	if [ -a $HOME/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/"$file" ]; then
-		echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-	else
-		ln -s $HOME/dotfiles/"$file" $HOME/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/"$file"
-		echo "シンボリックリンクを貼りました: $file"
-	fi
-done
-
-
-# sublにシンボリックリンクを貼る
-if [ -a /usr/local/bin/subl ]; then
-	echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: subl"
-else
-	ln -s $HOME/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/subl
-	echo "シンボリックリンクを貼りました: subl"
-fi
