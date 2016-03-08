@@ -106,12 +106,12 @@ brew cask install onyx
 brew cask install pixate-studio
 brew cask install pngyu
 brew cask install processing
-##brew cask install psequel
+brew cask install psequel
 brew cask install p5
 brew cask install quicktime-player7
 brew cask install reggy
 brew cask install rightfont
-##brew cask install sequel-pro
+brew cask install sequel-pro
 brew cask install shupapan
 brew cask install sketch
 brew cask install skype
