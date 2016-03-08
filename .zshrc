@@ -443,6 +443,9 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 #export DOCKER_MACHINE_NAME="default"
 eval "$(docker-machine env default)"
 
+# direnv
+eval "$(direnv hook zsh)"
+
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
 
