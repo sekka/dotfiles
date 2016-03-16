@@ -115,6 +115,7 @@ brew cask install rightfont
 brew cask install sequel-pro
 brew cask install shupapan
 brew cask install sketch
+brew cask install sketch-tool
 brew cask install skype
 brew cask install slack
 ##brew cask install soundnode

@@ -263,6 +263,27 @@ alias td='tmux detach'
 alias ta='tmux attach'
 alias tat='tmux attach -t'
 
+# git
+alias gst="git status"
+alias gcm="git commit"
+# submoduleアップデート
+alias smu="git submodule foreach 'git checkout master; git pull'"
+# Untracked filesを表示せず，not stagedと，stagedだけの状態を出力する
+alias gstt="git status -uno"
+# 行ごとの差分ではなく単語レベルでの差分を色付きで表示する
+alias gdifff="git diff --word-diff"
+# いい感じのグラフでログを表示
+alias log0="git log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold white)― %an%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
+alias log1="git log --pretty='format:%C(yellow)%h%Creset %C(magenta)%cd%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset%C(black bold)%ar%Creset' --date=iso"
+alias log2="git log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)― %an%C(reset)' --abbrev-commit"
+alias log3="git log --graph --date-order -C -M --pretty=format:'<%h> %ad [%an] %Cgreen%d%Creset %s' --all --date=short"
+alias log4="git log --graph --pretty='format:%C(yellow)%h%Cblue%d%Creset %s %C(black bold)%an, %ar%Creset'"
+alias log5="git log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'"
+alias log6="git log --graph --pretty=format:'%Cred%h%Creset - %s%C(yellow)%d%Creset %Cgreen(%cr:%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+alias log7="git log --graph --pretty=format:'%Cred%h%Creset - %s%C(yellow)%d%Creset %Cgreen(%cr:%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=iso"
+alias log8="git log --graph --all --decorate"
+alias log9="git !'git lg --all'"
+
 # cd
 alias ..='cd ..'
 alias ...='cd ../..'
