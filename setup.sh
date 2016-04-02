@@ -91,6 +91,7 @@ brew cask install droplr
 brew cask install fontexplorer-x-pro
 ##brew cask install github-desktop
 brew cask install glyphs
+brew cask install google-nik-collection
 brew cask install gyazo
 brew cask install heroku-toolbelt
 brew cask install iconjar
@@ -244,9 +245,15 @@ docker version
 ##docker images
 ##docker ps -a
 
-echo "\033[0;34m==関連ツールをインストール==\033[0;39m"
-go get github.com/pottava/docker-webui
 
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# goでCUIツールをインストール\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
+
+go get -u github.com/pottava/docker-webui
+go get -u github.com/gizak/termui
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
