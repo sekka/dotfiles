@@ -151,6 +151,7 @@ npm install -g tmux-cpu
 npm install -g tmux-mem
 npm install -g gulp
 npm install -g caniuse-cmd
+npm install -g npm-check
 npm install -g npm-check-updates
 npm install -g yo
 npm install -g coffee-script
