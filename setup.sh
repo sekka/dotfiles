@@ -27,7 +27,7 @@ brew install android-platform-tools
 brew install curl
 brew install devd
 brew install direnv
-brew install ffmpeg
+brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 brew install fpp
 brew install ghq
 brew install gibo
@@ -36,6 +36,7 @@ brew install go
 brew install hub
 brew install hugo
 brew install httpie
+brew install ImageMagick
 brew install node
 brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
@@ -105,6 +106,7 @@ brew cask install night-owl
 ##brew cask install numi
 brew cask install mplayerx
 brew cask install onyx
+brew cask install paw
 ##brew cask install pingendo
 brew cask install pixate-studio
 brew cask install pngyu
