@@ -113,6 +113,7 @@ brew cask install pngyu
 brew cask install processing
 brew cask install psequel
 brew cask install p5
+brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
 brew cask install quicktime-player7
 brew cask install reggy
 brew cask install rightfont
