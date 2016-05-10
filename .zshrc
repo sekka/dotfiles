@@ -436,6 +436,9 @@ export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
 # export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
+# nodebrew (install by Homebrew)
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
 # rbenv (install by Homebrew)
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"

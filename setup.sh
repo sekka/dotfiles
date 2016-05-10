@@ -37,7 +37,7 @@ brew install hub
 brew install hugo
 brew install httpie
 brew install ImageMagick
-brew install node
+brew install nodebrew
 brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
 brew install mycli
@@ -141,6 +141,20 @@ brew cask install xquartz
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 brew cask cleanup
 brew cask doctor
+
+
+echo "\033[0;31m# ==========================================================\033[0;39m"↲
+echo "\033[0;31m#\033[0;39m"↲
+echo "\033[0;31m# nodeを導入する\033[0;39m"↲
+echo "\033[0;31m#\033[0;39m"↲
+echo "\033[0;31m# ==========================================================\033[0;39m"↲
+
+nodebrew selfupdate
+nodebrew install-binary 4.x.x
+nodebrew install-binary stablei
+nodebrew install-binary latest
+nodebrew ls-all
+nodebrew use 4.x.x
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
