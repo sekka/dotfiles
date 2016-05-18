@@ -117,6 +117,7 @@ brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch 
 brew cask install quicktime-player7
 brew cask install reggy
 brew cask install rightfont
+brew cask install safari-technology-preview
 brew cask install sequel-pro
 brew cask install shupapan
 brew cask install sketch
