@@ -262,18 +262,11 @@ echo "\033[0;31m# ==========================================================\033
 ##eval "$(docker-machine env default)"
 
 docker version
+docker-machine version
+docker-compose version
 ##docker images
 ##docker ps -a
 
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# goでCUIツールをインストール\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-go get -u github.com/pottava/docker-webui
-go get -u github.com/gizak/termui
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"

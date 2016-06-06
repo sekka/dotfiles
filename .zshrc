@@ -465,7 +465,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 #export DOCKER_CERT_PATH="$HOME/.docker/machine/machines/default"
 #export DOCKER_TLS_VERIFY="1"
 #export DOCKER_MACHINE_NAME="default"
-eval "$(docker-machine env default)"
+#eval "$(docker-machine env default)"
 
 # direnv
 eval "$(direnv hook zsh)"
