@@ -24,7 +24,7 @@ brew install peco
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
 brew install ag
 brew install android-platform-tools
-brew install curl
+brew install --with-openssl curl & brew link curl --force
 brew install devd
 brew install direnv
 brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
@@ -41,6 +41,7 @@ brew install nodebrew
 brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
 brew install mycli
+brew install openssl & brew link openssl --force
 brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
