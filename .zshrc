@@ -441,6 +441,7 @@ export PATH=$HOME/.nodebrew/current/bin:$PATH
 
 # rbenv (install by Homebrew)
 export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"
 eval "$(rbenv init -)"
 
 # pyenv (install by Homebrew)
