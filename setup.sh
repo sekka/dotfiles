@@ -278,3 +278,4 @@ echo "\033[0;31m# ==========================================================\033
 brew cleanup
 brew doctor
 gibo -u
+tmux source-file ~/.tmux.conf
