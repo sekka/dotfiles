@@ -42,6 +42,8 @@ brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
 brew install mycli
 brew install openssl & brew link openssl --force
+brew tap Code-Hex/pget
+brew install pget
 brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
@@ -80,6 +82,7 @@ brew cask install appcleaner
 brew cask install atom
 brew cask install androidtool
 brew cask install blender
+brew cask install blisk
 ##brew cask install cactus
 brew cask install ccleaner
 brew cask install charles
