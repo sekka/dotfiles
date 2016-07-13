@@ -417,7 +417,7 @@ function tmux_automatically_attach_session()
                 # on OS X force tmux's default command
                 # to spawn a shell in the user's namespace
                 tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-				tmux -f <(echo "$tmux_config") new-session \; source $HOME/dotfiles/.tmux/new-session && echo "$(tmux -V) created new session supported OS X"
+                tmux -f <(echo "$tmux_config") new-session \; source $HOME/dotfiles/.tmux/new-session && echo "$(tmux -V) created new session supported OS X"
             else
                 tmux new-session && echo "tmux created new session"
             fi
@@ -449,10 +449,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PYENV_ROOT/bin:$PATH
 eval "$(pyenv init -)"
 
-# SSH
-# 参考：http://iwashi.co/2014/05/06/digital-oceanvagrant-upssl-errorrbenv/
-export SSL_CERT_FILE=/usr/local/etc/openssl/cert.pem
-
 # PostgreSQL
 export PGDATA=/usr/local/var/postgres
 
@@ -460,13 +456,6 @@ export PGDATA=/usr/local/var/postgres
 export GOPATH="$HOME/.go"
 export GOROOT=/usr/local/opt/go/libexec
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
-# Docker
-#export DOCKER_HOST="tcp://192.168.99.100:2376"
-#export DOCKER_CERT_PATH="$HOME/.docker/machine/machines/default"
-#export DOCKER_TLS_VERIFY="1"
-#export DOCKER_MACHINE_NAME="default"
-#eval "$(docker-machine env default)"
 
 # direnv
 eval "$(direnv hook zsh)"
