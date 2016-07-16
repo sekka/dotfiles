@@ -73,8 +73,9 @@ brew cask install vagrant-manager
 brew cask install chefdk
 
 echo "\033[0;34m==Dockerをインストール==\033[0;39m"
-brew tap homebrew/binary
-brew cask install dockertoolbox
+##brew tap homebrew/binary
+##brew cask install dockertoolbox
+brew cask install docker
 
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
@@ -89,6 +90,7 @@ brew cask install charles
 ##brew cask install coccinellida
 brew cask install coteditor
 brew cask install cookie
+brew cask install cooviewer
 brew cask install couleurs
 brew cask install dropbox
 brew cask install droplr
@@ -98,6 +100,7 @@ brew cask install glyphs
 brew cask install google-nik-collection
 brew cask install gyazo
 brew cask install heroku-toolbelt
+brew cask install hyperterm
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
@@ -267,8 +270,8 @@ echo "\033[0;31m# ==========================================================\033
 docker version
 docker-machine version
 docker-compose version
-##docker images
-##docker ps -a
+docker images
+docker ps -a
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
