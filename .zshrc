@@ -91,8 +91,7 @@ PROMPT=""									# デフォルトのパス表示を消す
 PROMPT+="%F{magenta}[%1~]%f"				# パス
 PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"	# OK/NGの顔文字
 PROMPT+="%% "								# コマンド入力待ち
-#RPROMPT="%F{green}%*"						# カスタム時刻表示
-RPROMPT="%1(v|%F{red}%1v%f|) %F{green}%*" # GIT+カスタム時刻表示
+RPROMPT="%1(v|%F{red}%1v%f|) %F{green}%*"	# GIT+カスタム時刻表示
 
 # もしかして時のプロンプト指定
 SPROMPT="%{$fg[red]%}%{$suggest%}(*'~'%)? < もしかして %B%r%b %{$fg[red]%}? [そう!(y), 違う!(n),a,e]:${reset_color} "
