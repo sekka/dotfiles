@@ -91,8 +91,7 @@ PROMPT=""									# デフォルトのパス表示を消す
 PROMPT+="%F{magenta}[%1~]%f"				# パス
 PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"	# OK/NGの顔文字
 PROMPT+="%% "								# コマンド入力待ち
-#RPROMPT="%F{green}%*"						# カスタム時刻表示
-RPROMPT="%1(v|%F{red}%1v%f|) %F{green}%*" # GIT+カスタム時刻表示
+RPROMPT="%1(v|%F{red}%1v%f|) %F{green}%*"	# GIT+カスタム時刻表示
 
 # もしかして時のプロンプト指定
 SPROMPT="%{$fg[red]%}%{$suggest%}(*'~'%)? < もしかして %B%r%b %{$fg[red]%}? [そう!(y), 違う!(n),a,e]:${reset_color} "
@@ -294,6 +293,7 @@ alias -g L='| less'
 alias -g H='| head'
 alias -g T='| tail'
 alias -g G='| grep'
+alias -g CL='| color'
 
 # -n 行数表示, -I バイナリファイル無視, svn関係のファイルを無視
 alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
@@ -463,6 +463,9 @@ eval "$(direnv hook zsh)"
 
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
+
+# export
+export PATH=$HOME/dotfiles/bin:$PATH
 
 path=(
     $HOME/bin(N-/)
