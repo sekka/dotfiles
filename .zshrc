@@ -247,6 +247,9 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
+# color
+alias -g C="| color"
+
 # mkdir
 alias mkdir='mkdir -p'
 
@@ -462,6 +465,9 @@ eval "$(direnv hook zsh)"
 
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
+
+# export
+export PATH=$HOME/dotfiles/bin:$PATH
 
 path=(
     $HOME/bin(N-/)
