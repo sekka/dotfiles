@@ -74,8 +74,8 @@ brew cask install chefdk
 
 echo "\033[0;34m==Dockerをインストール==\033[0;39m"
 ##brew tap homebrew/binary
-##brew cask install dockertoolbox
-brew cask install docker
+brew cask install dockertoolbox
+##brew cask install docker
 
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
