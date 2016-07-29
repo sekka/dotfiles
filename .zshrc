@@ -263,8 +263,15 @@ alias ta='tmux attach'
 alias tat='tmux attach -t'
 
 # git
+alias gft="git fetch"
+alias gpl="git pull"
+alias gco="git checkout"
 alias gst="git status"
-alias gcm="git commit"
+alias gcm="git commit -a"
+alias gbr="git branch"
+alias gbr="git branch -a"
+alias gbm="git branch --merged"
+alias gbn="git branch --no-merge"
 # submoduleアップデート
 alias smu="git submodule foreach 'git checkout master; git pull'"
 # Untracked filesを表示せず，not stagedと，stagedだけの状態を出力する
@@ -282,6 +289,8 @@ alias log6="git log --graph --pretty=format:'%Cred%h%Creset - %s%C(yellow)%d%Cre
 alias log7="git log --graph --pretty=format:'%Cred%h%Creset - %s%C(yellow)%d%Creset %Cgreen(%cr:%cd) %C(bold blue)<%an>%Creset' --abbrev-commit --date=iso"
 alias log8="git log --graph --all --decorate"
 alias log9="git !'git lg --all'"
+# hub + pecoでリポジトリをブラウザで開く
+alias hbr='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 
 # cd
 alias ..='cd ..'
@@ -316,6 +325,7 @@ fi
 # peco
 # -------------------------------------
 
+# コマンド履歴を出して検索・絞り込みするやつ
 function peco-select-history() {
     local tac
     if which tac > /dev/null; then
@@ -331,6 +341,18 @@ function peco-select-history() {
 }
 zle -N peco-select-history
 bindkey '^r' peco-select-history
+
+# ghqでクローンしてきたリポジトリへの移動が捗る
+function peco-src () {
+  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd ${selected_dir}"
+    zle accept-line
+  fi
+  zle clear-screen
+}
+zle -N peco-src
+bindkey '^]' peco-src
 
 
 # --------------------------------------
