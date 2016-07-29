@@ -316,6 +316,7 @@ fi
 # peco
 # -------------------------------------
 
+# コマンド履歴を出して検索・絞り込みするやつ
 function peco-select-history() {
     local tac
     if which tac > /dev/null; then
@@ -331,6 +332,18 @@ function peco-select-history() {
 }
 zle -N peco-select-history
 bindkey '^r' peco-select-history
+
+# ghqでクローンしてきたリポジトリへの移動が捗る
+function peco-src () {
+  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd ${selected_dir}"
+    zle accept-line
+  fi
+  zle clear-screen
+}
+zle -N peco-src
+bindkey '^]' peco-src
 
 
 # --------------------------------------
