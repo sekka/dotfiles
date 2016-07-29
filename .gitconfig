@@ -12,4 +12,4 @@
   clean = git-lfs clean %f
   smudge = git-lfs smudge %f
 [ghq]
-  root = $HOME/Documents/src
+  root = ~/Documents/src
