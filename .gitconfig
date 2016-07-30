@@ -1,3 +1,5 @@
+[core]
+  excludesfile = ~/.gitignore_global
 [user]
   name = sekka
   email = sekka3@gmail.com
