@@ -508,6 +508,7 @@ path=(
 
 zplug "zsh-users/zsh-syntax-highlighting"
 zplug "zsh-users/zsh-history-substring-search"
+zplug "mrowa44/emojify", as:command
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
