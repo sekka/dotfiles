@@ -269,7 +269,7 @@ alias gco="git checkout"
 alias gst="git status"
 alias gcm="git commit -a"
 alias gbr="git branch"
-alias gbr="git branch -a"
+alias gba="git branch -a"
 alias gbm="git branch --merged"
 alias gbn="git branch --no-merge"
 # submoduleアップデート
