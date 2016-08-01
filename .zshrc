@@ -481,6 +481,10 @@ export GOPATH="$HOME/.go"
 export GOROOT=/usr/local/opt/go/libexec
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
+# zplug
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
 # direnv
 eval "$(direnv hook zsh)"
 
@@ -496,3 +500,24 @@ path=(
     /usr/local/sbin(N-/)
     $path
 )
+
+
+# --------------------------------------
+# プラグイン読み込み
+# --------------------------------------
+
+zplug "zsh-users/zsh-syntax-highlighting"
+zplug "zsh-users/zsh-history-substring-search"
+
+# check コマンドで未インストール項目があるかどうか verbose にチェックし
+# false のとき（つまり未インストール項目がある）y/N プロンプトで
+# インストールする
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# プラグインを読み込み、コマンドにパスを通す
+zplug load --verbose
