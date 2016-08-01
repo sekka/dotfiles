@@ -17,3 +17,5 @@
 	root = ~/Documents/src
 [commit]
 	template = .gitcommit_template
+[merge]
+	ff = false
