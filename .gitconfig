@@ -19,3 +19,5 @@
 	template = .gitcommit_template
 [merge]
 	ff = false
+[pull]
+	ff = only
