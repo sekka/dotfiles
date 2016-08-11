@@ -4,14 +4,10 @@ echo "\033[0;31m# Homebrew CaskでGUIツールをインストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-echo "\033[0;34m==brew caskを導入==\033[0;39m"
-brew tap caskroom/cask
-brew cask update
-
 echo "\033[0;34m==Vagrantをインストール==\033[0;39m"
 brew cask install vagrant
 brew cask install vagrant-manager
-brew cask install chefdk
+##brew cask install chefdk
 
 echo "\033[0;34m==Dockerをインストール==\033[0;39m"
 ##brew cask install dockertoolbox
