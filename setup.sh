@@ -41,6 +41,7 @@ brew install nodebrew
 brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
 brew install mycli
+brew install m-cli
 brew install openssl & brew link openssl --force
 brew tap Code-Hex/pget
 brew install pget
