@@ -1,22 +1,22 @@
 module.exports = {
     config: {
         // default font size in pixels for all tabs
-        fontSize: 12,
+        fontSize: 10,
 
         // font family with optional fallbacks
-        fontFamily: 'Menlo, "DejaVu Sans Mono", "Lucida Console", monospace',
+        fontFamily: 'Monaco',
 
         // terminal cursor background color (hex)
-        cursorColor: '#F81CE5',
+        cursorColor: '#f9fffa',
 
         // color of the text
-        foregroundColor: '#fff',
+        foregroundColor: '#f9fffa',
 
         // terminal background color
-        backgroundColor: '#000',
+        backgroundColor: '#032b34',
 
         // border color (window, tabs)
-        borderColor: '#333',
+        borderColor: '#032b34',
 
         // custom css to embed in the main window
         css: '',
@@ -29,24 +29,24 @@ module.exports = {
 
         // some color overrides. see http://bit.ly/29k1iU2 for
         // the full list
-        colors: [
-            '#000000',
-            '#ff0000',
-            '#33ff00',
-            '#ffff00',
-            '#0066ff',
-            '#cc00ff',
-            '#00ffff',
-            '#d0d0d0',
-            '#808080',
-            '#ff0000',
-            '#33ff00',
-            '#ffff00',
-            '#0066ff',
-            '#cc00ff',
-            '#00ffff',
-            '#ffffff'
-        ]
+        colors: {
+            black: '#6d8397',
+            red: '#ff8300',
+            green: '#baed00',
+            yellow: '#ffe000',
+            blue: '#00bef3',
+            magenta: '#c6abff',
+            cyan: '#79cfff',
+            white: '#f9fffa',
+            lightBlack: '#6d8397',
+            lightRed: '#ff8300',
+            lightGreen: '#baed00',
+            lightYellow: '#ffe000',
+            lightBlue: '#00bef3',
+            lightMagenta: '#c6abff',
+            lightCyan: '#79cfff',
+            lightWhite: '#f9fffa'
+        }
     },
 
     // a list of plugins to fetch and install from npm
