@@ -1,6 +1,52 @@
-# 参考:
-# https://gist.github.com/mollifier/4979906
-# http://webtech-walker.com/archive/2008/12/15101251.html
+# --------------------------------------
+# path
+# --------------------------------------
+
+# Homebrew
+export PATH=/usr/local/sbin:$PATH
+export PATH=/usr/local/bin:$PATH
+# export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+
+# nodebrew (install by Homebrew)
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
+# rbenv (install by Homebrew)
+export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/shims:$PATH"
+eval "$(rbenv init -)"
+
+# pyenv (install by Homebrew)
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH=$PYENV_ROOT/bin:$PATH
+eval "$(pyenv init -)"
+
+# PostgreSQL
+export PGDATA=/usr/local/var/postgres
+
+# golang
+export GOPATH="$HOME/.go"
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
+# zplug
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
+# direnv
+eval "$(direnv hook zsh)"
+
+# 重複する要素を自動的に削除
+typeset -U path cdpath fpath manpath
+
+# export
+export PATH=$HOME/dotfiles/bin:$PATH
+
+path=(
+    $HOME/bin(N-/)
+    /usr/local/bin(N-/)
+    /usr/local/sbin(N-/)
+    $path
+)
 
 
 # --------------------------------------
@@ -383,6 +429,34 @@ esac
 
 
 # --------------------------------------
+# zplug
+# --------------------------------------
+
+zplug "zsh-users/zsh-syntax-highlighting"
+zplug "zsh-users/zsh-history-substring-search"
+zplug "zsh-users/zsh-completions"
+zplug "mrowa44/emojify", as:command
+
+# check コマンドで未インストール項目があるかどうか verbose にチェックし
+# false のとき（つまり未インストール項目がある）y/N プロンプトで
+# インストールする
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# プラグインを読み込み、コマンドにパスを通す
+zplug load --verbose
+
+# メンテナンス
+zplug clear
+zplug update
+zplug status
+
+
+# --------------------------------------
 # tmux
 # --------------------------------------
 
@@ -449,77 +523,3 @@ function tmux_automatically_attach_session()
     fi
 }
 tmux_automatically_attach_session
-
-
-# --------------------------------------
-# path
-# --------------------------------------
-
-# Homebrew
-export PATH=/usr/local/sbin:$PATH
-export PATH=/usr/local/bin:$PATH
-# export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-
-# nodebrew (install by Homebrew)
-export PATH=$HOME/.nodebrew/current/bin:$PATH
-
-# rbenv (install by Homebrew)
-export PATH="$HOME/.rbenv/bin:$PATH"
-export PATH="$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
-
-# pyenv (install by Homebrew)
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH=$PYENV_ROOT/bin:$PATH
-eval "$(pyenv init -)"
-
-# PostgreSQL
-export PGDATA=/usr/local/var/postgres
-
-# golang
-export GOPATH="$HOME/.go"
-export GOROOT=/usr/local/opt/go/libexec
-export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
-# zplug
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
-
-# direnv
-eval "$(direnv hook zsh)"
-
-# 重複する要素を自動的に削除
-typeset -U path cdpath fpath manpath
-
-# export
-export PATH=$HOME/dotfiles/bin:$PATH
-
-path=(
-    $HOME/bin(N-/)
-    /usr/local/bin(N-/)
-    /usr/local/sbin(N-/)
-    $path
-)
-
-
-# --------------------------------------
-# プラグイン読み込み
-# --------------------------------------
-
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-completions"
-zplug "mrowa44/emojify", as:command
-
-# check コマンドで未インストール項目があるかどうか verbose にチェックし
-# false のとき（つまり未インストール項目がある）y/N プロンプトで
-# インストールする
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
-
-# プラグインを読み込み、コマンドにパスを通す
-zplug load --verbose
