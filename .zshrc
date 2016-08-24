@@ -523,3 +523,9 @@ fi
 
 # プラグインを読み込み、コマンドにパスを通す
 zplug load --verbose
+
+# zplug メンテナンス
+zplug env
+zplug clear
+zplug update
+zplug status
