@@ -67,10 +67,7 @@ echo "\033[0;31m# ==========================================================\033
 brew install zplug
 
 # zplug メンテナンス
-zplug env
-zplug clear
-zplug update
-zplug status
+# zplug env
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"↲
