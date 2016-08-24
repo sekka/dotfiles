@@ -101,8 +101,6 @@ echo "\033[0;31m# ==========================================================\033
 
 echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g npm
-npm install -g tmux-cpu
-npm install -g tmux-mem
 npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check
