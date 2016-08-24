@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I \
+  | grep " SSID" \
+  | awk '{$1="";print}' \
+  | sed "s/ //")
+
+if [ -n "$ssid" ]; then
+  echo "#[bg=default,fg=white]$ssid#[default]"
+else
+  echo "#[bg=default,fg=red]✘#[default]"
+fi
