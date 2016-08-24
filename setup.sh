@@ -117,6 +117,7 @@ echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
 npm update
 npm upgrade
+npm list -g --depth=0
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
