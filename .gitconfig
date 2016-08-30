@@ -14,7 +14,7 @@
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 [ghq]
-	root = ~/Documents/src
+	root = ~/src
 [commit]
 	template = .gitcommit_template
 [merge]
