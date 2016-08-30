@@ -37,6 +37,7 @@ brew install hub
 brew install hugo
 brew install httpie
 brew install ImageMagick
+brew install jq
 brew install nodebrew
 brew install argon/mas/mas
 brew install --with-bundle --HEAD mpv
