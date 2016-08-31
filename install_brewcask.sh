@@ -31,7 +31,7 @@ brew cask install couleurs
 brew cask install dropbox
 brew cask install droplr
 brew cask install fontexplorer-x-pro
-##brew cask install github-desktop
+brew cask install github-desktop
 brew cask install glyphs
 brew cask install google-nik-collection
 brew cask install gyazo
