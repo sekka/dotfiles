@@ -104,6 +104,10 @@ autoload -U promptinit; promptinit
 # vcs_info宣言
 autoload -Uz vcs_info
 
+# cdrを有効にする
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+
 # 下のformatsの値をそれぞれの変数に入れてくれる機能の、変数の数の最大値
 zstyle ":vcs_info:*" max-exports 6
 
@@ -270,7 +274,7 @@ function cdup() {
    zle reset-prompt
 }
 zle -N cdup
-bindkey '^K' cdup
+# bindkey '^K' cdup
 
 
 # --------------------------------------
@@ -401,6 +405,10 @@ function peco-src () {
 zle -N peco-src
 bindkey '^]' peco-src
 
+# anyframe
+bindkey '^h' anyframe-widget-select-widget
+bindkey '^j' anyframe-widget-insert-git-branch
+bindkey '^k' anyframe-widget-checkout-git-branch
 
 # --------------------------------------
 # その他
@@ -436,6 +444,7 @@ zplug "zsh-users/zsh-syntax-highlighting"
 zplug "zsh-users/zsh-history-substring-search"
 zplug "zsh-users/zsh-completions"
 zplug "mrowa44/emojify", as:command
+zplug "mollifier/anyframe"
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
