@@ -7,5 +7,5 @@ if [[ ! $battery =~ "discharging" ]]; then
 elif [ $battery_quantity -le 15 ]; then
   echo "#[bg=red,fg=white] $battery_quantity% #[default]"
 else
-  echo "#[bg=cyan,fg=black] $battery_quantity% #[default]"
+  echo "#[bg=blue,fg=white] $battery_quantity% #[default]"
 fi
