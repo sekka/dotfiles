@@ -114,6 +114,7 @@ npm install -g coffee-script
 npm install -g generator-hubot
 npm install -g grunt-cli
 npm install -g bower
+npm install -g fixpack
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
