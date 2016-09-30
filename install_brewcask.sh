@@ -44,6 +44,7 @@ brew cask install imageoptim
 brew cask install intellij-idea
 brew cask install iterm2
 brew cask install ksdiff
+brew cask install keyboard-maestro
 ##brew cask install limechat
 brew cask install night-owl
 ##brew cask install numi
