@@ -37,7 +37,7 @@ brew cask install glyphs
 brew cask install google-nik-collection
 brew cask install gyazo
 brew cask install heroku-toolbelt
-brew cask install hyperterm
+brew cask install hyper
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
