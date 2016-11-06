@@ -50,6 +50,7 @@ brew cask install night-owl
 ##brew cask install numi
 brew cask install mplayerx
 brew cask install onyx
+brew cask install origami
 brew cask install paw
 ##brew cask install pingendo
 brew cask install pixate-studio
