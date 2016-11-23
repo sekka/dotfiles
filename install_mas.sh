@@ -5,7 +5,6 @@ echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
 mas install 906164672 ## Form
-mas install 449589707 ## Dash
 mas install 539883307 ## LINE
 mas install 414855915 ## WinArchiver Lite
 mas install 587512244 ## Kaleidoscope
@@ -23,6 +22,7 @@ mas install 880001334 ## Reeder
 mas install 498944723 ## JPEGmini
 mas install 409201541 ## Pages
 mas install 409203825 ## Numbers
+mas install 1024640650 ## CotEditor
 mas install 824171161 ## Affinity Designer
 mas install 568494494 ## Pocket
 mas install 944654199 ## Tree 2
