@@ -16,6 +16,7 @@ brew cask install dockertoolbox
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install alfred
 brew cask install appcleaner
+brew cask install arduino
 brew cask install atom
 brew cask install androidtool
 brew cask install blender
@@ -28,6 +29,7 @@ brew cask install coteditor
 brew cask install cookie
 brew cask install cooviewer
 brew cask install couleurs
+brew cask install dash
 brew cask install dropbox
 brew cask install droplr
 brew cask install fontexplorer-x-pro
