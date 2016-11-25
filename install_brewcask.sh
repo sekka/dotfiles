@@ -26,6 +26,7 @@ brew cask install ccleaner
 brew cask install charles
 ##brew cask install coccinellida
 brew cask install coteditor
+brew cask install cmd-eikana
 brew cask install cookie
 brew cask install cooviewer
 brew cask install couleurs
