@@ -55,6 +55,7 @@ brew install tmux
 brew install tree
 brew install vim
 brew install wget
+brew install yarn
 brew install youtube-dl
 brew install zsh
 
@@ -71,11 +72,11 @@ brew install zplug
 # zplug env
 
 
-echo "\033[0;31m# ==========================================================\033[0;39m"↲
-echo "\033[0;31m#\033[0;39m"↲
-echo "\033[0;31m# fontを導入する\033[0;39m"↲
-echo "\033[0;31m#\033[0;39m"↲
-echo "\033[0;31m# ==========================================================\033[0;39m"↲
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# fontを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew tap caskroom/fonts
 brew cask install font-fontawesome
@@ -83,18 +84,19 @@ brew cask install font-ricty-diminished
 brew cask install font-source-han-code-jp
 
 
-echo "\033[0;31m# ==========================================================\033[0;39m"↲
-echo "\033[0;31m#\033[0;39m"↲
-echo "\033[0;31m# nodeを導入する\033[0;39m"↲
-echo "\033[0;31m#\033[0;39m"↲
-echo "\033[0;31m# ==========================================================\033[0;39m"↲
+echo "\033[0;31m# ==========================================================\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# nodeを導入する\033[0;39m"
+echo "\033[0;31m#\033[0;39m"
+echo "\033[0;31m# ==========================================================\033[0;39m"
 
 nodebrew selfupdate
 nodebrew install-binary 4.x.x
+nodebrew install-binary 6.x.x
 nodebrew install-binary stablei
 nodebrew install-binary latest
 nodebrew ls-all
-nodebrew use 4.x.x
+nodebrew use 6.x.x
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
