@@ -92,10 +92,11 @@ echo "\033[0;31m# ==========================================================\033
 
 nodebrew selfupdate
 nodebrew install-binary 4.x.x
+nodebrew install-binary 6.x.x
 nodebrew install-binary stablei
 nodebrew install-binary latest
 nodebrew ls-all
-nodebrew use 4.x.x
+nodebrew use 6.x.x
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
