@@ -55,6 +55,7 @@ brew install tmux
 brew install tree
 brew install vim
 brew install wget
+brew install yarn
 brew install youtube-dl
 brew install zsh
 
