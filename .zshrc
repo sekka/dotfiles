@@ -42,10 +42,10 @@ typeset -U path cdpath fpath manpath
 export PATH=$HOME/dotfiles/bin:$PATH
 
 path=(
+    $path
     $HOME/bin(N-/)
     /usr/local/bin(N-/)
     /usr/local/sbin(N-/)
-    $path
 )
 
 
