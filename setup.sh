@@ -18,7 +18,7 @@ brew install pyenv
 brew install homebrew/boneyard/pyenv-pip-rehash
 
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
-brew tap peco/peco
+#brew tap peco/peco
 brew install peco
 
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
@@ -82,6 +82,7 @@ brew tap caskroom/fonts
 brew cask install font-fontawesome
 brew cask install font-ricty-diminished
 brew cask install font-source-han-code-jp
+brew cask install font-fira-code
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -92,8 +93,10 @@ echo "\033[0;31m# ==========================================================\033
 
 nodebrew selfupdate
 nodebrew install-binary 4.x.x
+nodebrew install-binary 5.x.x
 nodebrew install-binary 6.x.x
-nodebrew install-binary stablei
+nodebrew install-binary 7.x.x
+nodebrew install-binary stable
 nodebrew install-binary latest
 nodebrew ls-all
 nodebrew use 6.x.x
@@ -107,6 +110,7 @@ echo "\033[0;31m# ==========================================================\033
 
 echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g npm
+npm install -g yarn
 npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check
