@@ -79,6 +79,7 @@ brew cask install sketch-tool
 brew cask install skyfonts
 brew cask install skype
 brew cask install slack
+brew cask install spotify
 ##brew cask install soundnode
 brew cask install sourcetree
 breq cask install spotify
