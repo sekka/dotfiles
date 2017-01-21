@@ -40,7 +40,7 @@ brew install ImageMagick
 brew install jq
 brew install nodebrew
 brew install argon/mas/mas
-brew install --with-bundle --HEAD mpv
+#brew install --with-bundle --HEAD mpv
 brew install mycli
 brew install m-cli
 brew install openssl & brew link openssl --force
@@ -167,18 +167,18 @@ echo "\033[0;31m# ==========================================================\033
 #pyenv install -l
 
 echo "\033[0;34m==インストール==\033[0;39m"
-pyenv install -s 3.4.3
-pyenv versions
+#pyenv install -s 3.4.3
+#pyenv versions
 
 echo "\033[0;34m==グローバルで使用するバージョンを設定してリンク更新==\033[0;39m"
-pyenv global 3.4.3
-pyenv rehash
-python -V
-pip -V
-pyenv which python
+#pyenv global 3.4.3
+#pyenv rehash
+#python -V
+#pip -V
+#pyenv which python
 
 echo "\033[0;34m==必須のパッケージをインストール==\033[0;39m"
-pip install virtualenv
+#pip install virtualenv
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -232,3 +232,4 @@ brew cleanup
 brew doctor
 gibo -u
 tmux source-file ~/.tmux.conf
+

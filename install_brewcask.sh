@@ -14,6 +14,8 @@ brew cask install dockertoolbox
 ##brew cask install docker
 
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
+brew cask install 0xed
+brew cask install adobe-creative-cloud
 brew cask install alfred
 brew cask install appcleaner
 brew cask install arduino
@@ -24,6 +26,7 @@ brew cask install blender
 ##brew cask install cactus
 ##brew cask install ccleaner
 brew cask install charles
+brew cask install chatwork
 ##brew cask install coccinellida
 ##brew cask install coteditor
 brew cask install cmd-eikana
@@ -33,10 +36,12 @@ brew cask install couleurs
 brew cask install dash
 brew cask install dropbox
 brew cask install droplr
+brew cask install firefox
 brew cask install fontexplorer-x-pro
 ##brew cask install franz
 ##brew cask install github-desktop
 brew cask install glyphs
+brew cask install google-chrome
 brew cask install google-nik-collection
 brew cask install gyazo
 ##brew cask install heroku-toolbelt
@@ -53,6 +58,7 @@ brew cask install night-owl
 ##brew cask install numi
 ##brew cask install mplayerx
 brew cask install onyx
+brew cask install openframeworks
 brew cask install origami
 brew cask install paw
 ##brew cask install pingendo
@@ -75,6 +81,7 @@ brew cask install skype
 brew cask install slack
 ##brew cask install soundnode
 brew cask install sourcetree
+breq cask install spotify
 ##brew cask install caskroom/versions/sublime-text3
 brew cask install transmit
 brew cask install the-unarchiver

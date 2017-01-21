@@ -4,7 +4,9 @@ echo "\033[0;31m# masでGUIツールをインストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-mas install 906164672 ## Form
+brew install mas
+
+##mas install 906164672 ## Form
 mas install 539883307 ## LINE
 mas install 414855915 ## WinArchiver Lite
 mas install 587512244 ## Kaleidoscope
