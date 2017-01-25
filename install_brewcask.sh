@@ -36,6 +36,7 @@ brew cask install couleurs
 brew cask install dash
 brew cask install dropbox
 brew cask install droplr
+brew cask install electrum
 brew cask install firefox
 brew cask install fontexplorer-x-pro
 ##brew cask install franz
