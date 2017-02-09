@@ -34,6 +34,7 @@ brew cask install cmd-eikana
 brew cask install cooviewer
 brew cask install couleurs
 brew cask install dash
+brew cask install discord
 brew cask install dropbox
 brew cask install droplr
 brew cask install electrum
