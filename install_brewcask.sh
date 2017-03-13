@@ -85,6 +85,7 @@ brew cask install spotify
 ##brew cask install soundnode
 brew cask install sourcetree
 breq cask install spotify
+brew cask install svgcleaner
 ##brew cask install caskroom/versions/sublime-text3
 brew cask install transmit
 brew cask install the-unarchiver
