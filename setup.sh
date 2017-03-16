@@ -14,11 +14,9 @@ brew install ruby-build
 
 echo "\033[0;34m==Python環境をインストール==\033[0;39m"
 brew install pyenv
-#brew install pyenv-virtualenv
 brew install homebrew/boneyard/pyenv-pip-rehash
 
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
-#brew tap peco/peco
 brew install peco
 
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
@@ -40,7 +38,6 @@ brew install ImageMagick
 brew install jq
 brew install nodebrew
 brew install argon/mas/mas
-#brew install --with-bundle --HEAD mpv
 brew install mycli
 brew install m-cli
 brew install openssl & brew link openssl --force
@@ -67,9 +64,6 @@ echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew install zplug
-
-# zplug メンテナンス
-# zplug env
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -137,7 +131,6 @@ echo "\033[0;31m# ==========================================================\033
 
 echo "\033[0;34m==最新版を確認==\033[0;39m"
 brew upgrade ruby-build --HEAD
-#rbenv install -l
 
 echo "\033[0;34m==インストール==\033[0;39m"
 rbenv install -s 2.2.2
@@ -186,25 +179,6 @@ echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# Dockerを導入する\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
-
-##echo "\033[0;34m==Dockor Machineで仮想マシンを作成する==\033[0;39m"
-##docker-machine create --driver virtualbox default
-#docker-machine upgrade default
-
-##echo "\033[0;34m==作成した仮想マシンをリストアップする==\033[0;39m"
-##docker-machine ls
-
-##echo "\033[0;34m==作成した仮想マシンを起動する==\033[0;39m"
-##docker-machine start default
-
-##echo "\033[0;34m==起動した仮想マシンのIPアドレスを確認する==\033[0;39m"
-##docker-machine ip default
-
-##echo "\033[0;34m==起動した仮想マシンの各種環境変数を確認する==\033[0;39m"
-##docker-machine env default
-
-##echo "\033[0;34m==envコマンドで得られる環境変数をexport==\033[0;39m"
-##eval "$(docker-machine env default)"
 
 docker version
 docker-machine version
