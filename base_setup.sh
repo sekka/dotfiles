@@ -47,7 +47,7 @@ do
 done
 
 
-PET_FILES=(config.toml)
+PET_FILES=(config.toml snippet.toml)
 
 for file in ${PET_FILES[@]}
 
