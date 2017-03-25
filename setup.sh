@@ -8,12 +8,48 @@ echo "\033[0;34m==Homebrewをアップデート＆アップグレード==\033[0;
 brew update
 brew upgrade
 
-echo "\033[0;34m==Ruby環境をインストール==\033[0;39m"
-brew install rbenv
-brew install ruby-build
+echo "\033[0;34m==anyenvをインストール==\033[0;39m"
+git clone https://github.com/riywo/anyenv ~/.anyenv
+anyenv install rbenv
+anyenv install plenv
+anyenv install pyenv
+anyenv install phpenv
+anyenv install ndenv
+anyenv install denv
+anyenv install jenv
+anyenv install luaenv
+anyenv install goenv
+anyenv version
+
+mkdir -p $(anyenv root)/plugins
+git clone https://github.com/znz/anyenv-update.git $(anyenv root)/plugins/anyenv-update
+git clone https://github.com/aereal/anyenv-exec.git $(anyenv root)/plugins/anyenv-exec
+git clone https://github.com/znz/anyenv-git.git $(anyenv root)/plugins/anyenv-git
+anyenv update
+
+ndenv install v7.7.4
+ndenv global v7.7.4
+ndenv rehash
+node -v
+which node
+
+rbenv install 2.4.1
+rbenv global 2.4.1
+rbenv rehash
+ruby -v
+which ruby
+
+pyenv install 3.6.1
+pyenv global 3.6.1
+pyenv rehash
+which python
+
+goenv install 1.8
+goenv global 1.8
+go version
+which go
 
 echo "\033[0;34m==Python環境をインストール==\033[0;39m"
-brew install pyenv
 brew install homebrew/boneyard/pyenv-pip-rehash
 
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
@@ -30,13 +66,11 @@ brew install fpp
 brew install ghq
 brew install gibo
 brew install git
-brew install go
 brew install hub
 brew install hugo
 brew install httpie
 brew install ImageMagick
 brew install jq
-brew install nodebrew
 brew install argon/mas/mas
 brew install mycli
 brew install m-cli
@@ -52,7 +86,6 @@ brew install tmux
 brew install tree
 brew install vim
 brew install wget
-brew install yarn
 brew install youtube-dl
 brew install zsh
 
@@ -81,23 +114,6 @@ brew cask install font-fira-code
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# nodeを導入する\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-nodebrew selfupdate
-nodebrew install-binary 4.x.x
-nodebrew install-binary 5.x.x
-nodebrew install-binary 6.x.x
-nodebrew install-binary 7.x.x
-nodebrew install-binary stable
-nodebrew install-binary latest
-nodebrew ls-all
-nodebrew use 6.x.x
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# npmで色々インストール\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -105,73 +121,21 @@ echo "\033[0;31m# ==========================================================\033
 echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g npm
 npm install -g yarn
-npm install -g gulp
-npm install -g caniuse-cmd
-npm install -g npm-check
-npm install -g npm-check-updates
-npm install -g yo
-npm install -g coffee-script
-npm install -g generator-hubot
-npm install -g grunt-cli
-npm install -g bower
-npm install -g fixpack
+yarn global add gulp
+yarn global add caniuse-cmd
+yarn global add npm-check
+yarn global add npm-check-updates
+yarn global add bower
+yarn global add fixpack
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
 npm update
 npm upgrade
 npm list -g --depth=0
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Rubyを導入する\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-echo "\033[0;34m==最新版を確認==\033[0;39m"
-brew upgrade ruby-build --HEAD
-
-echo "\033[0;34m==インストール==\033[0;39m"
-rbenv install -s 2.2.2
-rbenv versions
-
-echo "\033[0;34m==グローバルで使用するバージョンを設定してリンク更新==\033[0;39m"
-rbenv global 2.2.2
-rbenv rehash
-ruby -v
-rbenv which ruby
-rbenv which gem
-
-echo "\033[0;34m==必須のgemをインストール==\033[0;39m"
-gem update --system
-gem install bundler
-gem install rbenv-rehash
-gem update
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Pythonを導入する\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-# 最新版を確認
-#pyenv install -l
-
-echo "\033[0;34m==インストール==\033[0;39m"
-#pyenv install -s 3.4.3
-#pyenv versions
-
-echo "\033[0;34m==グローバルで使用するバージョンを設定してリンク更新==\033[0;39m"
-#pyenv global 3.4.3
-#pyenv rehash
-#python -V
-#pip -V
-#pyenv which python
-
-echo "\033[0;34m==必須のパッケージをインストール==\033[0;39m"
-#pip install virtualenv
+yarn clean
+yarn global upgrade
+yarn global ls
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
