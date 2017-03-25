@@ -31,6 +31,7 @@ brew cask install google-chrome
 brew cask install google-nik-collection
 brew cask install gyazo
 brew cask install hyper
+brew cask install hyperswitch
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
@@ -65,6 +66,7 @@ breq cask install spotify
 brew cask install svgcleaner
 brew cask install transmit
 brew cask install the-unarchiver
+brew cask install typora
 brew cask install vlc
 brew cask install visual-studio-code
 brew cask install vivaldi
