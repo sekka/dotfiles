@@ -41,8 +41,8 @@ brew install argon/mas/mas
 brew install mycli
 brew install m-cli
 brew install openssl & brew link openssl --force
-brew tap Code-Hex/pget
-brew install pget
+brew install knqyf263/pet/pet
+brew install Code-Hex/pget/pget
 brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
