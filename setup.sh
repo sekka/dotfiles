@@ -44,6 +44,10 @@ pyenv global 3.6.1
 pyenv rehash
 which python
 
+goenv install 1.8
+goenv global 1.8
+go version
+which go
 
 echo "\033[0;34m==Python環境をインストール==\033[0;39m"
 brew install homebrew/boneyard/pyenv-pip-rehash
