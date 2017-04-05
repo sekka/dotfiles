@@ -13,6 +13,7 @@ brew cask install adobe-creative-cloud
 brew cask install alfred
 brew cask install appcleaner
 brew cask install arduino
+brew cask install bettertouchtool
 brew cask install blender
 brew cask install charles
 brew cask install chatwork
@@ -37,6 +38,7 @@ brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
 brew cask install iterm2
+brew cask install karabiner-elements
 brew cask install ksdiff
 brew cask install keyboard-maestro
 brew cask install night-owl
