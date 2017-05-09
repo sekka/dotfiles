@@ -13,7 +13,6 @@ brew cask install adobe-creative-cloud
 brew cask install alfred
 brew cask install appcleaner
 brew cask install arduino
-brew cask install bettertouchtool
 brew cask install blender
 brew cask install charles
 brew cask install chatwork
@@ -51,10 +50,8 @@ brew cask install processing
 brew cask install psequel
 brew cask install p5
 brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
-brew cask install quicktime-player7
 brew cask install reggy
 brew cask install rightfont
-brew cask install safari-technology-preview
 brew cask install sequel-pro
 brew cask install shupapan
 brew cask install sketch
@@ -68,7 +65,6 @@ breq cask install spotify
 brew cask install svgcleaner
 brew cask install transmit
 brew cask install the-unarchiver
-brew cask install typora
 brew cask install vlc
 brew cask install visual-studio-code
 brew cask install vivaldi
