@@ -131,22 +131,18 @@ echo "\033[0;31m# ==========================================================\033
 
 echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g npm
-npm install -g yarn
-yarn global add gulp
-yarn global add caniuse-cmd
-yarn global add npm-check
-yarn global add npm-check-updates
-yarn global add bower
-yarn global add fixpack
+npm install -g gulp
+npm install -g caniuse-cmd
+npm install -g npm-check
+npm install -g npm-check-updates
+npm install -g bower
+npm install -g fixpack
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
 npm update
 npm upgrade
 npm list -g --depth=0
-yarn clean
-yarn global upgrade
-yarn global ls
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
