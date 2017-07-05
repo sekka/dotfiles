@@ -13,6 +13,7 @@ brew cask install adobe-creative-cloud
 brew cask install alfred
 brew cask install appcleaner
 brew cask install arduino
+brew cask install atom
 brew cask install blender
 brew cask install charles
 brew cask install chatwork
@@ -28,6 +29,7 @@ brew cask install firefox
 brew cask install fontexplorer-x-pro
 brew cask install glyphs
 brew cask install google-chrome
+brew cask install caskroom/versions/google-chrome-canary
 brew cask install google-nik-collection
 brew cask install gyazo
 brew cask install hyper
