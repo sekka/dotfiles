@@ -168,6 +168,9 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
+# 補完の色を変更する
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
+
 
 # --------------------------------------
 # オプション
@@ -450,6 +453,7 @@ esac
 zplug "zsh-users/zsh-syntax-highlighting"
 zplug "zsh-users/zsh-history-substring-search"
 zplug "zsh-users/zsh-completions"
+zplug "zsh-users/zsh-autosuggestions"
 zplug "mollifier/anyframe"
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
