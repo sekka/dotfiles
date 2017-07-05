@@ -168,9 +168,6 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 
-# 補完の色を変更する
-export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
-
 
 # --------------------------------------
 # オプション
@@ -473,6 +470,9 @@ zplug load --verbose
 zplug clear
 zplug update
 zplug status
+
+# 補完の色を変更する
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
 
 
 # --------------------------------------
