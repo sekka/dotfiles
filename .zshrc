@@ -493,13 +493,7 @@ function tmux_automatically_attach_session()
         ! is_exists 'tmux' && return 1
 
         if is_tmux_runnning; then
-            echo ""
-            echo "${fg_bold[blue]}  _____ __  __ _   ___  __ ${reset_color}"
-            echo "${fg_bold[blue]} |_   _|  \/  | | | \ \/ / ${reset_color}"
-            echo "${fg_bold[blue]}   | | | |\/| | | | |\  /  ${reset_color}"
-            echo "${fg_bold[blue]}   | | | |  | | |_| |/  \  ${reset_color}"
-            echo "${fg_bold[blue]}   |_| |_|  |_|\___//_/\_\ ${reset_color}"
-            echo ""
+            echo :relaxed: | emojify
         elif is_screen_running; then
             echo "This is on screen."
         fi
