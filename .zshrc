@@ -453,6 +453,7 @@ zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "mollifier/anyframe"
 zplug "b4b4r07/easy-oneliner", if:"which fzf"
+zplug "b4b4r07/enhancd", use:init.sh
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
@@ -474,6 +475,9 @@ zplug status
 
 # 補完の色を変更する
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
+
+# enhancdで使用するフィルタリングツールを指定する
+ENHANCD_FILTER=peco; export ENHANCD_FILTER
 
 
 # --------------------------------------
