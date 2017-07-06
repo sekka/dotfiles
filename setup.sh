@@ -64,6 +64,9 @@ brew install homebrew/boneyard/pyenv-pip-rehash
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
 brew install peco
 
+echo "\033[0;34m==fzfをインストール==\033[0;39m"
+brew install fzf
+
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
 brew install ag
 brew install android-platform-tools

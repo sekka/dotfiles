@@ -47,10 +47,10 @@ export LC_ALL=en_US.UTF-8
 HISTFILE=~/.zsh_history
 
 # メモリ上に保存される履歴の数
-HISTSIZE=1000000
+HISTSIZE=10000000
 
 # HISTFILEで指定したファイルに保存される履歴の数
-SAVEHIST=1000000
+SAVEHIST=10000000
 
 # 同じコマンドをヒストリに追加しない
 setopt HIST_IGNORE_ALL_DUPS
@@ -452,6 +452,10 @@ zplug "zsh-users/zsh-history-substring-search"
 zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "mollifier/anyframe"
+zplug "b4b4r07/easy-oneliner", if:"which fzf"
+zplug "b4b4r07/enhancd", use:init.sh
+zplug "b4b4r07/emoji-cli"
+zplug "b4b4r07/history"
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
@@ -473,6 +477,18 @@ zplug status
 
 # 補完の色を変更する
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
+
+# enhancdで使用するフィルタリングツールを指定する
+export ENHANCD_FILTER=peco
+
+# emoji-cliで使用するフィルタリングツールを設定する
+export EMOJI_CLI_FILTER=fzf
+
+# historyの設定
+export ZSH_HISTORY_KEYBIND_GET='^r'
+export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
+export ZSH_HISTORY_KEYBIND_ARROW_UP='^p'
+export ZSH_HISTORY_KEYBIND_ARROW_DOWN='^n'
 
 
 # --------------------------------------
