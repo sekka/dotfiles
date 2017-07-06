@@ -47,10 +47,10 @@ export LC_ALL=en_US.UTF-8
 HISTFILE=~/.zsh_history
 
 # メモリ上に保存される履歴の数
-HISTSIZE=1000000
+HISTSIZE=10000000
 
 # HISTFILEで指定したファイルに保存される履歴の数
-SAVEHIST=1000000
+SAVEHIST=10000000
 
 # 同じコマンドをヒストリに追加しない
 setopt HIST_IGNORE_ALL_DUPS
