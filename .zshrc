@@ -454,6 +454,8 @@ zplug "zsh-users/zsh-autosuggestions"
 zplug "mollifier/anyframe"
 zplug "b4b4r07/easy-oneliner", if:"which fzf"
 zplug "b4b4r07/enhancd", use:init.sh
+zplug "b4b4r07/emoji-cli"
+zplug "b4b4r07/history"
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
@@ -477,7 +479,16 @@ zplug status
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
 
 # enhancdで使用するフィルタリングツールを指定する
-ENHANCD_FILTER=peco; export ENHANCD_FILTER
+export ENHANCD_FILTER=peco
+
+# emoji-cliで使用するフィルタリングツールを設定する
+export EMOJI_CLI_FILTER=fzf
+
+# historyの設定
+export ZSH_HISTORY_KEYBIND_GET='^r'
+export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
+export ZSH_HISTORY_KEYBIND_ARROW_UP='^p'
+export ZSH_HISTORY_KEYBIND_ARROW_DOWN='^n'
 
 
 # --------------------------------------
