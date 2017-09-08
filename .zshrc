@@ -2,6 +2,13 @@
 # path
 # --------------------------------------
 
+# bin/
+export PATH=$HOME/dotfiles/bin:$PATH
+
+# zplug
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
 # Homebrew
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
@@ -10,18 +17,11 @@ export PATH=/usr/local/bin:$PATH
 export PATH=$HOME/.anyenv/bin:$PATH
 eval "$(anyenv init -)"
 
-# zplug
-export ZPLUG_HOME=/usr/local/opt/zplug
-source $ZPLUG_HOME/init.zsh
-
 # direnv
 eval "$(direnv hook zsh)"
 
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
-
-# export
-export PATH=$HOME/dotfiles/bin:$PATH
 
 path=(
     $path
@@ -367,14 +367,14 @@ compdef _git gifa=git-log
 # -------------------------------------
 
 function prev() {
-  PREV=$(fc -lrn | head -n 1)
-  sh -c "pet new `printf %q "$PREV"`"
+    PREV=$(fc -lrn | head -n 1)
+    sh -c "pet new `printf %q "$PREV"`"
 }
 
 function pet-select() {
-  BUFFER=$(pet search --query "$LBUFFER")
-  CURSOR=$#BUFFER
-  zle redisplay
+    BUFFER=$(pet search --query "$LBUFFER")
+    CURSOR=$#BUFFER
+    zle redisplay
 }
 zle -N pet-select
 bindkey '^[' pet-select
@@ -402,12 +402,12 @@ bindkey '^r' peco-select-history
 
 # ghqでクローンしてきたリポジトリへの移動が捗る
 function peco-src () {
-  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
-  if [ -n "$selected_dir" ]; then
-    BUFFER="cd ${selected_dir}"
-    zle accept-line
-  fi
-  zle clear-screen
+    local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+    if [ -n "$selected_dir" ]; then
+        BUFFER="cd ${selected_dir}"
+        zle accept-line
+    fi
+    zle clear-screen
 }
 zle -N peco-src
 bindkey '^]' peco-src
