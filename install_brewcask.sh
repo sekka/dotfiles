@@ -11,6 +11,7 @@ echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
 brew cask install 0xed
 brew cask install adobe-creative-cloud
 brew cask install alfred
+brew cask install android-studio
 brew cask install appcleaner
 brew cask install atom
 brew cask install blender
