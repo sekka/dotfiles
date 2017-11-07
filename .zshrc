@@ -447,25 +447,25 @@ esac
 # zplug
 # --------------------------------------
 
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "mollifier/anyframe"
-zplug "b4b4r07/easy-oneliner", if:"which fzf"
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "b4b4r07/emoji-cli"
-zplug "b4b4r07/history"
+zplug "zsh-users/zsh-syntax-highlighting", lazy:true
+zplug "zsh-users/zsh-history-substring-search", lazy:true
+zplug "zsh-users/zsh-completions", lazy:true
+zplug "zsh-users/zsh-autosuggestions", lazy:true
+zplug "mollifier/anyframe", lazy:true
+zplug "b4b4r07/easy-oneliner", if:"which fzf", lazy:true
+zplug "b4b4r07/enhancd", use:init.sh, lazy:true
+zplug "b4b4r07/emoji-cli", lazy:true
+zplug "b4b4r07/history", lazy:true
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
 # インストールする
-if ! zplug check --verbose; then
-    printf "Install? [y/N]: "
-    if read -q; then
-        echo; zplug install
-    fi
-fi
+#if ! zplug check --verbose; then
+#    printf "Install? [y/N]: "
+#    if read -q; then
+#        echo; zplug install
+#    fi
+#fi
 
 # プラグインを読み込み、コマンドにパスを通す
 zplug load --verbose
