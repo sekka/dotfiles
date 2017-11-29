@@ -288,6 +288,9 @@ alias be='bundle exec'
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
+# coinmon
+alias cm='coinmon -c jpy -f btc,bch,mona,dash'
+
 # tmux
 alias t='tmux'
 alias td='tmux detach'
