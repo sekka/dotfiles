@@ -141,6 +141,7 @@ npm install -g npm-check-updates
 npm install -g bower
 npm install -g fixpack
 npm install -g gtop
+npm install -g coinmon
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
