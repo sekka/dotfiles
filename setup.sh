@@ -19,15 +19,7 @@ brew upgrade
 
 echo "\033[0;34m==anyenvをインストール==\033[0;39m"
 git clone https://github.com/riywo/anyenv ~/.anyenv
-anyenv install rbenv
-anyenv install plenv
-anyenv install pyenv
-anyenv install phpenv
 anyenv install ndenv
-anyenv install denv
-anyenv install jenv
-anyenv install luaenv
-anyenv install goenv
 anyenv version
 
 mkdir -p $(anyenv root)/plugins
@@ -36,30 +28,15 @@ git clone https://github.com/aereal/anyenv-exec.git $(anyenv root)/plugins/anyen
 git clone https://github.com/znz/anyenv-git.git $(anyenv root)/plugins/anyenv-git
 anyenv update
 
-ndenv install v7.7.4
+ndenv install v5.12.0
+ndenv install v6.12.3
+ndenv install v7.10.1
+ndenv install v8.9.4
+ndenv install v9.3.0
 ndenv global v7.7.4
 ndenv rehash
 node -v
 which node
-
-rbenv install 2.4.1
-rbenv global 2.4.1
-rbenv rehash
-ruby -v
-which ruby
-
-pyenv install 3.6.1
-pyenv global 3.6.1
-pyenv rehash
-which python
-
-goenv install 1.8
-goenv global 1.8
-go version
-which go
-
-echo "\033[0;34m==Python環境をインストール==\033[0;39m"
-brew install homebrew/boneyard/pyenv-pip-rehash
 
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
 brew install peco
@@ -69,7 +46,6 @@ brew install fzf
 
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
 brew install ag
-brew install android-platform-tools
 brew install --with-openssl curl & brew link curl --force
 brew install devd
 brew install direnv
@@ -87,6 +63,7 @@ brew install jq
 brew install argon/mas/mas
 brew install mycli
 brew install m-cli
+brew install neovim
 brew install openssl & brew link openssl --force
 brew install knqyf263/pet/pet
 brew install Code-Hex/pget/pget
@@ -138,7 +115,6 @@ npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates
-npm install -g bower
 npm install -g fixpack
 npm install -g gtop
 npm install -g coinmon
@@ -161,15 +137,6 @@ docker-machine version
 docker-compose version
 docker images
 docker ps -a
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Goで色々インストール\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-go get -u github.com/davecheney/httpstat
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"

@@ -18,12 +18,10 @@ mas install 497799835 ## Xcode
 mas install 498944723 ## JPEGmini
 mas install 539883307 ## LINE
 mas install 557168941 ## Tweetbot
-mas install 568494494 ## Pocket
 mas install 587512244 ## Kaleidoscope
 mas install 775737590 ## iA Writer
 mas install 824171161 ## Affinity Designer
 mas install 880001334 ## Reeder
-mas install 944654199 ## Tree 2
 mas install 950145466 ## Letterspace
 mas install 1024640650 ## CotEditor
 mas install 1162063368 ## DragToDo
