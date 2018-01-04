@@ -60,6 +60,7 @@ brew cask install transmit
 brew cask install the-unarchiver
 brew cask install vlc
 brew cask install visual-studio-code
+brew cask install webponize
 brew cask install wordpresscom
 brew cask install xld
 brew cask install xquartz
