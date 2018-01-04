@@ -471,7 +471,7 @@ zplug "b4b4r07/history"
 #fi
 
 # プラグインを読み込み、コマンドにパスを通す
-zplug load --verbose
+zplug load
 
 # メンテナンス
 zplug clear
