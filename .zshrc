@@ -463,12 +463,12 @@ zplug "b4b4r07/history"
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
 # インストールする
-#if ! zplug check --verbose; then
-#    printf "Install? [y/N]: "
-#    if read -q; then
-#        echo; zplug install
-#    fi
-#fi
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
 
 # プラグインを読み込み、コマンドにパスを通す
 zplug load
