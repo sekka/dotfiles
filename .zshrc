@@ -487,8 +487,8 @@ zplug load
 
 # メンテナンス
 zplug clear
-zplug update
-zplug status
+#zplug update
+#zplug status
 
 # 補完の色を変更する
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
@@ -524,7 +524,7 @@ function tmux_automatically_attach_session()
         ! is_exists 'tmux' && return 1
 
         if is_tmux_runnning; then
-            echo :relaxed: | emojify
+            echo :beer: :relaxed: | emojify
         elif is_screen_running; then
             echo "This is on screen."
         fi
@@ -538,7 +538,7 @@ function tmux_automatically_attach_session()
             if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
                 # detached session exists
                 tmux list-sessions
-                echo -n "Tmux: attach? (y/N/num) "
+                echo -n "tmux: attach? (y/N/num) "
                 read
                 if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
                     tmux attach-session
