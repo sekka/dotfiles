@@ -20,6 +20,9 @@ eval "$(anyenv init -)"
 # direnv
 eval "$(direnv hook zsh)"
 
+# NeoVim
+export XDG_CONFIG_HOME=$HOME/.config
+
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
 

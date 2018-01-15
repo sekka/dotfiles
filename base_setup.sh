@@ -55,7 +55,21 @@ do
 	if [ -a $HOME/.config/pet/$file ]; then
 			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
 	else
-		ln -s $HOME/dotfiles/settings/pet/$file $HOME/.config/pet/$file
+		ln -s $HOME/dotfiles/config/pet/$file $HOME/.config/pet/$file
+			echo "シンボリックリンクを貼りました: $file"
+	fi
+done
+
+
+NEOVIM_FILES=(init.vim)
+
+for file in ${NEOVIM_FILES[@]}
+
+do
+	if [ -a $HOME/.config/nvim/$file ]; then
+			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+	else
+		ln -s $HOME/dotfiles/config/nvim/$file $HOME/.config/nvim/$file
 			echo "シンボリックリンクを貼りました: $file"
 	fi
 done
