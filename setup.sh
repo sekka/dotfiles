@@ -119,6 +119,7 @@ npm install -g npm-check-updates
 npm install -g fixpack
 npm install -g gtop
 npm install -g coinmon
+npm install -g botkit
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
