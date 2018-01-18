@@ -59,6 +59,7 @@ brew install hub
 brew install hugo
 brew install htop
 brew install httpie
+brew install httpstat
 brew install ImageMagick
 brew install jq
 brew install argon/mas/mas
