@@ -32,8 +32,8 @@ ndenv install v5.12.0
 ndenv install v6.12.3
 ndenv install v7.10.1
 ndenv install v8.9.4
-ndenv install v9.3.0
-ndenv global v7.7.4
+ndenv install v9.4.0
+ndenv global v9.4.0
 ndenv rehash
 node -v
 which node
@@ -121,6 +121,7 @@ npm install -g fixpack
 npm install -g gtop
 npm install -g coinmon
 npm install -g botkit
+npm install -g vue-cli
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
