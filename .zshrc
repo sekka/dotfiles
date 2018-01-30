@@ -2,6 +2,9 @@
 # path
 # --------------------------------------
 
+# curl
+export PATH=/usr/local/opt/curl/bin:$PATH
+
 # bin/
 export PATH=$HOME/dotfiles/bin:$PATH
 
