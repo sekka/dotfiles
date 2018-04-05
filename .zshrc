@@ -131,18 +131,9 @@ OK=" [*'-'] "
 NG=" [*;-;] "
 
 PROMPT=""                                      # デフォルトのパス表示を消す
-PROMPT+="
-"                                              # 改行
 #PROMPT+="%F{black}%D%f"                       # 日付
 #PROMPT+=" "                                   #
 PROMPT+="%F{black}%*%f"                        # 時刻
-PROMPT+=" "                                    #
-#PROMPT+="%F{magenta}[%1~]%f"                  # カレントディレクトリ
-PROMPT+="%F{blue}%B%~%b%f"                     # パス
-PROMPT+=" "                                    #
-PROMPT+="%1(v|%F{black}%1v%f|)"                # git status
-PROMPT+="
-"                                              # 改行
 PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"     # OK/NGの顔文字
 PROMPT+="%B%(?.%F{green}❯❯%f.%F{red}❯❯%f)%b"   # コマンド入力待ち
 PROMPT+="%B❯❯%b"                               # コマンド入力待ち
