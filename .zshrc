@@ -310,6 +310,7 @@ alias t='tmux'
 alias td='tmux detach'
 alias ta='tmux attach'
 alias tat='tmux attach -t'
+alias tm="tmuximum"
 
 # git
 alias gft="git fetch"
@@ -473,6 +474,7 @@ zplug "b4b4r07/easy-oneliner", if:"which fzf"
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "b4b4r07/emoji-cli"
 zplug "b4b4r07/history"
+zplug "arks22/tmuximum", as:command
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
