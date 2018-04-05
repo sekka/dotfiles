@@ -115,10 +115,15 @@ zstyle ":vcs_info:git:*" stagedstr "+"
 zstyle ":vcs_info:git:*" unstagedstr "*"
 
 # vcs_info呼び出し
+# tmuxステータス表示
 precmd () {
     psvar=()
     LANG=en_US.UTF-8 vcs_info
     [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+
+    if [ ! -z $TMUX ]; then
+        tmux refresh-client -S
+    fi
 }
 
 # プロンプト表示設定
