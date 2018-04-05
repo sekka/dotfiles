@@ -79,6 +79,9 @@ setopt bang_hist
 # スペースから始まるコマンド行はヒストリに残さない
 setopt HIST_IGNORE_SPACE
 
+# glob展開のバグを修正
+setopt nonomatch
+
 
 # --------------------------------------
 # プロンプト
