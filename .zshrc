@@ -115,10 +115,15 @@ zstyle ":vcs_info:git:*" stagedstr "+"
 zstyle ":vcs_info:git:*" unstagedstr "*"
 
 # vcs_info呼び出し
+# tmuxステータス表示
 precmd () {
     psvar=()
     LANG=en_US.UTF-8 vcs_info
     [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+
+    if [ ! -z $TMUX ]; then
+        tmux refresh-client -S
+    fi
 }
 
 # プロンプト表示設定
@@ -126,18 +131,9 @@ OK=" [*'-'] "
 NG=" [*;-;] "
 
 PROMPT=""                                      # デフォルトのパス表示を消す
-PROMPT+="
-"                                              # 改行
 #PROMPT+="%F{black}%D%f"                       # 日付
 #PROMPT+=" "                                   #
 PROMPT+="%F{black}%*%f"                        # 時刻
-PROMPT+=" "                                    #
-#PROMPT+="%F{magenta}[%1~]%f"                  # カレントディレクトリ
-PROMPT+="%F{blue}%B%~%b%f"                     # パス
-PROMPT+=" "                                    #
-PROMPT+="%1(v|%F{black}%1v%f|)"                # git status
-PROMPT+="
-"                                              # 改行
 PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"     # OK/NGの顔文字
 PROMPT+="%B%(?.%F{green}❯❯%f.%F{red}❯❯%f)%b"   # コマンド入力待ち
 PROMPT+="%B❯❯%b"                               # コマンド入力待ち
@@ -314,6 +310,7 @@ alias t='tmux'
 alias td='tmux detach'
 alias ta='tmux attach'
 alias tat='tmux attach -t'
+alias tm="tmuximum"
 
 # git
 alias gft="git fetch"
@@ -477,6 +474,7 @@ zplug "b4b4r07/easy-oneliner", if:"which fzf"
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "b4b4r07/emoji-cli"
 zplug "b4b4r07/history"
+zplug "arks22/tmuximum", as:command
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで

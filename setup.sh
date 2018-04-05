@@ -98,11 +98,7 @@ echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
 brew tap caskroom/fonts
-brew cask install font-fontawesome
-brew cask install font-ricty-diminished
-brew cask install font-source-han-code-jp
-brew cask install font-fira-code
-brew cask install font-meslo-lg
+brew cask install font-meslo-for-powerline
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
