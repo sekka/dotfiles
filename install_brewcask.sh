@@ -31,6 +31,7 @@ brew cask install google-chrome
 brew cask install caskroom/versions/google-chrome-canary
 brew cask install google-nik-collection
 brew cask install gyazo
+brew cask install hyper
 brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
@@ -40,6 +41,7 @@ brew cask install ksdiff
 brew cask install keyboard-maestro
 brew cask install night-owl
 brew cask install maczip4win
+brew cask install mi
 brew cask install onyx
 brew cask install openframeworks
 brew cask install origami
