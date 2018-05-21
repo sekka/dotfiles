@@ -11,11 +11,14 @@ module.exports = {
     // default font size in pixels for all tabs
     fontSize: 12,
 
+    // Set editor line height
+    lineHeight: 1.1,
+
     // font family with optional fallbacks
-    fontFamily: 'Menlo, "DejaVu Sans Mono", Consolas, "Lucida Console", monospace',
+    fontFamily: 'MesloLGM-RegularForPowerline',
 
     // terminal cursor background color and opacity (hex, rgb, hsl, hsv, hwb or cmyk)
-    cursorColor: 'rgba(248,28,229,0.8)',
+    cursorColor: '#fff',
 
     // terminal text color under BLOCK cursor
     cursorAccentColor: '#000',
@@ -27,23 +30,30 @@ module.exports = {
     cursorBlink: false,
 
     // color of the text
-    foregroundColor: '#fff',
+    foregroundColor: '#f9fffa',
 
     // terminal background color
     // opacity is only supported on macOS
-    backgroundColor: '#000',
+    backgroundColor: '#032b34',
 
     // terminal selection color
     selectionColor: 'rgba(248,28,229,0.3)',
 
     // border color (window, tabs)
-    borderColor: '#333',
+    borderColor: '#032b34',
 
     // custom CSS to embed in the main window
-    css: '',
+    css: `
+      .hyper_main {border: none !important;}
+      .tab_tab {border: 0;}
+      .tab_textActive {border-bottom: 2px solid #009688;}
+      .term_term {opacity: 0.5; transition: opacity 0.15s ease-in-out; will-change: opacity;}
+      .term_active .term_term {opacity: 1;}
+    `,
 
     // custom CSS to embed in the terminal window
-    termCSS: '',
+    termCSS: `
+    `,
 
     // set to `true` (without backticks and without quotes) if you're using a
     // Linux setup that doesn't show native menus
@@ -62,22 +72,22 @@ module.exports = {
     // including the 6 x 6 color cubes and the grayscale map, just provide
     // an array here instead of a color map object
     colors: {
-      black: '#000000',
-      red: '#ff0000',
-      green: '#33ff00',
-      yellow: '#ffff00',
-      blue: '#0066ff',
-      magenta: '#cc00ff',
-      cyan: '#00ffff',
-      white: '#d0d0d0',
-      lightBlack: '#808080',
-      lightRed: '#ff0000',
-      lightGreen: '#33ff00',
-      lightYellow: '#ffff00',
-      lightBlue: '#0066ff',
-      lightMagenta: '#cc00ff',
-      lightCyan: '#00ffff',
-      lightWhite: '#ffffff',
+      black: '#6d8397',
+      red: '#ff8300',
+      green: '#baed00',
+      yellow: '#ffe000',
+      blue: '#00bef3',
+      magenta: '#c6abff',
+      cyan: '#79cfff',
+      white: '#f9fffa',
+      lightBlack: '#6d8397',
+      lightRed: '#ff8300',
+      lightGreen: '#baed00',
+      lightYellow: '#ffe000',
+      lightBlue: '#00bef3',
+      lightMagenta: '#c6abff',
+      lightCyan: '#79cfff',
+      lightWhite: '#f9fffa',
     },
 
     // the shell to run when spawning a new session (i.e. /usr/local/bin/fish)
@@ -123,7 +133,11 @@ module.exports = {
   //   `hyperpower`
   //   `@company/project`
   //   `project#1.0.1`
-  plugins: ['hyperterm-material'],
+  plugins: [
+    //'hyperterm-material',
+    //'hyperline',
+    'hyper-tab-icons-plus',
+  ],
 
   // in development, you can create a directory under
   // `~/.hyper_plugins/local/` and include it here
