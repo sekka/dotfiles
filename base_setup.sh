@@ -33,7 +33,7 @@ echo "# dotdilesにシンボリックリンクを貼る"
 echo "#"
 echo "# =========================================================="
 
-DOT_FILES=(.gitconfig .gitcommit_template .gitignore .gitignore_global .tigrc .tmux.conf .zshrc .zshenv .vimrc .hyperterm.js)
+DOT_FILES=(.gitconfig .gitcommit_template .gitignore .gitignore_global .tigrc .tmux.conf .zshrc .zshenv .vimrc .hyper.js)
 
 for file in ${DOT_FILES[@]}
 
