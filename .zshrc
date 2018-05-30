@@ -308,6 +308,9 @@ alias sudo='sudo '
 # coinmon
 alias cm='coinmon -c jpy -f btc,bch,mona,dash'
 
+# npm run
+alias nrun='npm run $(commands | peco)'
+
 # tmux
 alias t='tmux'
 alias td='tmux detach'
@@ -432,6 +435,11 @@ function peco-src () {
 }
 zle -N peco-src
 bindkey '^]' peco-src
+
+# npm-scriptsを簡単に実行するやつ
+function commands () {
+  cat package.json | jq -r '.scripts | keys[]'
+}
 
 # anyframe
 bindkey '^h' anyframe-widget-select-widget
