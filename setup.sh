@@ -121,6 +121,7 @@ npm install -g gtop
 npm install -g coinmon
 npm install -g botkit
 npm install -g vue-cli
+npm install -g lighthouse
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
 npm cache clean
