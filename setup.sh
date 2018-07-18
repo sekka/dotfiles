@@ -80,6 +80,7 @@ brew install tig
 brew install tmux
 brew install tree
 brew install vim
+brew install webp
 brew install wget
 brew install youtube-dl
 brew install zsh
