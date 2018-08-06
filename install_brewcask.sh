@@ -36,6 +36,7 @@ brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
 brew cask install iterm2
+brew cask install jasper
 brew cask install karabiner-elements
 brew cask install ksdiff
 brew cask install keyboard-maestro
