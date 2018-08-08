@@ -61,14 +61,12 @@ brew cask install skyfonts
 brew cask install skype
 brew cask install slack
 brew cask install sourcetree
-breq cask install spotify
 brew cask install svgcleaner
 brew cask install transmit
 brew cask install the-unarchiver
 brew cask install vlc
 brew cask install visual-studio-code
 brew cask install webponize
-brew cask install wordpresscom
 brew cask install xld
 brew cask install xquartz
 

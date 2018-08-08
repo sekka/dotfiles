@@ -85,6 +85,7 @@ brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
 brew install redis
+brew install speedtest_cli
 brew install tig
 brew install tmux
 brew install tree
