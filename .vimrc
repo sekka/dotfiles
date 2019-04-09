@@ -393,7 +393,7 @@ set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
 " 外部でファイルに変更がされた場合は読みなおす
 set autoread
 
-" ???
+" ビープを鳴らさない
 set noerrorbells
 
 " ビープの代わりにビジュアルベル(画面フラッシュ)を使う
