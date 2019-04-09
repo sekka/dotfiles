@@ -54,6 +54,7 @@ brew install ag
 brew tap aws/tap
 brew install awscli
 brew install aws-sam-cli
+brew install cmake
 brew install ctop
 brew install --with-openssl curl & brew link curl --force
 brew install devd
@@ -74,6 +75,7 @@ brew install httpstat
 brew install ImageMagick
 brew install jq
 brew install argon/mas/mas
+brew install mono
 brew install mycli
 brew install m-cli
 brew install neovim
@@ -85,6 +87,7 @@ brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
 brew install redis
+brew install rust
 brew install speedtest_cli
 brew install tig
 brew install tmux
