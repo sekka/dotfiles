@@ -38,6 +38,11 @@ ndenv rehash
 node -v
 which node
 
+pyenv install 3.7.2
+pyenv global 3.7.2
+python -V
+which python
+
 echo "\033[0;34m==pecoをインストール==\033[0;39m"
 brew install peco
 
@@ -46,6 +51,9 @@ brew install fzf
 
 echo "\033[0;34m==各CUIツールをインストール==\033[0;39m"
 brew install ag
+brew tap aws/tap
+brew install awscli
+brew install aws-sam-cli
 brew install ctop
 brew install --with-openssl curl & brew link curl --force
 brew install devd
@@ -72,10 +80,12 @@ brew install neovim
 brew install openssl & brew link openssl --force
 brew install knqyf263/pet/pet
 brew install Code-Hex/pget/pget
+brew install pipenv
 brew install pt
 brew install pstree
 brew install reattach-to-user-namespace
 brew install redis
+brew install speedtest_cli
 brew install tig
 brew install tmux
 brew install tree
