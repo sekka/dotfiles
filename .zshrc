@@ -3,7 +3,7 @@
 # --------------------------------------
 
 # curl
-export PATH=/usr/local/opt/curl/bin:$PATH
+# export PATH=/usr/local/opt/curl/bin:$PATH
 
 # bin/
 export PATH=$HOME/dotfiles/bin:$PATH
@@ -66,6 +66,9 @@ setopt SHARE_HISTORY
 
 # cd で移動した場所を記録して後で呼び出せるようにする
 setopt AUTO_PUSHD
+
+# ディレクトリ名と一致した場合cd
+setopt AUTO_CD
 
 # 重複している移動履歴を記録しない
 setopt PUSHD_IGNORE_DUPS
@@ -163,8 +166,8 @@ zstyle ':zle:*' word-style unspecified
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 # 補完機能を有効にする
-autoload -Uz compinit
-compinit -u
+autoload -U compinit
+compinit
 
 # 色付きで補完する
 zstyle ':completion:*' list-colors di=34 fi=0

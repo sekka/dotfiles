@@ -28,10 +28,6 @@ git clone https://github.com/aereal/anyenv-exec.git $(anyenv root)/plugins/anyen
 git clone https://github.com/znz/anyenv-git.git $(anyenv root)/plugins/anyenv-git
 anyenv update
 
-ndenv install v5.12.0
-ndenv install v6.12.3
-ndenv install v7.10.1
-ndenv install v8.9.4
 ndenv install v9.4.0
 ndenv global v9.4.0
 ndenv rehash
@@ -56,30 +52,30 @@ brew install awscli
 brew install aws-sam-cli
 brew install cmake
 brew install ctop
-brew install --with-openssl curl & brew link curl --force
+# brew install --with-openssl curl & brew link curl --force
 brew install devd
 brew install direnv
 brew tap moncho/dry
 brew install dry
-brew install emojify
-brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
+# brew install emojify
+# brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 brew install fpp
 brew install ghq
 brew install gibo
 brew install git
 brew install hub
-brew install hugo
+# brew install hugo
 brew install htop
 brew install httpie
 brew install httpstat
 brew install ImageMagick
 brew install jq
-brew install argon/mas/mas
+brew install mas
 brew install mono
 brew install mycli
 brew install m-cli
-brew install neovim
-brew install openssl & brew link openssl --force
+# brew install neovim
+# brew install openssl & brew link openssl --force
 brew install knqyf263/pet/pet
 brew install Code-Hex/pget/pget
 brew install pipenv
@@ -93,7 +89,7 @@ brew install tig
 brew install tmux
 brew install tree
 brew install vim
-brew install webp
+# brew install webp
 brew install wget
 brew install youtube-dl
 brew install zsh
@@ -114,8 +110,7 @@ echo "\033[0;31m# fontを導入する\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-brew tap caskroom/fonts
-brew cask install font-meslo-for-powerline
+brew install homebrew/cask-fonts/font-meslo-for-powerline
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
@@ -126,19 +121,18 @@ echo "\033[0;31m# ==========================================================\033
 
 echo "\033[0;34m==インストール==\033[0;39m"
 npm install -g npm
-npm install -g gulp
+# npm install -g gulp
 npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates
 npm install -g fixpack
-npm install -g gtop
-npm install -g coinmon
-npm install -g botkit
+# npm install -g gtop
+# npm install -g coinmon
+# npm install -g botkit
 npm install -g vue-cli
 npm install -g lighthouse
 
 echo "\033[0;34m==メンテナンス==\033[0;39m"
-npm cache clean
 npm update
 npm upgrade
 npm list -g --depth=0
@@ -150,11 +144,11 @@ echo "\033[0;31m# Dockerを導入する\033[0;39m"
 echo "\033[0;31m#\033[0;39m"
 echo "\033[0;31m# ==========================================================\033[0;39m"
 
-docker version
-docker-machine version
-docker-compose version
-docker images
-docker ps -a
+# docker version
+# docker-machine version
+# docker-compose version
+# docker images
+# docker ps -a
 
 
 echo "\033[0;31m# ==========================================================\033[0;39m"
