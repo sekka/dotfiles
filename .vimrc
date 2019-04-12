@@ -17,42 +17,56 @@ endif
 
 " plugin
 call plug#begin(expand('~/.vim/plugged'))
+
 "" space + ne -> sidebar
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
+
 "" ga -> align
 Plug 'junegunn/vim-easy-align'
+
 "" space + go -> exec script
 Plug 'thinca/vim-quickrun'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+
 "" gcc -> comment
 Plug 'tpope/vim-commentary'
+
 "" option bar
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+
 "" auto bracket
 Plug 'Raimondi/delimitMate'
 Plug 'tpope/vim-surround'
+
 "" error detect
-Plug 'scrooloose/syntastic'
+Plug 'w0rp/ale'
+
 "" delete white space
 Plug 'bronson/vim-trailing-whitespace'
+
 "" auto complete
 Plug 'sheerun/vim-polyglot'
 Plug 'Valloric/YouCompleteMe'
 Plug 'ervandew/supertab'
+
 "" html
 Plug 'hail2u/vim-css3-syntax'
 Plug 'gorodinskiy/vim-coloresque'
 Plug 'tpope/vim-haml'
 Plug 'mattn/emmet-vim'
+
 "" javascript
 Plug 'jelera/vim-javascript-syntax'
+
 "" php
 Plug 'arnaud-lb/vim-php-namespace'
+
 "" python
 Plug 'davidhalter/jedi-vim'
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
+
 "" space + sh -> vimshell
 Plug 'Shougo/vimshell.vim'
 call plug#end()
@@ -253,10 +267,10 @@ nnoremap - <C-x>
 "" move 15 words
 nmap <silent> <Tab> 15<Right>
 nmap <silent> <S-Tab> 15<Left>
-nmap <silent> ll 15<Right>
-nmap <silent> hh 15<Left>
-nmap <silent> jj 15<Down>
-nmap <silent> kk 15<Up>
+"nmap <silent> ll 15<Right>
+"nmap <silent> hh 15<Left>
+"nmap <silent> jj 15<Down>
+"nmap <silent> kk 15<Up>
 
 "" pbcopy for OSX copy/paste
 vmap <C-x> :!pbcopy<CR>
