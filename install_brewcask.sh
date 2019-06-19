@@ -33,6 +33,8 @@ brew cask install google-chrome
 #brew cask install google-nik-collection
 #brew cask install gyazo
 #brew cask install hyper
+brew cask install hyperswitch
+brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
 brew cask install intellij-idea
@@ -43,6 +45,7 @@ brew cask install ksdiff
 brew cask install keyboard-maestro
 #brew cask install night-owl
 brew cask install maczip4win
+brew cask install magicalvoxel
 #brew cask install mi
 brew cask install onyx
 brew cask install openframeworks
@@ -54,16 +57,20 @@ brew cask install processing
 brew cask install p5
 brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
 brew cask install reggy
+brew cask install rightfont
 #brew cask install sequel-pro
 brew cask install shupapan
-brew cask install sketch
+#brew cask install sketch
 brew cask install skyfonts
 brew cask install skype
 brew cask install slack
+brew cask install sonic-pi
 brew cask install sourcetree
 brew cask install svgcleaner
+brew cask install touchdesigner
 brew cask install transmit
 brew cask install the-unarchiver
+brew cask install unshaky
 brew cask install vlc
 brew cask install visual-studio-code
 brew cask install webponize
