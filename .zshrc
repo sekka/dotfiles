@@ -133,14 +133,31 @@ precmd () {
 }
 
 # プロンプト表示設定
-OK=" [*'-'] "
-NG=" [*;-;] "
+OK="[*'-']"
+NG="[*;-;]"
 
 PROMPT=""                                      # デフォルトのパス表示を消す
+PROMPT+="
+"                                              # 改行
+
+PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"     # OK/NGの顔文字
+PROMPT+=" "                                    #
+
 #PROMPT+="%F{black}%D%f"                       # 日付
 #PROMPT+=" "                                   #
+
 PROMPT+="%F{black}%*%f"                        # 時刻
-PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f)"     # OK/NGの顔文字
+PROMPT+=" "                                    #
+
+#PROMPT+="%F{magenta}[%1~]%f"                  # カレントディレクトリ
+PROMPT+="%F{blue}%B%~%b%f"                     # パス
+PROMPT+=" "                                    #
+
+PROMPT+="%1(v|%F{red}%1v%f|)"                  # git status
+
+PROMPT+="
+"                                              # 改行
+
 PROMPT+="%B%(?.%F{green}❯❯%f.%F{red}❯❯%f)%b"   # コマンド入力待ち
 PROMPT+="%B❯❯%b"                               # コマンド入力待ち
 PROMPT+=" "                                    #
@@ -542,7 +559,7 @@ function tmux_automatically_attach_session()
         ! is_exists 'tmux' && return 1
 
         if is_tmux_runnning; then
-            echo :beer: :relaxed: | emojify
+            # echo :beer: :relaxed: | emojify
         elif is_screen_running; then
             echo "This is on screen."
         fi
