@@ -8,10 +8,10 @@ echo "\033[0;34m==Dockerをインストール==\033[0;39m"
 brew cask install docker
 
 echo "\033[0;34m==各GUIツールをインストール==\033[0;39m"
-brew cask install 0xed
+#brew cask install 0xed
 brew cask install adobe-creative-cloud
 brew cask install alfred
-brew cask install android-studio
+#brew cask install android-studio
 brew cask install appcleaner
 #brew cask install atom
 #brew cask install background-music
@@ -20,6 +20,7 @@ brew cask install blender
 brew cask install charles
 #brew cask install couleurs
 #brew cask install crunch
+brew cask install daisydisk
 brew cask install dash
 brew cask install discord
 brew cask install dropbox
@@ -37,9 +38,10 @@ brew cask install hyperswitch
 brew cask install iconjar
 brew cask install imagealpha
 brew cask install imageoptim
-brew cask install intellij-idea
+#brew cask install intellij-idea
 brew cask install iterm2
 #brew cask install jasper
+brew cask install jetbrains-toolbox
 brew cask install karabiner-elements
 brew cask install ksdiff
 brew cask install keyboard-maestro
@@ -70,6 +72,7 @@ brew cask install svgcleaner
 brew cask install touchdesigner
 brew cask install transmit
 brew cask install the-unarchiver
+brew cask install unity
 brew cask install unshaky
 brew cask install vlc
 brew cask install visual-studio-code
