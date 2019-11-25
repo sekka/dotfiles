@@ -18,8 +18,11 @@ brew update
 brew upgrade
 
 echo "\033[0;34m==anyenv==\033[0;39m"
-git clone https://github.com/riywo/anyenv ~/.anyenv
-anyenv install ndenv
+brew install anyenv
+#anyenv init
+anyenv install --init
+anyenv install nodenv
+anyenv install pyenv
 anyenv version
 
 mkdir -p $(anyenv root)/plugins
@@ -28,14 +31,14 @@ git clone https://github.com/aereal/anyenv-exec.git $(anyenv root)/plugins/anyen
 git clone https://github.com/znz/anyenv-git.git $(anyenv root)/plugins/anyenv-git
 anyenv update
 
-ndenv install v9.4.0
-ndenv global v9.4.0
-ndenv rehash
+nodenv install 12.10.0
+nodenv global 12.10.0
+nodenv rehash
 node -v
 which node
 
-pyenv install 3.7.2
-pyenv global 3.7.2
+pyenv install 3.7.4
+pyenv global 3.7.4
 python -V
 which python
 

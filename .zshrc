@@ -602,3 +602,5 @@ function tmux_automatically_attach_session()
     fi
 }
 tmux_automatically_attach_session
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
