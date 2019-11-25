@@ -12,7 +12,7 @@ mas install 409201541 ## Pages
 mas install 409203825 ## Numbers
 #mas install 414855915 ## WinArchiver Lite
 mas install 434290957 ## Motion
-mas install 443987910 ## 1Password
+#mas install 443987910 ## 1Password
 mas install 485812721 ## TweetDeck
 mas install 497799835 ## Xcode
 mas install 498944723 ## JPEGmini
