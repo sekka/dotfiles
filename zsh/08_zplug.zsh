@@ -1,13 +1,13 @@
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-completions"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "mollifier/anyframe"
-zplug "b4b4r07/easy-oneliner", if:"which fzf"
-zplug "b4b4r07/enhancd", use:init.sh
-zplug "b4b4r07/emoji-cli"
-zplug "b4b4r07/history"
-zplug "arks22/tmuximum", as:command
+zplug "zsh-users/zsh-syntax-highlighting"       # https://github.com/zsh-users/zsh-syntax-highlighting      # シンタックスハイライト
+zplug "zsh-users/zsh-history-substring-search"  # https://github.com/zsh-users/zsh-history-substring-search # 入力履歴検索
+zplug "zsh-users/zsh-completions"               # https://github.com/zsh-users/zsh-completions              # 入力補完
+zplug "zsh-users/zsh-autosuggestions"           # https://github.com/zsh-users/zsh-autosuggestions          # 入力サジェスト
+zplug "mollifier/anyframe"                      # https://github.com/mollifier/anyframe                     # peco/fzfなどのラッパー
+zplug "b4b4r07/easy-oneliner", if:"which fzf"   # https://github.com/b4b4r07/easy-oneliner                  #
+zplug "b4b4r07/enhancd", use:init.sh            # https://github.com/b4b4r07/enhancd                        # インタラクティブフィルタ
+zplug "b4b4r07/emoji-cli"                       # https://github.com/b4b4r07/emoji-cli                      # 絵文字
+zplug "b4b4r07/history"                         # https://github.com/b4b4r07/history                        # 履歴強化
+zplug "arks22/tmuximum", as:command             # https://github.com/arks22/tmuximum                        # tmux選択UIのインタラクティブ化
 
 # check コマンドで未インストール項目があるかどうか verbose にチェックし
 # false のとき（つまり未インストール項目がある）y/N プロンプトで
@@ -23,7 +23,7 @@ fi
 zplug load
 
 # メンテナンス
-zplug clear
+#zplug clear
 #zplug update
 #zplug status
 
