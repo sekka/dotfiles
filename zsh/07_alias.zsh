@@ -1,6 +1,6 @@
 # ls
-alias ls="ls -G" # color for darwin
 alias l="ls -la"
+alias ls="ls -G" # color for darwin
 alias la="ls -la"
 alias lsa="ls -la"
 alias l1="ls -1"
@@ -23,8 +23,9 @@ alias be='bundle exec'
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
-# coinmon
-alias cm='coinmon -c jpy -f btc,bch,mona,dash'
+# ag
+alias ag='ag --smart-case --stats --pager "less -F -R"'
+alias agh='ag --hidden --smart-case --stats --pager "less -F -R"'
 
 # npm run
 alias nrun='npm run $(commands | peco)'
@@ -73,9 +74,9 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 
 # グローバルエイリアス
-alias -g L='| less'
+alias -g L='| less -F -R'
 alias -g H='| head'
-alias -g T='| tail'
+alias -g T='| tail -F -R'
 alias -g G='| grep'
 alias -g CL='| color'
 
