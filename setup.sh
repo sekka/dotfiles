@@ -1,18 +1,3 @@
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# CUIツールをインストール\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-curl -L https://github.com/takaaki-kasai/git-foresta/raw/master/git-foresta -o /usr/local/bin/git-foresta && chmod 755 /usr/local/bin/git-foresta
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# HomebrewでCUIツールをインストール\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
 echo "\033[0;34m==Homebrewをアップデート＆アップグレード==\033[0;39m"
 brew update
 brew upgrade
@@ -83,6 +68,7 @@ brew install wget               # https://formulae.brew.sh/formula/wget     # DL
 brew install httpie             # https://formulae.brew.sh/formula/httpie   # 高機能cURL
 brew install httpstat           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew install speedtest_cli      # https://github.com/sivel/speedtest-cli    # スピードテストツール
+curl -L https://github.com/takaaki-kasai/git-foresta/raw/master/git-foresta -o /usr/local/bin/git-foresta && chmod 755 /usr/local/bin/git-foresta
 
 echo "\033[0;34m==Python==\033[0;39m"
 brew install pipenv             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
@@ -97,14 +83,13 @@ echo "\033[0;34m==aws==\033[0;39m"
 # brew install awscli
 # brew install aws-sam-cli
 
+echo "\033[0;34m==Homebrewメンテナンス==\033[0;39m"
+brew cleanup
+brew doctor
+gibo -u
+tmux source-file ~/.tmux.conf
 
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# npmで色々インストール\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-echo "\033[0;34m==インストール==\033[0;39m"
+echo "\033[0;34m==npmインストール==\033[0;39m"
 npm install -g npm
 npm install -g caniuse-cmd
 npm install -g npm-check
@@ -114,33 +99,14 @@ npm install -g gtop
 npm install -g @vue/cli
 npm install -g lighthouse
 
-echo "\033[0;34m==メンテナンス==\033[0;39m"
+echo "\033[0;34m==npmメンテナンス==\033[0;39m"
 npm update
 npm upgrade
 npm list -g --depth=0
 
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Dockerを導入する\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
+echo "\033[0;34m==Docker==\033[0;39m"
 # docker version
 # docker-machine version
 # docker-compose version
 # docker images
 # docker ps -a
-
-
-echo "\033[0;31m# ==========================================================\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# Homebrewをメンテナンス\033[0;39m"
-echo "\033[0;31m#\033[0;39m"
-echo "\033[0;31m# ==========================================================\033[0;39m"
-
-brew cleanup
-brew doctor
-gibo -u
-tmux source-file ~/.tmux.conf
-
