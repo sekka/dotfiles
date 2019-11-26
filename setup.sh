@@ -41,6 +41,7 @@ brew install fzf                # https://formulae.brew.sh/formula/fzf      # �
 brew install fpp                # https://formulae.brew.sh/formula/fpp      # パスピッカー
 brew install ag                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew install pt                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
+brew install rg                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
 brew install htop               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
 brew install vim                # https://formulae.brew.sh/formula/vim      #
 brew install tree               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
