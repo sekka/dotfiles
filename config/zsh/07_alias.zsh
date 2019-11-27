@@ -33,6 +33,9 @@ alias rg='rg --smart-case --stats --pretty'
 # npm run
 alias nrun='npm run $(commands | peco)'
 
+# yarn run
+alias yrun='yarn $(commands | peco)'
+
 # tmux
 alias t='tmux'
 alias td='tmux detach'
