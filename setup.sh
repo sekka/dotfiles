@@ -59,6 +59,7 @@ brew install git                # https://formulae.brew.sh/formula/git      # gi
 brew install hub                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
 brew install ghq                # https://formulae.brew.sh/formula/ghq      # git clone便利ツール
 brew install tig                # https://formulae.brew.sh/formula/tig      # gitクライアント
+brew install lazygit            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew install gibo               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew install ctop               # https://formulae.brew.sh/formula/ctop     # dockerコンテナメトリクスビューワ
 brew tap moncho/dry             # https://moncho.github.io/dry/             # dockerマネージャ
@@ -76,6 +77,7 @@ brew install pipenv             # https://formulae.brew.sh/formula/pipenv   # Py
 
 echo "\033[0;34m==画像処理==\033[0;39m"
 brew install ImageMagick        # https://formulae.brew.sh/formula/ImageMagick #
+brew install svgo               # https://formulae.brew.sh/formula/svgo     #
 brew install webp               # https://formulae.brew.sh/formula/webp     #
 # brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 
