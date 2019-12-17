@@ -71,6 +71,9 @@ brew install httpie             # https://formulae.brew.sh/formula/httpie   # �
 brew install httpstat           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew install speedtest_cli      # https://github.com/sivel/speedtest-cli    # スピードテストツール
 curl -L https://github.com/takaaki-kasai/git-foresta/raw/master/git-foresta -o /usr/local/bin/git-foresta && chmod 755 /usr/local/bin/git-foresta
+curl https://sh.rustup.rs -sSf | sh                                         # Rust
+curl -L firebase.tools | sh                                                 # Firebase
+brew install netlify-cli        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
 
 echo "\033[0;34m==Python==\033[0;39m"
 brew install pipenv             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
@@ -82,9 +85,13 @@ brew install webp               # https://formulae.brew.sh/formula/webp     #
 # brew install --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 
 echo "\033[0;34m==aws==\033[0;39m"
-# brew tap aws/tap
-# brew install awscli
-# brew install aws-sam-cli
+brew tap aws/tap
+brew install awscli
+brew install aws-sam-cli
+
+echo "\033[0;34m==heroku==\033[0;39m"
+brew tap heroku/brew
+brew install heroku
 
 echo "\033[0;34m==Homebrewメンテナンス==\033[0;39m"
 brew cleanup
@@ -97,6 +104,7 @@ npm install -g npm
 npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates
+npm install -g now
 npm install -g fixpack
 npm install -g gtop
 npm install -g @vue/cli
@@ -108,8 +116,8 @@ npm upgrade
 npm list -g --depth=0
 
 echo "\033[0;34m==Docker==\033[0;39m"
-# docker version
-# docker-machine version
-# docker-compose version
-# docker images
-# docker ps -a
+docker version
+docker-machine version
+docker-compose version
+docker images
+docker ps -a
