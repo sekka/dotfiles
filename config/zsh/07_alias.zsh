@@ -30,6 +30,9 @@ alias agh='ag --hidden --smart-case --stats --pager "less -F -R"'
 # rg
 alias rg='rg --smart-case --stats --pretty'
 
+# vim
+alias vp='vim +PlugInstall +qall'
+
 # npm run
 alias nrun='npm run $(commands | peco)'
 

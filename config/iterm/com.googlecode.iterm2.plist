@@ -1467,11 +1467,11 @@
 	<key>NSWindow Frame SUStatusFrame</key>
 	<string>636 524 400 129 0 0 1680 1050 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>2930 133 700 622 1680 -750 3200 1800 </string>
+	<string>490 321 700 622 0 0 1680 1050 </string>
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>540 295 770 429 0 0 1680 1028 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 128 590 902 0 0 1680 1050 </string>
+	<string>82 214 870 652 0 0 1680 1050 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>212 38 590 587 0 0 1680 1050 </string>
 	<key>New Bookmarks</key>
@@ -1796,7 +1796,7 @@
 				<real>0.97254902124404907</real>
 			</dict>
 			<key>Cursor Type</key>
-			<integer>2</integer>
+			<integer>1</integer>
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
@@ -2358,6 +2358,8 @@
 			<false/>
 			<key>Use Italic Font</key>
 			<true/>
+			<key>Use Non-ASCII Font</key>
+			<false/>
 			<key>Vertical Spacing</key>
 			<real>1.1899999999999999</real>
 			<key>Visual Bell</key>
@@ -2691,7 +2693,7 @@
 				<real>0.97254902124404907</real>
 			</dict>
 			<key>Cursor Type</key>
-			<integer>2</integer>
+			<integer>1</integer>
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
@@ -3540,6 +3542,8 @@
 			<false/>
 			<key>Use Italic Font</key>
 			<true/>
+			<key>Use Non-ASCII Font</key>
+			<false/>
 			<key>Use Tab Color</key>
 			<false/>
 			<key>Use Underline Color</key>
@@ -3563,6 +3567,7 @@
 		<string>3.3.0beta12</string>
 		<string>3.3.0beta13</string>
 		<string>3.3.0beta14</string>
+		<string>3.3.8beta2</string>
 		<string>3.3.0beta15</string>
 		<string>3.3.3beta2</string>
 		<string>3.3.0beta16</string>
@@ -3589,7 +3594,7 @@
 	<key>NoSyncLastTipTime</key>
 	<real>578896130.43280602</real>
 	<key>NoSyncLaunchExperienceControllerRunCount</key>
-	<integer>152</integer>
+	<integer>170</integer>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
 	<true/>
 	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
@@ -4389,11 +4394,9 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2019-11-26T05:11:31Z</date>
+	<date>2019-12-17T02:06:46Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
-	<key>SUSkippedVersion</key>
-	<string>3.3.8beta1</string>
 	<key>SUUpdateRelaunchingMarker</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -4431,9 +4434,9 @@
 	<key>TabsHaveCloseButton</key>
 	<true/>
 	<key>TerminalMargin</key>
-	<integer>15</integer>
+	<integer>0</integer>
 	<key>TerminalVMargin</key>
-	<integer>20</integer>
+	<integer>0</integer>
 	<key>ThreeFingerEmulates</key>
 	<false/>
 	<key>TmuxDashboardLimit</key>
@@ -4471,7 +4474,7 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.3.7beta4</string>
+	<string>3.3.8beta2</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
 	<integer>0</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>
