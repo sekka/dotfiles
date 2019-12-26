@@ -2,6 +2,7 @@
 " plugins - init
 " --------------------------------------
 
+" plugin読み込み準備
 if !filereadable(expand('~/.vim/autoload/plug.vim'))
   if !executable("curl")
     echoerr "You have to install curl or first install vim-plug yourself!"
@@ -14,6 +15,9 @@ if !filereadable(expand('~/.vim/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall
 endif
 
+" leaderの設定をSpaceに変更
+let mapleader="\<Space>"
+
 
 " --------------------------------------
 " plugins - list
@@ -24,9 +28,12 @@ call plug#begin(expand('~/.vim/plugged'))
 " IDE
 Plug 'editorconfig/editorconfig-vim'
 
-" NERDTree
+" Space + dir -> NERDTree
 Plug 'scrooloose/nerdtree'
 Plug 'jistr/vim-nerdtree-tabs'
+
+" space + sh -> vimshell↲
+Plug 'Shougo/vimshell.vim'
 
 call plug#end()
 
@@ -46,6 +53,12 @@ let g:NERDTreeWinSize = 30
 let NERDTreeShowHidden=1
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 nnoremap <Leader>dir :NERDTreeTabsToggle<CR>
+
+" vimshell↲
+"nnoremap <Leader>sh :VimShellPop<CR>
+nnoremap <Leader>sh :vertical terminal<CR>
+let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
+let g:vimshell_prompt =  '$ '
 
 
 " --------------------------------------
