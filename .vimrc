@@ -89,6 +89,15 @@ set autoread
 " バッファが編集中でもその他のファイルを開けるようにする
 set hidden
 
+" 高速ターミナル接続
+set ttyfast
+
+" ウインドウを右側に開く
+set splitright
+
+" ウインドウを下に開く
+set splitbelow
+
 " コマンドラインの履歴を10000件保存する
 set history=10000
 
@@ -139,6 +148,9 @@ set showcmd
 " ステータスラインを常に表示
 set laststatus=2
 
+" ステータスラインの内容
+set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
+
 " メッセージ表示欄を2行確保
 set cmdheight=2
 
@@ -147,6 +159,12 @@ set confirm
 
 " ヘルプを画面全体に表示
 set helpheight=999
+
+" 補完UIの色設定
+highlight Pmenu ctermbg=233 ctermfg=241
+highlight PmenuSel ctermbg=233 ctermfg=166
+highlight Search ctermbg=166 ctermfg=233
+highlight Visual ctermbg=166 ctermfg=23
 
 
 " --------------------------------------
@@ -240,4 +258,62 @@ set clipboard=unnamed,unnamedplus
 
 " クリップボード連携を有効にした時に BackSpace (Delete) が効かなくなるので設定する
 set backspace=indent,eol,start
+
+
+" --------------------------------------
+" settings - shortcut
+" --------------------------------------
+
+" save
+nnoremap <Leader>w :w<CR>
+nnoremap <Leader>qqq :q!<CR>
+nnoremap <Leader>eee :e<CR>
+nnoremap <Leader>wq :wq<CR>
+nnoremap <Leader>nn :noh<CR>
+
+" split
+nnoremap <Leader>s :<C-u>split<CR>
+nnoremap <Leader>v :<C-u>vsplit<CR>
+
+" Tabs
+nnoremap <Tab> gt
+nnoremap <S-Tab> gT
+nnoremap <Leader>t :tabnew<CR>
+
+" ignore wrap
+nnoremap j gj
+nnoremap k gk
+nnoremap <Down> gj
+nnoremap <Up> gk
+
+" Sft + y => yunk to EOL
+nnoremap Y y$
+
+" + => increment
+nnoremap + <C-a>
+
+" - => decrement
+nnoremap - <C-x>
+
+" move 15 words
+nmap <silent> <Tab> 15<Right>
+nmap <silent> <S-Tab> 15<Left>
+"nmap <silent> ll 15<Right>
+"nmap <silent> hh 15<Left>
+"nmap <silent> jj 15<Down>
+"nmap <silent> kk 15<Up>
+
+" pbcopy for OSX copy/paste
+vmap <C-x> :!pbcopy<CR>
+vmap <C-c> :w !pbcopy<CR><CR>
+
+" move line/word
+nmap <C-e> $
+nmap <C-a> 0
+nmap <C-f> W
+nmap <C-b> B
+imap <C-e> <C-o>$
+imap <C-a> <C-o>0
+imap <C-f> <C-o>W
+imap <C-b> <C-o>B
 
