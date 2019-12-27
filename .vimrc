@@ -129,12 +129,16 @@ set title
 
 " 行番号を表示
 set number
+set relativenumber
 
 " 画面最下行にルーラーを表示
 set ruler
 
 " 画面最下行にタイプ中のコマンドを表示
 set showcmd
+
+" 現在のモードを表示
+set showmode
 
 " ステータスラインを常に表示
 set laststatus=2
