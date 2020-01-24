@@ -43,6 +43,7 @@ brew install ag                 # https://formulae.brew.sh/formula/the_silver_se
 brew install pt                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
 brew install rg                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
 brew install htop               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
+brew install bandwhich          # https://formulae.brew.sh/formula/bandwhich    # 帯域確認
 brew install vim                # https://formulae.brew.sh/formula/vim      #
 brew install tree               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
 brew install pstree             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
@@ -109,6 +110,7 @@ npm install -g fixpack
 npm install -g gtop
 npm install -g @vue/cli
 npm install -g lighthouse
+npm install -g git-diff-archive
 
 echo "\033[0;34m==npmメンテナンス==\033[0;39m"
 npm update
