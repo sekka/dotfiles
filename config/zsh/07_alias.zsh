@@ -76,6 +76,7 @@ alias log8="git log --graph --all --decorate"
 alias log9="git log --graph --all --date=iso --date-order -C -M --pretty='format:%C(magenta)%cd%Creset %C(yellow)%h%Creset %Cgreen(%an)%Creset %Cred%d%Creset %s'"
 # hub + pecoでリポジトリをブラウザで開く
 alias hbr='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
+alias tiga='tig --all'
 
 # cd
 alias ..='cd ..'
