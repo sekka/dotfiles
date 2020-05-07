@@ -1,9 +1,6 @@
 # ls
-alias l="ls -la"
-alias ls="ls -G" # color for darwin
-alias la="ls -la"
-alias lsa="ls -la"
-alias l1="ls -1"
+alias l="exa"
+alias lsa="exa --long --all --binary --bytes --group --header --links --inode --modified --blocks --extended --git --time-style long-iso"
 
 # tree
 # N: 文字化け対策, C:色をつける

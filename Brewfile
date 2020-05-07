@@ -15,10 +15,15 @@ brew "fpp"                # https://formulae.brew.sh/formula/fpp      # パス�
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
 brew "rg"                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
+brew "exa"                # https://formulae.brew.sh/formula/exa      # すごいls
+brew "bat"                # https://formulae.brew.sh/formula/bat      # すごいcat
+brew "hexyl"              # https://formulae.brew.sh/formula/hexyl    # すごいod
+brew "fd"                 # https://formulae.brew.sh/formula/fd       # すごいfind
 brew "htop"               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
 brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich    # 帯域確認
 brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
+brew "procs"              # https://formulae.brew.sh/formula/procs    # すごいps
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
 brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl   # YouTube動画DLツール
@@ -77,9 +82,11 @@ cask "dash"
 #cask "discord"
 #cask "dropbox"
 cask "firefox"
+cask "fork"
 cask "glyphs"
 #cask "google-backup-and-sync"
 cask "google-chrome"
+cask "hiddenbar"
 cask "hyperswitch"
 cask "iconjar"
 cask "imagealpha"
@@ -90,6 +97,7 @@ cask "karabiner-elements"
 cask "ksdiff"
 cask "keyboard-maestro"
 #cask "magicalvoxel"
+cask "monitorcontrol"
 cask "onyx"
 #cask "openframeworks"
 cask "paw"
