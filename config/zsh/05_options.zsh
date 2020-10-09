@@ -4,7 +4,7 @@ setopt print_eight_bit
 # beep を無効にする
 setopt no_beep
 
-# 入力しているコマンド名が間違っている場合にもしかして：を出す。
+# 入力しているコマンド名が間違っている場合にもしかして：を出す
 setopt correct
 
 # 色を使う
