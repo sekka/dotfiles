@@ -77,20 +77,32 @@ cask "1password"
 cask "adobe-creative-cloud"
 cask "alfred"
 cask "appcleaner"
-cask "blender"
-cask "charles"
+#cask "blackhole-16ch"
+#cask "blender"
+#cask "charles"i
+#cask "contraste"
 cask "daisydisk"
 cask "dash"
 cask "discord"
+cask "docker"
 cask "dropbox"
 cask "firefox"
-cask "fork"
+#cask "firefox-developer-edition"
+#cask "firefox-nightly"
+#cask "fontgoggles"
+#cask "fork"
 cask "glyphs"
 cask "google-backup-and-sync"
 cask "google-chrome"
+#cask "google-chrome-beta"
+#cask "google-chrome-canary"
+#cask "google-chrome-dev"
+#cask "graphql-playground"
+#cask "hex-fiend"
 cask "hiddenbar"
 cask "hyperswitch"
 cask "iconjar"
+cask "iina"
 cask "imagealpha"
 cask "imageoptim"
 cask "iterm2"
@@ -98,40 +110,70 @@ cask "jetbrains-toolbox"
 cask "karabiner-elements"
 cask "ksdiff"
 cask "keyboard-maestro"
-cask "magicalvoxel"
-cask "monitorcontrol"
+cask "macwinzipper"
+#cask "magicalvoxel"
+cask "microsoft-edge"
+#cask "microsoft-edge-beta"
+#cask "microsoft-edge-canary"
+#cask "microsoft-edge-dev"
+#cask "microsoft-office-2016"
+#cask "monitorcontrol"
+#cask "notion"
+#cask "obs"
 cask "onyx"
-cask "openframeworks"
+#cask "openframeworks"
 cask "paw"
-cask "pngyu"
-cask "processing"
-cask "p5"
+#cask "pngyu"
+#cask "processing"
+#cask "p5"
 cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
-cask "rightfont"
+#cask "rightfont"
+cask "sensei"
 cask "skyfonts"
 cask "slack"
-cask "sonic-pi"
+#cask "sonic-pi"
 cask "sourcetree"
 #cask "spotify"
 #cask "steam"
-cask "svgcleaner"
-cask "touchdesigner"
-cask "transmit"
+#cask "svgcleaner"
+#cask "touchdesigner"
+#cask "unity-hub"
+
+# ==Utility==
+cask "cursorsense"
 cask "the-unarchiver"
-cask "unity-hub"
-cask "vlc"
+cask "zoom"
+
+# ==ウェブ開発==
+cask "transmit"
 cask "visual-studio-code"
-cask "webponize"
-cask "xld"
+
+# ==画像処理==
+cask "optimage"
+
+# ==Audio==
+#cask "eqMac"
+#cask "vlc"
+#cask "xld"
+
+# ==CreativeCoding==
+
+# ==mas==
 mas "Keynote",              id: 409183694
 mas "Pages",                id: 409201541
 mas "Numbers",              id: 409203825
+mas "TweetDeck"             id: 485812721
+mas "Bandwidth+"            id: 490461369
 mas "Xcode",                id: 497799835
 mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
 mas "Kaleidoscope",         id: 587512244
-mas "Affinity Designer",    id: 824171161
+#mas "Affinity Designer",    id: 824171161
 mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
-mas "Gifski",               id: 1351639930
+#mas "Gifski",               id: 1351639930
+#mas "TeraCopy"              id: 1378806557
 mas "Reeder",               id: 1449412482
+mas "ComicViewer"           id: 1455702185
+#mas "Cicero"                id: 1480977453
+#mas "WebPonize"             id: 1526039365
