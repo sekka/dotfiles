@@ -38,7 +38,7 @@ brew "devd"               # https://formulae.brew.sh/formula/devd     # ロー�
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
 brew "ghq"                # https://formulae.brew.sh/formula/ghq      # git clone便利ツール
-brew "github/gh/gh"       # https://cli.github.com/                   # GitHubコマンドラインツール
+brew "gh"                 # https://formulae.brew.sh/formula/gh       # GitHubコマンドラインツール
 brew "tig"                # https://formulae.brew.sh/formula/tig      # gitクライアント
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
@@ -67,10 +67,7 @@ brew "awscli"
 brew "aws/tap/aws-sam-cli"
 
 # ==heroku==
-brew "heroku/brew/heroku"
-
-# ==Dockerをインストール==
-cask "docker"
+brew "heroic/brew/heroku"
 
 # ==Utility==
 cask "1password"
@@ -78,47 +75,51 @@ cask "alfred"
 cask "appcleaner"
 cask "cursorsense"
 cask "daisydisk"
-cask "dash"
-cask "discord"
 cask "dropbox"
-cask "firefox"
-#cask "firefox-developer-edition"
-#cask "firefox-nightly"
 cask "google-backup-and-sync"
-cask "google-chrome"
-#cask "google-chrome-beta"
-#cask "google-chrome-canary"
-#cask "google-chrome-dev"
-#cask "hex-fiend"
 cask "hiddenbar"
 cask "hyperswitch"
-cask "iterm2"
 cask "karabiner-elements"
 cask "keyboard-maestro"
 cask "macwinzipper"
-cask "microsoft-edge"
-#cask "microsoft-edge-beta"
-#cask "microsoft-edge-canary"
-#cask "microsoft-edge-dev"
-#cask "microsoft-office-2016"
 #cask "monitorcontrol"
 #cask "notion"
 cask "onyx"
 cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
 cask "sensei"
-cask "slack"
 #cask "spotify"
 #cask "steam"
 cask "the-unarchiver"
 #cask "unity-hub"
+
+# ==communication==
+cask "discord"
+cask "slack"
 cask "zoom"
+
+# ==Browser==
+cask "firefox"
+#cask "firefox-developer-edition"
+#cask "firefox-nightly"
+cask "google-chrome"
+#cask "google-chrome-beta"
+#cask "google-chrome-canary"
+#cask "google-chrome-dev"
+cask "microsoft-edge"
+#cask "microsoft-edge-beta"
+#cask "microsoft-edge-canary"
+#cask "microsoft-edge-dev"
+#cask "microsoft-office-2016"
 
 # ==ウェブ開発==
 #cask "charles"
 #cask "contraste"
+cask "dash"
 cask "docker"
 #cask "fork"
 #cask "graphql-playground"
+#cask "hex-fiend"
+cask "iterm2"
 cask "jetbrains-toolbox"
 cask "ksdiff"
 cask "paw"
@@ -167,8 +168,8 @@ cask "skyfonts"
 mas "Keynote",              id: 409183694
 mas "Pages",                id: 409201541
 mas "Numbers",              id: 409203825
-mas "TweetDeck"             id: 485812721
-mas "Bandwidth+"            id: 490461369
+mas "TweetDeck",            id: 485812721
+mas "Bandwidth+",           id: 490461369
 mas "Xcode",                id: 497799835
 mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
@@ -177,8 +178,8 @@ mas "Kaleidoscope",         id: 587512244
 mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
 #mas "Gifski",               id: 1351639930
-#mas "TeraCopy"              id: 1378806557
+#mas "TeraCopy",             id: 1378806557
 mas "Reeder",               id: 1449412482
-mas "ComicViewer"           id: 1455702185
-#mas "Cicero"                id: 1480977453
-#mas "WebPonize"             id: 1526039365
+mas "ComicViewer",          id: 1455702185
+#mas "Cicero",               id: 1480977453
+#mas "WebPonize",            id: 1526039365

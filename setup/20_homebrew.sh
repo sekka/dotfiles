@@ -1,6 +1,6 @@
 brew update
 brew upgrade
-brew cask upgrade
+brew upgrade --cask --greedy
 brew bundle
 
 brew cleanup

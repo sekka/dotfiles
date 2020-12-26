@@ -4,11 +4,18 @@ echo "# Homebrewを導入する"
 echo "#"
 echo "# =========================================================="
 
+# Install Xcode and the Xcode Command Line Tools
 xcode-select --install
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap homebrew/versions
-brew doctor
-echo insecure >> ~/.curlrc
+
+# Agree to Xcode license
+xcodebuild -license
+
+# Install the Rosetta2
+softwareupdate --install-rosetta
+
+# ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# brew doctor
+# echo insecure >> ~/.curlrc
 
 
 echo "# =========================================================="
@@ -33,43 +40,63 @@ echo "# dotdilesにシンボリックリンクを貼る"
 echo "#"
 echo "# =========================================================="
 
-DOT_FILES=(.gitconfig .gitcommit_template .gitignore .gitignore_global .tigrc .tmux.conf .zshrc .zshenv .vimrc .hyper.js .agignore)
+DOT_FILES=(\
+    .gitconfig \
+    gitcommit_template \
+    .gitignore \
+    .gitignore_global \
+    .tigrc \
+    .tmux.conf \
+    .zshrc \
+    .zshenv \
+    .vimrc \
+    .hyper.js \
+    .agignore \
+)
 
 for file in ${DOT_FILES[@]}
 
 do
-	if [ -a $HOME/$file ]; then
-			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-	else
-		ln -s $HOME/dotfiles/$file $HOME/$file
-			echo "シンボリックリンクを貼りました: $file"
-	fi
+    if [ -a $HOME/$file ]; then
+        echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+    else
+        ln -s $HOME/dotfiles/$file $HOME/$file
+            echo "シンボリックリンクを貼りました: $file"
+    fi
 done
 
 
-PET_FILES=(config.toml snippet.toml)
+echo "# =========================================================="
 
-for file in ${PET_FILES[@]}
+# PET_FILES=(\
+#     config.toml \
+#     snippet.toml \
+# )
+# 
+# for file in ${PET_FILES[@]}
+# 
+# do
+#     if [ -a $HOME/.config/pet/$file ]; then
+#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+#     else
+#         ln -s $HOME/dotfiles/config/pet/$file $HOME/.config/pet/$file
+#             echo "シンボリックリンクを貼りました: $file"
+#     fi
+# done
 
-do
-	if [ -a $HOME/.config/pet/$file ]; then
-			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-	else
-		ln -s $HOME/dotfiles/config/pet/$file $HOME/.config/pet/$file
-			echo "シンボリックリンクを貼りました: $file"
-	fi
-done
+echo "# =========================================================="
 
-
-NEOVIM_FILES=(init.vim)
-
-for file in ${NEOVIM_FILES[@]}
-
-do
-	if [ -a $HOME/.config/nvim/$file ]; then
-			echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-	else
-		ln -s $HOME/dotfiles/config/nvim/$file $HOME/.config/nvim/$file
-			echo "シンボリックリンクを貼りました: $file"
-	fi
-done
+# NEOVIM_FILES=(\
+#     init.vim \
+# )
+# 
+# for file in ${NEOVIM_FILES[@]}
+# 
+# do
+#     if [ -a $HOME/.config/nvim/$file ]; then
+#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
+#     else
+#         ln -s $HOME/dotfiles/config/nvim/$file $HOME/.config/nvim/$file
+#             echo "シンボリックリンクを貼りました: $file"
+#     fi
+# done
