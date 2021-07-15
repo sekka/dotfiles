@@ -4,6 +4,7 @@ cask_args appdir: "/Applications"
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
 brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
+brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
 
 # ==ターミナル==
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
@@ -30,7 +31,8 @@ brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文�
 brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl   # YouTube動画DLツール
 brew "Code-Hex/pget/pget" # https://github.com/Code-Hex/pget          # 高速DLツール
 brew "knqyf263/pet/pet"   # https://github.com/knqyf263/pet           # スニペットマネージャ
-brew "homebrew/cask-fonts/font-meslo-for-powerline"
+tap "homebrew/cask-fonts"
+cask "font-meslo-for-powerline"
 
 # ==ウェブ開発==
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
@@ -63,18 +65,20 @@ brew "webp"               # https://formulae.brew.sh/formula/webp     #
 #brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 
 # ==aws==
-brew "awscli"
-brew "aws/tap/aws-sam-cli"
+#brew "awscli"
+#brew "aws/tap/aws-sam-cli"
 
 # ==heroku==
-brew "heroic/brew/heroku"
+#brew "heroku/brew/heroku"
 
-# ==Utility==
+# ==ユーティリティ==
 cask "1password"
+#cask "abyssoft-teleport"
 cask "alfred"
 cask "appcleaner"
 cask "cursorsense"
 cask "daisydisk"
+#cask "deeper"
 cask "dropbox"
 cask "google-backup-and-sync"
 cask "hiddenbar"
@@ -88,16 +92,22 @@ cask "onyx"
 cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
 cask "sensei"
 #cask "spotify"
-#cask "steam"
 cask "the-unarchiver"
-#cask "unity-hub"
+#tap "hmarr/tap"
+#cask "vitals"
 
-# ==communication==
+# ==エンタメ==
+#cask "bluestacks"
+#cask "steam"
+
+# ==コミュニケーション==
 cask "discord"
+cask "messenger"
+cask "microsoft-teams"
 cask "slack"
 cask "zoom"
 
-# ==Browser==
+# ==ブラウザ==
 cask "firefox"
 #cask "firefox-developer-edition"
 #cask "firefox-nightly"
@@ -111,11 +121,14 @@ cask "microsoft-edge"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
 
+# ==仮想環境==
+#cask "utm"
+
 # ==ウェブ開発==
 #cask "charles"
 #cask "contraste"
 cask "dash"
-cask "docker"
+#cask "docker"
 #cask "fork"
 #cask "graphql-playground"
 #cask "hex-fiend"
@@ -144,9 +157,9 @@ cask "imageoptim"
 #cask "xld"
 
 # ==映像処理==
-cask "iina"
+#cask "iina"
 #cask "obs"
-#cask "vlc"
+cask "vlc"
 
 # ==フォント==
 #cask "fontgoggles"
@@ -163,13 +176,14 @@ cask "skyfonts"
 #cask "p5"
 #cask "sonic-pi"
 #cask "touchdesigner"
+#cask "unity-hub"
 
 # ==mas==
 mas "Keynote",              id: 409183694
 mas "Pages",                id: 409201541
 mas "Numbers",              id: 409203825
 mas "TweetDeck",            id: 485812721
-mas "Bandwidth+",           id: 490461369
+#mas "Bandwidth+",           id: 490461369
 mas "Xcode",                id: 497799835
 mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
@@ -179,7 +193,9 @@ mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
 #mas "Gifski",               id: 1351639930
 #mas "TeraCopy",             id: 1378806557
-mas "Reeder",               id: 1449412482
+#mas "Reeder",               id: 1449412482
 mas "ComicViewer",          id: 1455702185
 #mas "Cicero",               id: 1480977453
 #mas "WebPonize",            id: 1526039365
+mas "Reeder",               id: 1529448980
+

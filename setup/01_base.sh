@@ -5,10 +5,10 @@ echo "#"
 echo "# =========================================================="
 
 # Install Xcode and the Xcode Command Line Tools
-xcode-select --install
+sudo xcode-select --install
 
 # Agree to Xcode license
-xcodebuild -license
+sudo xcodebuild -license
 
 # Install the Rosetta2
 softwareupdate --install-rosetta
@@ -24,14 +24,14 @@ echo "# zshを導入する"
 echo "#"
 echo "# =========================================================="
 
-brew install zsh
+# brew install zsh
 
 # デフォルトのShellをzshにする
 # /etc/shells の末尾に /usr/local/bin/zsh を追記
-sudo sh -c 'echo $(which zsh) >> /etc/shells'
+# sudo sh -c 'echo $(which zsh) >> /etc/shells'
 
 # ユーザのデフォルトシェルを変更
-chsh -s /usr/local/bin/zsh
+# chsh -s /usr/local/bin/zsh
 
 
 echo "# =========================================================="
