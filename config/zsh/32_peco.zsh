@@ -12,8 +12,8 @@ function peco-select-history() {
     CURSOR=$#BUFFER
     zle clear-screen
 }
-zle -N peco-select-history
-bindkey '^r' peco-select-history
+# zle -N peco-select-history
+# bindkey '^r' peco-select-history
 
 # ghqでクローンしてきたリポジトリへの移動が捗る
 function peco-src () {
@@ -24,12 +24,12 @@ function peco-src () {
     fi
     zle clear-screen
 }
-zle -N peco-src
-bindkey '^]' peco-src
+# zle -N peco-src
+# bindkey '^]' peco-src
 
 # npm-scriptsを簡単に実行するやつ
 function commands () {
-  cat package.json | jq -r '.scripts | keys[]'
+    cat package.json | jq -r '.scripts | keys[]'
 }
 
 # anyframe
