@@ -5,8 +5,7 @@ echo "#"
 echo "# =========================================================="
 
 xcode-select --install
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-brew tap homebrew/versions
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 brew doctor
 echo insecure >> ~/.curlrc
 

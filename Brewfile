@@ -38,7 +38,7 @@ brew "devd"               # https://formulae.brew.sh/formula/devd     # ロー�
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
 brew "ghq"                # https://formulae.brew.sh/formula/ghq      # git clone便利ツール
-brew "github/gh/gh"       # https://cli.github.com/                   # GitHubコマンドラインツール
+brew "gh"                 # https://cli.github.com/                   # GitHubコマンドラインツール
 brew "tig"                # https://formulae.brew.sh/formula/tig      # gitクライアント
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
