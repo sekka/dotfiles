@@ -17,10 +17,12 @@
 [ghq]
 	root = ~/src
 [commit]
-	template = .gitcommit_template
+	template = ~/.gitcommit_template
 [merge]
 	ff = false
 [pull]
 	ff = only
 [http]
 	sslVerify = false
+[credential]
+	helper = osxkeychain
