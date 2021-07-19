@@ -9,12 +9,10 @@ unsetopt GLOBAL_RCS
 # curl
 # export PATH=/usr/local/opt/curl/bin:$PATH
 
-# bin/
-export PATH=$HOME/dotfiles/bin:$PATH
-
 # Homebrew
-export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
+export PATH=/usr/local/sbin:$PATH
+export PATH=/opt/homebrew/bin:$PATH
 
 # anyenv
 export PATH=$HOME/.anyenv/bin:$PATH
@@ -24,14 +22,18 @@ eval "$(anyenv init -)"
 export PATH=$HOME/.yarn/bin:$PATH
 export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
 
+# dotfiles bin
+export PATH=$HOME/dotfiles/bin:$PATH
+
 # 重複する要素を自動的に削除
 typeset -U path cdpath fpath manpath
 
 path=(
-    $path(N-/)
-    $HOME/bin(N-/)
-    /usr/local/bin(N-/)
+    $path
     /usr/local/sbin(N-/)
+    /usr/local/bin(N-/)
+    /usr/sbin
+    /usr/bin
 )
 
 # ZDOTDIR

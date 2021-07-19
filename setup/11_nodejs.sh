@@ -5,8 +5,8 @@ anyenv install nodenv
 #exec $SHELL -l
 nodenv install -l
 
-nodenv install 12.10.0
-nodenv global 12.10.0
+nodenv install 14.15.3
+nodenv global 14.15.3
 nodenv rehash
 nodenv versions
 node -v

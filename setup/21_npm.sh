@@ -8,6 +8,7 @@ npm install -g gtop
 npm install -g @vue/cli
 npm install -g lighthouse
 npm install -g git-diff-archive
+npm install -g commitizen
 
 npm update
 npm upgrade
