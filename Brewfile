@@ -76,13 +76,13 @@ cask "1password"
 #cask "abyssoft-teleport"
 cask "alfred"
 cask "appcleaner"
-cask "cursorsense"
+#cask "cursorsense"
 cask "daisydisk"
 #cask "deeper"
 cask "dropbox"
-cask "google-backup-and-sync"
+#cask "google-backup-and-sync"
 cask "hiddenbar"
-cask "hyperswitch"
+#cask "hyperswitch"
 cask "karabiner-elements"
 cask "keyboard-maestro"
 cask "macwinzipper"
@@ -187,7 +187,7 @@ mas "TweetDeck",            id: 485812721
 mas "Xcode",                id: 497799835
 mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
-mas "Kaleidoscope",         id: 587512244
+#mas "Kaleidoscope",         id: 587512244
 #mas "Affinity Designer",    id: 824171161
 mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
