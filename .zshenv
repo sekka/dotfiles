@@ -43,8 +43,5 @@ path=(
 export ZPLUG_HOME=/usr/local/opt/zplug
 source $ZPLUG_HOME/init.zsh
 
-# NeoVim
-export XDG_CONFIG_HOME=$HOME/.config
-
 # direnv
 eval "$(direnv hook zsh)"
