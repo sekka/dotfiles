@@ -10,6 +10,16 @@ npm install -g lighthouse
 npm install -g git-diff-archive
 npm install -g commitizen
 
+echo "# ======================================================================================="
+echo "# npm update"
 npm update
+
+echo "# ======================================================================================="
+echo "# npm upgrade"
+
 npm upgrade
+
+echo "# ======================================================================================="
+echo "# npm list -g --depth=0"
+
 npm list -g --depth=0

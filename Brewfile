@@ -16,18 +16,9 @@ brew "fzf"                # https://formulae.brew.sh/formula/fzf      # ファ�
 brew "fpp"                # https://formulae.brew.sh/formula/fpp      # パスピッカー
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
-tap "rhysd/hgrep" "https://github.com/rhysd/hgrep"
-brew "hgrep"              # 
-brew "rg"                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
-brew "exa"                # https://formulae.brew.sh/formula/exa      # すごいls
-brew "bat"                # https://formulae.brew.sh/formula/bat      # すごいcat
-brew "hexyl"              # https://formulae.brew.sh/formula/hexyl    # すごいod
-brew "fd"                 # https://formulae.brew.sh/formula/fd       # すごいfind
 brew "htop"               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
-brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich    # 帯域確認
 brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
-brew "procs"              # https://formulae.brew.sh/formula/procs    # すごいps
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
 brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl   # YouTube動画DLツール
@@ -46,12 +37,9 @@ brew "tig"                # https://formulae.brew.sh/formula/tig      # gitク�
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew "yarn"               # https://formulae.brew.sh/formula/yarn     # パッケージ管理
-brew "ctop"               # https://formulae.brew.sh/formula/ctop     # dockerコンテナメトリクスビューワ
-brew "dry"                # https://moncho.github.io/dry/             # dockerマネージャ
 brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
-brew "httpie"             # https://formulae.brew.sh/formula/httpie   # 高機能cURL
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
 brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
