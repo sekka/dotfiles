@@ -1,8 +1,6 @@
-echo "# =========================================================="
-echo "#"
-echo "# Homebrewを導入する"
-echo "#"
-echo "# =========================================================="
+# https://qiita.com/ko1nksm/items/e73e343f609c071e6a8c
+# set -e
+cd ~
 
 # Install Xcode and the Xcode Command Line Tools
 sudo xcode-select --install
@@ -13,16 +11,36 @@ sudo xcodebuild -license
 # Install the Rosetta2
 softwareupdate --install-rosetta
 
-# ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-# brew doctor
+
+echo "# ======================================================================================="
+echo "# Homebrewを導入する"
+
+if [ ! -f /opt/homebrew/bin/brew ]
+   then
+      echo "Installing Homebrew..."
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+   else
+      echo "Homebrew already installed."
+fi
+
+brew doctor
 # echo insecure >> ~/.curlrc
 
 
-echo "# =========================================================="
-echo "#"
+echo "# ======================================================================================="
+echo "# Rustを導入する"
+
+if [ ! -f $HOME/.cargo/bin/rustc ]
+   then
+      echo "Installing Rust..."
+      curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+   else
+      echo "Rust already installed."
+fi
+
+
+echo "# ======================================================================================="
 echo "# zshを導入する"
-echo "#"
-echo "# =========================================================="
 
 # brew install zsh
 
@@ -34,11 +52,8 @@ echo "# =========================================================="
 # chsh -s /usr/local/bin/zsh
 
 
-echo "# =========================================================="
-echo "#"
+echo "# ======================================================================================="
 echo "# dotdilesにシンボリックリンクを貼る"
-echo "#"
-echo "# =========================================================="
 
 DOT_FILES=(\
     .gitconfig \
@@ -46,9 +61,9 @@ DOT_FILES=(\
     .gitignore \
     .gitignore_global \
     .tigrc \
-    .tmux.conf \
     .zshrc \
     .zshenv \
+    .zprofile \
     .vimrc \
     .agignore \
 )
@@ -63,3 +78,9 @@ do
             echo "シンボリックリンクを貼りました: $file"
     fi
 done
+
+
+echo "# ======================================================================================="
+echo "# SHELLの再起動"
+
+exec $SHELL -l
