@@ -10,7 +10,8 @@ do
         opt="-lossless -metadata icc"
     else
         ext=".jpg"
-        opt="-q 75 -metadata icc -sharp_yuv"
+        # opt="-q 75 -metadata icc -sharp_yuv"
+        opt="-q 90 -metadata icc -sharp_yuv"
     fi
 
     base=`basename $imageFile $ext`
