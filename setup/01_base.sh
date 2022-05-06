@@ -63,20 +63,3 @@ do
             echo "シンボリックリンクを貼りました: $file"
     fi
 done
-
-echo "# =========================================================="
-
-# NEOVIM_FILES=(\
-#     init.vim \
-# )
-# 
-# for file in ${NEOVIM_FILES[@]}
-# 
-# do
-#     if [ -a $HOME/.config/nvim/$file ]; then
-#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-#     else
-#         ln -s $HOME/dotfiles/config/nvim/$file $HOME/.config/nvim/$file
-#             echo "シンボリックリンクを貼りました: $file"
-#     fi
-# done
