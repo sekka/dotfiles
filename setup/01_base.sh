@@ -50,7 +50,6 @@ DOT_FILES=(\
     .zshrc \
     .zshenv \
     .vimrc \
-    .hyper.js \
     .agignore \
 )
 
