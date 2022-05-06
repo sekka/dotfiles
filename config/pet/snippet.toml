@@ -1,9 +1,0 @@
-[[snippets]]
-  description = "Search zsh bindkey"
-  command = "bindkey | grep '\"\\^.\"'"
-  output = ""
-
-[[snippets]]
-  description = "Reset Launchpad layout"
-  command = "defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock"
-  output = ""

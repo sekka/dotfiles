@@ -64,25 +64,6 @@ do
     fi
 done
 
-
-echo "# =========================================================="
-
-# PET_FILES=(\
-#     config.toml \
-#     snippet.toml \
-# )
-# 
-# for file in ${PET_FILES[@]}
-# 
-# do
-#     if [ -a $HOME/.config/pet/$file ]; then
-#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-#     else
-#         ln -s $HOME/dotfiles/config/pet/$file $HOME/.config/pet/$file
-#             echo "シンボリックリンクを貼りました: $file"
-#     fi
-# done
-
 echo "# =========================================================="
 
 # NEOVIM_FILES=(\
