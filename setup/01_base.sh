@@ -16,11 +16,11 @@ echo "# ========================================================================
 echo "# Homebrewを導入する"
 
 if [ ! -f /opt/homebrew/bin/brew ]
-   then
-      echo "Installing Homebrew..."
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-   else
-      echo "Homebrew already installed."
+    then
+       echo "Installing Homebrew..."
+       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    else
+       echo "Homebrew already installed."
 fi
 
 brew doctor
@@ -31,25 +31,42 @@ echo "# ========================================================================
 echo "# Rustを導入する"
 
 if [ ! -f $HOME/.cargo/bin/rustc ]
-   then
-      echo "Installing Rust..."
-      curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
-   else
-      echo "Rust already installed."
+    then
+       echo "Installing Rust..."
+       curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+    else
+       echo "Rust already installed."
 fi
 
 
 echo "# ======================================================================================="
 echo "# zshを導入する"
 
-# brew install zsh
+brew install zsh
 
-# デフォルトのShellをzshにする
-# /etc/shells の末尾に /usr/local/bin/zsh を追記
-# sudo sh -c 'echo $(which zsh) >> /etc/shells'
+ETC_SHELLS=$(tail -1 /etc/shells)
+echo $ETC_SHELLS
+WHICH_ZSH="$(which zsh)"
+echo $WHICH_ZSH
 
-# ユーザのデフォルトシェルを変更
-# chsh -s /usr/local/bin/zsh
+echo "# zshをshellリストに追加する"
+if [ ! $ETC_SHELLS = $WHICH_ZSH ]
+    then
+        echo "Adding zsh..."
+        # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
+        sudo sh -c 'echo $(which zsh) >> /etc/shells'
+    else
+        echo "zsh already added."
+fi
+
+echo "# デフォルトシェルをzshに変更する"
+if [ ! $SHELL = $WHICH_ZSH ]
+    then
+        echo "Changing default Shell..."
+        chsh -s /opt/homebrew/bin/zsh
+    else
+        echo "zsh already default shell."
+fi
 
 
 echo "# ======================================================================================="
