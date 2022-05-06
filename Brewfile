@@ -16,6 +16,8 @@ brew "fzf"                # https://formulae.brew.sh/formula/fzf      # ファ�
 brew "fpp"                # https://formulae.brew.sh/formula/fpp      # パスピッカー
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
+tap "rhysd/hgrep" "https://github.com/rhysd/hgrep"
+brew "hgrep"              # 
 brew "rg"                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
 brew "exa"                # https://formulae.brew.sh/formula/exa      # すごいls
 brew "bat"                # https://formulae.brew.sh/formula/bat      # すごいcat
@@ -30,7 +32,6 @@ brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツ
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
 brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl   # YouTube動画DLツール
 brew "Code-Hex/pget/pget" # https://github.com/Code-Hex/pget          # 高速DLツール
-brew "knqyf263/pet/pet"   # https://github.com/knqyf263/pet           # スニペットマネージャ
 tap "homebrew/cask-fonts"
 cask "font-meslo-for-powerline"
 
@@ -62,7 +63,7 @@ brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Python�
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick #
 brew "svgo"               # https://formulae.brew.sh/formula/svgo     #
 brew "webp"               # https://formulae.brew.sh/formula/webp     #
-#brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
+brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 
 # ==aws==
 #brew "awscli"
@@ -74,23 +75,25 @@ brew "webp"               # https://formulae.brew.sh/formula/webp     #
 # ==ユーティリティ==
 cask "1password"
 #cask "abyssoft-teleport"
+cask "aldente"
 cask "alfred"
 cask "appcleaner"
+cask "bettertouchtool"
 #cask "cursorsense"
 cask "daisydisk"
 #cask "deeper"
 cask "dropbox"
-#cask "google-backup-and-sync"
-cask "hiddenbar"
+cask "google-drive"
+#cask "hiddenbar"
 #cask "hyperswitch"
-cask "karabiner-elements"
-cask "keyboard-maestro"
-cask "macwinzipper"
+#cask "karabiner-elements"
+#cask "keyboard-maestro"
+#cask "macwinzipper"
 #cask "monitorcontrol"
-#cask "notion"
+cask "notion"
 cask "onyx"
 cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
-cask "sensei"
+#cask "sensei"
 #cask "spotify"
 cask "the-unarchiver"
 #tap "hmarr/tap"
@@ -120,8 +123,10 @@ cask "microsoft-edge"
 #cask "microsoft-edge-canary"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
+cask "vivaldi"
 
 # ==仮想環境==
+cask "parallels"
 #cask "utm"
 
 # ==ウェブ開発==
@@ -137,11 +142,13 @@ cask "jetbrains-toolbox"
 cask "ksdiff"
 cask "paw"
 cask "sourcetree"
+cask "tower"
 cask "transmit"
 cask "visual-studio-code"
 
 # ==デザイン==
 cask "adobe-creative-cloud"
+cask "figma"
 cask "iconjar"
 
 # ==画像処理==
@@ -165,7 +172,7 @@ cask "vlc"
 #cask "fontgoggles"
 cask "glyphs"
 cask "fontexplorer-x-pro"
-#cask "rightfont"
+cask "rightfont"
 cask "skyfonts"
 
 # ==CreativeCoding==
@@ -179,13 +186,15 @@ cask "skyfonts"
 #cask "unity-hub"
 
 # ==mas==
-mas "Keynote",              id: 409183694
-mas "Pages",                id: 409201541
+#mas "Keynote",              id: 409183694
+#mas "Pages",                id: 409201541
 mas "Numbers",              id: 409203825
 mas "TweetDeck",            id: 485812721
+mas "Magnet"                id: 441258766
+mas "PopClip"               id: 445189367
 #mas "Bandwidth+",           id: 490461369
 mas "Xcode",                id: 497799835
-mas "JPEGmini",             id: 498944723
+#mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
 #mas "Kaleidoscope",         id: 587512244
 #mas "Affinity Designer",    id: 824171161
@@ -193,9 +202,15 @@ mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
 #mas "Gifski",               id: 1351639930
 #mas "TeraCopy",             id: 1378806557
+mas "辞書 by 物書堂"          id: 1380563956
+mas "Adblock Plus"          id: 1432731683
+mas "AdGuard for Safari"    id: 1440147259
 #mas "Reeder",               id: 1449412482
-mas "ComicViewer",          id: 1455702185
+#mas "ComicViewer",          id: 1455702185
+mas "GoPro プレーヤー + ReelSteady" id: 1460836908
+mas "Vimari"                id: 1480933944
 #mas "Cicero",               id: 1480977453
 #mas "WebPonize",            id: 1526039365
-mas "Reeder",               id: 1529448980
-
+#mas "Reeder",               id: 1529448980
+mas "Notion Web Clipper"    id: 1559269364
+mas "Kaleidoscope"          id: 1575557335
