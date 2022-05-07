@@ -23,6 +23,7 @@ if [ ! -f /opt/homebrew/bin/brew ]
        echo "Homebrew already installed."
 fi
 
+echo "# brew doctor"
 brew doctor
 # echo insecure >> ~/.curlrc
 
@@ -92,8 +93,27 @@ do
         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
     else
         ln -s $HOME/dotfiles/$file $HOME/$file
-            echo "シンボリックリンクを貼りました: $file"
+        echo "シンボリックリンクを貼りました: $file"
     fi
+done
+
+
+echo "# =========================================================="
+echo "# .config/にシンボリックリンクを貼る"
+
+CONFIG_DIRS=(\
+   zellij \
+)
+
+for dirs in ${CONFIG_DIRS[@]}
+
+do
+   if [ -a $HOME/.config/$dirs ]; then
+       echo "フォルダが存在するのでシンボリックリンクを貼りませんでした: $dirs"
+   else
+       ln -s $HOME/dotfiles/config/$dirs $HOME/.config/$dirs
+       echo "シンボリックリンクを貼りました: $dirs"
+   fi
 done
 
 
