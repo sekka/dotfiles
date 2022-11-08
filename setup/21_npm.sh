@@ -1,4 +1,4 @@
-npm install -g npm
+#npm install -g npm
 npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates

@@ -3,8 +3,8 @@ cask_args appdir: "/Applications"
 # ==OS==
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
-brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
-brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
+#brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
+#brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
 
 # ==ターミナル==
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
@@ -28,7 +28,7 @@ cask "font-meslo-for-powerline"
 
 # ==ウェブ開発==
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
-brew "devd"               # https://formulae.brew.sh/formula/devd     # ローカルサーバ
+#brew "devd"               # https://formulae.brew.sh/formula/devd     # ローカルサーバ
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
 brew "ghq"                # https://formulae.brew.sh/formula/ghq      # git clone便利ツール
@@ -66,6 +66,7 @@ cask "1password"
 cask "aldente"
 cask "alfred"
 cask "appcleaner"
+cask "app-tamer"
 cask "bettertouchtool"
 #cask "cursorsense"
 cask "daisydisk"
@@ -79,8 +80,8 @@ cask "google-drive"
 #cask "macwinzipper"
 #cask "monitorcontrol"
 cask "notion"
-cask "onyx"
-cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
+#cask "onyx"
+#cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
 #cask "sensei"
 #cask "spotify"
 cask "the-unarchiver"
@@ -99,6 +100,8 @@ cask "slack"
 cask "zoom"
 
 # ==ブラウザ==
+#cask "arc"
+#cask "brave-browser"
 cask "firefox"
 #cask "firefox-developer-edition"
 #cask "firefox-nightly"
@@ -111,10 +114,10 @@ cask "microsoft-edge"
 #cask "microsoft-edge-canary"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
-cask "vivaldi"
+#cask "vivaldi"
 
 # ==仮想環境==
-cask "parallels"
+#cask "parallels"
 #cask "utm"
 
 # ==ウェブ開発==
@@ -128,21 +131,21 @@ cask "dash"
 cask "iterm2"
 cask "jetbrains-toolbox"
 cask "ksdiff"
-cask "paw"
-cask "sourcetree"
+#cask "paw"
+#cask "sourcetree"
 cask "tower"
 cask "transmit"
 cask "visual-studio-code"
 
 # ==デザイン==
-cask "adobe-creative-cloud"
-cask "figma"
-cask "iconjar"
+#cask "adobe-creative-cloud"
+#cask "figma"
+#cask "iconjar"
 
 # ==画像処理==
 #cask "optimage"
-cask "imagealpha"
-cask "imageoptim"
+#cask "imagealpha"
+#cask "imageoptim"
 #cask "pngyu"
 #cask "svgcleaner"
 
@@ -154,14 +157,15 @@ cask "imageoptim"
 # ==映像処理==
 #cask "iina"
 #cask "obs"
-cask "vlc"
+#cask "vlc"
 
 # ==フォント==
+#cask "fontbase"
 #cask "fontgoggles"
-cask "glyphs"
-cask "fontexplorer-x-pro"
-cask "rightfont"
-cask "skyfonts"
+#cask "glyphs"
+#cask "fontexplorer-x-pro"
+#cask "rightfont"
+#cask "skyfonts"
 
 # ==CreativeCoding==
 #cask "blender"
@@ -177,9 +181,9 @@ cask "skyfonts"
 #mas "Keynote",              id: 409183694
 #mas "Pages",                id: 409201541
 mas "Numbers",              id: 409203825
-mas "TweetDeck",            id: 485812721
+#mas "TweetDeck",            id: 485812721
 mas "Magnet"                id: 441258766
-mas "PopClip"               id: 445189367
+#mas "PopClip"               id: 445189367
 #mas "Bandwidth+",           id: 490461369
 mas "Xcode",                id: 497799835
 #mas "JPEGmini",             id: 498944723
