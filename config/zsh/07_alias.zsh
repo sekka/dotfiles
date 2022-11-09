@@ -58,10 +58,10 @@ alias -g CL='| color'
 # -n 行数表示, -I バイナリファイル無視, svn関係のファイルを無視
 alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
 
-#
-alias envp='envp1'
-alias envp1="echo $PATH | sed 's/:/\\n/g'"
-alias envp2="echo $PATH | sed 's/:/\n/g'"
+# env整形表示
+alias envpath='envpath1'
+alias envpath1="echo $PATH | sed 's/:/\\n/g'"
+alias envpath2="echo $PATH | sed 's/:/\n/g'"
 
 # C で標準出力をクリップボードにコピーする
 # mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
@@ -75,3 +75,7 @@ elif which putclip >/dev/null 2>&1 ; then
     # Cygwin
     alias -g C='| putclip'
 fi
+
+# シェル再起動
+# https://qiita.com/yusabana/items/c4de582c6f85a42817d8
+alias shreboot='exec $SHELL -l'
