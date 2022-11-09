@@ -7,23 +7,18 @@
 # refs. https://this.aereal.org/entry/zsh-path-helper
 unsetopt GLOBAL_RCS
 
-# curl
-# export PATH=/usr/local/opt/curl/bin:$PATH
+# path: Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Homebrew
-export PATH=/usr/local/bin:$PATH
-export PATH=/usr/local/sbin:$PATH
-export PATH=/opt/homebrew/bin:$PATH
-
-# anyenv
+# path: anyenv
 export PATH=$HOME/.anyenv/bin:$PATH
 eval "$(anyenv init -)"
 
-# yarn
+# path: yarn
 export PATH=$HOME/.yarn/bin:$PATH
 export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
 
-# dotfiles bin
+# path: dotfiles bin
 export PATH=$HOME/dotfiles/bin:$PATH
 
 # 重複する要素を自動的に削除
@@ -37,12 +32,12 @@ path=(
     /usr/bin
 )
 
-# ZDOTDIR
+# path: ZDOTDIR
 # export ZDOTDIR=$HOME/dotfiles/zsh/
 
-# zplug
+# path: zplug
 export ZPLUG_HOME=/usr/local/opt/zplug
 source $ZPLUG_HOME/init.zsh
 
-# direnv
+# path: direnv
 eval "$(direnv hook zsh)"
