@@ -34,7 +34,7 @@ echo "# Rustを導入する"
 if [ ! -f $HOME/.cargo/bin/rustc ]
     then
        echo "Installing Rust..."
-       curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
     else
        echo "Rust already installed."
 fi
@@ -75,7 +75,7 @@ echo "# dotdilesにシンボリックリンクを貼る"
 
 DOT_FILES=(\
     .gitconfig \
-    gitcommit_template \
+    .gitcommit_template \
     .gitignore \
     .gitignore_global \
     .tigrc \
