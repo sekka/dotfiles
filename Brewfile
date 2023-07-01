@@ -3,8 +3,8 @@ cask_args appdir: "/Applications"
 # ==OS==
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
-brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
-brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
+#brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
+#brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
 
 # ==ターミナル==
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
@@ -16,21 +16,13 @@ brew "fzf"                # https://formulae.brew.sh/formula/fzf      # ファ�
 brew "fpp"                # https://formulae.brew.sh/formula/fpp      # パスピッカー
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
-brew "rg"                 # https://formulae.brew.sh/formula/ripgrep                  # 超すごいgrep
-brew "exa"                # https://formulae.brew.sh/formula/exa      # すごいls
-brew "bat"                # https://formulae.brew.sh/formula/bat      # すごいcat
-brew "hexyl"              # https://formulae.brew.sh/formula/hexyl    # すごいod
-brew "fd"                 # https://formulae.brew.sh/formula/fd       # すごいfind
 brew "htop"               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
-brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich    # 帯域確認
 brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
-brew "procs"              # https://formulae.brew.sh/formula/procs    # すごいps
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
-brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl   # YouTube動画DLツール
-brew "Code-Hex/pget/pget" # https://github.com/Code-Hex/pget          # 高速DLツール
-brew "knqyf263/pet/pet"   # https://github.com/knqyf263/pet           # スニペットマネージャ
+brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl # YouTube動画DLツール
+brew "pget"               # https://formulae.brew.sh/formula/pget       # 高速DLツール
 tap "homebrew/cask-fonts"
 cask "font-meslo-for-powerline"
 
@@ -45,12 +37,9 @@ brew "tig"                # https://formulae.brew.sh/formula/tig      # gitク�
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew "yarn"               # https://formulae.brew.sh/formula/yarn     # パッケージ管理
-brew "ctop"               # https://formulae.brew.sh/formula/ctop     # dockerコンテナメトリクスビューワ
-brew "dry"                # https://moncho.github.io/dry/             # dockerマネージャ
 brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
-brew "httpie"             # https://formulae.brew.sh/formula/httpie   # 高機能cURL
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
 brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
@@ -63,6 +52,7 @@ brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick #
 brew "svgo"               # https://formulae.brew.sh/formula/svgo     #
 brew "webp"               # https://formulae.brew.sh/formula/webp     #
 #brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
+brew "ffmpeg"
 
 # ==aws==
 #brew "awscli"
@@ -72,82 +62,96 @@ brew "webp"               # https://formulae.brew.sh/formula/webp     #
 #brew "heroku/brew/heroku"
 
 # ==ユーティリティ==
-cask "1password"
+#cask "1password"
 #cask "abyssoft-teleport"
-cask "alfred"
-cask "appcleaner"
+#cask "aldente"
+#cask "alfred"
+#cask "amorphousdiskmark"
+#cask "appcleaner"
+#cask "app-tamer"
+#cask "bartender"
+#cask "bettertouchtool"
 #cask "cursorsense"
-cask "daisydisk"
+#cask "cleanmymac"
+#cask "daisydisk"
 #cask "deeper"
-cask "dropbox"
-#cask "google-backup-and-sync"
-cask "hiddenbar"
+#cask "dropbox"
+#cask "google-drive"
+#cask "hiddenbar"
 #cask "hyperswitch"
-cask "karabiner-elements"
-cask "keyboard-maestro"
-cask "macwinzipper"
+#cask "karabiner-elements"
+#cask "keyboard-maestro"
+#cask "macwinzipper"
 #cask "monitorcontrol"
 #cask "notion"
-cask "onyx"
-cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
-cask "sensei"
+#cask "onyx"
+#cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
+#cask "sensei"
 #cask "spotify"
-cask "the-unarchiver"
+#cask "the-unarchiver"
+#cask "transmission"
 #tap "hmarr/tap"
 #cask "vitals"
+#cask "vpn-by-google-one"
 
 # ==エンタメ==
 #cask "bluestacks"
 #cask "steam"
 
 # ==コミュニケーション==
-cask "discord"
-cask "messenger"
-cask "microsoft-teams"
-cask "slack"
-cask "zoom"
+#cask "discord"
+#cask "messenger"
+#cask "microsoft-teams"
+#cask "slack"
+#cask "zoom"
 
 # ==ブラウザ==
-cask "firefox"
+#cask "arc"
+#cask "brave-browser"
+#cask "firefox"
 #cask "firefox-developer-edition"
 #cask "firefox-nightly"
-cask "google-chrome"
+#cask "google-chrome"
 #cask "google-chrome-beta"
 #cask "google-chrome-canary"
 #cask "google-chrome-dev"
-cask "microsoft-edge"
+#cask "microsoft-edge"
 #cask "microsoft-edge-beta"
 #cask "microsoft-edge-canary"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
+#cask "vivaldi"
 
 # ==仮想環境==
+#cask "parallels"
 #cask "utm"
 
 # ==ウェブ開発==
 #cask "charles"
 #cask "contraste"
-cask "dash"
+#cask "dash"
 #cask "docker"
 #cask "fork"
 #cask "graphql-playground"
 #cask "hex-fiend"
-cask "iterm2"
-cask "jetbrains-toolbox"
-cask "ksdiff"
-cask "paw"
-cask "sourcetree"
-cask "transmit"
-cask "visual-studio-code"
+#cask "iterm2"
+#cask "jetbrains-toolbox"
+#cask "ksdiff"
+#cask "paw"
+#cask "sourcetree"
+#cask "tower"
+#cask "transmit"
+#cask "visual-studio-code"
 
 # ==デザイン==
-cask "adobe-creative-cloud"
-cask "iconjar"
+#cask "adobe-creative-cloud"
+#cask "figma"
+#cask "iconjar"
 
 # ==画像処理==
 #cask "optimage"
-cask "imagealpha"
-cask "imageoptim"
+#cask "imagealpha"
+#cask "imageoptim"
 #cask "pngyu"
 #cask "svgcleaner"
 
@@ -159,14 +163,15 @@ cask "imageoptim"
 # ==映像処理==
 #cask "iina"
 #cask "obs"
-cask "vlc"
+#cask "vlc"
 
 # ==フォント==
+#cask "fontbase"
 #cask "fontgoggles"
-cask "glyphs"
-cask "fontexplorer-x-pro"
+#cask "glyphs"
+#cask "fontexplorer-x-pro"
 #cask "rightfont"
-cask "skyfonts"
+#cask "skyfonts"
 
 # ==CreativeCoding==
 #cask "blender"
@@ -179,13 +184,15 @@ cask "skyfonts"
 #cask "unity-hub"
 
 # ==mas==
-mas "Keynote",              id: 409183694
-mas "Pages",                id: 409201541
-mas "Numbers",              id: 409203825
-mas "TweetDeck",            id: 485812721
+#mas "Keynote",              id: 409183694
+#mas "Pages",                id: 409201541
+#mas "Numbers",              id: 409203825
+#mas "TweetDeck",            id: 485812721
+#mas "Magnet"                id: 441258766
+#mas "PopClip"               id: 445189367
 #mas "Bandwidth+",           id: 490461369
 mas "Xcode",                id: 497799835
-mas "JPEGmini",             id: 498944723
+#mas "JPEGmini",             id: 498944723
 mas "LINE",                 id: 539883307
 #mas "Kaleidoscope",         id: 587512244
 #mas "Affinity Designer",    id: 824171161
@@ -193,9 +200,15 @@ mas "CotEditor",            id: 1024640650
 mas "Lungo",                id: 1263070803
 #mas "Gifski",               id: 1351639930
 #mas "TeraCopy",             id: 1378806557
+#mas "辞書 by 物書堂"          id: 1380563956
+#mas "Adblock Plus"          id: 1432731683
+#mas "AdGuard for Safari"    id: 1440147259
 #mas "Reeder",               id: 1449412482
-mas "ComicViewer",          id: 1455702185
+#mas "ComicViewer",          id: 1455702185
+mas "GoPro プレーヤー + ReelSteady" id: 1460836908
+mas "Vimari"                id: 1480933944
 #mas "Cicero",               id: 1480977453
 #mas "WebPonize",            id: 1526039365
-mas "Reeder",               id: 1529448980
-
+#mas "Reeder",               id: 1529448980
+mas "Notion Web Clipper"    id: 1559269364
+mas "Kaleidoscope"          id: 1575557335

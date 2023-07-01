@@ -1,8 +1,6 @@
-echo "# =========================================================="
-echo "#"
-echo "# Homebrewを導入する"
-echo "#"
-echo "# =========================================================="
+# https://qiita.com/ko1nksm/items/e73e343f609c071e6a8c
+# set -e
+cd ~
 
 # Install Xcode and the Xcode Command Line Tools
 sudo xcode-select --install
@@ -13,44 +11,78 @@ sudo xcodebuild -license
 # Install the Rosetta2
 softwareupdate --install-rosetta
 
-# ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-# brew doctor
+
+echo "# ======================================================================================="
+echo "# Homebrewを導入する"
+
+if [ ! -f /opt/homebrew/bin/brew ]
+    then
+       echo "Installing Homebrew..."
+       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    else
+       echo "Homebrew already installed."
+fi
+
+echo "# brew doctor"
+brew doctor
 # echo insecure >> ~/.curlrc
 
 
-echo "# =========================================================="
-echo "#"
+echo "# ======================================================================================="
+echo "# Rustを導入する"
+
+if [ ! -f $HOME/.cargo/bin/rustc ]
+    then
+       echo "Installing Rust..."
+       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    else
+       echo "Rust already installed."
+fi
+
+
+echo "# ======================================================================================="
 echo "# zshを導入する"
-echo "#"
-echo "# =========================================================="
 
-# brew install zsh
+brew install zsh
 
-# デフォルトのShellをzshにする
-# /etc/shells の末尾に /usr/local/bin/zsh を追記
-# sudo sh -c 'echo $(which zsh) >> /etc/shells'
+ETC_SHELLS=$(tail -1 /etc/shells)
+echo $ETC_SHELLS
+WHICH_ZSH="$(which zsh)"
+echo $WHICH_ZSH
 
-# ユーザのデフォルトシェルを変更
-# chsh -s /usr/local/bin/zsh
+echo "# zshをshellリストに追加する"
+if [ ! $ETC_SHELLS = $WHICH_ZSH ]
+    then
+        echo "Adding zsh..."
+        # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
+        sudo sh -c 'echo $(which zsh) >> /etc/shells'
+    else
+        echo "zsh already added."
+fi
+
+echo "# デフォルトシェルをzshに変更する"
+if [ ! $SHELL = $WHICH_ZSH ]
+    then
+        echo "Changing default Shell..."
+        chsh -s /opt/homebrew/bin/zsh
+    else
+        echo "zsh already default shell."
+fi
 
 
-echo "# =========================================================="
-echo "#"
+echo "# ======================================================================================="
 echo "# dotdilesにシンボリックリンクを貼る"
-echo "#"
-echo "# =========================================================="
 
 DOT_FILES=(\
     .gitconfig \
-    gitcommit_template \
+    .gitcommit_template \
     .gitignore \
     .gitignore_global \
     .tigrc \
-    .tmux.conf \
     .zshrc \
     .zshenv \
+    .zprofile \
     .vimrc \
-    .hyper.js \
     .agignore \
 )
 
@@ -61,42 +93,31 @@ do
         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
     else
         ln -s $HOME/dotfiles/$file $HOME/$file
-            echo "シンボリックリンクを貼りました: $file"
+        echo "シンボリックリンクを貼りました: $file"
     fi
 done
 
 
 echo "# =========================================================="
+echo "# .config/にシンボリックリンクを貼る"
 
-# PET_FILES=(\
-#     config.toml \
-#     snippet.toml \
-# )
-# 
-# for file in ${PET_FILES[@]}
-# 
-# do
-#     if [ -a $HOME/.config/pet/$file ]; then
-#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-#     else
-#         ln -s $HOME/dotfiles/config/pet/$file $HOME/.config/pet/$file
-#             echo "シンボリックリンクを貼りました: $file"
-#     fi
-# done
+CONFIG_DIRS=(\
+   zellij \
+)
 
-echo "# =========================================================="
+for dirs in ${CONFIG_DIRS[@]}
 
-# NEOVIM_FILES=(\
-#     init.vim \
-# )
-# 
-# for file in ${NEOVIM_FILES[@]}
-# 
-# do
-#     if [ -a $HOME/.config/nvim/$file ]; then
-#         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-#     else
-#         ln -s $HOME/dotfiles/config/nvim/$file $HOME/.config/nvim/$file
-#             echo "シンボリックリンクを貼りました: $file"
-#     fi
-# done
+do
+   if [ -a $HOME/.config/$dirs ]; then
+       echo "フォルダが存在するのでシンボリックリンクを貼りませんでした: $dirs"
+   else
+       ln -s $HOME/dotfiles/config/$dirs $HOME/.config/$dirs
+       echo "シンボリックリンクを貼りました: $dirs"
+   fi
+done
+
+
+echo "# ======================================================================================="
+echo "# SHELLの再起動"
+
+exec $SHELL -l

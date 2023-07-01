@@ -6,7 +6,10 @@ anyenv install pyenv
 pyenv install -l
 
 #pyenv install 3.7.4
+pyenv install 2.7.18
 #pyenv global 3.7.4
+pyenv global 2.7.18
+
 pyenv rehash
 pyenv versions
 python -V

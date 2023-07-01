@@ -1,1 +1,1 @@
-go get -u github.com/gulyasm/jsonui
+go install github.com/JuanIrache/gopro-utils/bin/gopro2gpx@latest
