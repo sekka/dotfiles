@@ -26,3 +26,5 @@
 	sslVerify = false
 [credential]
 	helper = osxkeychain
+[alias]
+	ac = !git add -A && aicommits -a
