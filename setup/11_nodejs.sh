@@ -13,6 +13,10 @@ volta install node@15
 volta install node@16
 volta install node@17
 volta install node@18
+volta install node@19
+volta install node@20
+volta install node@21
+volta install node@22
 volta install node@latest
 volta install node
 
