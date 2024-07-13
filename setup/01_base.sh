@@ -79,6 +79,7 @@ DOT_FILES=(\
     .gitignore \
     .gitignore_global \
     .tigrc \
+    .tmux.conf \
     .zshrc \
     .zshenv \
     .zprofile \
