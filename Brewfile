@@ -3,8 +3,6 @@ cask_args appdir: "/Applications"
 # ==OS==
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
-#brew "bluetoothconnector" # https://formulae.brew.sh/formula/bluetoothconnector #
-#brew "switchaudio-osx"    # https://formulae.brew.sh/formula/switchaudio-osx
 
 # ==ターミナル==
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
@@ -30,6 +28,7 @@ cask "font-meslo-for-powerline"
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
 brew "devd"               # https://formulae.brew.sh/formula/devd     # ローカルサーバ
 brew "git"                # https://formulae.brew.sh/formula/git      # git
+brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
 brew "ghq"                # https://formulae.brew.sh/formula/ghq      # git clone便利ツール
 brew "gh"                 # https://formulae.brew.sh/formula/gh       # GitHubコマンドラインツール
@@ -129,6 +128,7 @@ brew "ffmpeg"
 # ==ウェブ開発==
 #cask "charles"
 #cask "contraste"
+#cask "cursor"
 #cask "dash"
 #cask "docker"
 #cask "fork"
@@ -142,6 +142,7 @@ brew "ffmpeg"
 #cask "tower"
 #cask "transmit"
 #cask "visual-studio-code"
+#cask "xbar"
 
 # ==デザイン==
 #cask "adobe-creative-cloud"
