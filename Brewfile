@@ -35,13 +35,13 @@ brew "gh"                 # https://formulae.brew.sh/formula/gh       # GitHub�
 brew "tig"                # https://formulae.brew.sh/formula/tig      # gitクライアント
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
-brew "yarn"               # https://formulae.brew.sh/formula/yarn     # パッケージ管理
+# brew "yarn"               # https://formulae.brew.sh/formula/yarn     # パッケージ管理
 brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
-brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
+# brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
 
 # ==Python==
 brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
