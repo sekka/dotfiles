@@ -18,6 +18,10 @@ eval "$(anyenv init -)"
 export GOPATH=$HOME/go
 PATH=$PATH:$GOPATH/bin
 
+# path: php
+# export PATH=/usr/local/opt/php/bin:$PATH
+# export PATH=/usr/local/opt/php/sbin:$PATH
+
 # path: yarn
 export PATH=$HOME/.yarn/bin:$PATH
 export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
