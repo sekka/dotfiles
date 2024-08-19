@@ -29,7 +29,7 @@ function tmux_automatically_attach_session()
 
         if is_tmux_runnning; then
             # tmuxが実行中の場合
-            # echo :beer: :relaxed: | emojify
+            echo :beer: :relaxed: | emojify
         elif is_screen_running; then
             # GNU Screenが実行中の場合
             echo "This is on screen."
