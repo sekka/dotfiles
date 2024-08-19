@@ -1,6 +1,6 @@
 # ls
-alias l="exa"
-alias lsa="exa --long --all --binary --bytes --group --header --links --inode --modified --blocks --extended --git --time-style long-iso"
+alias l="eza"
+alias lsa="eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --extended --git --git-repos --time-style long-iso"
 
 # tree
 # N: 文字化け対策, C:色をつける
