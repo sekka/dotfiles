@@ -206,7 +206,7 @@ mas "Lungo",                id: 1263070803
 #mas "AdGuard for Safari"    id: 1440147259
 #mas "Reeder",               id: 1449412482
 #mas "ComicViewer",          id: 1455702185
-mas "GoPro プレーヤー + ReelSteady" id: 1460836908
+#mas "GoPro プレーヤー + ReelSteady" id: 1460836908
 mas "Vimari"                id: 1480933944
 #mas "Cicero",               id: 1480977453
 #mas "WebPonize",            id: 1526039365
