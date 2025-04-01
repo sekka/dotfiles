@@ -188,38 +188,38 @@ brew "ffmpeg"
 #cask "unity-hub"
 
 # ==mas==
-#mas "Kindle"                id: 302584613
-#mas "Eagle"                 id: 403115926
-#mas "Keynote",              id: 409183694
-#mas "Pages",                id: 409201541
-#mas "Numbers",              id: 409203825
-#mas "TweetDeck",            id: 485812721
-#mas "Magnet"                id: 441258766
-#mas "PopClip"               id: 445189367
-#mas "Bandwidth+",           id: 490461369
-#mas "Xcode",                id: 497799835
-#mas "JPEGmini",             id: 498944723
-#mas "LINE",                 id: 539883307
-#mas "Kaleidoscope",         id: 587512244
-#mas "Affinity Designer",    id: 824171161
-#mas "CotEditor",            id: 1024640650
-#mas "Lungo",                id: 1263070803
-#mas "Windows App"           id: 1295203466
-#mas "Gifski",               id: 1351639930
-#mas "TeraCopy",             id: 1378806557
-#mas "辞書 by 物書堂"          id: 1380563956
-#mas "Adblock Plus"          id: 1432731683
-#mas "AdGuard for Safari"    id: 1440147259
-#mas "Reeder",               id: 1449412482
-#mas "ComicViewer",          id: 1455702185
-#mas "ReelSteady"            id: 1460836908
-#mas "Vimari"                id: 1480933944
-#mas "Cicero",               id: 1480977453
-#mas "Structured"            id: 1499198946
-#mas "1Password for Safari"  id: 1569813296
-#mas "WebPonize",            id: 1526039365
-#mas "Eagle for Safari"      id: 1526651672
-#mas "Reeder",               id: 1529448980
-#mas "Notion Web Clipper"    id: 1559269364
-#mas "Kaleidoscope"          id: 1575557335
-#mas "Whisper Transcription" id: 1668083311
+#mas "Kindle",                id: 302584613
+#mas "Eagle",                 id: 403115926
+#mas "Keynote",               id: 409183694
+#mas "Pages",                 id: 409201541
+#mas "Numbers",               id: 409203825
+#mas "TweetDeck",             id: 485812721
+#mas "Magnet",                id: 441258766
+#mas "PopClip",               id: 445189367
+#mas "Bandwidth+",            id: 490461369
+#mas "Xcode",                 id: 497799835
+#mas "JPEGmini",              id: 498944723
+#mas "LINE",                  id: 539883307
+#mas "Kaleidoscope",          id: 587512244
+#mas "Affinity Designer",     id: 824171161
+#mas "CotEditor",             id: 1024640650
+#mas "Lungo",                 id: 1263070803
+#mas "Windows App",           id: 1295203466
+#mas "Gifski",                id: 1351639930
+#mas "TeraCopy",              id: 1378806557
+#mas "辞書 by 物書堂",          id: 1380563956
+#mas "Adblock Plus",          id: 1432731683
+#mas "AdGuard for Safari",    id: 1440147259
+#mas "Reeder",                id: 1449412482
+#mas "ComicViewer",           id: 1455702185
+#mas "ReelSteady"             id: 1460836908
+#mas "Vimari",                id: 1480933944
+#mas "Cicero",                id: 1480977453
+#mas "Structured",            id: 1499198946
+#mas "1Password for Safari",  id: 1569813296
+#mas "WebPonize",             id: 1526039365
+#mas "Eagle for Safari",      id: 1526651672
+#mas "Reeder",                id: 1529448980
+#mas "Notion Web Clipper",    id: 1559269364
+#mas "Kaleidoscope",          id: 1575557335
+#mas "Whisper Transcription", id: 1668083311
