@@ -20,10 +20,8 @@ brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
-brew "yt-dlp"             # https://formulae.brew.sh/formula/youtube-dl # YouTube動画DLツール
-brew "pget"               # https://formulae.brew.sh/formula/pget       # 高速DLツール
-tap "homebrew/cask-fonts"
-cask "font-meslo-for-powerline"
+brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp   # YouTube動画DLツール
+brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DLツール
 
 # ==ウェブ開発==
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
@@ -36,7 +34,6 @@ brew "gh"                 # https://formulae.brew.sh/formula/gh       # GitHub�
 brew "tig"                # https://formulae.brew.sh/formula/tig      # gitクライアント
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
-# brew "yarn"               # https://formulae.brew.sh/formula/yarn     # パッケージ管理
 brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
