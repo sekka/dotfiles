@@ -20,7 +20,7 @@ brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
-brew "youtube-dl"         # https://formulae.brew.sh/formula/youtube-dl # YouTube動画DLツール
+brew "yt-dlp"             # https://formulae.brew.sh/formula/youtube-dl # YouTube動画DLツール
 brew "pget"               # https://formulae.brew.sh/formula/pget       # 高速DLツール
 tap "homebrew/cask-fonts"
 cask "font-meslo-for-powerline"
