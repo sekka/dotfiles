@@ -25,7 +25,6 @@ brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DL
 
 # ==ウェブ開発==
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
-brew "devd"               # https://formulae.brew.sh/formula/devd     # ローカルサーバ
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール
