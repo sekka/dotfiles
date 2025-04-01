@@ -15,6 +15,7 @@ brew "fpp"                # https://formulae.brew.sh/formula/fpp      # パス�
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
 brew "htop"               # https://formulae.brew.sh/formula/htop     # プロセスビューワ
+brew "mactop"             # https://formulae.brew.sh/formula/mactop   # プロセスビューワ
 brew "vim"                # https://formulae.brew.sh/formula/vim      #
 brew "tree"               # https://formulae.brew.sh/formula/tree     # ディレクトリツリー表示
 brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツリーで表示
