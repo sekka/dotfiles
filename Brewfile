@@ -81,7 +81,6 @@ brew "ffmpeg"
 #cask "mac-mouse-fix"
 #cask "macwhisper"
 #cask "macwinzipper"
-#cask "mist"
 #cask "monitorcontrol"
 #cask "notion"
 #cask "onyx"
@@ -125,6 +124,7 @@ brew "ffmpeg"
 #cask "zen-browser"
 
 # ==仮想環境==
+#cask "mist"
 #cask "parallels"
 #cask "utm"
 
