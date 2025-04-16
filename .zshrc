@@ -11,7 +11,7 @@
 #         exec arch -arch $arch "$SHELL"
 #     }
 # fi
-# 
+#
 # setopt magic_equal_subst
 
 ZSHHOME="${HOME}/dotfiles/config/zsh"
