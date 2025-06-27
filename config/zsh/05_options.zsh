@@ -43,11 +43,36 @@ setopt auto_param_keys
 # = の後はパス名として補完する
 setopt magic_equal_subst
 
-# ヒストリファイルに保存するとき、すでに重複したコマンドがあったら古い方を削除する
-setopt hist_save_nodups
-
 # 補完候補が複数あるときに自動的に一覧表示する
 setopt auto_menu
 
 # 高機能なワイルドカード展開を使用する
 setopt extended_glob
+
+# --- 現代的なzshオプション追加 ---
+
+# 補完機能の強化
+setopt auto_list              # 曖昧な補完で自動的に選択肢を一覧表示
+setopt complete_in_word       # 単語の途中でも補完可能
+setopt always_to_end          # 補完時にカーソルを単語の末尾に移動
+setopt list_packed            # 補完リストを詰めて表示
+setopt glob_complete          # globパターンから補完候補を生成
+
+# ディレクトリ操作の改善
+setopt pushd_silent           # pushdとpopdでディレクトリスタックを表示しない
+setopt pushd_to_home          # 引数なしのpushdで$HOMEに移動
+setopt auto_name_dirs         # 絶対パスの変数を自動的にディレクトリ名として使用
+
+# パス検索の改善
+setopt path_dirs              # スラッシュを含むコマンド名でもパス検索を実行
+
+# グロブとパターンマッチの改善
+setopt numeric_glob_sort      # 数値を含むファイル名を数値順でソート
+setopt glob_dots              # ドットファイルもグロブ対象に含める（明示的に指定時）
+
+# ジョブ制御の改善
+setopt long_list_jobs         # ジョブの詳細情報を表示
+setopt check_jobs             # ログアウト時に実行中のジョブを確認
+
+# コマンドライン編集の改善
+setopt combining_chars        # 結合文字を正しく表示
