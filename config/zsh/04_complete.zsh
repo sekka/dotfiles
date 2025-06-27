@@ -1,9 +1,15 @@
 # for zsh-completions
 add_to_fpath "/usr/local/share/zsh-completions"
 
-# 補完機能を有効にする
+# 補完機能を有効にする (最適化版)
 autoload -U compinit
-compinit
+# 24時間以内に.zcompdumpが更新されていない場合のみフルチェック実行
+# それ以外は高速起動のため-Cオプション（セキュリティチェックをスキップ）を使用
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 # 色付きで補完する
 zstyle ':completion:*' list-colors di=34 fi=0
