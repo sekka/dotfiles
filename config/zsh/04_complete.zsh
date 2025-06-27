@@ -1,6 +1,10 @@
 # for zsh-completions
 add_to_fpath "/usr/local/share/zsh-completions"
 
+# 補完キャッシュディレクトリの設定
+ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+[[ ! -d "$ZSH_CACHE_DIR" ]] && mkdir -p "$ZSH_CACHE_DIR"
+
 # 補完機能を有効にする (最適化版)
 autoload -U compinit
 # 24時間以内に.zcompdumpが更新されていない場合のみフルチェック実行
@@ -10,6 +14,10 @@ if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
 else
     compinit -C
 fi
+
+# 補完キャッシュの設定
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path "$ZSH_CACHE_DIR"
 
 # 色付きで補完する
 zstyle ':completion:*' list-colors di=34 fi=0
@@ -29,3 +37,12 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
 
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
+
+# パフォーマンス向上のための追加設定
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+
+# 頻繁に使用される補完のキャッシュ設定
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
