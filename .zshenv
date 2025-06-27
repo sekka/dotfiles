@@ -34,10 +34,6 @@ export PATH=$HOME/dotfiles/bin:$PATH
 # path: ZDOTDIR
 # export ZDOTDIR=$HOME/dotfiles/zsh/
 
-# path: zplug
-export ZPLUG_HOME=/opt/homebrew/opt/zplug
-source $ZPLUG_HOME/init.zsh
-
 # env: direnv
 eval "$(direnv hook zsh)"
 . "$HOME/.cargo/env"

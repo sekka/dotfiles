@@ -1,3 +1,11 @@
+# Initialize zplug if available
+if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
+    source "$ZPLUG_HOME/init.zsh"
+else
+    echo "Warning: zplug not found. Please install it or check ZPLUG_HOME in .zprofile"
+    return
+fi
+
 zplug "zsh-users/zsh-syntax-highlighting"       # https://github.com/zsh-users/zsh-syntax-highlighting      # シンタックスハイライト
 zplug "zsh-users/zsh-history-substring-search"  # https://github.com/zsh-users/zsh-history-substring-search # 入力履歴検索
 zplug "zsh-users/zsh-completions"               # https://github.com/zsh-users/zsh-completions              # 入力補完
