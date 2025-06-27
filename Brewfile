@@ -67,7 +67,6 @@ brew "ffmpeg"
 #cask "app-tamer"
 #cask "bartender"
 #cask "bettertouchtool"
-#cask "chatgpt"
 #cask "cursorsense"
 #cask "cleanmymac"
 #cask "daisydisk"
@@ -94,6 +93,10 @@ brew "ffmpeg"
 #tap "hmarr/tap"
 #cask "vitals"
 #cask "vpn-by-google-one"
+
+# ==AI==
+cask "chatgpt"
+cask "claude"
 
 # ==エンタメ==
 #cask "alcom"

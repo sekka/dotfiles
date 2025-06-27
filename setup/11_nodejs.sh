@@ -17,6 +17,8 @@ volta install node@19
 volta install node@20
 volta install node@21
 volta install node@22
+volta install node@23
+volta install node@24
 volta install node@latest
 volta install node
 
@@ -40,6 +42,8 @@ volta install npm@6
 volta install npm@7
 volta install npm@8
 volta install npm@9
+volta install npm@10
+volta install npm@11
 volta install npm@latest
 volta install npm
 
