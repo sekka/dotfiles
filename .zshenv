@@ -1,53 +1,43 @@
 # --------------------------------------
-# env/path
+# .zshenv - Essential environment for ALL zsh invocations
 # --------------------------------------
+# This file is sourced for ALL zsh sessions (interactive, non-interactive, scripts)
+# Only put absolutely essential environment variables here
 
-# Load PATH helper functions
+# Load PATH helper functions (lightweight)
 source "$HOME/dotfiles/config/zsh/00_path_helper.zsh"
 
-# Essential paths
+# Essential paths that all shells need
 add_to_path "/usr/local/bin"
+add_to_path "$HOME/dotfiles/bin"
 
-# to avoid overwritten PATH via /usr/libexec/path_helper
+# Prevent macOS /usr/libexec/path_helper from reordering PATH
 # refs. https://github.com/Homebrew/homebrew-core/pull/32074#issuecomment-421381869
 # refs. https://this.aereal.org/entry/zsh-path-helper
 unsetopt GLOBAL_RCS
 
-# path: Homebrew
+# Homebrew - only set essential paths, avoid heavy eval for non-interactive shells
 if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+    export HOMEBREW_PREFIX="/opt/homebrew"
+    export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+    export HOMEBREW_REPOSITORY="/opt/homebrew"
+    add_to_path "/opt/homebrew/bin"
+    add_to_path "/opt/homebrew/sbin"
 elif [[ -x "/usr/local/bin/brew" ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
+    export HOMEBREW_PREFIX="/usr/local"
+    export HOMEBREW_CELLAR="/usr/local/Cellar"
+    export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+    add_to_path "/usr/local/bin"
+    add_to_path "/usr/local/sbin"
 fi
 
-# path: anyenv
-if [[ -d "$HOME/.anyenv" ]]; then
-    add_to_path "$HOME/.anyenv/bin"
-    eval "$(anyenv init -)"
-fi
-
-# path: go
+# Go - lightweight path setup
 export GOPATH="${GOPATH:-$HOME/go}"
 add_to_path "$GOPATH/bin" append
 
-# path: yarn
+# Yarn - only if directory exists
 add_to_path "$HOME/.yarn/bin"
 add_to_path "$HOME/.config/yarn/global/node_modules/.bin"
 
-# path: dotfiles bin
-add_to_path "$HOME/dotfiles/bin"
-
-# path: ZDOTDIR
-# export ZDOTDIR=$HOME/dotfiles/zsh/
-
-# env: direnv
-eval "$(direnv hook zsh)"
-
-# env: cargo
-source "$HOME/.cargo/env"
-
-# env/path: volta
-if [[ -d "$HOME/.volta" ]]; then
-    export VOLTA_HOME="$HOME/.volta"
-    add_to_path "$VOLTA_HOME/bin"
-fi
+# NOTE: Heavy operations (anyenv, direnv, cargo, volta) moved to .zprofile
+# They will only run in login shells, not for every script execution

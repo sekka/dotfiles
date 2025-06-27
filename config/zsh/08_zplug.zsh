@@ -1,8 +1,14 @@
 # Initialize zplug if available
 if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
     source "$ZPLUG_HOME/init.zsh"
+elif [[ -d "/opt/homebrew/opt/zplug" ]]; then
+    export ZPLUG_HOME="/opt/homebrew/opt/zplug"
+    source "$ZPLUG_HOME/init.zsh"
+elif [[ -d "/usr/local/opt/zplug" ]]; then
+    export ZPLUG_HOME="/usr/local/opt/zplug"
+    source "$ZPLUG_HOME/init.zsh"
 else
-    echo "Warning: zplug not found. Please install it or check ZPLUG_HOME in .zprofile"
+    echo "Warning: zplug not found. Please install via 'brew install zplug'"
     return
 fi
 
