@@ -1,5 +1,7 @@
-# 履歴を保存するファイルを指定
-HISTFILE=~/.zsh_history
+# 履歴を保存するファイルを指定（XDG準拠）
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+# 履歴ディレクトリが存在しない場合は作成
+[[ ! -d "${HISTFILE:h}" ]] && mkdir -p "${HISTFILE:h}"
 
 # メモリ上に保存される履歴の数（最適化: 1000万 → 10万）
 HISTSIZE=100000
