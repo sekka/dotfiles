@@ -5,7 +5,7 @@
 # Only put absolutely essential environment variables here
 
 # Load PATH helper functions (lightweight)
-source "$HOME/dotfiles/config/zsh/00_path_helper.zsh"
+source "$HOME/dotfiles/config/zsh/helpers.zsh"
 
 # Essential paths that all shells need
 add_to_path "/usr/local/bin"
