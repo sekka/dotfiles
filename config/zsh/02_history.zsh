@@ -22,8 +22,8 @@ setopt HIST_VERIFY              # 履歴展開時に一度編集状態にする
 
 # 履歴の品質向上
 setopt HIST_REDUCE_BLANKS       # 余分な空白は詰める
-setopt HIST_IGNORE_SPACE        # スペースから始まるコマンド行はヒストリに残さない
 setopt EXTENDED_HISTORY         # 実行時間とタイムスタンプを記録
+# Note: HIST_IGNORE_SPACE は 05_options.zsh のセキュリティセクションに移動
 
 # ヒストリ展開
 setopt BANG_HIST                # !を使ったヒストリ展開を行う
