@@ -36,7 +36,6 @@ export PATH=$HOME/dotfiles/bin:$PATH
 
 # env: direnv
 eval "$(direnv hook zsh)"
-. "$HOME/.cargo/env"
 
 # env: cargo
 source "$HOME/.cargo/env"
