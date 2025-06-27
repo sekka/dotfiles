@@ -26,8 +26,6 @@ fi
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/kei/.lmstudio/bin"
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+# Docker CLI completions path is added to fpath
+# (compinit is already called in config/zsh/04_complete.zsh)
 fpath=(/Users/kei/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
