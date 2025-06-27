@@ -1,5 +1,8 @@
+# パス変数の定義（保守性向上）
+local zsh_completions_dir="/usr/local/share/zsh-completions"
+
 # for zsh-completions
-add_to_fpath "/usr/local/share/zsh-completions"
+add_to_fpath "$zsh_completions_dir"
 
 # 補完キャッシュディレクトリの設定
 ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
@@ -31,9 +34,16 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # ../ の後は今いるディレクトリを補完しない
 zstyle ':completion:*' ignore-parents parent pwd ..
 
+# システムパス変数の定義
+local system_paths=(
+    /usr/local/sbin /usr/local/bin
+    /usr/sbin /usr/bin
+    /sbin /bin
+    /usr/X11R6/bin
+)
+
 # sudo の後ろでコマンド名を補完する
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
-                   /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+zstyle ':completion:*:sudo:*' command-path "${system_paths[@]}"
 
 # ps コマンドのプロセス名補完
 zstyle ':completion:*:processes' command 'ps x -o pid,s,args'

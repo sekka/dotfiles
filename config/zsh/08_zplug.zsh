@@ -1,11 +1,15 @@
+# パス変数の定義（保守性向上）
+local homebrew_arm64="/opt/homebrew"
+local homebrew_x86="/usr/local"
+
 # Initialize zplug if available
 if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
     source "$ZPLUG_HOME/init.zsh"
-elif [[ -d "/opt/homebrew/opt/zplug" ]]; then
-    export ZPLUG_HOME="/opt/homebrew/opt/zplug"
+elif [[ -d "$homebrew_arm64/opt/zplug" ]]; then
+    export ZPLUG_HOME="$homebrew_arm64/opt/zplug"
     source "$ZPLUG_HOME/init.zsh"
-elif [[ -d "/usr/local/opt/zplug" ]]; then
-    export ZPLUG_HOME="/usr/local/opt/zplug"
+elif [[ -d "$homebrew_x86/opt/zplug" ]]; then
+    export ZPLUG_HOME="$homebrew_x86/opt/zplug"
     source "$ZPLUG_HOME/init.zsh"
 else
     echo "Warning: zplug not found. Please install via 'brew install zplug'"

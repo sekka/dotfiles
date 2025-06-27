@@ -67,9 +67,17 @@ function tmux_automatically_attach_session()
 
             # macOSであり、reattach-to-user-namespaceがインストールされている場合
             if is_osx && is_exists 'reattach-to-user-namespace'; then
+                # パス変数の定義（XDG準拠）
+                local tmux_config_file="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
+                local dotfiles_dir="${HOME}/dotfiles"
+                local tmux_session_script="$dotfiles_dir/.tmux/new-session"
+                
+                # フォールバック: 従来の設定ファイルパス
+                [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
+                
                 # macOS用の設定で新しいtmuxセッションを開始
-                tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-                tmux -f <(echo "$tmux_config") new-session \; source $HOME/dotfiles/.tmux/new-session && echo "$(tmux -V) created new session supported OS X"
+                tmux_config=$(cat "$tmux_config_file" <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
+                tmux -f <(echo "$tmux_config") new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
             else
                 # 通常の方法で新しいtmuxセッションを開始
                 tmux new-session && echo "tmux created new session"
