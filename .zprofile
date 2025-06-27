@@ -15,6 +15,7 @@ export VISUAL="${VISUAL:-$EDITOR}"
 
 # Set language environment
 export LANG="${LANG:-en_US.UTF-8}"
+export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
 
 # XDG Base Directory specification
