@@ -1,5 +1,8 @@
+# FZF共通設定
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
 export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=header,grid --line-range :100 {}"'
+export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=header,grid --line-range :100 {} 2>/dev/null || cat {}"'
+export FZF_ALT_C_OPTS='--preview "ls -la {}" --preview-window=right:40%:wrap'
 
 # コマンド履歴を出して検索・絞り込みするやつ
 function fzf-select-history() {
@@ -30,42 +33,57 @@ function fzf-src() {
 zle -N fzf-src
 bindkey '^]' fzf-src
 
-# checkout git branch with preview
-function fzf-checkout-branch() {
-    local branches branch
-    branches=$(git branch | sed -e 's/\(^\* \|^  \)//g' | cut -d " " -f 1) &&
-    branch=$(echo "$branches" | fzf --preview "git show --color=always {}") &&
-    git checkout $(echo "$branch")
+# 統合されたgitブランチ切り替え関数（プレビュー付き）
+function fzf-git-branch() {
+    # gitリポジトリ内かチェック
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "Not a git repository"
+        return 1
+    fi
+    
+    local branches branch include_remote=false
+    
+    # -rオプションでリモートブランチも含める
+    if [[ "$1" == "-r" ]]; then
+        include_remote=true
+        branches=$(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')
+    else
+        branches=$(git branch | sed 's/^[* ] //')
+    fi
+    
+    branch=$(echo "$branches" | fzf \
+        --preview "git show --color=always --stat {}" \
+        --preview-window=right:60%:wrap \
+        --header "Select branch to checkout" \
+        --bind "ctrl-r:reload(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')" \
+        --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')"
+    )
+    
+    if [[ -n "$branch" ]]; then
+        # リモートブランチの場合はorigin/を削除
+        branch=$(echo "$branch" | sed 's#^origin/##')
+        git checkout "$branch"
+    fi
 }
-zle -N fzf-checkout-branch
-bindkey "^b" fzf-checkout-branch
 
-# fcd - cd to selected directory
+# キーバインドとエイリアス
+zle -N fzf-git-branch
+bindkey "^b" fzf-git-branch
+alias fbr='fzf-git-branch'
+alias fbrm='fzf-git-branch -r'
+
+# 最適化されたディレクトリ移動関数
 function fcd() {
     local dir
-    dir=$(find ${1:-.} \
-        -path '*/\.*' \
-        -prune \
-        -o \
-        -type d \
-        -print 2> /dev/null | fzf +m) &&
-    cd "$dir"
-}
-
-# fbr - checkout git branch
-function fbr() {
-    local branches branch
-    branches=$(git branch -vv) &&
-    branch=$(echo "$branches" | fzf +m) &&
-    git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
-}
-
-# fbrm - checkout git branch (including remote branches)
-function fbrm() {
-    local branches branch
-    branches=$(git branch --all | grep -v HEAD) &&
-    branch=$(echo "$branches" | fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
-    git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+    dir=$(find ${1:-.} -type d \
+        -not -path '*/\.*' \
+        -not -path '*/node_modules/*' \
+        -not -path '*/target/*' \
+        2>/dev/null | fzf \
+        --preview "ls -la {}" \
+        --preview-window=right:40%:wrap \
+        --header "Select directory to cd"
+    ) && cd "$dir"
 }
 
 # fshow - git commit browser
@@ -86,34 +104,45 @@ function fshow() {
     FZF-EOF"
 }
 
-# fadd - git add browser
+# 最適化されたgit add関数（エラーハンドリング付き）
 function fadd() {
-    local out q n addfiles
-    while out=$(
-            git status --short |
-            awk '{if (substr($0,2,1) !~ / /) print $2}' |
-            fzf-tmux --multi --exit-0 --expect=ctrl-d); do
-        q=$(head -1 <<< "$out")
-        n=$[$(wc -l <<< "$out") - 1]
-        addfiles=(`echo $(tail "-$n" <<< "$out")`)
-        [[ -z "$addfiles" ]] && continue
-        if [ "$q" = ctrl-d ]; then
-            git diff --color=always $addfiles | less -R
-        else
-            git add $addfiles
-        fi
-    done
-}
-
-# fssh - ssh browser
-function fssh() {
-    local sshLoginHost
-    sshLoginHost=`cat ~/.ssh/config | grep -i ^host | awk '{print $2}' | fzf`
-
-    if [ "$sshLoginHost" = "" ]; then
-        # ex) Ctrl-C.
+    # gitリポジトリ内かチェック
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        echo "Not a git repository"
         return 1
     fi
+    
+    local files
+    files=$(git status --porcelain | awk '{print $2}' | fzf \
+        --multi \
+        --preview "git diff --color=always {} 2>/dev/null || cat {}" \
+        --preview-window=right:60%:wrap \
+        --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
+        --bind "ctrl-d:execute(git diff --color=always {} | less -R)"
+    )
+    
+    if [[ -n "$files" ]]; then
+        echo "$files" | xargs git add
+        echo "Added files:"
+        echo "$files"
+    fi
+}
 
-    ssh ${sshLoginHost}
+# 最適化されたSSH接続関数（エラーハンドリング付き）
+function fssh() {
+    if [[ ! -f ~/.ssh/config ]]; then
+        echo "SSH config file not found"
+        return 1
+    fi
+    
+    local host
+    host=$(awk '/^Host / {print $2}' ~/.ssh/config | grep -v '*' | fzf \
+        --preview "grep -A 10 '^Host {}' ~/.ssh/config" \
+        --preview-window=right:40%:wrap \
+        --header "Select SSH host"
+    )
+    
+    if [[ -n "$host" ]]; then
+        ssh "$host"
+    fi
 }
