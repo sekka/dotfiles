@@ -2,7 +2,11 @@
 # env/path
 # --------------------------------------
 
-export PATH="/usr/local/bin:$PATH"
+# Load PATH helper functions
+source "$HOME/dotfiles/config/zsh/00_path_helper.zsh"
+
+# Essential paths
+add_to_path "/usr/local/bin"
 
 # to avoid overwritten PATH via /usr/libexec/path_helper
 # refs. https://github.com/Homebrew/homebrew-core/pull/32074#issuecomment-421381869
@@ -10,26 +14,28 @@ export PATH="/usr/local/bin:$PATH"
 unsetopt GLOBAL_RCS
 
 # path: Homebrew
-eval "$(/opt/homebrew/bin/brew shellenv)"
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 # path: anyenv
-export PATH=$HOME/.anyenv/bin:$PATH
-eval "$(anyenv init -)"
+if [[ -d "$HOME/.anyenv" ]]; then
+    add_to_path "$HOME/.anyenv/bin"
+    eval "$(anyenv init -)"
+fi
 
 # path: go
-export GOPATH=$HOME/go
-PATH=$PATH:$GOPATH/bin
-
-# path: php
-# export PATH=/usr/local/opt/php/bin:$PATH
-# export PATH=/usr/local/opt/php/sbin:$PATH
+export GOPATH="${GOPATH:-$HOME/go}"
+add_to_path "$GOPATH/bin" append
 
 # path: yarn
-export PATH=$HOME/.yarn/bin:$PATH
-export PATH=$HOME/.config/yarn/global/node_modules/.bin:$PATH
+add_to_path "$HOME/.yarn/bin"
+add_to_path "$HOME/.config/yarn/global/node_modules/.bin"
 
 # path: dotfiles bin
-export PATH=$HOME/dotfiles/bin:$PATH
+add_to_path "$HOME/dotfiles/bin"
 
 # path: ZDOTDIR
 # export ZDOTDIR=$HOME/dotfiles/zsh/
@@ -41,5 +47,7 @@ eval "$(direnv hook zsh)"
 source "$HOME/.cargo/env"
 
 # env/path: volta
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
+if [[ -d "$HOME/.volta" ]]; then
+    export VOLTA_HOME="$HOME/.volta"
+    add_to_path "$VOLTA_HOME/bin"
+fi

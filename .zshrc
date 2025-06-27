@@ -25,7 +25,7 @@ if [ -d $ZSHHOME -a -r $ZSHHOME -a \
 fi
 
 # Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/kei/.lmstudio/bin"
-# Docker CLI completions path is added to fpath
-# (compinit is already called in config/zsh/04_complete.zsh)
-fpath=(/Users/kei/.docker/completions $fpath)
+add_to_path "$HOME/.lmstudio/bin" append
+
+# Docker CLI completions
+add_to_fpath "$HOME/.docker/completions"

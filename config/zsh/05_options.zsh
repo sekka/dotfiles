@@ -43,7 +43,6 @@ setopt auto_param_keys
 # = の後はパス名として補完する
 setopt magic_equal_subst
 
-
 # ヒストリファイルに保存するとき、すでに重複したコマンドがあったら古い方を削除する
 setopt hist_save_nodups
 
