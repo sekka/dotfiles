@@ -17,5 +17,6 @@ cargo install fd-find       # https://crates.io/crates/fd-find すごいfind
 cargo install bandwhich     # https://crates.io/crates/bandwhich 帯域確認
 cargo install ht            # https://crates.io/crates/ht HTTPie / 高機能cURL
 cargo install cargo-update  # https://crates.io/crates/cargo-update
+cargo install --locked --git 'https://github.com/anatawa12/git-vrc.git'
 
 cargo install-update -a    # 全てのクレートを最新に (cargo-update)

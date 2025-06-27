@@ -2,6 +2,8 @@
 # env/path
 # --------------------------------------
 
+export PATH="/usr/local/bin:$PATH"
+
 # to avoid overwritten PATH via /usr/libexec/path_helper
 # refs. https://github.com/Homebrew/homebrew-core/pull/32074#issuecomment-421381869
 # refs. https://this.aereal.org/entry/zsh-path-helper

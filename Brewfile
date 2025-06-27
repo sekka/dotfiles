@@ -145,6 +145,7 @@ brew "ffmpeg"
 #cask "tower"
 #cask "transmit"
 #cask "visual-studio-code"
+#cask "warp"
 #cask "xbar"
 
 # ==デザイン==

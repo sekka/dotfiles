@@ -23,3 +23,11 @@ if [ -d $ZSHHOME -a -r $ZSHHOME -a \
             [ \( -f $i -o -h $i \) -a -r $i ] && . $i
     done
 fi
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/kei/.lmstudio/bin"
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/kei/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
