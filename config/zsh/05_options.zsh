@@ -43,20 +43,9 @@ setopt auto_param_keys
 # = の後はパス名として補完する
 setopt magic_equal_subst
 
-# 同時に起動したzshの間でヒストリを共有する
-setopt share_history
-
-# 同じコマンドをヒストリに残さない
-setopt hist_ignore_all_dups
 
 # ヒストリファイルに保存するとき、すでに重複したコマンドがあったら古い方を削除する
 setopt hist_save_nodups
-
-# スペースから始まるコマンド行はヒストリに残さない
-setopt hist_ignore_space
-
-# ヒストリに保存するときに余分なスペースを削除する
-setopt hist_reduce_blanks
 
 # 補完候補が複数あるときに自動的に一覧表示する
 setopt auto_menu

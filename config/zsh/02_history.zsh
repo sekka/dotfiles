@@ -13,14 +13,6 @@ setopt HIST_IGNORE_ALL_DUPS
 # 端末間の履歴を共有
 setopt SHARE_HISTORY
 
-# cd で移動した場所を記録して後で呼び出せるようにする
-setopt AUTO_PUSHD
-
-# ディレクトリ名と一致した場合cd
-setopt AUTO_CD
-
-# 重複している移動履歴を記録しない
-setopt PUSHD_IGNORE_DUPS
 
 # 余分な空白は詰める
 setopt HIST_REDUCE_BLANKS
