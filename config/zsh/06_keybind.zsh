@@ -1,8 +1,7 @@
-# emacs 風キーバインドにする
+# Emacsキーバインド設定
 bindkey -e
 
-# ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
-# bindkey '^R' history-incremental-pattern-search-backward
+# 親ディレクトリ移動関数
 
 function cdup() {
    echo
@@ -10,4 +9,3 @@ function cdup() {
    zle reset-prompt
 }
 zle -N cdup
-# bindkey '^K' cdup

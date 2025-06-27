@@ -1,8 +1,6 @@
-# パス変数の定義（保守性向上）
+# zplug初期化
 local homebrew_arm64="/opt/homebrew"
 local homebrew_x86="/usr/local"
-
-# Initialize zplug if available
 if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
     source "$ZPLUG_HOME/init.zsh"
 elif [[ -d "$homebrew_arm64/opt/zplug" ]]; then
@@ -32,31 +30,18 @@ zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"  # https://github.com/b4
 zplug "b4b4r07/history", defer:2                        # https://github.com/b4b4r07/history                        # 履歴強化
 zplug "arks22/tmuximum", as:command, defer:2, if:"command -v tmux"  # https://github.com/arks22/tmuximum           # tmux選択UIのインタラクティブ化
 
-# check コマンドで未インストール項目があるかどうかチェック
-# 起動時間を短縮するため、verboseオプションを削除し、非対話的にインストール
+# プラグイン自動インストール
 if ! zplug check; then
     echo "Installing missing zplug plugins..."
     zplug install
 fi
 
-# プラグインを読み込み、コマンドにパスを通す
 zplug load
 
-# メンテナンス
-#zplug clear
-#zplug update
-#zplug status
-
-# 補完の色を変更する
+# プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
-
-# enhancdで使用するフィルタリングツールを指定する
 export ENHANCD_FILTER=peco
-
-# emoji-cliで使用するフィルタリングツールを設定する
 export EMOJI_CLI_FILTER=fzf
-
-# historyの設定
 export ZSH_HISTORY_KEYBIND_GET='^r'
 export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
 export ZSH_HISTORY_KEYBIND_ARROW_UP='^p'

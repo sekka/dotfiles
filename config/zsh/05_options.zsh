@@ -49,13 +49,12 @@ setopt auto_menu
 # 高機能なワイルドカード展開を使用する
 setopt extended_glob
 
-# --- 現代的なzshオプション追加 ---
+# --- 高度なzshオプション ---
 
 # 補完機能の強化
 setopt auto_list              # 曖昧な補完で自動的に選択肢を一覧表示
 setopt complete_in_word       # 単語の途中でも補完可能
 setopt always_to_end          # 補完時にカーソルを単語の末尾に移動
-setopt list_packed            # 補完リストを詰めて表示
 setopt glob_complete          # globパターンから補完候補を生成
 
 # ディレクトリ操作の改善
@@ -77,16 +76,7 @@ setopt check_jobs             # ログアウト時に実行中のジョブを確
 # コマンドライン編集の改善
 setopt combining_chars        # 結合文字を正しく表示
 
-# --- セキュリティオプション ---
-
-# ファイル保護
-setopt no_clobber             # リダイレクトでの既存ファイル上書きを防止 (>| で強制上書き可能)
-setopt rm_star_wait           # rm * 実行時に10秒間の確認待機
-setopt rm_star_silent         # rm * 実行時の警告を無効化しない
-
-# 履歴のセキュリティ
-setopt hist_ignore_space      # スペースで始まるコマンドを履歴に残さない（機密情報対策）
-
-# グロブ展開の安全性
-setopt no_bad_pattern         # 不正なパターンでエラー終了
-setopt warn_create_global     # グローバル変数作成時に警告（zsh 5.8+）
+# --- セキュリティ強化オプション ---
+setopt no_clobber             # ファイル上書き防止
+setopt rm_star_wait           # rm * の確認待機
+setopt hist_ignore_space      # 機密コマンドの履歴除外

@@ -1,4 +1,4 @@
-# git
+# Git基本操作エイリアス
 alias gft="git fetch"
 alias gpl="git pull"
 alias gco="git checkout"
@@ -9,16 +9,11 @@ alias gba="git branch -a"
 alias gbm="git branch --merged"
 alias gbn="git branch --no-merge"
 
-# submoduleアップデート
 alias smu="git submodule foreach 'git checkout master; git pull'"
-
-# Untracked filesを表示せず，not stagedと，stagedだけの状態を出力する
 alias gstt="git status -uno"
-
-# 行ごとの差分ではなく単語レベルでの差分を色付きで表示する
 alias gdiff="git diff --word-diff"
 
-# いい感じのグラフでログを表示
+# Git log表示エイリアス
 alias log="log9"
 
 alias log0="git log \
@@ -72,8 +67,6 @@ alias log9="git log \
     -C -M  \
     --pretty='format:%C(magenta)%cd%Creset %C(yellow)%h%Creset %Cgreen(%an)%Creset %Cred%d%Creset %s'"
 
-# hub + pecoでリポジトリをブラウザで開く
+# その他Git関連ツール
 alias hbr='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
-
-# tig
 alias tiga='tig --all'

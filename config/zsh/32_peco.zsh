@@ -1,4 +1,4 @@
-# コマンド履歴を出して検索・絞り込みするやつ
+# peco関数定義
 function peco-select-history() {
     local tac
     if which tac > /dev/null; then
@@ -12,10 +12,9 @@ function peco-select-history() {
     CURSOR=$#BUFFER
     zle clear-screen
 }
+# 無効化（fzfを使用）
 # zle -N peco-select-history
 # bindkey '^r' peco-select-history
-
-# ghqでクローンしてきたリポジトリへの移動が捗る
 function peco-src () {
     local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
     if [ -n "$selected_dir" ]; then
@@ -24,10 +23,9 @@ function peco-src () {
     fi
     zle clear-screen
 }
+# 無効化（fzfを使用）
 # zle -N peco-src
 # bindkey '^]' peco-src
-
-# npm-scriptsを簡単に実行するやつ
 function commands () {
     cat package.json | jq -r '.scripts | keys[]'
 }

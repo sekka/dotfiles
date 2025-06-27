@@ -4,7 +4,7 @@ export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=header,grid --line-range :100 {} 2>/dev/null || cat {}"'
 export FZF_ALT_C_OPTS='--preview "ls -la {}" --preview-window=right:40%:wrap'
 
-# コマンド履歴を出して検索・絞り込みするやつ（エラーハンドリング強化版）
+# fzf関数定義
 function fzf-select-history() {
     # fzfが利用可能かチェック
     if ! command -v fzf >/dev/null 2>&1; then
@@ -35,7 +35,6 @@ function fzf-select-history() {
 zle -N fzf-select-history
 bindkey '^r' fzf-select-history
 
-# ghqでクローンしてきたリポジトリへの移動が捗る（エラーハンドリング強化版）
 function fzf-src() {
     # 必要なコマンドの存在チェック
     if ! command -v ghq >/dev/null 2>&1; then
@@ -62,7 +61,6 @@ function fzf-src() {
 zle -N fzf-src
 bindkey '^]' fzf-src
 
-# 統合されたgitブランチ切り替え関数（プレビュー付き）
 function fzf-git-branch() {
     # gitリポジトリ内かチェック
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -95,13 +93,12 @@ function fzf-git-branch() {
     fi
 }
 
-# キーバインドとエイリアス
 zle -N fzf-git-branch
 bindkey "^b" fzf-git-branch
 alias fbr='fzf-git-branch'
 alias fbrm='fzf-git-branch -r'
 
-# 最適化されたディレクトリ移動関数
+# 追加fzf関数
 function fcd() {
     local dir
     dir=$(find ${1:-.} -type d \
@@ -115,7 +112,6 @@ function fcd() {
     ) && cd "$dir"
 }
 
-# fshow - git commit browser
 function fshow() {
     git log \
         --graph \
@@ -133,7 +129,6 @@ function fshow() {
     FZF-EOF"
 }
 
-# 最適化されたgit add関数（エラーハンドリング付き）
 function fadd() {
     # gitリポジトリ内かチェック
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -157,7 +152,6 @@ function fadd() {
     fi
 }
 
-# 最適化されたSSH接続関数（エラーハンドリング付き）
 function fssh() {
     if [[ ! -f ~/.ssh/config ]]; then
         echo "SSH config file not found"

@@ -1,3 +1,4 @@
+# Git差分アーカイブ作成関数
 function git_diff_archive() {
   local diff=""
   local h="HEAD"

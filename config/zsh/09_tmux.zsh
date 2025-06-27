@@ -1,25 +1,12 @@
-# コマンドが存在するかどうかを確認する関数
+# Tmux自動起動機能
 function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
 
-# 現在のOSがmacOSかどうかを確認する関数
 function is_osx() { [[ $OSTYPE == darwin* ]]; }
-
-# 現在GNU Screenが実行中かどうかを確認する関数
 function is_screen_running() { [ ! -z "$STY" ]; }
-
-# 現在tmuxが実行中かどうかを確認する関数
 function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-
-# GNU Screenまたはtmuxが実行中かどうかを確認する関数
 function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
-
-# シェルが対話的に開始されたかどうかを確認する関数
 function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
-
-# SSH経由でセッションが実行されているかどうかを確認する関数
 function is_ssh_running() { [ ! -z "$SSH_CONNECTION" ]; }
-
-# tmuxセッションを自動的にアタッチする関数
 function tmux_automatically_attach_session()
 {
     # Screenまたはtmuxが既に実行中の場合
@@ -75,11 +62,9 @@ function tmux_automatically_attach_session()
                 # フォールバック: 従来の設定ファイルパス
                 [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
                 
-                # macOS用の設定で新しいtmuxセッションを開始
-                tmux_config=$(cat "$tmux_config_file" <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
+                    tmux_config=$(cat "$tmux_config_file" <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
                 tmux -f <(echo "$tmux_config") new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
             else
-                # 通常の方法で新しいtmuxセッションを開始
                 tmux new-session && echo "tmux created new session"
             fi
         fi
