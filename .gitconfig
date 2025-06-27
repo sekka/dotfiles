@@ -28,6 +28,8 @@
 	helper = osxkeychain
 [alias]
 	ac = !git add -A && aicommits -a
+[mergetool]
+	keepBackup = true
 [filter "vrc"]
 	smudge = git vrc smudge --file %f
 	clean = git vrc clean --file %f

@@ -81,7 +81,6 @@ brew "ffmpeg"
 #cask "mac-mouse-fix"
 #cask "macwhisper"
 #cask "macwinzipper"
-#cask "mist"
 #cask "monitorcontrol"
 #cask "notion"
 #cask "notion-calendar"
@@ -127,6 +126,7 @@ brew "ffmpeg"
 #cask "zen-browser"
 
 # ==仮想環境==
+#cask "mist"
 #cask "parallels"
 #cask "utm"
 
@@ -147,6 +147,7 @@ brew "ffmpeg"
 #cask "tower"
 #cask "transmit"
 #cask "visual-studio-code"
+#cask "warp"
 #cask "xbar"
 
 # ==デザイン==

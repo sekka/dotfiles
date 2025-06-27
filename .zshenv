@@ -2,6 +2,8 @@
 # env/path
 # --------------------------------------
 
+export PATH="/usr/local/bin:$PATH"
+
 # to avoid overwritten PATH via /usr/libexec/path_helper
 # refs. https://github.com/Homebrew/homebrew-core/pull/32074#issuecomment-421381869
 # refs. https://this.aereal.org/entry/zsh-path-helper
@@ -46,13 +48,3 @@ source "$HOME/.cargo/env"
 # env/path: volta
 export VOLTA_HOME="$HOME/.volta"
 export PATH="$VOLTA_HOME/bin:$PATH"
-
-# 重複する要素を自動的に削除
-# https://zenn.dev/ress/articles/069baf1c305523dfca3d
-#typeset -U path cdpath fpath manpath
-typeset -U path PATH
-path=(
-    /opt/homebrew/bin(N-/)
-	/usr/local/bin(N-/)
-	$path
-)
