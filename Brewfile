@@ -84,6 +84,8 @@ brew "ffmpeg"
 #cask "mist"
 #cask "monitorcontrol"
 #cask "notion"
+#cask "notion-calendar"
+#cask "ogdesign-eagle"
 #cask "onyx"
 #cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
 #cask "sensei"
@@ -189,11 +191,9 @@ brew "ffmpeg"
 
 # ==mas==
 #mas "Kindle",                id: 302584613
-#mas "Eagle",                 id: 403115926
 #mas "Keynote",               id: 409183694
 #mas "Pages",                 id: 409201541
 #mas "Numbers",               id: 409203825
-#mas "TweetDeck",             id: 485812721
 #mas "Magnet",                id: 441258766
 #mas "PopClip",               id: 445189367
 #mas "Bandwidth+",            id: 490461369
