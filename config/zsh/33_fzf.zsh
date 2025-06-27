@@ -4,29 +4,58 @@ export FZF_CTRL_T_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
 export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=header,grid --line-range :100 {} 2>/dev/null || cat {}"'
 export FZF_ALT_C_OPTS='--preview "ls -la {}" --preview-window=right:40%:wrap'
 
-# コマンド履歴を出して検索・絞り込みするやつ
+# コマンド履歴を出して検索・絞り込みするやつ（エラーハンドリング強化版）
 function fzf-select-history() {
-    local tac
-    if which tac > /dev/null; then
-        tac="tac"
-    else
-        tac="tail -r"
+    # fzfが利用可能かチェック
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "Error: fzf is not installed"
+        return 1
     fi
-    BUFFER=$(\history -n 1 | \
-        eval $tac | \
-        fzf --query "$LBUFFER")
-    CURSOR=$#BUFFER
+    
+    local tac selected
+    # tacコマンドの検出（よりポータブルな方法）
+    if command -v tac >/dev/null 2>&1; then
+        tac="tac"
+    elif command -v tail >/dev/null 2>&1; then
+        tac="tail -r"
+    else
+        echo "Error: Neither 'tac' nor 'tail' command available"
+        return 1
+    fi
+    
+    # 履歴の取得と選択（エラーハンドリング付き）
+    selected=$(history -n 1 | eval "$tac" | fzf --query "$LBUFFER") || return
+    
+    if [[ -n "$selected" ]]; then
+        BUFFER="$selected"
+        CURSOR=$#BUFFER
+    fi
     zle clear-screen
 }
 zle -N fzf-select-history
 bindkey '^r' fzf-select-history
 
-# ghqでクローンしてきたリポジトリへの移動が捗る
+# ghqでクローンしてきたリポジトリへの移動が捗る（エラーハンドリング強化版）
 function fzf-src() {
-    local selected_dir=$(ghq list -p | fzf --query "$LBUFFER" --preview "bat --color=always --style=header,grid --line-range :80 {}/README.*")
-    if [ -n "$selected_dir" ]; then
+    # 必要なコマンドの存在チェック
+    if ! command -v ghq >/dev/null 2>&1; then
+        echo "Error: ghq is not installed"
+        return 1
+    fi
+    if ! command -v fzf >/dev/null 2>&1; then
+        echo "Error: fzf is not installed"  
+        return 1
+    fi
+    
+    local selected_dir
+    selected_dir=$(ghq list -p 2>/dev/null | fzf --query "$LBUFFER" --preview "bat --color=always --style=header,grid --line-range :80 {}/README.* 2>/dev/null || ls -la {}") || return
+    
+    if [[ -n "$selected_dir" ]] && [[ -d "$selected_dir" ]]; then
         BUFFER="cd ${selected_dir}"
         zle accept-line
+    else
+        echo "Error: Invalid directory selected"
+        return 1
     fi
     zle clear-screen
 }
