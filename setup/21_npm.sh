@@ -1,6 +1,7 @@
 #npm install -g npm
 npm install -g @anthropic-ai/claude-code
 npm install -g @google/gemini-cli
+npm install -g ccusage
 npm install -g imageoptim-cli
 npm install -g caniuse-cmd
 npm install -g npm-check
