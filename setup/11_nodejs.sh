@@ -1,6 +1,6 @@
 curl https://get.volta.sh | bash
 
-exec $SHELL -l
+# exec $SHELL -l
 
 volta --version
 
