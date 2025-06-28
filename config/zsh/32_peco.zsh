@@ -13,6 +13,7 @@ function peco-select-history() {
     zle clear-screen
 }
 # 無効化（fzfを使用）
+# fzfの方が高速で、プレビュー機能やより豊富なオプションを提供するため移行
 # zle -N peco-select-history
 # bindkey '^r' peco-select-history
 function peco-src () {
@@ -24,6 +25,7 @@ function peco-src () {
     zle clear-screen
 }
 # 無効化（fzfを使用）
+# fzfの方がファイルプレビュー機能があり、リポジトリの内容を確認しながら選択できるため移行
 # zle -N peco-src
 # bindkey '^]' peco-src
 function commands () {

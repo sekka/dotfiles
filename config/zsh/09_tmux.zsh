@@ -1,4 +1,10 @@
+# --------------------------------------
 # Tmux自動起動機能
+# --------------------------------------
+# このスクリプトはzshシェル起動時にtmuxセッションを自動的に管理する。
+# 既存セッションがあれば選択してアタッチ、なければ新規作成する。
+# SSH接続時は自動起動しない。
+
 function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
 
 function is_osx() { [[ $OSTYPE == darwin* ]]; }
@@ -62,8 +68,12 @@ function tmux_automatically_attach_session()
                 # フォールバック: 従来の設定ファイルパス
                 [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
 
-                    tmux_config=$(cat "$tmux_config_file" <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-                tmux -f <(echo "$tmux_config") new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
+                # ヒアドキュメントを使用して設定を作成
+                tmux -f <(cat <<EOF
+$(cat "$tmux_config_file")
+set-option -g default-command "reattach-to-user-namespace -l $SHELL"
+EOF
+                ) new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
             else
                 tmux new-session && echo "tmux created new session"
             fi

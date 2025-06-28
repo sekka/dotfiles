@@ -12,6 +12,10 @@ add_to_path "/usr/local/bin"
 add_to_path "$HOME/dotfiles/bin"
 
 # Prevent macOS /usr/libexec/path_helper from reordering PATH
+# macOSでは/etc/zprofileで/usr/libexec/path_helperが実行され、
+# 独自に設定したPATHの順序が変更されてしまう問題がある。
+# GLOBAL_RCSを無効にすることで、/etc/zprofileなどのグローバル設定ファイルの
+# 読み込みをスキップし、PATH順序を保持する。
 # refs. https://github.com/Homebrew/homebrew-core/pull/32074#issuecomment-421381869
 # refs. https://this.aereal.org/entry/zsh-path-helper
 unsetopt GLOBAL_RCS

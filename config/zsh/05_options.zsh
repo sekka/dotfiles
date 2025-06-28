@@ -42,6 +42,6 @@ setopt check_jobs             # ログアウト時に実行中のジョブを確
 setopt combining_chars        # 結合文字を正しく表示
 
 # --- セキュリティ強化オプション ---
-setopt no_clobber             # ファイル上書き防止
-setopt rm_star_wait           # rm * の確認待機
-setopt hist_ignore_space      # 機密コマンドの履歴除外
+setopt no_clobber             # リダイレクト(>)での既存ファイル上書きを防止。上書きには>!または>|を使用
+setopt rm_star_wait           # rm * 実行時に10秒間の確認待機。誤って全ファイル削除を防ぐ
+setopt hist_ignore_space      # スペースで始まるコマンドを履歴に残さない。パスワード等の機密情報入力時に使用
