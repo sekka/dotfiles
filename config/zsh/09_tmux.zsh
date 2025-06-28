@@ -80,4 +80,9 @@ EOF
         fi
     fi
 }
-tmux_automatically_attach_session
+
+# ログインシェルでのみtmux自動起動を実行
+# $SHLVLが1の場合は最初のシェル（ログインシェル）
+if [[ -o login ]] || [[ "$SHLVL" -eq 1 ]]; then
+    tmux_automatically_attach_session
+fi
