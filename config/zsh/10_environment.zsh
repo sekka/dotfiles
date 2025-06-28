@@ -88,7 +88,22 @@ if [[ -d "$HOME/.local/aws-cli/v2/current/bin" ]]; then
     add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 fi
 
-# === PATH重複チェック機能 ===
+# === Core Functions ===
+# ディレクトリ変更時自動実行
+function chpwd() {
+    pwd
+    local file_count=$(ls -1A 2>/dev/null | wc -l)
+    if [[ $file_count -lt 50 ]]; then
+        eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --extended --git --git-repos --time-style long-iso
+    else
+        ls
+    fi
+}
+
+# PATH表示関数
+function path_show() { echo -e ${PATH//:/'\n'} }
+
+# === PATH管理ユーテリティ ===
 # デバッグ用：重複したPATHエントリを表示
 check_path_duplicates() {
     echo "=== PATH Entries ==="
@@ -104,7 +119,7 @@ optimize_path() {
     local new_path=""
     local IFS=':'
     local seen=()
-    
+
     for dir in $PATH; do
         if [[ ! " ${seen[@]} " =~ " ${dir} " ]]; then
             seen+=("$dir")
@@ -115,7 +130,7 @@ optimize_path() {
             fi
         fi
     done
-    
+
     export PATH="$new_path"
     echo "PATH optimized. Removed $(( $(echo "$PATH" | tr ':' '\n' | wc -l) - $(echo "$new_path" | tr ':' '\n' | wc -l) )) duplicate entries."
 }
