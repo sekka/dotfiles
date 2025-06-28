@@ -48,7 +48,7 @@ setopt rm_star_wait           # rm * 実行時に10秒間の確認待機。誤�
 setopt hist_ignore_space      # スペースで始まるコマンドを履歴に残さない。パスワード等の機密情報入力時に使用
 setopt no_all_export          # 変数の自動エクスポートを防止
 setopt no_global_export       # 関数の自動エクスポートを防止
-setopt warn_create_global     # 関数内でグローバル変数作成時に警告
+# setopt warn_create_global     # 関数内でグローバル変数作成時に警告
 setopt pipe_fail              # パイプラインの右側のコマンドがエラーの場合、全体をエラーとする
 
 # --- パフォーマンス強化オプション ---
