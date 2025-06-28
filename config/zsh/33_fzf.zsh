@@ -5,6 +5,7 @@ export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=header,grid --line
 export FZF_ALT_C_OPTS='--preview "ls -la {}" --preview-window=right:40%:wrap'
 
 # fzf関数定義
+# 使用例: Ctrl+Rを押すと履歴検索が開始される
 function fzf-select-history() {
     # fzfが利用可能かチェック
     if ! command -v fzf >/dev/null 2>&1; then
@@ -35,6 +36,8 @@ function fzf-select-history() {
 zle -N fzf-select-history
 bindkey '^r' fzf-select-history
 
+# ghqで管理されているリポジトリをfzfで選択して移動
+# 使用例: Ctrl+]を押すとリポジトリ選択画面が開く
 function fzf-src() {
     # 必要なコマンドの存在チェック
     if ! command -v ghq >/dev/null 2>&1; then
@@ -61,6 +64,8 @@ function fzf-src() {
 zle -N fzf-src
 bindkey '^]' fzf-src
 
+# Gitブランチをfzfで選択してチェックアウト
+# 使用例: fbrまたはCtrl+Bでローカルブランチ、fbrmでリモートブランチも含む
 function fzf-git-branch() {
     # gitリポジトリ内かチェック
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -99,6 +104,8 @@ alias fbr='fzf-git-branch'
 alias fbrm='fzf-git-branch -r'
 
 # 追加fzf関数
+# ディレクトリをインタラクティブに選択して移動
+# 使用例: fcdまたはfcd ~/projectsで指定ディレクトリ以下を検索
 function fcd() {
     local dir
     dir=$(find ${1:-.} -type d \
@@ -112,6 +119,8 @@ function fcd() {
     ) && cd "$dir"
 }
 
+# Gitコミットログをfzfで閲覧・選択
+# 使用例: fshowでコミット一覧を表示、Enterで詳細表示
 function fshow() {
     git log \
         --graph \
@@ -129,6 +138,8 @@ function fshow() {
     FZF-EOF"
 }
 
+# Gitの変更ファイルをfzfで選択してadd
+# 使用例: faddで変更ファイル一覧から選択、Tabで複数選択可能
 function fadd() {
     # gitリポジトリ内かチェック
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
@@ -152,6 +163,8 @@ function fadd() {
     fi
 }
 
+# SSH接続先をfzfで選択して接続
+# 使用例: fsshで~/.ssh/configに定義されたホスト一覧から選択
 function fssh() {
     if [[ ! -f ~/.ssh/config ]]; then
         echo "SSH config file not found"
