@@ -1,17 +1,20 @@
 # --------------------------------------
-# Centralized PATH Management
+# Environment Configuration - PATH management and core functions
 # --------------------------------------
-# このファイルですべてのPATH設定を一元管理する
+# このファイルでPATH設定とコア機能を一元管理する
+# Note: Locale settings are centralized in .zprofile
+
+# === PATH Management ===
 # 重複を防ぐため、add_to_path関数を使用してパスを追加する
 
-# === 基本システムパス ===
+# 基本システムパス
 add_to_path "/usr/local/bin"
 add_to_path "/usr/local/sbin"
 
-# === dotfiles関連 ===
+# dotfiles関連
 add_to_path "$HOME/dotfiles/bin"
 
-# === Homebrew ===
+# Homebrew
 # 環境変数は.zshenvで設定済み
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
     add_to_path "$HOMEBREW_PREFIX/bin"
@@ -88,7 +91,24 @@ if [[ -d "$HOME/.local/aws-cli/v2/current/bin" ]]; then
     add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 fi
 
-# === PATH重複チェック機能 ===
+# === Core Functions ===
+
+# ディレクトリ変更時自動実行
+function chpwd() {
+    pwd
+    local file_count=$(ls -1A 2>/dev/null | wc -l)
+    if [[ $file_count -lt 50 ]]; then
+        eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --extended --git --git-repos --time-style long-iso
+    else
+        ls
+    fi
+}
+
+# PATH表示関数
+function path_show() { echo -e ${PATH//:/'\n'} }
+
+# === PATH管理ユーティリティ ===
+
 # デバッグ用：重複したPATHエントリを表示
 check_path_duplicates() {
     echo "=== PATH Entries ==="
@@ -98,7 +118,6 @@ check_path_duplicates() {
     echo "$PATH" | tr ':' '\n' | sort | uniq -d
 }
 
-# === PATH最適化機能 ===
 # 重複を削除してPATHを最適化
 optimize_path() {
     local new_path=""
