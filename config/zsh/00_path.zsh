@@ -12,19 +12,10 @@ add_to_path "/usr/local/sbin"
 add_to_path "$HOME/dotfiles/bin"
 
 # === Homebrew ===
-if [[ -x "/opt/homebrew/bin/brew" ]]; then
-    # Apple Silicon Mac
-    export HOMEBREW_PREFIX="/opt/homebrew"
-    export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
-    export HOMEBREW_REPOSITORY="/opt/homebrew"
-    add_to_path "/opt/homebrew/bin"
-    add_to_path "/opt/homebrew/sbin"
-elif [[ -x "/usr/local/bin/brew" ]]; then
-    # Intel Mac
-    export HOMEBREW_PREFIX="/usr/local"
-    export HOMEBREW_CELLAR="/usr/local/Cellar"
-    export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
-    # /usr/local/binは既に追加済み
+# 環境変数は.zshenvで設定済み
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+    add_to_path "$HOMEBREW_PREFIX/bin"
+    add_to_path "$HOMEBREW_PREFIX/sbin"
 fi
 
 # === プログラミング言語関連 ===

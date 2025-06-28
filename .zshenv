@@ -18,7 +18,18 @@ source "$HOME/dotfiles/config/zsh/helpers.zsh"
 # refs. https://this.aereal.org/entry/zsh-path-helper
 unsetopt GLOBAL_RCS
 
-# Homebrew environment variables are set in config/zsh/00_path.zsh
+# Homebrew - set environment variables once (used by multiple files)
+if [[ -x "/opt/homebrew/bin/brew" ]]; then
+    # Apple Silicon Mac
+    export HOMEBREW_PREFIX="/opt/homebrew"
+    export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+    export HOMEBREW_REPOSITORY="/opt/homebrew"
+elif [[ -x "/usr/local/bin/brew" ]]; then
+    # Intel Mac
+    export HOMEBREW_PREFIX="/usr/local"
+    export HOMEBREW_CELLAR="/usr/local/Cellar"
+    export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+fi
 
 # Language-specific paths are managed in config/zsh/00_path.zsh
 
