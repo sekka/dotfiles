@@ -50,3 +50,8 @@ zstyle ':completion:*' verbose true
 # プロセス補完の詳細設定
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+
+# 追加の補完最適化設定
+zstyle ':completion:*' group-name ''              # 補完候補をタイプ別にグループ化
+zstyle ':completion:*' squeeze-slashes true       # 重複するスラッシュを削除
+zstyle ':completion:*' special-dirs true          # . と .. ディレクトリも補完対象に含める

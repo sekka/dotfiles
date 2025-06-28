@@ -46,3 +46,12 @@ setopt combining_chars        # 結合文字を正しく表示
 setopt no_clobber             # リダイレクト(>)での既存ファイル上書きを防止。上書きには>!または>|を使用
 setopt rm_star_wait           # rm * 実行時に10秒間の確認待機。誤って全ファイル削除を防ぐ
 setopt hist_ignore_space      # スペースで始まるコマンドを履歴に残さない。パスワード等の機密情報入力時に使用
+setopt no_all_export          # 変数の自動エクスポートを防止
+setopt no_global_export       # 関数の自動エクスポートを防止
+setopt warn_create_global     # 関数内でグローバル変数作成時に警告
+setopt pipe_fail              # パイプラインの右側のコマンドがエラーの場合、全体をエラーとする
+
+# --- パフォーマンス強化オプション ---
+setopt no_bg_nice             # バックグラウンドジョブの優先度を下げない
+setopt no_hup                 # シェル終了時にジョブにHUPシグナルを送らない
+setopt no_check_jobs          # シェル終了時にジョブの確認をスキップ（高速化）
