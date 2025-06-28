@@ -2,7 +2,6 @@
 bindkey -e
 
 # 親ディレクトリ移動関数
-
 function cdup() {
    echo
    cd ..

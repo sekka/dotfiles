@@ -58,10 +58,10 @@ function tmux_automatically_attach_session()
                 local tmux_config_file="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
                 local dotfiles_dir="${HOME}/dotfiles"
                 local tmux_session_script="$dotfiles_dir/.tmux/new-session"
-                
+
                 # フォールバック: 従来の設定ファイルパス
                 [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
-                
+
                     tmux_config=$(cat "$tmux_config_file" <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
                 tmux -f <(echo "$tmux_config") new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
             else

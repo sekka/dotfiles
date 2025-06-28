@@ -11,7 +11,7 @@ function fzf-select-history() {
         echo "Error: fzf is not installed"
         return 1
     fi
-    
+
     local tac selected
     # tacコマンドの検出（よりポータブルな方法）
     if command -v tac >/dev/null 2>&1; then
@@ -22,10 +22,10 @@ function fzf-select-history() {
         echo "Error: Neither 'tac' nor 'tail' command available"
         return 1
     fi
-    
+
     # 履歴の取得と選択（エラーハンドリング付き）
     selected=$(history -n 1 | eval "$tac" | fzf --query "$LBUFFER") || return
-    
+
     if [[ -n "$selected" ]]; then
         BUFFER="$selected"
         CURSOR=$#BUFFER
@@ -45,10 +45,10 @@ function fzf-src() {
         echo "Error: fzf is not installed"  
         return 1
     fi
-    
+
     local selected_dir
     selected_dir=$(ghq list -p 2>/dev/null | fzf --query "$LBUFFER" --preview "bat --color=always --style=header,grid --line-range :80 {}/README.* 2>/dev/null || ls -la {}") || return
-    
+
     if [[ -n "$selected_dir" ]] && [[ -d "$selected_dir" ]]; then
         BUFFER="cd ${selected_dir}"
         zle accept-line
@@ -67,9 +67,9 @@ function fzf-git-branch() {
         echo "Not a git repository"
         return 1
     fi
-    
+
     local branches branch include_remote=false
-    
+
     # -rオプションでリモートブランチも含める
     if [[ "$1" == "-r" ]]; then
         include_remote=true
@@ -77,7 +77,7 @@ function fzf-git-branch() {
     else
         branches=$(git branch | sed 's/^[* ] //')
     fi
-    
+
     branch=$(echo "$branches" | fzf \
         --preview "git show --color=always --stat {}" \
         --preview-window=right:60%:wrap \
@@ -85,7 +85,7 @@ function fzf-git-branch() {
         --bind "ctrl-r:reload(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')" \
         --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')"
     )
-    
+
     if [[ -n "$branch" ]]; then
         # リモートブランチの場合はorigin/を削除
         branch=$(echo "$branch" | sed 's#^origin/##')
@@ -135,7 +135,7 @@ function fadd() {
         echo "Not a git repository"
         return 1
     fi
-    
+
     local files
     files=$(git status --porcelain | awk '{print $2}' | fzf \
         --multi \
@@ -144,7 +144,7 @@ function fadd() {
         --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
         --bind "ctrl-d:execute(git diff --color=always {} | less -R)"
     )
-    
+
     if [[ -n "$files" ]]; then
         echo "$files" | xargs git add
         echo "Added files:"
@@ -157,14 +157,14 @@ function fssh() {
         echo "SSH config file not found"
         return 1
     fi
-    
+
     local host
     host=$(awk '/^Host / {print $2}' ~/.ssh/config | grep -v '*' | fzf \
         --preview "grep -A 10 '^Host {}' ~/.ssh/config" \
         --preview-window=right:40%:wrap \
         --header "Select SSH host"
     )
-    
+
     if [[ -n "$host" ]]; then
         ssh "$host"
     fi
