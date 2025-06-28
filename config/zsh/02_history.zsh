@@ -31,6 +31,3 @@ setopt EXTENDED_HISTORY         # 実行時間とタイムスタンプを記録
 
 # ヒストリ展開
 setopt BANG_HIST                # !を使ったヒストリ展開を行う
-
-# glob展開のバグを修正
-setopt nonomatch

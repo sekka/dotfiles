@@ -33,6 +33,7 @@ setopt path_dirs              # スラッシュを含むコマンド名でもパ
 # グロブとパターンマッチの改善
 setopt numeric_glob_sort      # 数値を含むファイル名を数値順でソート
 setopt glob_dots              # ドットファイルもグロブ対象に含める（明示的に指定時）
+setopt nonomatch              # グロブパターンにマッチしない場合もエラーにしない
 
 # ジョブ制御の改善
 setopt long_list_jobs         # ジョブの詳細情報を表示
