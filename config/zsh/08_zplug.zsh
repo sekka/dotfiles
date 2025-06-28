@@ -1,13 +1,10 @@
 # zplug初期化
-local homebrew_arm64="/opt/homebrew"
-local homebrew_x86="/usr/local"
+# HOMEBREW_PREFIXは.zshenvで設定済み
+if [[ -n "$HOMEBREW_PREFIX" ]] && [[ -d "$HOMEBREW_PREFIX/opt/zplug" ]]; then
+    export ZPLUG_HOME="$HOMEBREW_PREFIX/opt/zplug"
+fi
+
 if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
-    source "$ZPLUG_HOME/init.zsh"
-elif [[ -d "$homebrew_arm64/opt/zplug" ]]; then
-    export ZPLUG_HOME="$homebrew_arm64/opt/zplug"
-    source "$ZPLUG_HOME/init.zsh"
-elif [[ -d "$homebrew_x86/opt/zplug" ]]; then
-    export ZPLUG_HOME="$homebrew_x86/opt/zplug"
     source "$ZPLUG_HOME/init.zsh"
 else
     echo "Warning: zplug not found. Please install via 'brew install zplug'"
