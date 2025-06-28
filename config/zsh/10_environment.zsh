@@ -94,7 +94,7 @@ function chpwd() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
     if [[ $file_count -lt 50 ]]; then
-        eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --extended --git --git-repos --time-style long-iso
+        eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --git --git-repos --time-style long-iso
     else
         ls
     fi

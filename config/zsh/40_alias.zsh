@@ -1,6 +1,6 @@
 # ファイル操作系エイリアス
 alias l="eza"
-alias lsa="eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --extended --git --git-repos --time-style long-iso"
+alias lsa="eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --git --git-repos --time-style long-iso"
 
 alias tree="tree -NC"
 alias rm='rm -i'
