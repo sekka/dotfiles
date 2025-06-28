@@ -29,8 +29,8 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 # --------------------------------------
 
 # anyenv - unified version manager (heavy operation)
-if [[ -d "$HOME/.anyenv" ]] && ! command -v anyenv >/dev/null 2>&1; then
-    add_to_path "$HOME/.anyenv/bin"
+# PATH is managed in config/zsh/00_path.zsh
+if [[ -d "$HOME/.anyenv" ]] && command -v anyenv >/dev/null 2>&1; then
     eval "$(anyenv init -)"
 fi
 
@@ -45,14 +45,9 @@ if [[ -f "$HOME/.cargo/env" ]]; then
 fi
 
 # volta - Node.js version manager
+# PATH is managed in config/zsh/00_path.zsh
 if [[ -d "$HOME/.volta" ]]; then
     export VOLTA_HOME="$HOME/.volta"
-    add_to_path "$VOLTA_HOME/bin"
 fi
 
-# zplug path setup (for 08_zplug.zsh)
-if [[ -d "/opt/homebrew/opt/zplug" ]]; then
-    export ZPLUG_HOME="/opt/homebrew/opt/zplug"
-elif [[ -d "/usr/local/opt/zplug" ]]; then
-    export ZPLUG_HOME="/usr/local/opt/zplug"
-fi
+# zplug path setup is now handled in 08_zplug.zsh
