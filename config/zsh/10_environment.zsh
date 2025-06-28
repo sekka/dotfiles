@@ -103,7 +103,7 @@ function chpwd() {
 # PATH表示関数
 function path_show() { echo -e ${PATH//:/'\n'} }
 
-# === PATH管理ユーテリティ ===
+# === PATH管理ユーティリティ ===
 # デバッグ用：重複したPATHエントリを表示
 check_path_duplicates() {
     echo "=== PATH Entries ==="
