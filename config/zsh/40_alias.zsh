@@ -57,4 +57,7 @@ elif which xsel >/dev/null 2>&1 ; then
 elif which putclip >/dev/null 2>&1 ; then
     alias -g C='| putclip'
 fi
+
 alias shreboot='exec $SHELL -l'
+
+alias claude="$HOME/.claude/local/claude"
