@@ -74,6 +74,8 @@ echo "# ========================================================================
 echo "# dotdilesにシンボリックリンクを貼る"
 
 DOT_FILES=(\
+    .claude/CLAUDE.md \
+    .claude/settings.local.json \
     .gemini/settings.json \
     .gitconfig \
     .gitcommit_template \
