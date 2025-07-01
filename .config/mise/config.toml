@@ -51,6 +51,10 @@ git log \
     --pretty='format:%C(yellow)commit %H%C(reset)%C(red)%d%C(reset)%nAuthor: %C(blue)%an <%ae>%C(reset)%nDate:   %C(green)%ad%C(reset)%n%n    %s%n'
 """
 
+[tasks.git-util-reviewit]
+description = "コードレビューを開く"
+run = "npx reviewit"
+
 [tasks.git-util-hbr]
 description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
