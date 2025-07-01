@@ -74,9 +74,10 @@ echo "# ========================================================================
 echo "# dotdilesにシンボリックリンクを貼る"
 
 DOT_FILES=(\
-    .config/mise/config.toml \
+    .agignore \
     .claude/CLAUDE.md \
     .claude/settings.local.json \
+    .config/mise/config.toml \
     .gemini/settings.json \
     .gitconfig \
     .gitcommit_template \
@@ -84,11 +85,10 @@ DOT_FILES=(\
     .gitignore_global \
     .tigrc \
     .tmux.conf \
-    .zshrc \
-    .zshenv \
-    .zprofile \
     .vimrc \
-    .agignore \
+    .zprofile \
+    .zshenv \
+    .zshrc \
 )
 
 for file in ${DOT_FILES[@]}
