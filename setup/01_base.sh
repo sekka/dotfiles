@@ -74,6 +74,7 @@ echo "# ========================================================================
 echo "# dotdilesにシンボリックリンクを貼る"
 
 DOT_FILES=(\
+    .config/mise/config.toml \
     .claude/CLAUDE.md \
     .claude/settings.local.json \
     .gemini/settings.json \

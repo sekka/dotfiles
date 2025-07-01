@@ -43,11 +43,6 @@ alias -g CL='| color'
 
 alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
 
-# システム系エイリアス
-alias envpath='envpath1'
-alias envpath1="echo $PATH | sed 's/:/\\n/g'"
-alias envpath2="echo $PATH | sed 's/:/\n/g'"
-
 # クリップボード連携
 if which pbcopy >/dev/null 2>&1 ; then
     # Mac
@@ -57,7 +52,5 @@ elif which xsel >/dev/null 2>&1 ; then
 elif which putclip >/dev/null 2>&1 ; then
     alias -g C='| putclip'
 fi
-
-alias shreboot='exec $SHELL -l'
 
 alias claude="$HOME/.claude/local/claude"

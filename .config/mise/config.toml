@@ -1,0 +1,97 @@
+[tasks.rust-rtop]
+description = "システムモニタリング"
+run = "rtop"
+
+[tasks.rust-procs]
+description = "プロセスモニタリング"
+run = "procs"
+
+[tasks.rust-cargo-update]
+description = "cargo update"
+run = "cargo install-update -a"
+
+[tasks.git-client-tig]
+description = "gitクライアント"
+run = "tig"
+
+[tasks.git-client-gitui]
+description = "gitクライアント"
+run = "gitui"
+
+[tasks.git-client-lazygit]
+description = "gitクライアント"
+run = "lazygit"
+
+[tasks.git-log-glog]
+description = "シンプルなワンライン表示"
+run = """
+git log \
+    --graph \
+    --date=short \
+    --pretty='format:%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an%C(reset)%C(red)%d%C(reset) %s'
+"""
+
+[tasks.git-log-glogd]
+description = "詳細表示（相対時間、全ブランチ）"
+run = """
+git log \
+    --graph \
+    --all \
+    --date=relative \
+    --pretty='format:%C(yellow)%h%C(reset) %C(green)(%ar)%C(reset) %C(blue)%an%C(reset)%C(red)%d%C(reset) %s'
+"""
+
+[tasks.git-log-glogs]
+description = "統計情報付き詳細表示（変更ファイル数表示）"
+run = """
+git log \
+    --graph \
+    --stat \
+    --date=iso \
+    --pretty='format:%C(yellow)commit %H%C(reset)%C(red)%d%C(reset)%nAuthor: %C(blue)%an <%ae>%C(reset)%nDate:   %C(green)%ad%C(reset)%n%n    %s%n'
+"""
+
+[tasks.git-util-hbr]
+description = "リポジトリをブラウザで開く"
+run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
+
+[tasks.system-envpath]
+description = "envpath"
+run = "echo $PATH | sed 's/:/\\n/g'"
+
+[tasks.system-shreboot]
+description = "SHELL再起動"
+run = "exec $SHELL -l"
+
+[tasks.util-hexyl]
+description = "pecoでファイルを選択してhexylで表示"
+run = '''
+file=$(find . -maxdepth 1 -type f | sort | peco)
+if [ -n "$file" ]; then
+    hexyl "$file"
+fi
+'''
+
+[tasks.util-bat]
+description = "pecoでファイルを選択してbatで表示"
+run = '''
+file=$(find . -maxdepth 1 -type f | sort | peco)
+if [ -n "$file" ]; then
+    bat "$file"
+fi
+'''
+
+
+
+[tasks.aws-sso-login]
+alias = "al"
+description = "SSOでログインして、現在のセッションに認証情報を設定する"
+run = "aws sso login"
+
+[tasks.gh-list-deploy]
+description = "デプロイの実行履歴を表示する"
+run = """
+gh run list \
+    --repo firstcontributions/first-contributions \
+    --limit 10
+"""

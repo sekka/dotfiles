@@ -32,6 +32,7 @@ brew "ghq"                # https://formulae.brew.sh/formula/ghq      # git clon
 brew "gh"                 # https://formulae.brew.sh/formula/gh       # GitHubコマンドラインツール
 brew "tig"                # https://formulae.brew.sh/formula/tig      # gitクライアント
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
+brew "gitui"              # https://formulae.brew.sh/formula/gitui    # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
