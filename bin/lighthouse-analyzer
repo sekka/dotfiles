@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# Lighthouse自動分析スクリプト
+# 使用法: ./lighthouse-analyzer.sh <URL> <実行回数> <間隔(秒)> [出力ディレクトリ]
+
+set -e
+
+# 引数チェック
+if [ $# -lt 3 ]; then
+    echo "使用法: $0 <URL> <実行回数> <間隔(秒)> [出力ディレクトリ]"
+    echo "例: $0 https://example.com 5 60 ./results"
+    exit 1
+fi
+
+URL="$1"
+COUNT="$2"
+INTERVAL="$3"
+OUTPUT_DIR="${4:-./lighthouse-results}"
+
+# 出力ディレクトリ作成
+mkdir -p "$OUTPUT_DIR"
+
+echo "Lighthouse分析を開始します"
+echo "URL: $URL"
+echo "実行回数: $COUNT"
+echo "間隔: ${INTERVAL}秒"
+echo "出力先: $OUTPUT_DIR"
+echo ""
+
+# URLからファイル名用の文字列を生成
+URL_SANITIZED=$(echo "$URL" | sed -E 's|^https?://||' | sed 's|[^a-zA-Z0-9._-]|_|g' | sed 's|_+|_|g' | sed 's|^_||' | sed 's|_$||')
+
+# 実行開始
+for i in $(seq 1 $COUNT); do
+    echo "[$i/$COUNT] 分析実行中..."
+    
+    # タイムスタンプ付きファイル名（URL情報を含む）
+    TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+    OUTPUT_FILE="$OUTPUT_DIR/lighthouse_${URL_SANITIZED}_${TIMESTAMP}.json"
+    
+    # Lighthouse実行
+    lighthouse "$URL" \
+        --chrome-flags="--headless" \
+        --output=json \
+        --output-path="$OUTPUT_FILE" \
+        --form-factor=desktop \
+        --screenEmulation.mobile=false \
+        --screenEmulation.width=1350 \
+        --screenEmulation.height=940 \
+        --screenEmulation.deviceScaleFactor=1 \
+        --throttling-method=provided \
+        --only-categories=performance,accessibility,best-practices,seo,pwa \
+        --quiet
+    
+    echo "  結果保存: $OUTPUT_FILE"
+    
+    # 最後の実行でない場合は待機
+    if [ $i -lt $COUNT ]; then
+        echo "  ${INTERVAL}秒待機中..."
+        sleep "$INTERVAL"
+    fi
+done
+
+echo ""
+echo "すべての分析が完了しました"
+echo "結果は $OUTPUT_DIR に保存されています"
+
+# 結果サマリー生成
+SUMMARY_FILE="$OUTPUT_DIR/summary_${URL_SANITIZED}_$(date +"%Y%m%d_%H%M%S").txt"
+echo "=== Lighthouse分析サマリー ===" > "$SUMMARY_FILE"
+echo "URL: $URL" >> "$SUMMARY_FILE"
+echo "実行回数: $COUNT" >> "$SUMMARY_FILE"
+echo "実行日時: $(date)" >> "$SUMMARY_FILE"
+echo "" >> "$SUMMARY_FILE"
+
+# JSONファイルから主要スコアを抽出
+echo "各実行のスコア:" >> "$SUMMARY_FILE"
+for json_file in "$OUTPUT_DIR"/lighthouse_${URL_SANITIZED}_*.json; do
+    if [ -f "$json_file" ]; then
+        filename=$(basename "$json_file")
+        echo "ファイル: $filename" >> "$SUMMARY_FILE"
+        
+        # jqがインストールされている場合はスコアを抽出
+        if command -v jq > /dev/null 2>&1; then
+            echo "  Performance: $(jq -r '.categories.performance.score * 100 | floor' "$json_file")%" >> "$SUMMARY_FILE"
+            echo "  Accessibility: $(jq -r '.categories.accessibility.score * 100 | floor' "$json_file")%" >> "$SUMMARY_FILE"
+            echo "  Best Practices: $(jq -r '.categories["best-practices"].score * 100 | floor' "$json_file")%" >> "$SUMMARY_FILE"
+            echo "  SEO: $(jq -r '.categories.seo.score * 100 | floor' "$json_file")%" >> "$SUMMARY_FILE"
+            if jq -e '.categories.pwa' "$json_file" > /dev/null 2>&1; then
+                echo "  PWA: $(jq -r '.categories.pwa.score * 100 | floor' "$json_file")%" >> "$SUMMARY_FILE"
+            fi
+        fi
+        echo "" >> "$SUMMARY_FILE"
+    fi
+done
+
+echo "サマリー保存: $SUMMARY_FILE"
