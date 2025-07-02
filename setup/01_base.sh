@@ -77,7 +77,6 @@ DOT_FILES=(\
     .agignore \
     .claude/CLAUDE.md \
     .claude/settings.local.json \
-    .config/mise/config.toml \
     .gemini/settings.json \
     .gitconfig \
     .gitcommit_template \
@@ -107,7 +106,8 @@ echo "# =========================================================="
 echo "# .config/にシンボリックリンクを貼る"
 
 CONFIG_DIRS=(\
-   zellij \
+    mise \
+    zellij \
 )
 
 for dirs in ${CONFIG_DIRS[@]}
