@@ -1,14 +1,22 @@
 #!/bin/bash
 
 # Lighthouse自動分析スクリプト
-# 使用法: ./lighthouse-analyzer.sh <URL> <実行回数> <間隔(秒)> [出力ディレクトリ]
+# 使用法: ./lighthouse-analyzer.sh <URL> <実行回数> <間隔(秒)> [出力ディレクトリ] [--auth]
 
 set -e
 
 # 引数チェック
 if [ $# -lt 3 ]; then
-    echo "使用法: $0 <URL> <実行回数> <間隔(秒)> [出力ディレクトリ]"
+    echo "使用法: $0 <URL> <実行回数> <間隔(秒)> [出力ディレクトリ] [--auth] [--profile=ProfileName]"
     echo "例: $0 https://example.com 5 60 ./results"
+    echo "例（認証必要）: $0 https://example.com 5 60 ./results --auth"
+    echo "例（特定プロファイル）: $0 https://example.com 5 60 ./results --auth --profile=\"Profile 1\""
+    echo ""
+    echo "利用可能なプロファイル:"
+    CHROME_DIR="$HOME/Library/Application Support/Google/Chrome"
+    if [ -d "$CHROME_DIR" ]; then
+        ls -1 "$CHROME_DIR" | grep -E "^(Default|Profile [0-9]+)$" | sed 's/^/  - /'
+    fi
     exit 1
 fi
 
@@ -16,6 +24,31 @@ URL="$1"
 COUNT="$2"
 INTERVAL="$3"
 OUTPUT_DIR="${4:-./lighthouse-results}"
+USE_AUTH=false
+CHROME_PROFILE="Default"
+
+# 引数解析（オプション処理を改善）
+shift 3  # 最初の3つの必須引数をスキップ
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --auth)
+            USE_AUTH=true
+            shift
+            ;;
+        --profile=*)
+            CHROME_PROFILE="${1#*=}"
+            shift
+            ;;
+        *)
+            # 出力ディレクトリとして扱う（まだ設定されていない場合）
+            if [[ "$OUTPUT_DIR" == "./lighthouse-results" ]]; then
+                OUTPUT_DIR="$1"
+            fi
+            shift
+            ;;
+    esac
+done
 
 # 出力ディレクトリ作成
 mkdir -p "$OUTPUT_DIR"
@@ -25,6 +58,22 @@ echo "URL: $URL"
 echo "実行回数: $COUNT"
 echo "間隔: ${INTERVAL}秒"
 echo "出力先: $OUTPUT_DIR"
+if [ "$USE_AUTH" = true ]; then
+    echo "認証: 有効（Chromeプロファイル使用）"
+    echo "プロファイル: $CHROME_PROFILE"
+    
+    # プロファイルの存在チェック
+    CHROME_DIR="$HOME/Library/Application Support/Google/Chrome"
+    PROFILE_PATH="$CHROME_DIR/$CHROME_PROFILE"
+    if [ ! -d "$PROFILE_PATH" ]; then
+        echo "❌ エラー: プロファイル '$CHROME_PROFILE' が見つかりません"
+        echo "利用可能なプロファイル:"
+        ls -1 "$CHROME_DIR" | grep -E "^(Default|Profile [0-9]+)$" | sed 's/^/  - /'
+        exit 1
+    fi
+    
+    echo "⚠️  注意: 分析中はChromeブラウザを閉じることをお勧めします"
+fi
 echo ""
 
 # URLからファイル名用の文字列を生成
@@ -38,9 +87,19 @@ for i in $(seq 1 $COUNT); do
     TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
     OUTPUT_FILE="$OUTPUT_DIR/lighthouse_${URL_SANITIZED}_${TIMESTAMP}.json"
     
-    # Lighthouse実行
-    lighthouse "$URL" \
-        --chrome-flags="--headless" \
+    # Chrome設定を認証オプションに応じて変更
+    if [ "$USE_AUTH" = true ]; then
+        CHROME_USER_DATA_DIR="$HOME/Library/Application Support/Google/Chrome"
+        CHROME_FLAGS="--user-data-dir=$CHROME_USER_DATA_DIR --profile-directory=$CHROME_PROFILE"
+        echo "  🔐 認証付きモード（$CHROME_PROFILE）で分析中..."
+    else
+        CHROME_FLAGS="--headless"
+        echo "  🔍 通常モードで分析中..."
+    fi
+    
+    # Lighthouse実行（エラーハンドリング付き）
+    if lighthouse "$URL" \
+        --chrome-flags="$CHROME_FLAGS" \
         --output=json \
         --output-path="$OUTPUT_FILE" \
         --form-factor=desktop \
@@ -50,7 +109,12 @@ for i in $(seq 1 $COUNT); do
         --screenEmulation.deviceScaleFactor=1 \
         --throttling-method=provided \
         --only-categories=performance,accessibility,best-practices,seo,pwa \
-        --quiet
+        --enable-error-reporting=false \
+        --quiet 2>/dev/null; then
+        echo "  ✅ 分析完了"
+    else
+        echo "  ⚠️  警告: 分析中にエラーが発生しましたが、結果は保存されています"
+    fi
     
     echo "  結果保存: $OUTPUT_FILE"
     
