@@ -4,7 +4,7 @@ setopt correct                # 入力しているコマンド名が間違って
 setopt prompt_subst           # 色を使う
 setopt ignore_eof             # ^Dでログアウトしない
 setopt no_flow_control        # ^Q/^Sのフローコントロールを無効にする
-setopt no_tify                # バックグラウンドジョブが終了したらすぐに知らせる
+setopt notify                 # バックグラウンドジョブが終了したらすぐに知らせる
 setopt interactive_comments   # '#' 以降をコメントとして扱う
 setopt auto_cd                # ディレクトリ名だけでcdする
 setopt auto_pushd             # cd したら自動的にpushdする
