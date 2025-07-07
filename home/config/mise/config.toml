@@ -1,30 +1,39 @@
-[tasks.llm-claude-ccusage]
-description = "Claude Codeのセッション使用状況を表示"
-run = "npx ccusage@latest"
+[tasks.aws-sso-login]
+alias = "al"
+description = "SSOでログインして、現在のセッションに認証情報を設定する"
+run = "aws sso login"
 
-[tasks.llm-claude-ccsearch]
-description = "Claude Codeのセッション検索・共有"
-run = "npx ccsearch@latest"
+[tasks.dev-update-browserslist]
+description = "Browserslistのデータベースを更新する"
+run = "npx browserslist@latest --update-db"
 
-[tasks.llm-claude-ccresume]
-description = "Claude Codeのclaude --resumeを使いやすくする"
-run = "npx @sasazame/ccresume@latest"
+[tasks.format]
+description = "全ファイルのformatを実行"
+run = """
+echo "🎨 Formatting files..."
+# シェルスクリプト（zshファイルを除外）
+find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
+# Markdown, YAML, JSON
+prettier --write "**/*.{md,yaml,yml,json}"
+# TOML
+find . -name "*.toml" -type f -exec taplo format {} +
+echo "✨ Formatting complete!"
+"""
 
-[tasks.rust-rtop]
-description = "システムモニタリング"
-run = "rtop"
+[tasks.format-sh]
+description = "シェルスクリプトのformatを実行"
+run = """
+echo "🎨 Formatting shell scripts..."
+find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
+"""
 
-[tasks.rust-procs]
-description = "プロセスモニタリング"
-run = "procs"
-
-[tasks.rust-cargo-update]
-description = "cargo update"
-run = "cargo install-update -a"
-
-[tasks.git-client-tig]
-description = "gitクライアント"
-run = "tig"
+[tasks.gh-list-deploy]
+description = "デプロイの実行履歴を表示する"
+run = """
+gh run list \
+    --repo firstcontributions/first-contributions \
+    --limit 10
+"""
 
 [tasks.git-client-gitui]
 description = "gitクライアント"
@@ -33,6 +42,10 @@ run = "gitui"
 [tasks.git-client-lazygit]
 description = "gitクライアント"
 run = "lazygit"
+
+[tasks.git-client-tig]
+description = "gitクライアント"
+run = "tig"
 
 [tasks.git-log-glog]
 description = "シンプルなワンライン表示"
@@ -63,6 +76,10 @@ git log \
     --pretty='format:%C(yellow)commit %H%C(reset)%C(red)%d%C(reset)%nAuthor: %C(blue)%an <%ae>%C(reset)%nDate:   %C(green)%ad%C(reset)%n%n    %s%n'
 """
 
+[tasks.git-util-hbr]
+description = "リポジトリをブラウザで開く"
+run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
+
 [tasks.git-util-reviewit-browser]
 description = "コードレビューを開く"
 run = "npx reviewit@latest"
@@ -70,57 +87,6 @@ run = "npx reviewit@latest"
 [tasks.git-util-reviewit-tui]
 description = "コードレビューをTUIで開く"
 run = "npx reviewit@latest --tui"
-
-[tasks.git-util-hbr]
-description = "リポジトリをブラウザで開く"
-run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
-
-[tasks.dev-update-browserslist]
-description = "Browserslistのデータベースを更新する"
-run = "npx browserslist@latest --update-db"
-
-[tasks.system-envpath]
-description = "envpath"
-run = "echo $PATH | sed 's/:/\\n/g'"
-
-[tasks.system-envsort]
-description = "環境変数をアルファベット順でソートして表示"
-run = "env | sort"
-
-[tasks.system-shreboot]
-description = "SHELL再起動"
-run = "exec $SHELL -l"
-
-[tasks.system-zsh-reload]
-description = "zshの設定を再読み込み"
-run = "source ~/.zshrc"
-
-[tasks.system-tmux-reload]
-description = "tmux設定を再読み込み"
-run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
-
-[tasks.util-hexyl]
-description = "pecoでファイルを選択してhexylで表示"
-run = '''
-file=$(find . -maxdepth 1 -type f | sort | peco)
-if [ -n "$file" ]; then
-    hexyl "$file"
-fi
-'''
-
-[tasks.util-bat]
-description = "pecoでファイルを選択してbatで表示"
-run = '''
-file=$(find . -maxdepth 1 -type f | sort | peco)
-if [ -n "$file" ]; then
-    bat "$file"
-fi
-'''
-
-
-# =============================================================================
-# Lint & Format タスク
-# =============================================================================
 
 [tasks.lint]
 description = "全ファイルのlintを実行"
@@ -142,25 +108,29 @@ echo "🔍 ShellCheck running..."
 find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -not -path "./.git/*" -exec shellcheck {} +
 """
 
-[tasks.format]
-description = "全ファイルのformatを実行"
-run = """
-echo "🎨 Formatting files..."
-# シェルスクリプト（bin/とsetup/1*,2*を除外）
-find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./home/config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
-# Markdown, YAML, JSON
-prettier --write "**/*.{md,yaml,yml,json}"
-# TOML
-find . -name "*.toml" -type f -exec taplo format {} +
-echo "✨ Formatting complete!"
-"""
+[tasks.llm-claude-ccresume]
+description = "Claude Codeのclaude --resumeを使いやすくする"
+run = "npx @sasazame/ccresume@latest"
 
-[tasks.format-sh]
-description = "シェルスクリプトのformatを実行"
-run = """
-echo "🎨 Formatting shell scripts..."
-find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./home/config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
-"""
+[tasks.llm-claude-ccsearch]
+description = "Claude Codeのセッション検索・共有"
+run = "npx ccsearch@latest"
+
+[tasks.llm-claude-ccusage]
+description = "Claude Codeのセッション使用状況を表示"
+run = "npx ccusage@latest"
+
+[tasks.rust-cargo-update]
+description = "cargo update"
+run = "cargo install-update -a"
+
+[tasks.rust-procs]
+description = "プロセスモニタリング"
+run = "procs"
+
+[tasks.rust-rtop]
+description = "システムモニタリング"
+run = "rtop"
 
 [tasks.setup-lint]
 description = "lintツールをセットアップ"
@@ -178,15 +148,40 @@ pre-commit install
 echo "✅ Setup complete!"
 """
 
-[tasks.aws-sso-login]
-alias = "al"
-description = "SSOでログインして、現在のセッションに認証情報を設定する"
-run = "aws sso login"
+[tasks.system-envpath]
+description = "envpath"
+run = "echo $PATH | sed 's/:/\\n/g'"
 
-[tasks.gh-list-deploy]
-description = "デプロイの実行履歴を表示する"
-run = """
-gh run list \
-    --repo firstcontributions/first-contributions \
-    --limit 10
-"""
+[tasks.system-envsort]
+description = "環境変数をアルファベット順でソートして表示"
+run = "env | sort"
+
+[tasks.system-shreboot]
+description = "SHELL再起動"
+run = "exec $SHELL -l"
+
+[tasks.system-tmux-reload]
+description = "tmux設定を再読み込み"
+run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
+
+[tasks.system-zsh-reload]
+description = "zshの設定を再読み込み"
+run = "source ~/.zshrc"
+
+[tasks.util-bat]
+description = "pecoでファイルを選択してbatで表示"
+run = '''
+file=$(find . -maxdepth 1 -type f | sort | peco)
+if [ -n "$file" ]; then
+    bat "$file"
+fi
+'''
+
+[tasks.util-hexyl]
+description = "pecoでファイルを選択してhexylで表示"
+run = '''
+file=$(find . -maxdepth 1 -type f | sort | peco)
+if [ -n "$file" ]; then
+    hexyl "$file"
+fi
+'''
