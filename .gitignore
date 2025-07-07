@@ -125,4 +125,4 @@ DerivedData/
 /*.gcno
 
 .env
-.claude/settings.local.json
+.claude/
