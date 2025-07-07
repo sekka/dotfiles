@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Claude コマンドの同期スクリプト
-# プロジェクトの .claude/commands/ から ~/.claude/commands/ へシンボリックリンクを作成
+# Claude Commands 同期スクリプト
+# 日常的な同期作業用 - 新しいコマンドファイルの追加や変更を反映
+# 
+# 初回セットアップの場合は setup/setup-claude.sh を実行してください
 
 # カラー定義
 GREEN='\033[0;32m'
@@ -13,12 +15,18 @@ NC='\033[0m' # No Color
 SOURCE_DIR="${HOME}/dotfiles/.claude/commands"
 TARGET_DIR="${HOME}/.claude/commands"
 
-echo "🔄 Claude コマンドの同期を開始します..."
+echo "🔄 Claude Commands の同期を開始します..."
 
-# ターゲットディレクトリが存在しない場合は作成
+# 前提条件チェック
 if [ ! -d "$TARGET_DIR" ]; then
-    echo "📁 ディレクトリを作成: $TARGET_DIR"
-    mkdir -p "$TARGET_DIR"
+    echo -e "${RED}❌ エラー:${NC} $TARGET_DIR が存在しません"
+    echo "💡 初回セットアップの場合は setup/setup-claude.sh を実行してください"
+    exit 1
+fi
+
+if [ ! -d "$SOURCE_DIR" ]; then
+    echo -e "${RED}❌ エラー:${NC} $SOURCE_DIR が存在しません"
+    exit 1
 fi
 
 # 同期カウンター
