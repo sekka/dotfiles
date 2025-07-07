@@ -3,8 +3,6 @@
 ## 重要
 
 - ユーザーとの対話には日本語を使う
-- 許可を求めるなど、タスクが中断する時は`afplay /System/Library/Sounds/Hero.aiff`を実行して通知音を鳴らしてください。
-- タスクが完了したら、`afplay /System/Library/Sounds/Sosumi.aiff`を実行して通知音を鳴らしてください。
 
 ## Core Development Rules
 
