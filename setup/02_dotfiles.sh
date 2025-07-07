@@ -43,7 +43,6 @@ echo "📁 .config/ ディレクトリにシンボリックリンクを作成...
 
 CONFIG_DIRS=(
   mise
-  zellij
 )
 
 # .config ディレクトリが存在しない場合は作成
@@ -72,4 +71,3 @@ echo "   ⏭️ スキップ: $skipped"
 echo ""
 echo "✨ dotfiles のセットアップが完了しました！"
 echo "💡 今後の設定変更は dotfiles/ ディレクトリで行ってください"
-

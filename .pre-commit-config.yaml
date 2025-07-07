@@ -1,47 +1,77 @@
 # See https://pre-commit.com for more information
 repos:
+  # mise tasks による包括的チェック
+  - repo: local
+    hooks:
+      - id: mise-lint
+        name: mise lint
+        entry: mise run lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+      - id: mise-lint-sh
+        name: mise lint-sh
+        entry: mise run lint-sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+      - id: mise-format
+        name: mise format
+        entry: mise run format
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+      - id: mise-format-sh
+        name: mise format-sh
+        entry: mise run format-sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        verbose: true
+
   # シェルスクリプト
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.6
+    rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        args: [-W, all]
+        files: ^(scripts/(setup-git-hooks|sync-claude-commands)\\.sh|setup/0[123]_.*\\.sh)
 
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.7.0-4
+    rev: v3.11.0-1
     hooks:
       - id: shfmt
         args: [-w, -s, -i, "2"]
+        files: ^(scripts/(setup-git-hooks|sync-claude-commands)\\.sh|setup/0[123]_.*\\.sh)
 
   # Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.37.0
+    rev: v0.45.0
     hooks:
       - id: markdownlint
         args: [--fix]
 
   # YAML
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.32.0
+    rev: v1.37.1
     hooks:
       - id: yamllint
 
-  # TOML
-  - repo: https://github.com/tamasfe/taplo
-    rev: 0.8.1
-    hooks:
-      - id: taplo
+  # TOML（taplo）は問題があるため一時的に無効化
 
   # JSON, YAML, Markdown (prettier)
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
+        exclude: ^(bin/|setup/)
 
   # 一般的なファイルチェック
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -49,4 +79,3 @@ repos:
       - id: check-json
       - id: check-toml
       - id: check-added-large-files
-

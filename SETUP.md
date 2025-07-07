@@ -47,6 +47,13 @@
 ./scripts/sync-claude-commands.sh
 ```
 
+### Git hooks の設定
+
+```bash
+# commit前のlint/formatチェックを自動化
+./scripts/setup-git-hooks.sh
+```
+
 ### その他の設定ファイル
 
 - dotfiles 内のファイルを直接編集すれば、自動的にシンボリックリンク経由で反映されます
@@ -67,14 +74,17 @@ dotfiles/
 │   └── ...                     # その他のセットアップスクリプト
 ├── scripts/                    # 日常的な作業用
 │   ├── sync-claude-commands.sh # Claude Commands 同期
+│   ├── setup-git-hooks.sh      # Git hooks セットアップ
 │   └── tmux/                   # tmux関連スクリプト
 ├── config/                     # .config/ ディレクトリ用設定
-│   ├── mise/
-│   └── zellij/
+│   └── mise/
 ├── .claude/                    # Claude関連設定
 │   ├── commands/               # Claudeコマンドファイル
 │   ├── CLAUDE.md              # Claude設定
 │   └── settings.json          # Claude設定
+├── .githooks/                  # Git hooks
+│   └── pre-commit              # commit前チェック
+├── .pre-commit-check.sh        # lint/formatチェックスクリプト
 └── .[dotfiles]                 # 各種設定ファイル
     ├── .zshrc
     ├── .gitconfig
@@ -111,3 +121,26 @@ dotfiles/
 - `scripts/` のスクリプトは必要に応じて実行
 - 既存ファイルがある場合は自動的にスキップされます
 
+## 🔧 コード品質管理
+
+### 自動チェック
+
+Git hooks により、commit前に以下のチェックが自動実行されます：
+
+- `mise run lint`: Markdown, YAML, TOMLファイルのlint
+- `mise run lint-sh`: シェルスクリプトのlint (ShellCheck)
+- `mise run format`: Markdown, YAML, TOMLファイルの整形
+- `mise run format-sh`: シェルスクリプトの整形 (shfmt)
+
+### 手動実行
+
+```bash
+# 手動でチェック実行
+./.pre-commit-check.sh
+
+# 個別実行
+mise run lint
+mise run lint-sh
+mise run format
+mise run format-sh
+```

@@ -45,7 +45,7 @@ function fzf-src() {
         return 1
     fi
     if ! command -v fzf >/dev/null 2>&1; then
-        echo "Error: fzf is not installed"  
+        echo "Error: fzf is not installed"
         return 1
     fi
 

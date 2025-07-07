@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Git pre-commit hook
+# mise tasks でlint/formatを実行し、全て成功した場合のみcommitを許可
+
+# dotfilesディレクトリでのチェック
+if [ -f ".pre-commit-check.sh" ]; then
+  ./.pre-commit-check.sh
+else
+  echo "⚠️  .pre-commit-check.sh が見つかりません"
+  exit 1
+fi

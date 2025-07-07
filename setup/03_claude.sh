@@ -123,4 +123,3 @@ echo "      ⏭️ スキップ: $commands_skipped"
 echo ""
 echo "✨ Claude Commands の初回セットアップが完了しました！"
 echo "💡 今後の Commands 同期は scripts/sync-claude-commands.sh を使用してください"
-

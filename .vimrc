@@ -250,7 +250,7 @@ filetype indent on
 
 
 " --------------------------------------
-" setting - copy 
+" setting - copy
 " --------------------------------------
 
 " OSのクリップボードを使う
@@ -320,4 +320,3 @@ imap <C-e> <C-o>$
 imap <C-a> <C-o>0
 imap <C-f> <C-o>W
 imap <C-b> <C-o>B
-

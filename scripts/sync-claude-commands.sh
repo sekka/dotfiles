@@ -94,4 +94,3 @@ echo "   ⏭️  スキップ: $skipped"
 
 echo ""
 echo "✨ 同期が完了しました！"
-

@@ -42,7 +42,10 @@
       "mcp__o3__o3-search",
       "mcp__context7__resolve-library-id",
       "Bash(git mv:*)",
-      "Bash(shellcheck:*)"
+      "Bash(shellcheck:*)",
+      "Bash(./scripts/setup-git-hooks.sh:*)",
+      "Bash(./.pre-commit-check.sh:*)",
+      "Bash(pre-commit:*)"
     ],
     "deny": []
   }
