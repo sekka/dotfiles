@@ -19,6 +19,7 @@
 ```
 
 対象ファイル：
+
 - `.zshrc`, `.zshenv`, `.zprofile` - zsh設定
 - `.gitconfig`, `.gitignore_global` - Git設定
 - `.tmux.conf` - tmux設定
