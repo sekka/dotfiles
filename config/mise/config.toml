@@ -113,6 +113,11 @@ if [ -n "$file" ]; then
 fi
 '''
 
+[tasks.tmux-reload]
+alias = "tr"
+description = "tmux設定を再読み込み"
+run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
+
 
 
 [tasks.aws-sso-login]
