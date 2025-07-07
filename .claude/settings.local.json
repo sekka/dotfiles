@@ -29,7 +29,8 @@
       "Bash(lighthouse-analyzer:*)",
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(claude config list)",
-      "Bash(claude config list:*)"
+      "Bash(claude config list:*)",
+      "Bash(gemini:*)"
     ],
     "deny": []
   }
