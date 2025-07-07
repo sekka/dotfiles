@@ -12,11 +12,11 @@ fi
 
 # バッテリーがある場合の処理（従来通り）
 battery=$(echo "$pmset_output" | awk '{ if (NR == 2) print $2 " " $3 }' | sed -e "s/;//g" -e "s/%//")
-battery_quantity=$(echo $battery | awk '{print $2}')
+battery_quantity=$(echo "$battery" | awk '{print $2}')
 
 if [[ ! $battery =~ "discharging" ]]; then
   echo "#[bg=blue,fg=white] ⚡ $battery_quantity% #[default]"
-elif [ $battery_quantity -le 15 ]; then
+elif [ "$battery_quantity" -le 15 ]; then
   echo "#[bg=red,fg=white] $battery_quantity% #[default]"
 else
   echo "#[bg=blue,fg=white] $battery_quantity% #[default]"

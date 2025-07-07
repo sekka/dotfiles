@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "$(uptime | awk '{print $(NF-2)}')"
+uptime | awk '{print $(NF-2)}'

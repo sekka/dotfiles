@@ -67,7 +67,7 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
-        exclude: ^(bin/|setup/)
+        exclude: ^(setup/)
 
   # 一般的なファイルチェック
   - repo: https://github.com/pre-commit/pre-commit-hooks
