@@ -37,14 +37,14 @@ repos:
     rev: v0.10.0.1
     hooks:
       - id: shellcheck
-        files: ^(scripts/(setup-git-hooks|sync-claude-commands)\\.sh|setup/0[123]_.*\\.sh)
+        files: ^(scripts/(setup|development|system)/.*\\.sh|setup/.*\\.sh)
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.11.0-1
     hooks:
       - id: shfmt
         args: [-w, -s, -i, "2"]
-        files: ^(scripts/(setup-git-hooks|sync-claude-commands)\\.sh|setup/0[123]_.*\\.sh)
+        files: ^(scripts/(setup|development|system)/.*\\.sh|setup/.*\\.sh)
 
   # Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
@@ -67,7 +67,6 @@ repos:
     hooks:
       - id: prettier
         types_or: [json, yaml, markdown]
-        exclude: ^(setup/)
 
   # 一般的なファイルチェック
   - repo: https://github.com/pre-commit/pre-commit-hooks

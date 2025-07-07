@@ -139,7 +139,7 @@ echo "✅ Lint checks completed"
 description = "シェルスクリプトのlintを実行"
 run = """
 echo "🔍 ShellCheck running..."
-find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shellcheck {} +
+find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -not -path "./.git/*" -exec shellcheck {} +
 """
 
 [tasks.format]
