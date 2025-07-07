@@ -40,10 +40,9 @@ brew autoremove
 
 echo "# ======================================================================================="
 echo "# copy cot"
-if [ ! -f /usr/local/bin/cot ]
-    then
-       echo "Copying Cot..."
-       sudo ln -s /Applications/CotEditor.app/Contents/SharedSupport/bin/cot /usr/local/bin/cot
-    else
-       echo "Cot already installed."
+if [ ! -f /usr/local/bin/cot ]; then
+    echo "Copying Cot..."
+    sudo ln -s /Applications/CotEditor.app/Contents/SharedSupport/bin/cot /usr/local/bin/cot
+else
+    echo "Cot already installed."
 fi

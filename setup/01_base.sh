@@ -15,12 +15,11 @@ softwareupdate --install-rosetta
 echo "# ======================================================================================="
 echo "# Homebrewを導入する"
 
-if [ ! -f /opt/homebrew/bin/brew ]
-    then
-       echo "Installing Homebrew..."
-       /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-    else
-       echo "Homebrew already installed."
+if [ ! -f /opt/homebrew/bin/brew ]; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+else
+    echo "Homebrew already installed."
 fi
 
 echo "# brew doctor"
@@ -31,12 +30,11 @@ brew doctor
 echo "# ======================================================================================="
 echo "# Rustを導入する"
 
-if [ ! -f $HOME/.cargo/bin/rustc ]
-    then
-       echo "Installing Rust..."
-       curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    else
-       echo "Rust already installed."
+if [ ! -f $HOME/.cargo/bin/rustc ]; then
+    echo "Installing Rust..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+else
+    echo "Rust already installed."
 fi
 
 
@@ -51,50 +49,46 @@ WHICH_ZSH="$(which zsh)"
 echo $WHICH_ZSH
 
 echo "# zshをshellリストに追加する"
-if [ ! $ETC_SHELLS = $WHICH_ZSH ]
-    then
-        echo "Adding zsh..."
-        # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
-        sudo sh -c 'echo $(which zsh) >> /etc/shells'
-    else
-        echo "zsh already added."
+if [ ! $ETC_SHELLS = $WHICH_ZSH ]; then
+    echo "Adding zsh..."
+    # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
+    sudo sh -c 'echo $(which zsh) >> /etc/shells'
+else
+    echo "zsh already added."
 fi
 
 echo "# デフォルトシェルをzshに変更する"
-if [ ! $SHELL = $WHICH_ZSH ]
-    then
-        echo "Changing default Shell..."
-        chsh -s /opt/homebrew/bin/zsh
-    else
-        echo "zsh already default shell."
+if [ ! $SHELL = $WHICH_ZSH ]; then
+    echo "Changing default Shell..."
+    chsh -s /opt/homebrew/bin/zsh
+else
+    echo "zsh already default shell."
 fi
 
 
 echo "# ======================================================================================="
 echo "# dotfilesにシンボリックリンクを貼る"
 
-DOT_FILES=(\
-    .agignore \
-    .claude/CLAUDE.md \
-    .claude/commands/gemini-search.md \
-    .claude/settings.json \
-    .claude/settings.local.json \
-    .gemini/settings.json \
-    .gitconfig \
-    .gitcommit_template \
-    .gitignore \
-    .gitignore_global \
-    .tigrc \
-    .tmux.conf \
-    .vimrc \
-    .zprofile \
-    .zshenv \
-    .zshrc \
+DOT_FILES=(
+    .agignore
+    .claude/CLAUDE.md
+    .claude/commands/gemini-search.md
+    .claude/settings.json
+    .claude/settings.local.json
+    .gemini/settings.json
+    .gitconfig
+    .gitcommit_template
+    .gitignore
+    .gitignore_global
+    .tigrc
+    .tmux.conf
+    .vimrc
+    .zprofile
+    .zshenv
+    .zshrc
 )
 
-for file in ${DOT_FILES[@]}
-
-do
+for file in ${DOT_FILES[@]}; do
     if [ -a $HOME/$file ]; then
         echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
     else
@@ -107,20 +101,18 @@ done
 echo "# =========================================================="
 echo "# .config/にシンボリックリンクを貼る"
 
-CONFIG_DIRS=(\
-    mise \
-    zellij \
+CONFIG_DIRS=(
+    mise
+    zellij
 )
 
-for dirs in ${CONFIG_DIRS[@]}
-
-do
-   if [ -a $HOME/.config/$dirs ]; then
-       echo "フォルダが存在するのでシンボリックリンクを貼りませんでした: $dirs"
-   else
-       ln -s $HOME/dotfiles/config/$dirs $HOME/.config/$dirs
-       echo "シンボリックリンクを貼りました: $dirs"
-   fi
+for dirs in ${CONFIG_DIRS[@]}; do
+    if [ -a $HOME/.config/$dirs ]; then
+        echo "フォルダが存在するのでシンボリックリンクを貼りませんでした: $dirs"
+    else
+        ln -s $HOME/dotfiles/config/$dirs $HOME/.config/$dirs
+        echo "シンボリックリンクを貼りました: $dirs"
+    fi
 done
 
 

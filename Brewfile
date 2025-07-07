@@ -1,10 +1,11 @@
 cask_args appdir: "/Applications"
 
-# ==OS==
+
+# === OS ===
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
 
-# ==ターミナル==
+# === ターミナル ===
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
 brew "tmux"               # https://formulae.brew.sh/formula/tmux     #
 brew "reattach-to-user-namespace" # https://formulae.brew.sh/formula/reattach-to-user-namespace # tmux便利ツール
@@ -23,7 +24,7 @@ brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文�
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp   # YouTube動画DLツール
 brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DLツール
 
-# ==ウェブ開発==
+# === ウェブ開発 ===
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
@@ -41,10 +42,10 @@ brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの�
 brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
 # brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
 
-# ==Python==
+# === Python ===
 brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
 
-# ==画像処理==
+# === 画像処理 ===
 brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli # 画像最適化ツール
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick #
 brew "svgo"               # https://formulae.brew.sh/formula/svgo     #
@@ -52,14 +53,14 @@ brew "webp"               # https://formulae.brew.sh/formula/webp     #
 #brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
 brew "ffmpeg"
 
-# ==aws==
+# === AWS ===
 #brew "awscli"
 #brew "aws/tap/aws-sam-cli"
 
-# ==heroku==
+# === Heroku ===
 #brew "heroku/brew/heroku"
 
-# ==ユーティリティ==
+# === ユーティリティ ===
 #cask "1password"
 #cask "abyssoft-teleport"
 #cask "aldente"
@@ -96,23 +97,23 @@ brew "ffmpeg"
 #cask "vitals"
 #cask "vpn-by-google-one"
 
-# ==AI==
+# === AI ===
 cask "chatgpt"
 cask "claude"
 
-# ==エンタメ==
+# === エンタメ ===
 #cask "alcom"
 #cask "bluestacks"
 #cask "steam"
 
-# ==コミュニケーション==
+# === コミュニケーション ===
 #cask "discord"
 #cask "messenger"
 #cask "microsoft-teams"
 #cask "slack"
 #cask "zoom"
 
-# ==ブラウザ==
+# === ブラウザ ===
 #cask "arc"
 #cask "brave-browser"
 #cask "firefox"
@@ -130,12 +131,12 @@ cask "claude"
 #cask "vivaldi"
 #cask "zen-browser"
 
-# ==仮想環境==
+# === 仮想環境 ===
 #cask "mist"
 #cask "parallels"
 #cask "utm"
 
-# ==ウェブ開発==
+# === ウェブ開発 ===
 #cask "charles"
 #cask "contraste"
 #cask "cursor"
@@ -155,29 +156,29 @@ cask "claude"
 #cask "warp"
 #cask "xbar"
 
-# ==デザイン==
+# === デザイン ===
 #cask "adobe-creative-cloud"
 #cask "figma"
 #cask "iconjar"
 
-# ==画像処理==
+# === 画像処理 ===
 #cask "optimage"
 #cask "imagealpha"
 #cask "imageoptim"
 #cask "pngyu"
 #cask "svgcleaner"
 
-# ==音源処理==
+# === 音源処理 ===
 #cask "blackhole-16ch"
 #cask "eqMac"
 #cask "xld"
 
-# ==映像処理==
+# === 映像処理 ===
 #cask "iina"
 #cask "obs"
 #cask "vlc"
 
-# ==フォント==
+# === フォント ===
 #cask "fontbase"
 #cask "fontgoggles"
 #cask "glyphs"
@@ -185,7 +186,7 @@ cask "claude"
 #cask "rightfont"
 #cask "skyfonts"
 
-# ==CreativeCoding==
+# === CreativeCoding ===
 #cask "blender"
 #cask "magicalvoxel"
 #cask "openframeworks"
@@ -195,7 +196,7 @@ cask "claude"
 #cask "touchdesigner"
 #cask "unity-hub"
 
-# ==mas==
+# === mas ===
 #mas "Kindle",                id: 302584613
 #mas "Keynote",               id: 409183694
 #mas "Pages",                 id: 409201541
