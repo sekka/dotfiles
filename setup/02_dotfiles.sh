@@ -12,15 +12,17 @@ echo "🔗 dotfiles のシンボリックリンクを作成します..."
 
 # ホームディレクトリにシンボリックリンクを貼るファイル
 DOT_FILES=(
+  .agignore
+  .gitcommit_template
   .gitconfig
   .gitignore_global
+  .mcp.json
+  .tigrc
   .tmux.conf
   .vimrc
   .zprofile
   .zshenv
   .zshrc
-  .claude
-  .gemini
 )
 
 echo ""
