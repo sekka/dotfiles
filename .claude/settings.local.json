@@ -30,7 +30,14 @@
       "WebFetch(domain:docs.anthropic.com)",
       "Bash(claude config list)",
       "Bash(claude config list:*)",
-      "Bash(gemini:*)"
+      "Bash(gemini:*)",
+      "Bash(echo:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(pnpm:*)",
+      "Bash(gh:*)",
+      "Bash(curl:*)",
+      "Bash(jq:*)"
     ],
     "deny": []
   }

@@ -20,6 +20,15 @@
             "command": "npx ccusage@latest"
           }
         ]
+      },
+      {
+        "matcher": "Bash(git add:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short"
+          }
+        ]
       }
     ],
     "Notification": [
@@ -32,7 +41,7 @@
           },
           {
             "type": "command",
-            "command": "PROJECT_NAME=$(basename \"$PWD\") && TIMESTAMP=$(date '+%Y年%m月%d日（%a）%H:%M') && MESSAGE=\"Claude Code通知 - ${PROJECT_NAME} - ${TIMESTAMP}\" && curl -X POST -H 'Content-type: application/json' -d \"{\\\"text\\\": \\\"$MESSAGE\\\"}\" \"$SLACK_WEBHOOK_URL\""
+            "command": "PROJECT_NAME=$(basename \"$PWD\") && TIMESTAMP=$(date '+%Y年%m月%d日（%a）%H:%M') && GIT_STATUS=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ') && GIT_BRANCH=$(git branch --show-current 2>/dev/null || echo 'unknown') && RECENT_COMMIT=$(git log -1 --oneline 2>/dev/null | cut -c1-50 || echo '不明') && MESSAGE=\"🤖 *Claude Code 通知*\\n\\n📁 プロジェクト: \\`${PROJECT_NAME}\\`\\n🌿 ブランチ: \\`${GIT_BRANCH}\\`\\n⏰ 時刻: ${TIMESTAMP}\\n\\n📝 作業状況:\\n• 変更ファイル数: ${GIT_STATUS}個\\n• 最新コミット: ${RECENT_COMMIT}\\n\\n💬 処理が中断されました。確認をお願いします。\\n\\n🔍 次のアクション:\\n• 変更内容の確認\\n• 必要に応じてコミット\\n• テストの実行\" && curl -X POST -H 'Content-type: application/json' -d \"{\\\"text\\\": \\\"$MESSAGE\\\"}\" \"$SLACK_WEBHOOK_URL\""
           }
         ]
       }
