@@ -45,6 +45,7 @@ brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピ�
 brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
 
 # ==画像処理==
+brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli # 画像最適化ツール
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick #
 brew "svgo"               # https://formulae.brew.sh/formula/svgo     #
 brew "webp"               # https://formulae.brew.sh/formula/webp     #
