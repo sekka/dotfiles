@@ -23,6 +23,9 @@ alias nrun="npm run \$(commands | peco)"
 alias yrun="yarn \$(commands | peco)"
 alias mrun="mise run"
 
+# Claude Commands同期
+alias claude-sync="/Users/kei/dotfiles/scripts/sync-claude-commands.sh"
+
 # セッション管理エイリアス
 alias t="tmux"
 alias td="tmux detach"
