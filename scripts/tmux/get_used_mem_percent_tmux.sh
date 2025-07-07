@@ -44,39 +44,14 @@ calculate_used_mem() {
 }
 
 # Debug
-debug() {
-  if [ "$DEBUG" = "yes" ]; then
-    echo "PAGES_FREE: $PAGES_FREE pages"
-    echo "PAGES_FREE: $((PAGES_FREE * 4096 / 1024 / 1024)) MB"
-    echo "PAGES_ACTIVE: $PAGES_ACTIVE pages"
-    echo "PAGES_ACTIVE: $((PAGES_ACTIVE * 4096 / 1024 / 1024)) MB"
-    echo "PAGES_INACTIVE: $PAGES_INACTIVE pages"
-    echo "PAGES_INACTIVE: $((PAGES_INACTIVE * 4096 / 1024 / 1024)) MB"
-    echo "PAGES_SPECULATIVE: $PAGES_SPECULATIVE pages"
-    echo "PAGES_SPECULATIVE: $((PAGES_SPECULATIVE * 4096 / 1024 / 1024)) MB"
-    echo "PAGES_WIRED: $PAGES_WIRED pages"
-    echo "PAGES_WIRED: $((PAGES_WIRED * 4096 / 1024 / 1024)) MB"
-    echo "FREE_MEM: $FREE_MEM pages"
-    echo "FREE_MEM: $((FREE_MEM * 4096 / 1024 / 1024)) MB"
-    echo "USED_MEM: $USED_MEM pages"
-    echo "USED_MEM: $((USED_MEM * 4096 / 1024 / 1024)) MB"
-    echo "TOTAL_MEM: $TOTAL_MEM pages"
-    echo "TOTAL_MEM: $((TOTAL_MEM * 4096 / 1024 / 1024)) MB"
-    echo "---------------"
-    # 搭載メモリ(理論値): 8GBの場合
-    echo "TOTAL_MEM: $((8 * 1024)) MB (Theoretical value)"
-    echo "---------------"
-    echo "USED_MEM: $((USED_MEM * 1000 / TOTAL_MEM)) %"
-  fi
-}
+# Debug function removed - was unused and caused unreachable code warnings
 
 RET=0
 ## メイン処理 -----
 calculate_used_mem
 RET=$?
 
-## デバッグ -----
-#DEBUG=yes debug
+## デバッグ機能は削除済み
 
 ## exit
 exit $RET
