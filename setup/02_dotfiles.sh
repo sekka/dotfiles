@@ -19,6 +19,8 @@ DOT_FILES=(
   .zprofile
   .zshenv
   .zshrc
+  .claude
+  .gemini
 )
 
 echo ""
@@ -32,7 +34,7 @@ for file in "${DOT_FILES[@]}"; do
     echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に存在)"
     ((skipped++))
   else
-    ln -s "$HOME/dotfiles/$file" "$HOME/$file"
+    ln -s "$HOME/dotfiles/home/$file" "$HOME/$file"
     echo -e "${GREEN}✅ 作成:${NC} $file"
     ((created++))
   fi
@@ -56,7 +58,7 @@ for dirs in "${CONFIG_DIRS[@]}"; do
     echo -e "${YELLOW}⏭️  スキップ:${NC} $dirs (既に存在)"
     ((skipped++))
   else
-    ln -s "$HOME/dotfiles/config/$dirs" "$HOME/.config/$dirs"
+    ln -s "$HOME/dotfiles/home/config/$dirs" "$HOME/.config/$dirs"
     echo -e "${GREEN}✅ 作成:${NC} $dirs"
     ((created++))
   fi
