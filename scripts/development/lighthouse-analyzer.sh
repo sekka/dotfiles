@@ -15,7 +15,13 @@ if [ $# -lt 3 ]; then
   echo "利用可能なプロファイル:"
   CHROME_DIR="$HOME/Library/Application Support/Google/Chrome"
   if [ -d "$CHROME_DIR" ]; then
-    ls -1 "$CHROME_DIR" | grep -E "^(Default|Profile [0-9]+)$" | sed 's/^/  - /'
+    # プロファイルディレクトリを安全に列挙
+    for profile_dir in "$CHROME_DIR"/Default "$CHROME_DIR"/Profile*; do
+      if [ -d "$profile_dir" ]; then
+        basename="$(basename "$profile_dir")"
+        echo "  - $basename"
+      fi
+    done
   fi
   exit 1
 fi
@@ -68,7 +74,13 @@ if [ "$USE_AUTH" = true ]; then
   if [ ! -d "$PROFILE_PATH" ]; then
     echo "❌ エラー: プロファイル '$CHROME_PROFILE' が見つかりません"
     echo "利用可能なプロファイル:"
-    ls -1 "$CHROME_DIR" | grep -E "^(Default|Profile [0-9]+)$" | sed 's/^/  - /'
+    # プロファイルディレクトリを安全に列挙
+    for profile_dir in "$CHROME_DIR"/Default "$CHROME_DIR"/Profile*; do
+      if [ -d "$profile_dir" ]; then
+        basename="$(basename "$profile_dir")"
+        echo "  - $basename"
+      fi
+    done
     exit 1
   fi
 
@@ -80,7 +92,7 @@ echo ""
 URL_SANITIZED=$(echo "$URL" | sed -E 's|^https?://||' | sed 's|[^a-zA-Z0-9._-]|_|g' | sed 's|_+|_|g' | sed 's|^_||' | sed 's|_$||')
 
 # 実行開始
-for i in $(seq 1 $COUNT); do
+for i in $(seq 1 "$COUNT"); do
   echo "[$i/$COUNT] 分析実行中..."
 
   # タイムスタンプ付きファイル名（URL情報を含む）
@@ -119,7 +131,7 @@ for i in $(seq 1 $COUNT); do
   echo "  結果保存: $OUTPUT_FILE"
 
   # 最後の実行でない場合は待機
-  if [ $i -lt $COUNT ]; then
+  if [ "$i" -lt "$COUNT" ]; then
     echo "  ${INTERVAL}秒待機中..."
     sleep "$INTERVAL"
   fi
@@ -132,27 +144,31 @@ echo "結果は $OUTPUT_DIR に保存されています"
 # 結果サマリー生成
 SUMMARY_FILE="$OUTPUT_DIR/summary_${URL_SANITIZED}_$(date +"%Y%m%d_%H%M%S").txt"
 echo "=== Lighthouse分析サマリー ===" >"$SUMMARY_FILE"
-echo "URL: $URL" >>"$SUMMARY_FILE"
-echo "実行回数: $COUNT" >>"$SUMMARY_FILE"
-echo "実行日時: $(date)" >>"$SUMMARY_FILE"
-echo "" >>"$SUMMARY_FILE"
+{
+  echo "URL: $URL"
+  echo "実行回数: $COUNT"
+  echo "実行日時: $(date)"
+  echo ""
+} >>"$SUMMARY_FILE"
 
 # JSONファイルから主要スコアを抽出
 echo "各実行のスコア:" >>"$SUMMARY_FILE"
-for json_file in "$OUTPUT_DIR"/lighthouse_${URL_SANITIZED}_*.json; do
+for json_file in "$OUTPUT_DIR"/lighthouse_"${URL_SANITIZED}"_*.json; do
   if [ -f "$json_file" ]; then
     filename=$(basename "$json_file")
     echo "ファイル: $filename" >>"$SUMMARY_FILE"
 
     # jqがインストールされている場合はスコアを抽出
     if command -v jq >/dev/null 2>&1; then
-      echo "  Performance: $(jq -r '.categories.performance.score * 100 | floor' "$json_file")%" >>"$SUMMARY_FILE"
-      echo "  Accessibility: $(jq -r '.categories.accessibility.score * 100 | floor' "$json_file")%" >>"$SUMMARY_FILE"
-      echo "  Best Practices: $(jq -r '.categories["best-practices"].score * 100 | floor' "$json_file")%" >>"$SUMMARY_FILE"
-      echo "  SEO: $(jq -r '.categories.seo.score * 100 | floor' "$json_file")%" >>"$SUMMARY_FILE"
-      if jq -e '.categories.pwa' "$json_file" >/dev/null 2>&1; then
-        echo "  PWA: $(jq -r '.categories.pwa.score * 100 | floor' "$json_file")%" >>"$SUMMARY_FILE"
-      fi
+      {
+        echo "  Performance: $(jq -r '.categories.performance.score * 100 | floor' "$json_file")%"
+        echo "  Accessibility: $(jq -r '.categories.accessibility.score * 100 | floor' "$json_file")%"
+        echo "  Best Practices: $(jq -r '.categories["best-practices"].score * 100 | floor' "$json_file")%"
+        echo "  SEO: $(jq -r '.categories.seo.score * 100 | floor' "$json_file")%"
+        if jq -e '.categories.pwa' "$json_file" >/dev/null 2>&1; then
+          echo "  PWA: $(jq -r '.categories.pwa.score * 100 | floor' "$json_file")%"
+        fi
+      } >>"$SUMMARY_FILE"
     fi
     echo "" >>"$SUMMARY_FILE"
   fi

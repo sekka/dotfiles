@@ -4,12 +4,13 @@
 
 IFS=$'\n'
 
-for tsFile in $(\find . -name '*.m3u8'); do
-  echo "start converting "$tsFile
+# find出力をwhile read loopで安全に処理
+find . -name '*.m3u8' -print0 | while IFS= read -r -d '' tsFile; do
+  echo "start converting $tsFile"
 
   base=$(basename "$tsFile" ".m3u8")
-  dir=$(dirname $tsFile)
-  ffmpeg -i $tsFile -movflags faststart -c copy -bsf:a aac_adtstoasc $dir"/"$base".mp4" >/dev/null 2>&1
+  dir=$(dirname "$tsFile")
+  ffmpeg -nostdin -i "$tsFile" -movflags faststart -c copy -bsf:a aac_adtstoasc "$dir/$base.mp4" >/dev/null 2>&1
 
   echo "complete"
 done
