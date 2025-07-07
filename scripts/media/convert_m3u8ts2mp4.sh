@@ -7,7 +7,7 @@ IFS=$'\n'
 for tsFile in $(\find . -name '*.m3u8'); do
   echo "start converting "$tsFile
 
-  base=$(basename $tsFile $ext)
+  base=$(basename "$tsFile" ".m3u8")
   dir=$(dirname $tsFile)
   ffmpeg -i $tsFile -movflags faststart -c copy -bsf:a aac_adtstoasc $dir"/"$base".mp4" >/dev/null 2>&1
 

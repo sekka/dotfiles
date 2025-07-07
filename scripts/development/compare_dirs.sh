@@ -11,7 +11,7 @@ if [ -z "$dir1" ] || [ -z "$dir2" ]; then
 fi
 
 # 第一ディレクトリのファイルリストを取得
-files1=$(ls $dir1)
+files1=$(ls "$dir1")
 
 # ファイル名が同じファイルのチェックサムを比較
 for file in $files1; do
