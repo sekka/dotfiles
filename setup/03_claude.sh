@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Claude Commands 初回セットアップスクリプト
-# 初回環境構築時のみ実行
+# Claude Commands セットアップ・同期スクリプト
+# 初回セットアップと日常的な同期の両方に対応
+# .envrcにより、dotfilesディレクトリ移動時に自動実行される
 
 # カラー定義
 GREEN='\033[0;32m'
@@ -10,7 +11,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo "🤖 Claude Commands の初回セットアップを開始します..."
+echo "🤖 Claude Commands のセットアップ・同期を開始します..."
 
 # ディレクトリの定義
 DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/home/.claude"
@@ -120,5 +121,5 @@ echo "      ✅ 新規作成: $commands_created"
 echo "      ⏭️ スキップ: $commands_skipped"
 
 echo ""
-echo "✨ Claude Commands の初回セットアップが完了しました！"
-echo "💡 今後の Commands 同期は scripts/sync-claude-commands.sh を使用してください"
+echo "✨ Claude Commands のセットアップ・同期が完了しました！"
+echo "💡 このスクリプトは .envrc により dotfiles ディレクトリ移動時に自動実行されます"
