@@ -67,55 +67,6 @@ fi
 
 
 echo "# ======================================================================================="
-echo "# dotfilesにシンボリックリンクを貼る"
-
-DOT_FILES=(
-    .agignore
-    .claude/CLAUDE.md
-    .claude/settings.json
-    .claude/settings.local.json
-    .gemini/settings.json
-    .gitconfig
-    .gitcommit_template
-    .gitignore
-    .gitignore_global
-    .tigrc
-    .tmux.conf
-    .vimrc
-    .zprofile
-    .zshenv
-    .zshrc
-)
-
-for file in ${DOT_FILES[@]}; do
-    if [ -a $HOME/$file ]; then
-        echo "ファイルが存在するのでシンボリックリンクを貼りませんでした: $file"
-    else
-        ln -s $HOME/dotfiles/$file $HOME/$file
-        echo "シンボリックリンクを貼りました: $file"
-    fi
-done
-
-
-echo "# =========================================================="
-echo "# .config/にシンボリックリンクを貼る"
-
-CONFIG_DIRS=(
-    mise
-    zellij
-)
-
-for dirs in ${CONFIG_DIRS[@]}; do
-    if [ -a $HOME/.config/$dirs ]; then
-        echo "フォルダが存在するのでシンボリックリンクを貼りませんでした: $dirs"
-    else
-        ln -s $HOME/dotfiles/config/$dirs $HOME/.config/$dirs
-        echo "シンボリックリンクを貼りました: $dirs"
-    fi
-done
-
-
-echo "# ======================================================================================="
 echo "# SHELLの再起動"
 
 exec $SHELL -l
