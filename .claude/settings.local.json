@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(tmux:*)",
+      "Bash(rg:*)",
+      "Bash(true)",
+      "Bash(eza:*)",
+      "Bash(source:*)",
+      "Bash(afplay:*)",
+      "Bash(mise alias:*)",
+      "Bash(mise tasks:*)",
+      "Bash(mise:*)",
+      "Bash(MISE_VERBOSE=1 mise task ls 2 >& 1)",
+      "Bash(python3:*)",
+      "Bash(ruby:*)",
+      "Bash(cat:*)",
+      "Bash(MISE_GLOBAL=1 mise task ls)",
+      "Bash(git commit:*)",
+      "Bash(chmod:*)",
+      "Bash(/Users/kei/dotfiles/lighthouse-analyzer.sh:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)",
+      "Bash(lighthouse-analyzer:*)"
+    ],
+    "deny": []
+  }
+}
