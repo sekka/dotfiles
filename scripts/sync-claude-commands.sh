@@ -2,7 +2,7 @@
 
 # Claude Commands 同期スクリプト
 # 日常的な同期作業用 - 新しいコマンドファイルの追加や変更を反映
-# 
+#
 # 初回セットアップの場合は setup/setup-claude.sh を実行してください
 
 # カラー定義
@@ -19,14 +19,14 @@ echo "🔄 Claude Commands の同期を開始します..."
 
 # 前提条件チェック
 if [ ! -d "$TARGET_DIR" ]; then
-    echo -e "${RED}❌ エラー:${NC} $TARGET_DIR が存在しません"
-    echo "💡 初回セットアップの場合は setup/setup-claude.sh を実行してください"
-    exit 1
+  echo -e "${RED}❌ エラー:${NC} $TARGET_DIR が存在しません"
+  echo "💡 初回セットアップの場合は setup/setup-claude.sh を実行してください"
+  exit 1
 fi
 
 if [ ! -d "$SOURCE_DIR" ]; then
-    echo -e "${RED}❌ エラー:${NC} $SOURCE_DIR が存在しません"
-    exit 1
+  echo -e "${RED}❌ エラー:${NC} $SOURCE_DIR が存在しません"
+  exit 1
 fi
 
 # 同期カウンター
@@ -36,36 +36,36 @@ updated=0
 
 # ソースディレクトリ内の全ての .md ファイルを処理
 for file in "$SOURCE_DIR"/*.md; do
-    # ファイルが存在しない場合はスキップ（globパターンがマッチしない場合）
-    [ -e "$file" ] || continue
-    
-    # ファイル名を取得
-    filename=$(basename "$file")
-    target_link="$TARGET_DIR/$filename"
-    
-    # 既存のリンクまたはファイルをチェック
-    if [ -L "$target_link" ]; then
-        # シンボリックリンクが既に存在する場合
-        current_target=$(readlink "$target_link")
-        if [ "$current_target" = "$file" ]; then
-            echo -e "${YELLOW}⏭️  スキップ:${NC} $filename (既に正しくリンクされています)"
-            ((skipped++))
-        else
-            # 異なるファイルを指している場合は更新
-            echo -e "${GREEN}🔄 更新:${NC} $filename"
-            rm "$target_link"
-            ln -s "$file" "$target_link"
-            ((updated++))
-        fi
-    elif [ -e "$target_link" ]; then
-        # 通常のファイルが存在する場合
-        echo -e "${RED}⚠️  警告:${NC} $filename は通常のファイルとして存在します。手動で確認してください。"
+  # ファイルが存在しない場合はスキップ（globパターンがマッチしない場合）
+  [ -e "$file" ] || continue
+
+  # ファイル名を取得
+  filename=$(basename "$file")
+  target_link="$TARGET_DIR/$filename"
+
+  # 既存のリンクまたはファイルをチェック
+  if [ -L "$target_link" ]; then
+    # シンボリックリンクが既に存在する場合
+    current_target=$(readlink "$target_link")
+    if [ "$current_target" = "$file" ]; then
+      echo -e "${YELLOW}⏭️  スキップ:${NC} $filename (既に正しくリンクされています)"
+      ((skipped++))
     else
-        # リンクを新規作成
-        echo -e "${GREEN}✅ 作成:${NC} $filename"
-        ln -s "$file" "$target_link"
-        ((created++))
+      # 異なるファイルを指している場合は更新
+      echo -e "${GREEN}🔄 更新:${NC} $filename"
+      rm "$target_link"
+      ln -s "$file" "$target_link"
+      ((updated++))
     fi
+  elif [ -e "$target_link" ]; then
+    # 通常のファイルが存在する場合
+    echo -e "${RED}⚠️  警告:${NC} $filename は通常のファイルとして存在します。手動で確認してください。"
+  else
+    # リンクを新規作成
+    echo -e "${GREEN}✅ 作成:${NC} $filename"
+    ln -s "$file" "$target_link"
+    ((created++))
+  fi
 done
 
 # 逆方向のチェック：ホームディレクトリにあるがプロジェクトにないリンクを検出
@@ -73,15 +73,15 @@ echo ""
 echo "🔍 孤立したリンクをチェック中..."
 orphaned=0
 for link in "$TARGET_DIR"/*.md; do
-    [ -L "$link" ] || continue
-    
-    target=$(readlink "$link")
-    if [[ "$target" == "$SOURCE_DIR"/* ]] && [ ! -e "$target" ]; then
-        filename=$(basename "$link")
-        echo -e "${RED}🗑️  孤立したリンク:${NC} $filename (削除しました)"
-        rm "$link"
-        ((orphaned++))
-    fi
+  [ -L "$link" ] || continue
+
+  target=$(readlink "$link")
+  if [[ $target == "$SOURCE_DIR"/* ]] && [ ! -e "$target" ]; then
+    filename=$(basename "$link")
+    echo -e "${RED}🗑️  孤立したリンク:${NC} $filename (削除しました)"
+    rm "$link"
+    ((orphaned++))
+  fi
 done
 
 # サマリー表示
@@ -94,3 +94,4 @@ echo "   ⏭️  スキップ: $skipped"
 
 echo ""
 echo "✨ 同期が完了しました！"
+

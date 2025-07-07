@@ -41,7 +41,8 @@
       "Bash(env)",
       "mcp__o3__o3-search",
       "mcp__context7__resolve-library-id",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(shellcheck:*)"
     ],
     "deny": []
   }

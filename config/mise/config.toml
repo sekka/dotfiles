@@ -119,6 +119,60 @@ fi
 
 
 
+# =============================================================================
+# Lint & Format タスク
+# =============================================================================
+
+[tasks.lint]
+description = "全ファイルのlintを実行"
+run = """
+echo "🔍 Running pre-commit on all files..."
+pre-commit run --all-files
+"""
+
+[tasks.lint-sh]
+description = "シェルスクリプトのlintを実行"
+run = """
+echo "🔍 ShellCheck running..."
+find . -name "*.sh" -type f -exec shellcheck {} +
+"""
+
+[tasks.format]
+description = "全ファイルのformatを実行"
+run = """
+echo "🎨 Formatting files..."
+# シェルスクリプト
+find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
+# Markdown, YAML, JSON
+prettier --write "**/*.{md,yaml,yml,json}"
+# TOML
+find . -name "*.toml" -type f -exec taplo format {} +
+echo "✨ Formatting complete!"
+"""
+
+[tasks.format-sh]
+description = "シェルスクリプトのformatを実行"
+run = """
+echo "🎨 Formatting shell scripts..."
+find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
+"""
+
+[tasks.setup-lint]
+description = "lintツールをセットアップ"
+run = """
+echo "📦 Installing lint tools..."
+# Homebrew tools
+brew install shellcheck shfmt yamllint
+# npm tools
+npm install -g prettier markdownlint-cli
+# Rust tools
+cargo install taplo-cli
+# pre-commit
+brew install pre-commit
+pre-commit install
+echo "✅ Setup complete!"
+"""
+
 [tasks.aws-sso-login]
 alias = "al"
 description = "SSOでログインして、現在のセッションに認証情報を設定する"
