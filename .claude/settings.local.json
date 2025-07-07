@@ -26,7 +26,10 @@
       "Bash(/Users/kei/dotfiles/lighthouse-analyzer.sh:*)",
       "Bash(mkdir:*)",
       "Bash(git add:*)",
-      "Bash(lighthouse-analyzer:*)"
+      "Bash(lighthouse-analyzer:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude config list)",
+      "Bash(claude config list:*)"
     ],
     "deny": []
   }

@@ -1,34 +1,6 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(grep:*)",
-      "Bash(ls:*)",
-      "Bash(mv:*)",
-      "Bash(rm:*)",
-      "Bash(find:*)",
-      "Bash(cp:*)",
-      "Bash(tmux:*)",
-      "Bash(rg:*)",
-      "Bash(true)",
-      "Bash(eza:*)",
-      "Bash(source:*)",
-      "Bash(afplay:*)",
-      "Bash(mise alias:*)",
-      "Bash(mise tasks:*)",
-      "Bash(mise:*)",
-      "Bash(MISE_VERBOSE=1 mise task ls 2 >& 1)",
-      "Bash(python3:*)",
-      "Bash(ruby:*)",
-      "Bash(cat:*)",
-      "Bash(MISE_GLOBAL=1 mise task ls)",
-      "Bash(git commit:*)",
-      "Bash(chmod:*)",
-      "Bash(/Users/kei/dotfiles/lighthouse-analyzer.sh:*)",
-      "Bash(mkdir:*)",
-      "Bash(git add:*)",
-      "Bash(lighthouse-analyzer:*)"
-    ],
-    "deny": []
+  "env": {
+    "SLACK_WEBHOOK_URL": ""
   },
   "hooks": {
     "PostToolUse": [
@@ -60,7 +32,7 @@
           },
           {
             "type": "command",
-            "command": "transcript_path=$(jq -r '.transcript_path') && jq -s '.[-3:]' \"$transcript_path\" | claude -p 'この会話の内容を日本語で簡潔に要約してください' | jq -Rs '{\"text\": .}' | curl -X POST -H 'Content-type: application/json' -d @- https://hooks.slack.com/services/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"
+            "command": "PROJECT_NAME=$(basename \"$PWD\") && TIMESTAMP=$(date '+%Y年%m月%d日（%a）%H:%M') && MESSAGE=\"Claude Code通知 - ${PROJECT_NAME} - ${TIMESTAMP}\" && curl -X POST -H 'Content-type: application/json' -d \"{\\\"text\\\": \\\"$MESSAGE\\\"}\" \"$SLACK_WEBHOOK_URL\""
           }
         ]
       }
