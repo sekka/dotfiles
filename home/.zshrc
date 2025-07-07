@@ -1,5 +1,5 @@
 
-ZSHHOME="${HOME}/dotfiles/config/zsh"
+ZSHHOME="${HOME}/dotfiles/home/config/zsh"
 
 if [ -d $ZSHHOME -a -r $ZSHHOME -a \
     -x $ZSHHOME ]; then

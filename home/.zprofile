@@ -6,7 +6,7 @@
 
 # Load PATH helper functions (if not already loaded)
 if ! typeset -f add_to_path > /dev/null; then
-    source "$HOME/dotfiles/config/zsh/helpers.zsh"
+    source "$HOME/dotfiles/home/config/zsh/00_helpers.zsh"
 fi
 
 # Set default editor and visual editor

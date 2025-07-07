@@ -139,7 +139,7 @@ echo "✅ Lint checks completed"
 description = "シェルスクリプトのlintを実行"
 run = """
 echo "🔍 ShellCheck running..."
-find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./config/zsh/*" -not -path "./scripts/tmux/*" -exec shellcheck {} +
+find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./home/config/zsh/*" -not -path "./scripts/tmux/*" -exec shellcheck {} +
 """
 
 [tasks.format]
@@ -147,7 +147,7 @@ description = "全ファイルのformatを実行"
 run = """
 echo "🎨 Formatting files..."
 # シェルスクリプト（bin/とsetup/1*,2*を除外）
-find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
+find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./home/config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
 # Markdown, YAML, JSON
 prettier --write "**/*.{md,yaml,yml,json}"
 # TOML
@@ -159,7 +159,7 @@ echo "✨ Formatting complete!"
 description = "シェルスクリプトのformatを実行"
 run = """
 echo "🎨 Formatting shell scripts..."
-find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
+find . -name "*.sh" -type f -not -path "./bin/*" -not -path "./setup/1*" -not -path "./setup/2*" -not -path "./home/config/zsh/*" -not -path "./scripts/tmux/*" -exec shfmt -w -s -i 2 {} +
 """
 
 [tasks.setup-lint]
