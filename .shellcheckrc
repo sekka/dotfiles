@@ -1,8 +1,7 @@
 # ShellCheck設定ファイル
 
-# bin/ディレクトリを除外（古いスクリプトが多数含まれるため）
-exclude=SC2044,SC2046,SC2154,SC3003
+# 警告コード除外設定（すべて削除済み）
+exclude=
 
-# 対象外ディレクトリ
-# bin/ - 古いスクリプトのため対象外
-# setup/1* setup/2* - 番号付きセットアップスクリプトのため対象外
+# 対象外ディレクトリ（個別ファイルのみ）
+# scripts/tmux/get_volume_tmux.sh, tmux_pane_border.sh - zshスクリプトのため対象外
