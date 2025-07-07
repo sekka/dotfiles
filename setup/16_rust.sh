@@ -1,3 +1,6 @@
+#!/bin/bash
+# Rust and cargo utilities setup script
+
 rustup --version
 rustup check
 rustup update stable

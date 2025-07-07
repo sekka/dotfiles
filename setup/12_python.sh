@@ -1,3 +1,6 @@
+#!/bin/bash
+# Python and pyenv setup script
+
 brew update
 brew upgrade
 

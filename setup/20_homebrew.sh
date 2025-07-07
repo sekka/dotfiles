@@ -1,4 +1,6 @@
+#!/bin/bash
 # Brewfileからパッケージをインストール
+
 echo "# ======================================================================================="
 echo "# brew bundle --file=setup/Brewfile"
 brew bundle --file="$(dirname "$0")/Brewfile"

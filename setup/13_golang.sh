@@ -1,3 +1,6 @@
+#!/bin/bash
+# Go and goenv setup script (currently commented out)
+
 # brew update
 # brew upgrade
 

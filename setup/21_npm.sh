@@ -1,3 +1,6 @@
+#!/bin/bash
+# Global npm packages setup script
+
 #npm install -g npm
 npm install -g @anthropic-ai/claude-code
 npm install -g @google/gemini-cli

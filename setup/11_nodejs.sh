@@ -1,3 +1,6 @@
+#!/bin/bash
+# Node.js and Volta setup script
+
 curl https://get.volta.sh | bash
 
 # exec $SHELL -l
