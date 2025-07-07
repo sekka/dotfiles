@@ -12,7 +12,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # ディレクトリの定義
-SOURCE_DIR="${HOME}/dotfiles/.claude/commands"
+SOURCE_DIR="${HOME}/dotfiles/home/.claude/commands"
 TARGET_DIR="${HOME}/.claude/commands"
 
 echo "🔄 Claude Commands の同期を開始します..."

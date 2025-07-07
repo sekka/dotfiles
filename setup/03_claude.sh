@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 echo "🤖 Claude Commands の初回セットアップを開始します..."
 
 # ディレクトリの定義
-DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/.claude"
+DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/home/.claude"
 HOME_CLAUDE_DIR="${HOME}/.claude"
 COMMANDS_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/commands"
 COMMANDS_TARGET_DIR="${HOME_CLAUDE_DIR}/commands"
@@ -37,7 +37,6 @@ echo "🔗 Claude設定ファイルのシンボリックリンクを作成..."
 CLAUDE_FILES=(
   "CLAUDE.md"
   "settings.json"
-  "settings.local.json"
 )
 
 created=0
