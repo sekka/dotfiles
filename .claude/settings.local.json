@@ -45,7 +45,10 @@
       "Bash(shellcheck:*)",
       "Bash(./scripts/setup-git-hooks.sh:*)",
       "Bash(./.pre-commit-check.sh:*)",
-      "Bash(pre-commit:*)"
+      "Bash(pre-commit:*)",
+      "Bash(for:*)",
+      "Bash(do sed -i '' 's|#!/bin/sh|#!/bin/bash|' \"$file\")",
+      "Bash(done)"
     ],
     "deny": []
   }
