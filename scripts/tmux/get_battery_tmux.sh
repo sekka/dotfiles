@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # バッテリーの存在を確認
 pmset_output=$(/usr/bin/pmset -g ps)

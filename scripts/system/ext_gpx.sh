@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 for INPUT_FILE in $(\find . -name '*.mp4'); do
   echo "start converting "$INPUT_FILE

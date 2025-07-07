@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # system_profilerを使用してSSIDを取得
 ssid=$(system_profiler SPAirPortDataType 2>/dev/null | awk '/Current Network Information:/{getline; print $0}' | head -1 | awk -F':' '{print $1}' | sed 's/^[[:space:]]*//')

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #for pngFile in `\find . -name '*.png'`
 for imageFile in $(\find . -type f \( -name '*.png' -o -name '*.jpg' \)); do

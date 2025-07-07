@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 if [ "$2" = "" ]; then
   git archive --format=zip --prefix=archive/ HEAD $(git diff --name-only HEAD $1) -o archive.zip
 else
