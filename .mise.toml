@@ -1,0 +1,7 @@
+# mise設定ファイル
+# https://mise.jdx.dev/
+
+[tasks.tmux-reload]
+description = "tmux設定を再読み込み"
+run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
+alias = "tr"
