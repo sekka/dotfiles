@@ -91,9 +91,13 @@ run = "env | sort"
 description = "SHELL再起動"
 run = "exec $SHELL -l"
 
-[tasks.system-sourcesh]
+[tasks.system-zsh-reload]
 description = "zshの設定を再読み込み"
 run = "source ~/.zshrc"
+
+[tasks.system-tmux-reload]
+description = "tmux設定を再読み込み"
+run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
 
 [tasks.util-hexyl]
 description = "pecoでファイルを選択してhexylで表示"
@@ -112,11 +116,6 @@ if [ -n "$file" ]; then
     bat "$file"
 fi
 '''
-
-[tasks.tmux-reload]
-alias = "tr"
-description = "tmux設定を再読み込み"
-run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
 
 
 
