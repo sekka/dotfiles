@@ -13,3 +13,4 @@ fi
 
 # Docker CLI completions
 add_to_fpath "$HOME/.docker/completions"
+

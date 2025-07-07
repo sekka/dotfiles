@@ -21,6 +21,7 @@ alias rg='rg --smart-case --stats --pretty'
 alias vp='vim +PlugInstall +qall'
 alias nrun='npm run $(commands | peco)'
 alias yrun='yarn $(commands | peco)'
+alias mrun='mise run'
 
 # セッション管理エイリアス
 alias t='tmux'

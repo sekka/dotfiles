@@ -1,3 +1,15 @@
+[tasks.llm-claude-ccusage]
+description = "Claude Codeのセッション使用状況を表示"
+run = "npx ccusage@latest"
+
+[tasks.llm-claude-ccsearch]
+description = "Claude Codeのセッション検索・共有"
+run = "npx ccsearch@latest"
+
+[tasks.llm-claude-ccresume]
+description = "Claude Codeのclaude --resumeを使いやすくする"
+run = "npx @sasazame/ccresume@latest"
+
 [tasks.rust-rtop]
 description = "システムモニタリング"
 run = "rtop"
@@ -51,13 +63,21 @@ git log \
     --pretty='format:%C(yellow)commit %H%C(reset)%C(red)%d%C(reset)%nAuthor: %C(blue)%an <%ae>%C(reset)%nDate:   %C(green)%ad%C(reset)%n%n    %s%n'
 """
 
-[tasks.git-util-reviewit]
+[tasks.git-util-reviewit-browser]
 description = "コードレビューを開く"
-run = "npx reviewit"
+run = "npx reviewit@latest"
+
+[tasks.git-util-reviewit-tui]
+description = "コードレビューをTUIで開く"
+run = "npx reviewit@latest --tui"
 
 [tasks.git-util-hbr]
 description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
+
+[tasks.dev-update-browserslist]
+description = "Browserslistのデータベースを更新する"
+run = "npx browserslist@latest --update-db"
 
 [tasks.system-envpath]
 description = "envpath"
@@ -66,6 +86,10 @@ run = "echo $PATH | sed 's/:/\\n/g'"
 [tasks.system-shreboot]
 description = "SHELL再起動"
 run = "exec $SHELL -l"
+
+[tasks.system-sourcesh]
+description = "zshの設定を再読み込み"
+run = "source ~/.zshrc"
 
 [tasks.util-hexyl]
 description = "pecoでファイルを選択してhexylで表示"

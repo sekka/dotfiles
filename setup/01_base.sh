@@ -71,11 +71,12 @@ fi
 
 
 echo "# ======================================================================================="
-echo "# dotdilesにシンボリックリンクを貼る"
+echo "# dotfilesにシンボリックリンクを貼る"
 
 DOT_FILES=(\
     .agignore \
     .claude/CLAUDE.md \
+    .claude/settings.json \
     .claude/settings.local.json \
     .gemini/settings.json \
     .gitconfig \
