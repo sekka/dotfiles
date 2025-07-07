@@ -37,7 +37,10 @@
       "Bash(pnpm:*)",
       "Bash(gh:*)",
       "Bash(curl:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(env)",
+      "mcp__o3__o3-search",
+      "mcp__context7__resolve-library-id"
     ],
     "deny": []
   }

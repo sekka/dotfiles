@@ -83,6 +83,10 @@ run = "npx browserslist@latest --update-db"
 description = "envpath"
 run = "echo $PATH | sed 's/:/\\n/g'"
 
+[tasks.system-envsort]
+description = "環境変数をアルファベット順でソートして表示"
+run = "env | sort"
+
 [tasks.system-shreboot]
 description = "SHELL再起動"
 run = "exec $SHELL -l"
