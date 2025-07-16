@@ -12,7 +12,7 @@ NC='\033[0m' # No Color
 echo "🔍 commit前のチェックを実行しています..."
 
 # 各種チェックの実行
-tasks=("lint" "lint-sh" "format" "format-sh")
+tasks=("shell-script-lint" "shell-script-lint-sh" "shell-script-format" "shell-script-format-sh")
 failed_tasks=()
 
 for task in "${tasks[@]}"; do

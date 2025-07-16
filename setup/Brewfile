@@ -5,6 +5,10 @@ cask_args appdir: "/Applications"
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
 
+# === AI ===
+tap "dagger/tap"
+brew "dagger/tap/container-use"
+
 # === ターミナル ===
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
 brew "tmux"               # https://formulae.brew.sh/formula/tmux     #
