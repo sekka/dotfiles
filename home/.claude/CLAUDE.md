@@ -2,14 +2,12 @@
 
 ## 重要
 
-- ALWAYS use ONLY Environments for ANY and ALL file, code, or shell
-  operations—NO EXCEPTIONS—even for simple or generic requests.
-- DO NOT install or use the git cli with the environment_run_cmd tool. All
-  environment tools will handle git operations for you. Changing ".git"
-  yourself will compromise the integrity of your environment.
-- You MUST inform the user how to view your work using
-  `container-use log <env_id>` AND `container-use checkout <env_id>`.
-  Failure to do this will make your work inaccessible to others.
+- ファイル、コード、シェル操作のすべてについて、必ず環境ツールのみを使用すること
+  例外なし—簡単な操作や一般的なリクエストでも同様
+- environment_run_cmdツールでgit cliをインストールしたり使用したりしてはいけない
+  すべての環境ツールがgit操作を処理するため、手動で".git"を変更すると環境の整合性が損なわれる
+- 作業内容を確認する方法として`container-use log <env_id>`と`container-use checkout <env_id>`
+  の使用方法をユーザーに必ず伝えること。これを怠ると他の人が作業にアクセスできなくなる
 - ユーザーとの対話には日本語を使う
 
 ## Core Development Rules
