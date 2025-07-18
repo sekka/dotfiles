@@ -63,7 +63,7 @@ function tmux_automatically_attach_session()
                 # パス変数の定義（XDG準拠）
                 local tmux_config_file="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
                 local dotfiles_dir="${HOME}/dotfiles"
-                local tmux_session_script="$dotfiles_dir/.tmux/new-session"
+                local tmux_session_script="$dotfiles_dir/home/.tmux/new-session"
 
                 # フォールバック: 従来の設定ファイルパス
                 [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
