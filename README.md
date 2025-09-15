@@ -67,14 +67,16 @@ dotfiles/
 ### 開発ツール
 
 - **mise**: 言語バージョン管理とタスク定義
-- **Claude Code**: AI支援開発環境
-- **Code Quality**: lint/format自動チェック
+- **Claude Code**: AI支援開発環境（CLAUDE.md、MCP設定）
+- **Code Quality**: lint/format自動チェック（pre-commit統合）
+- **Python**: uvによるモダンな環境管理
 
 ### メディア・システムツール
 
 - 画像・動画変換スクリプト
 - システム情報取得ツール
 - tmux用ステータス表示スクリプト
+- ディレクトリ比較ツール（compare_dirs.sh）
 
 ## 📋 要件
 

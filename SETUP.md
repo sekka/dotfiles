@@ -45,7 +45,7 @@
 # 言語環境のセットアップ（オプション）
 ./setup/10_anyenv.sh    # 言語環境管理
 ./setup/11_nodejs.sh    # Node.js
-./setup/12_python.sh    # Python
+./setup/12_python.sh    # Python（uvによる環境管理）
 ./setup/13_golang.sh    # Go
 ./setup/16_rust.sh      # Rust
 ```
@@ -90,19 +90,19 @@ dotfiles/
 │   ├── .tmux.conf                  # tmux設定
 │   ├── .vimrc                      # vim設定
 │   ├── .claude/                    # Claude設定
-│   │   ├── CLAUDE.md               # Claude共通設定
-│   │   ├── settings.json           # Claude設定
+│   │   ├── CLAUDE.md               # Claude共通設定・作業ルール
+│   │   ├── settings.json           # Claude設定（シンプル化済み）
 │   │   └── commands/               # Claudeコマンド
 │   ├── .gemini/                    # Gemini設定
-│   ├── .mcp.json                   # MCP設定
+│   ├── .mcp.json                   # MCP設定（各種MCPサーバー統合）
 │   └── config/                     # .config/用設定
-│       ├── mise/config.toml        # mise設定（タスク・ツール管理）
+│       ├── mise/config.toml        # mise設定（タスク・ツール管理、LLMタスク追加）
 │       ├── zsh/                    # zsh設定ファイル群
 │       └── iterm/                  # iTerm2設定
 ├── scripts/                        # 実行用スクリプト
 │   ├── development/                # 開発関連ツール
 │   │   ├── lighthouse-analyzer.sh  # Lighthouse分析
-│   │   └── compare_dirs.sh         # ディレクトリ比較
+│   │   └── compare_dirs.sh         # ディレクトリ比較（改善版）
 │   ├── media/                      # メディア変換ツール
 │   │   ├── convert_img2webp.sh     # 画像WebP変換
 │   │   └── convert_m3u8ts2mp4.sh   # 動画変換
@@ -163,6 +163,9 @@ mise run lint-sh     # シェルスクリプトのlint
 mise run format      # ファイル整形
 mise run format-sh   # シェルスクリプト整形
 
+# LLM関連タスク
+mise run llm-serena  # serena-mcp-serverを起動
+
 # Git hooks設定済みの場合、commit時に自動実行
 git commit -m "変更内容"
 ```
@@ -207,6 +210,26 @@ ls -la ~/.claude/commands/
 ---
 
 ## ⚠️ 重要な変更点
+
+### 最近の主な変更
+
+#### 2025年1月
+
+1. **Python環境管理の変更**
+   - pyenvからuvへ移行
+   - より高速でモダンな環境管理
+
+2. **シェル環境の改善**
+   - PATHに個別スクリプトディレクトリを追加
+   - .local環境変数の読み込み追加
+
+3. **開発ツールの強化**
+   - compare_dirs.shスクリプトの大幅改善
+   - mise設定にLLMタスク（serena-mcp-server）追加
+
+4. **Claude設定の最適化**
+   - CLAUDE.mdのAI署名ルール明確化
+   - settings.jsonのシンプル化
 
 ### v2.0での主な変更
 
