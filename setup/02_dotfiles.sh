@@ -32,7 +32,7 @@ created=0
 skipped=0
 
 for file in "${DOT_FILES[@]}"; do
-  if [ -a "$HOME/$file" ]; then
+  if [ -e "$HOME/$file" ]; then
     echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に存在)"
     ((skipped++))
   else
@@ -56,7 +56,7 @@ if [ ! -d "$HOME/.config" ]; then
 fi
 
 for dirs in "${CONFIG_DIRS[@]}"; do
-  if [ -a "$HOME/.config/$dirs" ]; then
+  if [ -e "$HOME/.config/$dirs" ]; then
     echo -e "${YELLOW}⏭️  スキップ:${NC} $dirs (既に存在)"
     ((skipped++))
   else
