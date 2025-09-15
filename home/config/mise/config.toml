@@ -80,6 +80,10 @@ run = "npx ccsearch@latest"
 description = "Claude Codeのセッション使用状況を表示"
 run = "npx ccusage@latest"
 
+[tasks.llm-serena]
+description = "serena-mcp-serverを起動"
+run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
+
 [tasks.rust-cargo-update]
 description = "cargo update"
 run = "cargo install-update -a"
