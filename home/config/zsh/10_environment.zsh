@@ -9,7 +9,11 @@ add_to_path "/usr/local/bin"
 add_to_path "/usr/local/sbin"
 
 # === dotfiles関連 ===
-add_to_path "$HOME/dotfiles/bin"
+add_to_path "$HOME/dotfiles/scripts/development"
+add_to_path "$HOME/dotfiles/scripts/media"
+add_to_path "$HOME/dotfiles/scripts/setup"
+add_to_path "$HOME/dotfiles/scripts/system"
+add_to_path "$HOME/dotfiles/scripts/tmux"
 
 # === Homebrew ===
 # 環境変数は.zshenvで設定済み
