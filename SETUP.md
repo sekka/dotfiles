@@ -80,7 +80,7 @@ direnv reload
 
 ## 📁 現在のディレクトリ構造
 
-```
+```text
 dotfiles/
 ├── home/                           # 個人設定ファイル
 │   ├── .zshrc                      # zshメイン設定
