@@ -171,6 +171,12 @@ alias = "mu"
 description = "miseのアップグレード（ツールのインストール/更新を実行）"
 run = "mise upgrade"
 
+# mise list
+[tasks.mise-list]
+alias = "ml"
+description = "インストール済みツール一覧"
+run = "mise list"
+
 # --------------------------------------
 # Rust関連
 # --------------------------------------
