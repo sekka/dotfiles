@@ -112,11 +112,11 @@ git log \
 # コードレビューツール
 [tasks.git-util-difit-browser]
 description = "コードレビューを開く"
-run = "npx difit@latest"
+run = "difit"
 
 [tasks.git-util-difit-tui]
 description = "コードレビューをTUIで開く"
-run = "npx difit@latest --tui"
+run = "difit --tui"
 
 [tasks.git-util-hbr]
 description = "リポジトリをブラウザで開く"
@@ -140,6 +140,11 @@ run = "ccsearch"
 description = "Claude Codeのセッション使用状況を表示"
 run = "ccusage"
 
+# codemass
+[tasks.llm-codemass]
+description = "codemassを起動"
+run = "codemass"
+
 # Serena MCPサーバー
 [tasks.llm-serena]
 description = "serena-mcp-serverを起動"
@@ -159,6 +164,12 @@ run = "mise doctor"
 alias = "msu"
 description = "mise本体更新"
 run = "mise self-update"
+
+# mise upgrade
+[tasks.mise-upgrade]
+alias = "mu"
+description = "miseのアップグレード（ツールのインストール/更新を実行）"
+run = "mise upgrade"
 
 # --------------------------------------
 # Rust関連
@@ -311,3 +322,5 @@ fi
 "npm:@sasazame/ccresume" = "latest"
 "npm:ccsearch" = "latest"
 "npm:ccusage" = "latest"
+"npm:codemass" = "latest"
+"npm:difit" = "latest"
