@@ -1,23 +1,42 @@
 # ============================================
 # mise Configuration
 # ============================================
+# miseは開発環境管理ツールです
+# Node.js、Python、Ruby等のバージョン管理とタスクランナー機能を提供します
+#
+# 使用方法:
+# mise run <task>        # タスクを実行
+# mise run <alias>       # エイリアスでタスクを実行
+# mise list              # インストール済みツール一覧
+# mise install           # .mise.tomlの設定に基づいてツールをインストール
 
+# ============================================
+# Environment Variables (環境変数設定)
+# ============================================
+# プロジェクト全体で使用される環境変数を定義
 [env]
 
-# --------------------------------------
-# Global Settings
-# --------------------------------------
+# ============================================
+# Global Settings (グローバル設定)
+# ============================================
 [settings]
+# 実験的機能を有効化（新機能を試したい場合はtrue）
 experimental = true
+# リモートバージョン情報のキャッシュ期間
 fetch_remote_versions_cache = "1h"
+# リモートバージョン取得時のタイムアウト
 fetch_remote_versions_timeout = "10s"
+# 並列実行ジョブ数（CPUコア数に応じて調整）
 jobs = 4
+# レガシーバージョンファイル（.nvmrc、.ruby-version等）をサポート
 legacy_version_file = true
+# プラグイン自動更新チェックの間隔
 plugin_autoupdate_last_check_duration = "7 days"
+# 信頼するプロジェクトディレクトリ（これらのディレクトリ内の.mise.tomlは自動的に信頼される）
 trusted_config_paths = ["~/dotfiles", "~/src/**", "~/projects/**"]
 
 # --------------------------------------
-# AWS
+# AWS関連
 # --------------------------------------
 [tasks.aws-login]
 alias = "al"
@@ -25,7 +44,7 @@ description = "AWS SSOログイン"
 run = "aws sso login"
 
 # --------------------------------------
-# Development Tools
+# 開発ツール
 # --------------------------------------
 [tasks.browserslist]
 alias = "bl"
@@ -40,18 +59,25 @@ gh run list \
     --limit 10
 """
 
+# --------------------------------------
+# Git操作
+# --------------------------------------
+# GitUIクライアント
 [tasks.git-client-gitui]
 description = "gitクライアント"
 run = "gitui"
 
+# LazyGitクライアント
 [tasks.git-client-lazygit]
 description = "gitクライアント"
 run = "lazygit"
 
+# Tigクライアント
 [tasks.git-client-tig]
 description = "gitクライアント"
 run = "tig"
 
+# Git log表示（シンプル）
 [tasks.git-log-glog]
 description = "シンプルなワンライン表示"
 run = """
@@ -61,6 +87,7 @@ git log \
     --pretty='format:%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an%C(reset)%C(red)%d%C(reset) %s'
 """
 
+# Git log表示（詳細）
 [tasks.git-log-glogd]
 description = "詳細表示（相対時間、全ブランチ）"
 run = """
@@ -71,6 +98,7 @@ git log \
     --pretty='format:%C(yellow)%h%C(reset) %C(green)(%ar)%C(reset) %C(blue)%an%C(reset)%C(red)%d%C(reset) %s'
 """
 
+# Git log表示（統計付き）
 [tasks.git-log-glogs]
 description = "統計情報付き詳細表示（変更ファイル数表示）"
 run = """
@@ -81,6 +109,7 @@ git log \
     --pretty='format:%C(yellow)commit %H%C(reset)%C(red)%d%C(reset)%nAuthor: %C(blue)%an <%ae>%C(reset)%nDate:   %C(green)%ad%C(reset)%n%n    %s%n'
 """
 
+# コードレビューツール
 [tasks.git-util-difit-browser]
 description = "コードレビューを開く"
 run = "npx difit@latest"
@@ -93,52 +122,71 @@ run = "npx difit@latest --tui"
 description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
 
+# --------------------------------------
+# Claude Code関連
+# --------------------------------------
+# Claude Code再開ツール
 [tasks.llm-claude-ccresume]
 description = "Claude Codeのclaude --resumeを使いやすくする"
 run = "npx @sasazame/ccresume@latest"
 
+# Claude Codeセッション検索
 [tasks.llm-claude-ccsearch]
 description = "Claude Codeのセッション検索・共有"
 run = "npx ccsearch@latest"
 
+# Claude Code使用状況
 [tasks.llm-claude-ccusage]
 description = "Claude Codeのセッション使用状況を表示"
 run = "npx ccusage@latest"
 
+# Serena MCPサーバー
 [tasks.llm-serena]
 description = "serena-mcp-serverを起動"
 run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
 
 # --------------------------------------
-# mise Management
+# mise自体の管理
 # --------------------------------------
+# mise診断
 [tasks.mise-doctor]
 alias = "md"
 description = "mise環境診断"
 run = "mise doctor"
 
+# mise更新
 [tasks.mise-self-update]
 alias = "msu"
 description = "mise本体更新"
 run = "mise self-update"
 
+# --------------------------------------
+# Rust関連
+# --------------------------------------
+# Cargo更新
 [tasks.rust-cargo-update]
 description = "cargo update"
 run = "cargo install-update -a"
 
+# プロセス監視
 [tasks.rust-procs]
 description = "プロセスモニタリング"
 run = "procs"
 
+# システム監視
 [tasks.rust-rtop]
 description = "システムモニタリング"
 run = "rtop"
 
+# --------------------------------------
+# コード整形・Lint (pre-commit hook用)
+# --------------------------------------
+# 全ファイルのフォーマット
 [tasks.shell-script-format]
 description = "全ファイルのformatを実行"
 run = """
 echo "🎨 Formatting files..."
-# シェルスクリプト（zshファイルを除外）
+# シェルスクリプト（特定ファイルを除外）
 find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
 # Markdown, YAML, JSON
 prettier --write "**/*.{md,yaml,yml,json}"
@@ -147,6 +195,7 @@ find . -name "*.toml" -type f -exec taplo format {} +
 echo "✨ Formatting complete!"
 """
 
+# シェルスクリプトのフォーマット
 [tasks.shell-script-format-sh]
 description = "シェルスクリプトのformatを実行"
 run = """
@@ -154,6 +203,7 @@ echo "🎨 Formatting shell scripts..."
 find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
 """
 
+# 全ファイルのLint
 [tasks.shell-script-lint]
 description = "全ファイルのlintを実行"
 run = """
@@ -167,6 +217,7 @@ yamllint . || echo "YAML lint completed"
 echo "✅ Lint checks completed"
 """
 
+# シェルスクリプトのLint
 [tasks.shell-script-lint-sh]
 description = "シェルスクリプトのlintを実行"
 run = """
@@ -174,6 +225,7 @@ echo "🔍 ShellCheck running..."
 find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -not -path "./.git/*" -exec shellcheck {} +
 """
 
+# Lintツールのセットアップ
 [tasks.shell-script-setup-lint]
 description = "lintツールをセットアップ"
 run = """
@@ -190,22 +242,30 @@ pre-commit install
 echo "✅ Setup complete!"
 """
 
+# --------------------------------------
+# システム管理
+# --------------------------------------
+# PATH表示
 [tasks.system-envpath]
 description = "envpath"
 run = "echo $PATH | sed 's/:/\\n/g'"
 
+# 環境変数表示
 [tasks.system-envsort]
 description = "環境変数をアルファベット順でソートして表示"
 run = "env | sort"
 
+# シェル再起動
 [tasks.system-shreboot]
 description = "SHELL再起動"
 run = "exec $SHELL -l"
 
+# tmux設定再読み込み
 [tasks.system-tmux-reload]
 description = "tmux設定を再読み込み"
 run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再読み込みしました'"
 
+# zsh設定再読み込み
 [tasks.system-zsh-reload]
 description = "zshの設定を再読み込み"
 run = "source ~/.zshrc"
@@ -213,11 +273,13 @@ run = "source ~/.zshrc"
 # --------------------------------------
 # ユーティリティ
 # --------------------------------------
+# Homebrew更新
 [tasks.update-brew]
 alias = "ub"
 description = "Homebrew更新"
 run = "brew update && brew upgrade && brew cleanup"
 
+# batでファイルプレビュー
 [tasks.util-bat]
 description = "pecoでファイルを選択してbatで表示"
 run = '''
@@ -227,6 +289,7 @@ if [ -n "$file" ]; then
 fi
 '''
 
+# hexylでバイナリプレビュー
 [tasks.util-hexyl]
 description = "pecoでファイルを選択してhexylで表示"
 run = '''
@@ -235,3 +298,16 @@ if [ -n "$file" ]; then
     hexyl "$file"
 fi
 '''
+
+# ============================================
+# Tool Versions (ツールバージョン管理)
+# ============================================
+# プロジェクト固有の.mise.tomlで上書き可能
+#
+# 使用例:
+# [tools]
+# node = "lts"           # Node.js LTS版
+# python = "3.12"        # Python 3.12
+# ruby = "3.3"           # Ruby 3.3
+# go = "1.22"            # Go 1.22
+# rust = "stable"        # Rust安定版
