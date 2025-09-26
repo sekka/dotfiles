@@ -172,6 +172,10 @@ run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再�
 description = "zshの設定を再読み込み"
 run = "source ~/.zshrc"
 
+[tasks.util-update-brew]
+description = "Homebrewのアップデートとアップグレード"
+run = "brew update && brew upgrade && brew cleanup"
+
 [tasks.util-bat]
 description = "pecoでファイルを選択してbatで表示"
 run = '''
