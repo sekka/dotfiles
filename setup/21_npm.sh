@@ -3,7 +3,6 @@
 
 #npm install -g npm
 npm install -g @google/gemini-cli
-npm install -g ccusage
 npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates

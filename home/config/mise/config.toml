@@ -128,17 +128,17 @@ run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
 # Claude Code再開ツール
 [tasks.llm-claude-ccresume]
 description = "Claude Codeのclaude --resumeを使いやすくする"
-run = "npx @sasazame/ccresume@latest"
+run = "ccresume"
 
 # Claude Codeセッション検索
 [tasks.llm-claude-ccsearch]
 description = "Claude Codeのセッション検索・共有"
-run = "npx ccsearch@latest"
+run = "ccsearch"
 
 # Claude Code使用状況
 [tasks.llm-claude-ccusage]
 description = "Claude Codeのセッション使用状況を表示"
-run = "npx ccusage@latest"
+run = "ccusage"
 
 # Serena MCPサーバー
 [tasks.llm-serena]
@@ -307,4 +307,7 @@ fi
 # ruby = "3.3"           # Ruby 3.3
 # go = "1.22"            # Go 1.22
 # rust = "stable"        # Rust安定版
-"npm:@openai/codex" = "latest" # OpenAI Codex (npmパッケージ)
+"npm:@openai/codex" = "latest"      # OpenAI Codex (npmパッケージ)
+"npm:@sasazame/ccresume" = "latest"
+"npm:ccsearch" = "latest"
+"npm:ccusage" = "latest"
