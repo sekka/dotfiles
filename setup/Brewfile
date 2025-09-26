@@ -44,6 +44,7 @@ brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
 brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
+brew "dstp"               # https://formulae.brew.sh/formula/dstp     # ネットワーク調査
 # brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
 
 # === Python ===
