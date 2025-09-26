@@ -1,13 +1,3 @@
-[tasks.mise-doctor]
-alias = "md"
-description = "miseのメンテナンスを実行する"
-run = "mise doctor"
-
-[tasks.mise-self-update]
-alias = "msu"
-description = "miseの自己更新を実行する"
-run = "mise self-update"
-
 [tasks.aws-sso-login]
 alias = "al"
 description = "SSOでログインして、現在のセッションに認証情報を設定する"
@@ -93,6 +83,16 @@ run = "npx ccusage@latest"
 [tasks.llm-serena]
 description = "serena-mcp-serverを起動"
 run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
+
+[tasks.mise-doctor]
+alias = "md"
+description = "miseのメンテナンスを実行する"
+run = "mise doctor"
+
+[tasks.mise-self-update]
+alias = "msu"
+description = "miseの自己更新を実行する"
+run = "mise self-update"
 
 [tasks.rust-cargo-update]
 description = "cargo update"
@@ -182,8 +182,12 @@ run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再�
 description = "zshの設定を再読み込み"
 run = "source ~/.zshrc"
 
-[tasks.util-update-brew]
-description = "Homebrewのアップデートとアップグレード"
+# --------------------------------------
+# ユーティリティ
+# --------------------------------------
+[tasks.update-brew]
+alias = "ub"
+description = "Homebrew更新"
 run = "brew update && brew upgrade && brew cleanup"
 
 [tasks.util-bat]
