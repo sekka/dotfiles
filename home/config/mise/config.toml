@@ -1,10 +1,35 @@
-[tasks.aws-sso-login]
+# ============================================
+# mise Configuration
+# ============================================
+
+[env]
+
+# --------------------------------------
+# Global Settings
+# --------------------------------------
+[settings]
+experimental = true
+fetch_remote_versions_cache = "1h"
+fetch_remote_versions_timeout = "10s"
+jobs = 4
+legacy_version_file = true
+plugin_autoupdate_last_check_duration = "7 days"
+trusted_config_paths = ["~/dotfiles", "~/src/**", "~/projects/**"]
+
+# --------------------------------------
+# AWS
+# --------------------------------------
+[tasks.aws-login]
 alias = "al"
-description = "SSOでログインして、現在のセッションに認証情報を設定する"
+description = "AWS SSOログイン"
 run = "aws sso login"
 
-[tasks.dev-update-browserslist]
-description = "Browserslistのデータベースを更新する"
+# --------------------------------------
+# Development Tools
+# --------------------------------------
+[tasks.browserslist]
+alias = "bl"
+description = "Browserslist更新"
 run = "npx browserslist@latest --update-db"
 
 [tasks.gh-list-deploy]
