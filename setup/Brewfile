@@ -39,6 +39,7 @@ brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitク�
 brew "gitui"              # https://formulae.brew.sh/formula/gitui    # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
+brew "specify"            # https://formulae.brew.sh/formula/specify  # Spec-Driven Developmentツール
 
 # === ウェブ開発 ===
 brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
