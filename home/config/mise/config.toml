@@ -44,7 +44,7 @@ description = "AWS SSOログイン"
 run = "aws sso login"
 
 # --------------------------------------
-# 開発ツール
+# GitHub/開発ツール
 # --------------------------------------
 [tasks.browserslist]
 alias = "bl"
@@ -123,7 +123,7 @@ description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
 
 # --------------------------------------
-# Claude Code関連
+# LLM/AI関連
 # --------------------------------------
 # Claude Code再開ツール
 [tasks.llm-claude-ccresume]
@@ -179,7 +179,7 @@ description = "システムモニタリング"
 run = "rtop"
 
 # --------------------------------------
-# コード整形・Lint (pre-commit hook用)
+# Lint & Format (pre-commit hook用)
 # --------------------------------------
 # 全ファイルのフォーマット
 [tasks.shell-script-format]
