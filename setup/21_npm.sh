@@ -2,8 +2,6 @@
 # Global npm packages setup script
 
 #npm install -g npm
-npm install -g @google/gemini-cli
-npm install -g caniuse-cmd
 npm install -g npm-check
 npm install -g npm-check-updates
 npm install -g now
