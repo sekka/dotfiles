@@ -109,14 +109,17 @@ run = "npx ccusage@latest"
 description = "serena-mcp-serverを起動"
 run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
 
+# --------------------------------------
+# mise Management
+# --------------------------------------
 [tasks.mise-doctor]
 alias = "md"
-description = "miseのメンテナンスを実行する"
+description = "mise環境診断"
 run = "mise doctor"
 
 [tasks.mise-self-update]
 alias = "msu"
-description = "miseの自己更新を実行する"
+description = "mise本体更新"
 run = "mise self-update"
 
 [tasks.rust-cargo-update]
