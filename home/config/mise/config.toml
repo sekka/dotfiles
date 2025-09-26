@@ -1,3 +1,13 @@
+[tasks.mise-doctor]
+alias = "md"
+description = "miseのメンテナンスを実行する"
+run = "mise doctor"
+
+[tasks.mise-self-update]
+alias = "msu"
+description = "miseの自己更新を実行する"
+run = "mise self-update"
+
 [tasks.aws-sso-login]
 alias = "al"
 description = "SSOでログインして、現在のセッションに認証情報を設定する"
