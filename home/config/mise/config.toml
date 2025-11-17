@@ -122,6 +122,11 @@ run = "difit --tui"
 description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
 
+# Claude Code関係のファイルを一覧表示
+[tasks.llm-claude-ccexp]
+description = "Claude Code関係のファイルを一覧表示"
+run = "ccexp"
+
 # --------------------------------------
 # LLM/AI関連
 # --------------------------------------
@@ -159,6 +164,12 @@ alias = "md"
 description = "mise環境診断"
 run = "mise doctor"
 
+# mise list
+[tasks.mise-list]
+alias = "ml"
+description = "インストール済みツール一覧"
+run = "mise list"
+
 # mise更新
 [tasks.mise-self-update]
 alias = "msu"
@@ -170,12 +181,6 @@ run = "mise self-update"
 alias = "mu"
 description = "miseのアップグレード（ツールのインストール/更新を実行）"
 run = "mise upgrade"
-
-# mise list
-[tasks.mise-list]
-alias = "ml"
-description = "インストール済みツール一覧"
-run = "mise list"
 
 # --------------------------------------
 # Rust関連
@@ -317,6 +322,7 @@ fi
 '''
 
 [tools]
+"npm:@github/copilot" = "latest"
 # グローバルにインストールするツールを定義
 # 例:
 # node = "lts"           # Node.js LTS版
@@ -325,10 +331,10 @@ fi
 # go = "1.22"            # Go 1.22
 # rust = "stable"        # Rust安定版
 "npm:@google/gemini-cli" = "latest"
-"npm:@github/copilot" = "latest"
 "npm:@openai/codex" = "latest"
 "npm:@sasazame/ccresume" = "latest"
 "npm:caniuse-cmd" = "latest"
+"npm:ccexp" = "latest"
 "npm:ccsearch" = "latest"
 "npm:ccusage" = "latest"
 "npm:codemass" = "latest"
