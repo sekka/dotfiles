@@ -6,8 +6,8 @@ brew "m-cli"              # https://formulae.brew.sh/formula/m-cli    # Mac便�
 brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App Store操作用ツール
 
 # === AI ===
-tap "dagger/tap"
-brew "dagger/tap/container-use"
+#tap "dagger/tap"
+#brew "dagger/tap/container-use"
 
 # === ターミナル ===
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
@@ -94,6 +94,8 @@ brew "ffmpeg"
 #cask "monitorcontrol"
 #cask "notion"
 #cask "notion-calendar"
+#cask "obsidian"
+
 #cask "ogdesign-eagle"
 #cask "onyx"
 #cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
@@ -106,8 +108,10 @@ brew "ffmpeg"
 #cask "vpn-by-google-one"
 
 # === AI ===
-cask "chatgpt"
-cask "claude"
+#cask "chatgpt"
+#cask "claude"
+#cask "conductor"
+#cask "cursor"
 
 # === エンタメ ===
 #cask "alcom"
@@ -124,6 +128,7 @@ cask "claude"
 # === ブラウザ ===
 #cask "arc"
 #cask "brave-browser"
+#cask "chatgpt-atlas"
 #cask "firefox"
 #cask "firefox-developer-edition"
 #cask "firefox-nightly"
@@ -137,7 +142,7 @@ cask "claude"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
 #cask "vivaldi"
-#cask "zen-browser"
+#cask "zen"
 
 # === 仮想環境 ===
 #cask "mist"
@@ -147,13 +152,13 @@ cask "claude"
 # === ウェブ開発 ===
 #cask "charles"
 #cask "contraste"
-#cask "cursor"
 #cask "dash"
 #cask "docker"
 #cask "fork"
 #cask "graphql-playground"
 #cask "hex-fiend"
 #cask "iterm2"
+#cask "jasper-app"
 #cask "jetbrains-toolbox"
 #cask "ksdiff"
 #cask "paw"
@@ -166,6 +171,7 @@ cask "claude"
 
 # === デザイン ===
 #cask "adobe-creative-cloud"
+#cask "affinity"
 #cask "figma"
 #cask "iconjar"
 
@@ -228,6 +234,7 @@ cask "claude"
 #mas "Reeder",                id: 1449412482
 #mas "ComicViewer",           id: 1455702185
 #mas "ReelSteady"             id: 1460836908
+#mas "Tailscale"              id: 1475387142
 #mas "Vimari",                id: 1480933944
 #mas "Cicero",                id: 1480977453
 #mas "Structured",            id: 1499198946

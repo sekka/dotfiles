@@ -22,6 +22,7 @@ volta install node@21
 volta install node@22
 volta install node@23
 volta install node@24
+volta install node@25
 volta install node@latest
 volta install node
 
