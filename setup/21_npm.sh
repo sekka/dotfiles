@@ -2,16 +2,6 @@
 # Global npm packages setup script
 
 #npm install -g npm
-npm install -g npm-check
-npm install -g npm-check-updates
-npm install -g now
-npm install -g fixpack
-npm install -g gtop
-npm install -g @vue/cli
-npm install -g lighthouse
-npm install -g git-diff-archive
-npm install -g commitizen
-npm install -g aicommits
 
 echo "# ======================================================================================="
 echo "# npm update"
