@@ -106,10 +106,10 @@ brew "ffmpeg"
 #cask "vpn-by-google-one"
 
 # === AI ===
+#cask "antigravity"
 #cask "chatgpt"
 #cask "claude"
 #cask "conductor"
-#cask "antigravity"
 #cask "cursor"
 
 # === エンタメ ===
