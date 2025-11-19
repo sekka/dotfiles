@@ -322,7 +322,6 @@ fi
 '''
 
 [tools]
-"npm:@github/copilot" = "latest"
 # グローバルにインストールするツールを定義
 # 例:
 # node = "lts"           # Node.js LTS版
@@ -330,19 +329,22 @@ fi
 # ruby = "3.3"           # Ruby 3.3
 # go = "1.22"            # Go 1.22
 # rust = "stable"        # Rust安定版
+
+"npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@openai/codex" = "latest"
 "npm:@sasazame/ccresume" = "latest"
-"npm:caniuse-cmd" = "latest"
 "npm:ccexp" = "latest"
 "npm:ccsearch" = "latest"
 "npm:ccusage" = "latest"
 "npm:codemass" = "latest"
+
+"npm:caniuse-cmd" = "latest"
 "npm:difit" = "latest"
-"npm:git-cz" = "latest"
-"npm:npm-check" = "latest"
-"npm:npm-check-updates" = "latest"
 "npm:fixpack" = "latest"
+"npm:git-cz" = "latest"
+"npm:git-diff-archive" = "latest"
 "npm:gtop" = "latest"
 "npm:lighthouse" = "latest"
-"npm:git-diff-archive" = "latest"
+"npm:npm-check" = "latest"
+"npm:npm-check-updates" = "latest"
