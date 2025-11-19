@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(true)",
+      "Bash(echo $ZPLUG_HOME)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(git revert:*)",
+      "Bash(git rm:*)",
+      "Bash(git merge:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": []
+  },
+  "enabledMcpjsonServers": [
+    "markitdown"
+  ],
+  "enableAllProjectMcpServers": true
+}
