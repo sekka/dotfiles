@@ -48,6 +48,7 @@ fi
 # PATH is managed in config/zsh/00_path.zsh
 if [[ -d "$HOME/.volta" ]]; then
     export VOLTA_HOME="$HOME/.volta"
+    export PATH="$VOLTA_HOME/bin:$PATH"
 fi
 
 # zplug path setup is now handled in 08_zplug.zsh
