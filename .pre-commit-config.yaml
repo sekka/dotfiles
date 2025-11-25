@@ -65,12 +65,12 @@ repos:
   #     - id: rubocop
   #       files: ^scripts/.*\\.rb$
 
-  # TOML
-  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.14.0
-    hooks:
-      - id: pretty-format-toml
-        args: [--autofix]
+  # TOML（フォーマットを無効化）
+  # - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  #   rev: v2.14.0
+  #   hooks:
+  #     - id: pretty-format-toml
+  #       args: [--autofix]
 
   # JSON, YAML, Markdown (prettier)
   - repo: https://github.com/pre-commit/mirrors-prettier
