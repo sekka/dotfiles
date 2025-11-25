@@ -11,6 +11,7 @@ brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App 
 # === ターミナル ===
 brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
 brew "tmux"               # https://formulae.brew.sh/formula/tmux     #
+brew "zenith"             # https://formulae.brew.sh/formula/zenith   # ターミナルシステムモニタ
 brew "reattach-to-user-namespace" # https://formulae.brew.sh/formula/reattach-to-user-namespace # tmux便利ツール
 brew "zplug"              # https://formulae.brew.sh/formula/zplug    # ターミナル用プラグイン管理
 brew "peco"               # https://formulae.brew.sh/formula/peco     # インクリメンタルサーチ

@@ -330,6 +330,13 @@ fi
 # go = "1.22"            # Go 1.22
 # rust = "stable"        # Rust安定版
 
+node = ["lts", "latest", "25", "24", "23", "22", "21", "20", "19", "18"]
+deno = "latest"
+bun = "latest"
+# npm = "latest"
+yarn = "latest"
+pnpm = "latest"
+
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@openai/codex" = "latest"
@@ -348,3 +355,17 @@ fi
 "npm:lighthouse" = "latest"
 "npm:npm-check" = "latest"
 "npm:npm-check-updates" = "latest"
+
+# "cargo:zellij" = "latest"       # https://crates.io/crates/zellij すごいtmux
+# "cargo:starship" = "latest"     # https://crates.io/crates/starship すごいプロンプト
+"cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
+"cargo:bat" = "latest"          # https://crates.io/crates/bat すごいcat
+"cargo:hexyl" = "latest"        # https://crates.io/crates/hexyl すごいod
+"cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
+"cargo:procs" = "latest"        # https://crates.io/crates/procs すごいps
+"cargo:hgrep" = "latest"        # https://crates.io/crates/hgrep すごいgrep
+"cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
+"cargo:fd-find" = "latest"      # https://crates.io/crates/fd-find すごいfind
+"cargo:hx" = "latest"           # https://crates.io/crates/hx HTTPie / 高機能cURL
+"cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
+"cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
