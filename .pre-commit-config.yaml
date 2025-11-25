@@ -17,13 +17,6 @@ repos:
         pass_filenames: false
         always_run: true
         verbose: true
-      - id: mise-format
-        name: mise format
-        entry: mise run shell-script-format
-        language: system
-        pass_filenames: false
-        always_run: true
-        verbose: true
       - id: mise-format-sh
         name: mise format-sh
         entry: mise run shell-script-format-sh
