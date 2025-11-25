@@ -369,3 +369,4 @@ pnpm = "latest"
 "cargo:hx" = "latest"           # https://crates.io/crates/hx HTTPie / 高機能cURL
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
+"cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
