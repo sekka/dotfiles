@@ -54,11 +54,6 @@ if [[ -d "$HOME/.anyenv/bin" ]]; then
     add_to_path "$HOME/.anyenv/bin"
 fi
 
-# volta
-if [[ -d "$HOME/.volta/bin" ]]; then
-    add_to_path "$HOME/.volta/bin"
-fi
-
 # === 開発ツール ===
 
 # Docker Desktop
