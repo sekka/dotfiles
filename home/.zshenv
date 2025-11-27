@@ -33,5 +33,5 @@ fi
 
 # Language-specific paths are managed in config/zsh/00_path.zsh
 
-# NOTE: Heavy operations (anyenv, direnv, cargo) moved to .zprofile
+# NOTE: Heavy operations (direnv, cargo) moved to .zprofile
 # They will only run in login shells, not for every script execution

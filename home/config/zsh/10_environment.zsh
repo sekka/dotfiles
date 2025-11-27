@@ -37,23 +37,6 @@ fi
 add_to_path "$HOME/.yarn/bin" append
 add_to_path "$HOME/.config/yarn/global/node_modules/.bin" append
 
-# Python
-if [[ -d "$HOME/.local/bin" ]]; then
-    add_to_path "$HOME/.local/bin" append
-fi
-
-# Ruby
-if [[ -d "$HOME/.rbenv/bin" ]]; then
-    add_to_path "$HOME/.rbenv/bin"
-fi
-
-# === バージョンマネージャー ===
-
-# anyenv
-if [[ -d "$HOME/.anyenv/bin" ]]; then
-    add_to_path "$HOME/.anyenv/bin"
-fi
-
 # === 開発ツール ===
 
 # Docker Desktop

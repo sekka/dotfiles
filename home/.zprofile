@@ -28,12 +28,6 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 # Development environment initialization
 # --------------------------------------
 
-# anyenv - unified version manager (heavy operation)
-# PATH is managed in config/zsh/00_path.zsh
-if [[ -d "$HOME/.anyenv" ]] && command -v anyenv >/dev/null 2>&1; then
-    eval "$(anyenv init -)"
-fi
-
 # direnv - per-directory environment variables (heavy operation)
 if command -v direnv >/dev/null 2>&1; then
     eval "$(direnv hook zsh)"
