@@ -336,7 +336,6 @@ bun = "latest"
 # npm = "latest"
 yarn = "latest"
 pnpm = "latest"
-go = "latest"
 
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
@@ -357,6 +356,7 @@ go = "latest"
 "npm:npm-check" = "latest"
 "npm:npm-check-updates" = "latest"
 
+rust = "stable"
 # "cargo:zellij" = "latest"       # https://crates.io/crates/zellij すごいtmux
 # "cargo:starship" = "latest"     # https://crates.io/crates/starship すごいプロンプト
 "cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
@@ -373,4 +373,5 @@ go = "latest"
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
+go = "latest"
 # "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"

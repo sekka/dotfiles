@@ -27,16 +27,6 @@ brew doctor
 # echo insecure >> ~/.curlrc
 
 echo "# ======================================================================================="
-echo "# Rustを導入する"
-
-if [ ! -f "$HOME/.cargo/bin/rustc" ]; then
-  echo "Installing Rust..."
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-else
-  echo "Rust already installed."
-fi
-
-echo "# ======================================================================================="
 echo "# zshを導入する"
 
 brew install zsh
