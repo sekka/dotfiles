@@ -40,6 +40,7 @@ brew "gitui"              # https://formulae.brew.sh/formula/gitui    # gitク�
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
 brew "specify"            # https://formulae.brew.sh/formula/specify  # Spec-Driven Developmentツール
+brew "uv"                 # https://formulae.brew.sh/formula/uv       # Python環境管理ツール
 
 # === ウェブ開発 ===
 brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
