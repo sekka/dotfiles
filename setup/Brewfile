@@ -29,6 +29,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp   # YouTube�
 brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DLツール
 
 # === 開発 ===
+brew "mise"               # https://formulae.brew.sh/formula/mise     # タスクランナー
 brew "direnv"             # https://formulae.brew.sh/formula/direnv   #
 brew "git"                # https://formulae.brew.sh/formula/git      # git
 brew "hub"                # https://formulae.brew.sh/formula/hub      # GitHubサポートツール

@@ -41,9 +41,6 @@
 ```bash
 # Homebrewからアプリをインストール（Brewfile使用）
 ./setup/20_homebrew.sh
-
-# 言語環境のセットアップ（オプション）
-./setup/16_rust.sh      # Rust
 ```
 
 ---
@@ -118,7 +115,8 @@ dotfiles/
 │   ├── 03_claude.sh                # Claude設定セットアップ・同期
 │   ├── Brewfile                    # Homebrew設定
 │   ├── 20_homebrew.sh              # Homebrewアプリ
-│   └── [11-23]_*.sh                # 各言語・ツールセットアップ
+│   ├── 23_web.sh                   # Web開発ツール
+│   └── 30_claude.sh                # Claude CLI設定
 ├── .envrc                          # direnv設定（自動同期）
 ├── .gitignore                      # Git除外設定
 └── README.md, SETUP.md             # ドキュメント
