@@ -43,7 +43,6 @@
 ./setup/20_homebrew.sh
 
 # 言語環境のセットアップ（オプション）
-./setup/11_nodejs.sh    # Node.js
 ./setup/12_python.sh    # Python（uvによる環境管理）
 ./setup/13_golang.sh    # Go
 ./setup/16_rust.sh      # Rust
