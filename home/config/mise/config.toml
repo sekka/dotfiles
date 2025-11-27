@@ -336,6 +336,7 @@ bun = "latest"
 # npm = "latest"
 yarn = "latest"
 pnpm = "latest"
+go = "latest"
 
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
@@ -370,3 +371,5 @@ pnpm = "latest"
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
+
+# "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"
