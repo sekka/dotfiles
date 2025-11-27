@@ -207,6 +207,7 @@ brew "ffmpeg"
 # === 開発用フォント ===
 #cask "font-cascadia-code"
 #cask "font-fira-code"
+#cask "font-google-sans-code"
 #cask "font-hackgen"
 #cask "font-intel-one-mono"
 #cask "font-jetbrains-mono"
