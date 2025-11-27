@@ -33,10 +33,6 @@ if [[ -d "$HOME/.cargo/bin" ]]; then
     add_to_path "$HOME/.cargo/bin" append
 fi
 
-# Node.js / Yarn
-add_to_path "$HOME/.yarn/bin" append
-add_to_path "$HOME/.config/yarn/global/node_modules/.bin" append
-
 # === 開発ツール ===
 
 # Docker Desktop
@@ -49,9 +45,6 @@ add_to_path "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" ap
 add_to_path "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" append
 
 # === アプリケーション固有 ===
-
-# LM Studio
-add_to_path "$HOME/.lmstudio/bin" append
 
 # Rancher Desktop
 if [[ -d "$HOME/.rd/bin" ]]; then
