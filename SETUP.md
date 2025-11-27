@@ -43,7 +43,6 @@
 ./setup/20_homebrew.sh
 
 # 言語環境のセットアップ（オプション）
-./setup/13_golang.sh    # Go
 ./setup/16_rust.sh      # Rust
 ```
 
