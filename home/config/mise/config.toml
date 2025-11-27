@@ -371,5 +371,6 @@ go = "latest"
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
+"cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
 # "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"

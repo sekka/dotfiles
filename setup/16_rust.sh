@@ -19,6 +19,6 @@ rustup update stable
 # cargo install cargo-update # https://crates.io/crates/cargo-update
 # cargo install rtop         # https://crates.io/crates/rtop システムモニタリング
 cargo install mise # https://crates.io/crates/mise タスクランナー
-cargo install --locked --git 'https://github.com/anatawa12/git-vrc.git'
+# cargo install --locked --git 'https://github.com/anatawa12/git-vrc.git'
 
 cargo install-update -a # 全てのクレートを最新に (cargo-update)
