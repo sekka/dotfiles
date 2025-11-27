@@ -43,7 +43,6 @@
 ./setup/20_homebrew.sh
 
 # 言語環境のセットアップ（オプション）
-./setup/10_anyenv.sh    # 言語環境管理
 ./setup/11_nodejs.sh    # Node.js
 ./setup/12_python.sh    # Python（uvによる環境管理）
 ./setup/13_golang.sh    # Go
@@ -121,7 +120,6 @@ dotfiles/
 │   ├── 02_dotfiles.sh              # シンボリックリンク作成
 │   ├── 03_claude.sh                # Claude設定セットアップ・同期
 │   ├── Brewfile                    # Homebrew設定
-│   ├── 10_anyenv.sh                # 言語環境管理
 │   ├── 20_homebrew.sh              # Homebrewアプリ
 │   └── [11-23]_*.sh                # 各言語・ツールセットアップ
 ├── .envrc                          # direnv設定（自動同期）

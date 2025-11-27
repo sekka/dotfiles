@@ -1,15 +1,12 @@
 #!/bin/bash
-# Go and goenv setup script (currently commented out)
+# Go setup script (currently commented out, managed by mise)
 
-# brew update
-# brew upgrade
+# Go is now managed by mise (see home/config/mise/config.toml)
+# This script is kept for reference only
 
-# anyenv install goenv
-# #exec $SHELL -l
 # goenv install -l
-
-# #goenv install 1.13.8
-# #goenv global 1.13.8
+# goenv install 1.13.8
+# goenv global 1.13.8
 # goenv rehash
 # goenv versions
 # go version
