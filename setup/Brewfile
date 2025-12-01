@@ -110,6 +110,7 @@ brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg         # å‹
 #cask "antigravity"
 #cask "chatgpt"
 #cask "claude"
+#cask "claude-code"
 #cask "conductor"
 #cask "cursor"
 #cask "kiro"
