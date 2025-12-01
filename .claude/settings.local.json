@@ -1,14 +1,20 @@
 {
   "permissions": {
     "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(mkdir:*)",
       "Bash(git add:*)",
+      "Bash(git checkout:*)",
       "Bash(git commit:*)",
+      "Bash(git merge:*)",
       "Bash(mise where:*)",
       "Bash(mise install:*)"
-    ]
+    ],
+    "deny": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "markitdown"
-  ]
+  "enabledMcpjsonServers": ["markitdown"]
 }
