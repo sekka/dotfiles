@@ -15,6 +15,7 @@ DOT_FILES=(
   .agignore
   .gitcommit_template
   .gitconfig
+  .gitconfig_private
   .gitignore_global
   .mcp.json
   .tigrc
