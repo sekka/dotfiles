@@ -27,6 +27,7 @@ brew "pstree"             # https://formulae.brew.sh/formula/pstree   # psをツ
 brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文字
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp   # YouTube動画DLツール
 brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DLツール
+brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg    # 署名ツール
 
 # === 開発 ===
 brew "mise"               # https://formulae.brew.sh/formula/mise     # タスクランナー
@@ -39,36 +40,33 @@ brew "tig"                # https://formulae.brew.sh/formula/tig      # gitク�
 brew "lazygit"            # https://formulae.brew.sh/formula/lazygit  # gitクライアント
 brew "gitui"              # https://formulae.brew.sh/formula/gitui    # gitクライアント
 brew "gibo"               # https://formulae.brew.sh/formula/gibo     # gitignoreボイラープレート
+brew "czg"                # https://formulae.brew.sh/formula/czg      # コミットメッセージ支援ツール
 brew "wget"               # https://formulae.brew.sh/formula/wget     # DLツール
 brew "specify"            # https://formulae.brew.sh/formula/specify  # Spec-Driven Developmentツール
 brew "uv"                 # https://formulae.brew.sh/formula/uv       # Python環境管理ツール
 
 # === ウェブ開発 ===
-brew "http-server"        # https://formulae.brew.sh/formula/http-server # ローカルサーバ
-brew "jq"                 # https://formulae.brew.sh/formula/jq       # json便利ツール
-brew "mycli"              # https://formulae.brew.sh/formula/mycli    # MySQL便利ツール
-brew "httpstat"           # https://formulae.brew.sh/formula/httpstat # cURLの統計情報表示
-brew "speedtest_cli"      # https://github.com/sivel/speedtest-cli    # スピードテストツール
-brew "dstp"               # https://formulae.brew.sh/formula/dstp     # ネットワーク調査
-# brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli  # Netlify
+brew "http-server"        # https://formulae.brew.sh/formula/http-server      # ローカルサーバ
+brew "jq"                 # https://formulae.brew.sh/formula/jq               # json便利ツール
+brew "mycli"              # https://formulae.brew.sh/formula/mycli            # MySQL便利ツール
+brew "httpstat"           # https://formulae.brew.sh/formula/httpstat         # cURLの統計情報表示
+brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
+brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
+brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
+brew "firebase-cli"       # https://formulae.brew.sh/formula/firebase-cli     # Firebaseコマンドラインツール
+brew "vercel-cli"         # https://formulae.brew.sh/formula/vercel-cli       # Vercelコマンドラインツール
+brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli      # Netlifyコマンドラインツール
+brew "heroku"             # https://formulae.brew.sh/formula/heroku           # Herokuコマンドラインツール
 
 # === Python ===
-brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
+# brew "pipenv"             # https://formulae.brew.sh/formula/pipenv   # Pythonマネージャ
 
 # === 画像処理 ===
 brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli # 画像最適化ツール
-brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick #
-brew "svgo"               # https://formulae.brew.sh/formula/svgo     #
-brew "webp"               # https://formulae.brew.sh/formula/webp     #
-#brew --use-clang --HEAD ffmpeg --with-faac --with-fdk-aac --with-ffplay --with-fontconfig --with-freetype --with-frei0r --with-libass --with-libbluray --with-libcaca --with-libquvi --with-libsoxr --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-speex --with-theora --with-tools --with-x265 --enable-libx264 --enable-gpl --enable-libxvid --enable-shared
-brew "ffmpeg"
-
-# === AWS ===
-#brew "awscli"
-#brew "aws/tap/aws-sam-cli"
-
-# === Heroku ===
-#brew "heroku/brew/heroku"
+brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick    # 画像処理ツール
+brew "svgo"               # https://formulae.brew.sh/formula/svgo           # SVG最適化ツール
+brew "webp"               # https://formulae.brew.sh/formula/webp           # WebP画像処理ツール
+brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg         # 動画処理ツール
 
 # === ユーティリティ ===
 #cask "1password"
