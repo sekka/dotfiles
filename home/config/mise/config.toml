@@ -180,7 +180,7 @@ run = "mise self-update"
 [tasks.mise-upgrade]
 alias = "mu"
 description = "miseのアップグレード（ツールのインストール/更新を実行）"
-run = "mise upgrade"
+run = "mise upgrade --bump"
 
 # --------------------------------------
 # Rust関連
