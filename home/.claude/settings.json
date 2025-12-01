@@ -2,5 +2,8 @@
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753939126517
+  },
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
   }
 }
