@@ -112,6 +112,7 @@ brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg         # �
 #cask "claude"
 #cask "conductor"
 #cask "cursor"
+#cask "kiro"
 
 # === エンタメ ===
 #cask "alcom"
@@ -141,6 +142,7 @@ brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg         # �
 #cask "microsoft-edge-canary"
 #cask "microsoft-edge-dev"
 #cask "microsoft-office-2016"
+#cask "thebrowsercompany-dia"
 #cask "vivaldi"
 #cask "zen"
 
