@@ -1,4 +1,10 @@
 {
-  "theme": "GitHub",
-  "selectedAuthType": "oauth-personal"
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "ui": {
+    "theme": "GitHub"
+  }
 }
