@@ -299,7 +299,7 @@ run = "source ~/.zshrc"
 [tasks.update-brew]
 alias = "ub"
 description = "Homebrew更新"
-run = "brew update && brew upgrade && brew cleanup"
+run = "sh ~/dotfiles/setup/20_homebrew.sh && brew update && brew upgrade && brew cleanup"
 
 # batでファイルプレビュー
 [tasks.util-bat]
@@ -345,6 +345,7 @@ pnpm = "latest"
 "npm:ccsearch" = "latest"
 "npm:ccusage" = "latest"
 "npm:codemass" = "latest"
+"npm:mmcp" = "latest"
 
 "npm:caniuse-cmd" = "latest"
 "npm:difit" = "latest"
