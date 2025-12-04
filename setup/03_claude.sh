@@ -38,6 +38,7 @@ echo "🔗 Claude設定ファイルのシンボリックリンクを作成..."
 CLAUDE_FILES=(
   "CLAUDE.md"
   "settings.json"
+  "statusline.js"
 )
 
 created=0
