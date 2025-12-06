@@ -15,6 +15,5 @@
     ],
     "deny": []
   },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["markitdown"]
+  "enableAllProjectMcpServers": true
 }
