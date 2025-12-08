@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# https://zenn.dev/genda_jp/articles/2025-12-07-manage-git-worktree-with-ghq
+# https://github.com/i9wa4/dotfiles
+#
+# Create a git worktree for the specified GitHub pull request(s).
+# Checks out the PR branch for code review.
+#
+# Usage:
+#   pr-worktree-create <pr_number> [pr_number2 ...]
+#
+# Dependencies:
+#   - gh (GitHub CLI)
+#   - repo-setup (optional)
+
+# Check required dependencies
+for cmd in gh git; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: $cmd command not found. Please install it." >&2
+    exit 1
+  fi
+done
+
+# Check arguments
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <pr_number> [pr_number2 ...]" >&2
+  echo "Example: $0 123" >&2
+  echo "Example: $0 123 456 789" >&2
+  exit 1
+fi
+
+# Get repository name
+repo_name=$(basename "$(git rev-parse --show-toplevel)")
+
+# Fetch remote once
+echo "-> Fetching remote..."
+git fetch origin
+echo ""
+
+# Process each PR number
+for pr_number in "$@"; do
+  # Validate PR number
+  if [[ ! $pr_number =~ ^[0-9]+$ ]]; then
+    echo "Warning: '$pr_number' is not a valid PR number. Skipping." >&2
+    echo ""
+    continue
+  fi
+
+  echo "=== Processing PR #${pr_number} ==="
+
+  # Fetch PR branch name
+  echo "-> Fetching PR #${pr_number} info..."
+  pr_branch=$(gh pr view "${pr_number}" --json headRefName --jq '.headRefName' 2>/dev/null)
+
+  if [[ -z $pr_branch ]]; then
+    echo "Error: Could not get branch name for PR #${pr_number}." >&2
+    echo "Please verify the PR exists and you have access." >&2
+    echo ""
+    continue
+  fi
+
+  echo "* PR #${pr_number} branch: ${pr_branch}"
+
+  worktree_path="$(dirname "$(pwd)")/${repo_name}-pr-${pr_number}"
+
+  # Check for existing worktree
+  if [[ -d $worktree_path ]]; then
+    echo "* Worktree already exists: ${worktree_path}"
+    cd "$worktree_path"
+    echo "* Branch: $(git branch --show-current)"
+    cd - >/dev/null
+  else
+    # Create worktree
+    if git show-ref --verify --quiet "refs/remotes/origin/${pr_branch}"; then
+      echo "-> Creating worktree..."
+      git worktree add "$worktree_path" "origin/${pr_branch}"
+      cd "$worktree_path"
+      git checkout -b "${pr_branch}" "origin/${pr_branch}"
+      echo "* Created worktree: ${worktree_path}"
+
+      cd - >/dev/null
+
+      # Run repo-setup if available
+      if command -v repo-setup &>/dev/null; then
+        echo "-> Running repo-setup..."
+        cd "$worktree_path"
+        repo-setup
+        cd - >/dev/null
+      fi
+    else
+      echo "Error: Remote branch 'origin/${pr_branch}' not found." >&2
+      echo ""
+      continue
+    fi
+  fi
+
+  echo ""
+done
+
+echo "* All PR review worktrees are ready."
+echo ""

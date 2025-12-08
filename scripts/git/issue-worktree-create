@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o posix
+
+# https://zenn.dev/genda_jp/articles/2025-12-07-manage-git-worktree-with-ghq
+# https://github.com/i9wa4/dotfiles
+#
+# Create a git worktree for the specified GitHub issue(s).
+# Uses Claude to generate a descriptive branch name from the issue content.
+# Falls back to title-based naming if Claude is not available.
+#
+# Usage:
+#   issue-worktree-create <issue_number> [issue_number2 ...]
+#
+# Dependencies:
+#   - gh (GitHub CLI)
+#   - jq
+#   - claude (Anthropic CLI, optional)
+#   - repo-setup (optional)
+
+# Check required dependencies
+for cmd in gh jq git; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "Error: $cmd command not found. Please install it." >&2
+    exit 1
+  fi
+done
+
+# Check arguments
+if [[ $# -eq 0 ]]; then
+  echo "Usage: $0 <issue_number> [issue_number2 ...]" >&2
+  echo "Example: $0 123" >&2
+  echo "Example: $0 123 456 789" >&2
+  exit 1
+fi
+
+# Get repository name
+repo_name=$(basename "$(git rev-parse --show-toplevel)")
+
+# Fetch remote once
+echo "-> Fetching remote..."
+git fetch origin
+echo ""
+
+# Process each issue number
+for issue_number in "$@"; do
+  # Validate issue number
+  if [[ ! $issue_number =~ ^[0-9]+$ ]]; then
+    echo "Warning: '$issue_number' is not a valid issue number. Skipping." >&2
+    echo ""
+    continue
+  fi
+
+  echo "=== Processing Issue #${issue_number} ==="
+
+  # Fetch issue information
+  echo "-> Fetching issue info..."
+  if ! issue_json=$(gh issue view "${issue_number}" --json title,body,comments 2>&1); then
+    echo "Error: Failed to fetch Issue #${issue_number}. Skipping." >&2
+    echo "${issue_json}" >&2
+    echo ""
+    continue
+  fi
+
+  issue_title=$(jq -r '.title // empty' <<<"$issue_json")
+  issue_body=$(jq -r '.body // empty' <<<"$issue_json")
+  issue_comments=$(jq -r '.comments[]?.body // empty' <<<"$issue_json" | head -c 2000)
+
+  if [[ -z $issue_title ]]; then
+    echo "Error: Issue #${issue_number} has no title. Skipping." >&2
+    echo ""
+    continue
+  fi
+
+  # Generate branch name
+  echo "-> Generating branch name..."
+  branch_slug=""
+
+  # Try Claude first if available
+  if command -v claude &>/dev/null; then
+    prompt="Generate a short English slug (kebab-case) for a Git branch name from the following issue.
+- Maximum 5 words
+- Lowercase and hyphens only
+- Remove special characters
+- Start with a verb if possible
+
+Return ONLY the slug (no explanation).
+
+---
+Issue title: ${issue_title}
+---
+Issue body:
+${issue_body}
+---
+Issue comments:
+${issue_comments}
+---"
+
+    branch_slug=$(claude --print "$prompt" 2>/dev/null | tr -d '\n') || true
+  fi
+
+  # Fallback: use issue number only
+  if [[ -z $branch_slug ]]; then
+    echo "  (Using fallback: issue number only)"
+    branch_name="issue-${issue_number}"
+  else
+    branch_name="issue-${issue_number}-${branch_slug}"
+  fi
+  echo "* Branch name: ${branch_name}"
+
+  worktree_path="$(dirname "$(pwd)")/${repo_name}-${branch_name}"
+
+  # Check for existing worktree
+  if [[ -d $worktree_path ]]; then
+    echo "* Worktree already exists: ${worktree_path}"
+    echo "* Branch: ${branch_name}"
+  else
+    # Create worktree
+    if git show-ref --verify --quiet "refs/remotes/origin/${branch_name}"; then
+      git worktree add "$worktree_path" "$branch_name"
+      echo "* Created worktree: ${worktree_path}"
+    else
+      git worktree add -b "$branch_name" "$worktree_path"
+      echo "* Created worktree: ${worktree_path}"
+      echo "* Created local branch: ${branch_name}"
+    fi
+
+    # Run repo-setup if available
+    if command -v repo-setup &>/dev/null; then
+      echo "-> Running repo-setup..."
+      cd "$worktree_path"
+      repo-setup
+      cd - >/dev/null
+    fi
+  fi
+
+  echo ""
+done
+
+echo "* All issue worktrees are ready."
+echo ""
