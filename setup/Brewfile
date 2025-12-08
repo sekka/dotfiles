@@ -107,7 +107,7 @@ brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg         # å‹
 #cask "vpn-by-google-one"
 
 # === AI ===
-cask "antigravity"
+#cask "antigravity"
 #cask "chatgpt"
 #cask "claude"
 #cask "claude-code"
