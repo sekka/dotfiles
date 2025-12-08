@@ -10,6 +10,7 @@ add_to_path "/usr/local/sbin"
 
 # === dotfiles関連 ===
 add_to_path "$HOME/dotfiles/scripts/development"
+add_to_path "$HOME/dotfiles/scripts/git"
 add_to_path "$HOME/dotfiles/scripts/media"
 add_to_path "$HOME/dotfiles/scripts/setup"
 add_to_path "$HOME/dotfiles/scripts/system"

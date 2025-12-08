@@ -9,7 +9,6 @@ brew "mas"                # https://formulae.brew.sh/formula/mas      # Mac App 
 #brew "dagger/tap/container-use"
 
 # === ターミナル ===
-brew "zsh"                # https://formulae.brew.sh/formula/zsh      #
 brew "tmux"               # https://formulae.brew.sh/formula/tmux     #
 brew "zenith"             # https://formulae.brew.sh/formula/zenith   # ターミナルシステムモニタ
 brew "reattach-to-user-namespace" # https://formulae.brew.sh/formula/reattach-to-user-namespace # tmux便利ツール
@@ -28,6 +27,8 @@ brew "emojify"            # https://formulae.brew.sh/formula/emojify  # 絵文�
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp   # YouTube動画DLツール
 brew "pget"               # https://formulae.brew.sh/formula/pget     # 高速DLツール
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg    # 署名ツール
+brew "carlocab/personal/unrar"    # https://formulae.brew.sh/formula/unrar    # RAR解凍ツール
+brew "nkf"                # https://formulae.brew.sh/formula/nkf      # 文字コード変換ツール
 
 # === 開発 ===
 brew "mise"               # https://formulae.brew.sh/formula/mise     # タスクランナー
