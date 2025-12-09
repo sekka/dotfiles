@@ -1,13 +1,13 @@
 {
-  "alwaysThinkingEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1753939126517
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
   },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.js"
   },
-  "env": {
-    "DISABLE_AUTOUPDATER": "1"
+  "alwaysThinkingEnabled": false,
+  "feedbackSurveyState": {
+    "lastShownTime": 1753939126517
   }
 }
