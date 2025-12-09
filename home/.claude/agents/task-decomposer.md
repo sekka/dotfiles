@@ -7,6 +7,10 @@ description: 計画ファイル（計画ファイル）を原子的でコミッ�
 - タスク間で十分なコンテキストを維持し、全体目標を見失わないようにしたい
 - 明確なチェックポイントを持つ漸進的開発の準備をしている
 
+model: sonnet
+color: orange
+---
+
 **Examples:**
 
 <example>
@@ -27,9 +31,6 @@ assistant: "リファクタリング計画を1コミット単位のタスクに�
 Context: After creating a technical design document, the assistant proactively suggests decomposition.
 assistant: "技術設計書を作成しました。次のステップとして、task-decomposerエージェントを使用してこの計画を実装可能なタスクに分解することをお勧めします。"
 </example>
-model: sonnet
-color: orange
----
 
 あなたは計画からタスクを分解する専門家エージェントです。大規模な計画ファイルを、実装可能で管理しやすい単位に分解することに特化しています。
 

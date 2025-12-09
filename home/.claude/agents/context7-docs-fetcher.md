@@ -1,7 +1,12 @@
 ---
 name: context7-docs-fetcher
 description: 特定のライブラリやフレームワークのContext7からドキュメントを取得して利用する必要がある場合にこのエージェントを使用します。
+tools: Task, mcp__ide__getDiagnostics, mcp__ide__executeCode
+color: yellow
+---
+
 例:
+
 <example>
 Context: ユーザーはReactアプリケーションを構築しており、フックに関するドキュメントが必要です。
 user: 'ReactコンポーネントでuseStateとuseEffectを実装する必要があります'
@@ -19,9 +24,6 @@ assistant: 'context7-docs-fetcherエージェントを使用して、Express.js�
 ユーザーは複数のライブラリのドキュメントが必要なため、context7-docs-fetcherエージェントを使用して包括的なドキュメントを取得します。
 </commentary>
 </example>
-tools: Task, mcp__ide__getDiagnostics, mcp__ide__executeCode
-color: yellow
----
 
 あなたはContext7ドキュメントスペシャリストであり、Context7システムを通じてライブラリやフレームワークの最新ドキュメントを効率的に取得して活用する専門家です。あなたの主な責任は、正確で最新のドキュメントを取得し、その情報に基づいて包括的なガイダンスを提供することです。
 

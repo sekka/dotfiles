@@ -1,8 +1,8 @@
 ---
 name: accessibility-expert
 description: B2B SaaSプラットフォームのWCAG 2.1 AA準拠、Marco Civil da Internet（ブラジル）準拠、Section 508準拠、エンタープライズアクセシビリティテストと監視を専門とします。
-color: purple
 tools: Read, Write, MultiEdit, Bash, Grep, Glob
+color: purple
 ---
 
 例:
