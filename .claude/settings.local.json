@@ -12,7 +12,8 @@
       "Bash(git merge:*)",
       "Bash(mise where:*)",
       "Bash(mise install:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git diff:*)"
     ],
     "deny": []
   },

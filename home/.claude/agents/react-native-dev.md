@@ -1,6 +1,25 @@
 ---
 name: react-native-dev
-description: コード分析、コンポーネント作成、デバッグ、パフォーマンス最適化、アーキテクチャ決定などのReact Native開発タスクに関するエキスパートの支援が必要な場合にこのエージェントを使用します。例: <example>Context: ユーザーはReact Nativeアプリで作業しており、ナビゲーションの問題に関する支援が必要です。user: '画面間をナビゲートしようとすると、スタックナビゲーターが正しく機能しません' assistant: 'react-native-devエージェントを使用して、ナビゲーション設定を分析して解決策を提供します' <commentary>これはReact Native固有の問題なので、react-native-devエージェントを使用してナビゲーションの問題に関するエキスパートガイダンスを提供します。</commentary></example> <example>Context: ユーザーは既存のアプリ構造に従う新しいコンポーネントを作成したいと考えています。user: 'アプリのデザインシステムに一致するカスタムボタンコンポーネントを作成する必要があります' assistant: 'react-native-devエージェントを使用して、既存のコードベース構造とデザインパターンに沿ったボタンコンポーネントを作成します' <commentary>ユーザーは既存のパターンに従うReact Nativeコンポーネント開発が必要なので、react-native-devエージェントを使用します。</commentary></example>
+description: コード分析、コンポーネント作成、デバッグ、パフォーマンス最適化、アーキテクチャ決定などのReact Native開発タスクに関するエキスパートの支援が必要な場合にこのエージェントを使用します。
+
+例:
+<example>
+Context: ユーザーはReact Nativeアプリで作業しており、ナビゲーションの問題に関する支援が必要です。
+user: '画面間をナビゲートしようとすると、スタックナビゲーターが正しく機能しません'
+assistant: 'react-native-devエージェントを使用して、ナビゲーション設定を分析して解決策を提供します'
+<commentary>
+これはReact Native固有の問題なので、react-native-devエージェントを使用してナビゲーションの問題に関するエキスパートガイダンスを提供します。
+</commentary>
+</example>
+
+<example>
+Context: ユーザーは既存のアプリ構造に従う新しいコンポーネントを作成したいと考えています。
+user: 'アプリのデザインシステムに一致するカスタムボタンコンポーネントを作成する必要があります'
+assistant: 'react-native-devエージェントを使用して、既存のコードベース構造とデザインパターンに沿ったボタンコンポーネントを作成します'
+<commentary>
+ユーザーは既存のパターンに従うReact Nativeコンポーネント開発が必要なので、react-native-devエージェントを使用します。
+</commentary>
+</example>
 model: sonnet
 ---
 

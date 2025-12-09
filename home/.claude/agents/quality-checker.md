@@ -1,6 +1,38 @@
 ---
 name: quality-checker
-description: コード品質の検証、ベストプラクティスのチェック、品質基準への適合性確認が必要な場合にこのエージェントを使用します。潜在的なバグ、セキュリティ問題、パフォーマンス問題、保守性の懸念、コーディング標準への準拠をレビューすることを含みます。\n\n例：\n\n<example>\nコンテキスト: ユーザーが新機能の実装を完了し、品質基準を満たしているか確認したい\nuser: "新しいユーザー認証機能を実装しました。確認してください"\nassistant: "実装された認証機能を確認するため、quality-checker エージェントを起動して品質チェックを行います"\n<解説>\nユーザーが機能実装を完了し、検証を求めているため、quality-checker エージェントを使用して包括的な品質分析を実行します。\n</解説>\n</example>\n\n<example>\nコンテキスト: 複雑なアルゴリズムを書いた後、アシスタントが積極的に品質レビューを提案\nuser: "このソートアルゴリズムを書いてください"\nassistant: "こちらがソートアルゴリズムの実装です：\n[コード実装]\n\n次に、quality-checker エージェントを使用してこのコードの品質をチェックします"\n<解説>\n複雑なロジックを実装した後、次に進む前にコードが品質基準を満たしていることを確認するため、quality-checker エージェントを積極的に使用します。\n</解説>\n</example>\n\n<example>\nコンテキスト: ユーザーが特定のコードの品質レビューを明示的に依頼\nuser: "この API エンドポイントのコードにセキュリティ問題がないか確認して"\nassistant: "quality-checker エージェントを起動して、API エンドポイントのセキュリティと品質を詳細にチェックします"\n<解説>\nユーザーがセキュリティまたは品質検証を具体的に求めている場合、quality-checker エージェントを使用して対象を絞った分析を実行します。\n</解説>\n</example>
+description: コード品質の検証、ベストプラクティスのチェック、品質基準への適合性確認が必要な場合にこのエージェントを使用します。潜在的なバグ、セキュリティ問題、パフォーマンス問題、保守性の懸念、コーディング標準への準拠をレビューすることを含みます。
+
+例：
+
+<example>
+コンテキスト: ユーザーが新機能の実装を完了し、品質基準を満たしているか確認したい
+user: "新しいユーザー認証機能を実装しました。確認してください"
+assistant: "実装された認証機能を確認するため、quality-checker エージェントを起動して品質チェックを行います"
+<commentary>
+ユーザーが機能実装を完了し、検証を求めているため、quality-checker エージェントを使用して包括的な品質分析を実行します。
+</commentary>
+</example>
+
+<example>
+コンテキスト: 複雑なアルゴリズムを書いた後、アシスタントが積極的に品質レビューを提案
+user: "このソートアルゴリズムを書いてください"
+assistant: "こちらがソートアルゴリズムの実装です：
+[コード実装]
+
+次に、quality-checker エージェントを使用してこのコードの品質をチェックします"
+<commentary>
+複雑なロジックを実装した後、次に進む前にコードが品質基準を満たしていることを確認するため、quality-checker エージェントを積極的に使用します。
+</commentary>
+</example>
+
+<example>
+コンテキスト: ユーザーが特定のコードの品質レビューを明示的に依頼
+user: "この API エンドポイントのコードにセキュリティ問題がないか確認して"
+assistant: "quality-checker エージェントを起動して、API エンドポイントのセキュリティと品質を詳細にチェックします"
+<commentary>
+ユーザーがセキュリティまたは品質検証を具体的に求めている場合、quality-checker エージェントを使用して対象を絞った分析を実行します。
+</commentary>
+</example>
 tools: Bash, Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, Skill, SlashCommand, mcp__chrome-devtools__click, mcp__chrome-devtools__close_page, mcp__chrome-devtools__drag, mcp__chrome-devtools__emulate, mcp__chrome-devtools__evaluate_script, mcp__chrome-devtools__fill, mcp__chrome-devtools__fill_form, mcp__chrome-devtools__get_console_message, mcp__chrome-devtools__get_network_request, mcp__chrome-devtools__handle_dialog, mcp__chrome-devtools__hover, mcp__chrome-devtools__list_console_messages, mcp__chrome-devtools__list_network_requests, mcp__chrome-devtools__list_pages, mcp__chrome-devtools__navigate_page, mcp__chrome-devtools__new_page, mcp__chrome-devtools__performance_analyze_insight, mcp__chrome-devtools__performance_start_trace, mcp__chrome-devtools__performance_stop_trace, mcp__chrome-devtools__press_key, mcp__chrome-devtools__resize_page, mcp__chrome-devtools__select_page, mcp__chrome-devtools__take_screenshot, mcp__chrome-devtools__take_snapshot, mcp__chrome-devtools__upload_file, mcp__chrome-devtools__wait_for, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__deepwiki__read_wiki_structure, mcp__deepwiki__read_wiki_contents, mcp__deepwiki__ask_question, mcp__playwright__browser_close, mcp__playwright__browser_resize, mcp__playwright__browser_console_messages, mcp__playwright__browser_handle_dialog, mcp__playwright__browser_evaluate, mcp__playwright__browser_file_upload, mcp__playwright__browser_fill_form, mcp__playwright__browser_install, mcp__playwright__browser_press_key, mcp__playwright__browser_type, mcp__playwright__browser_navigate, mcp__playwright__browser_navigate_back, mcp__playwright__browser_network_requests, mcp__playwright__browser_run_code, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_drag, mcp__playwright__browser_hover, mcp__playwright__browser_select_option, mcp__playwright__browser_tabs, mcp__playwright__browser_wait_for, mcp__serena__list_dir, mcp__serena__find_file, mcp__serena__search_for_pattern, mcp__serena__get_symbols_overview, mcp__serena__find_symbol, mcp__serena__find_referencing_symbols, mcp__serena__replace_symbol_body, mcp__serena__insert_after_symbol, mcp__serena__insert_before_symbol, mcp__serena__rename_symbol, mcp__serena__write_memory, mcp__serena__read_memory, mcp__serena__list_memories, mcp__serena__delete_memory, mcp__serena__edit_memory, mcp__serena__activate_project, mcp__serena__get_current_config, mcp__serena__check_onboarding_performed, mcp__serena__onboarding, mcp__serena__think_about_collected_information, mcp__serena__think_about_task_adherence, mcp__serena__think_about_whether_you_are_done, mcp__serena__initial_instructions, ListMcpResourcesTool, ReadMcpResourceTool
 model: sonnet
 color: green

@@ -1,6 +1,32 @@
 ---
 name: task-decomposer
-description: Use this agent when you have a plan file (計画ファイル) that needs to be broken down into atomic, committable tasks. This agent is particularly useful when:\n\n- You have a feature specification or implementation plan that needs to be executed step by step\n- You want to ensure each task can be completed within a single commit\n- You need to maintain sufficient context between tasks to avoid losing track of the overall goal\n- You're preparing work for incremental development with clear checkpoints\n\n**Examples:**\n\n<example>\nContext: User has created a plan file for implementing a new authentication feature.\nuser: "plan.mdを作成したので、これを実装可能なタスクに分解してください"\nassistant: "計画ファイルを確認し、タスク分解を行います。task-decomposerエージェントを使用してタスクを分解します。"\n<Task tool call to launch task-decomposer agent>\n</example>\n\n<example>\nContext: User has a large refactoring plan that needs to be broken into manageable pieces.\nuser: "このリファクタリング計画を小さなタスクに分けたい"\nassistant: "リファクタリング計画を1コミット単位のタスクに分解するため、task-decomposerエージェントを起動します。"\n<Task tool call to launch task-decomposer agent>\n</example>\n\n<example>\nContext: After creating a technical design document, the assistant proactively suggests decomposition.\nassistant: "技術設計書を作成しました。次のステップとして、task-decomposerエージェントを使用してこの計画を実装可能なタスクに分解することをお勧めします。"\n</example>
+description: 計画ファイル（計画ファイル）を原子的でコミット可能なタスクに分解する必要があるときにこのエージェントを使用します。特に次のような場合に有用です:
+
+- 機能仕様や実装計画をステップごとに実行したい
+- 各タスクが単一コミットで完了できることを保証したい
+- タスク間で十分なコンテキストを維持し、全体目標を見失わないようにしたい
+- 明確なチェックポイントを持つ漸進的開発の準備をしている
+
+**Examples:**
+
+<example>
+Context: User has created a plan file for implementing a new authentication feature.
+user: "plan.mdを作成したので、これを実装可能なタスクに分解してください"
+assistant: "計画ファイルを確認し、タスク分解を行います。task-decomposerエージェントを使用してタスクを分解します。"
+<Task tool call to launch task-decomposer agent>
+</example>
+
+<example>
+Context: User has a large refactoring plan that needs to be broken into manageable pieces.
+user: "このリファクタリング計画を小さなタスクに分けたい"
+assistant: "リファクタリング計画を1コミット単位のタスクに分解するため、task-decomposerエージェントを起動します。"
+<Task tool call to launch task-decomposer agent>
+</example>
+
+<example>
+Context: After creating a technical design document, the assistant proactively suggests decomposition.
+assistant: "技術設計書を作成しました。次のステップとして、task-decomposerエージェントを使用してこの計画を実装可能なタスクに分解することをお勧めします。"
+</example>
 model: sonnet
 color: orange
 ---
