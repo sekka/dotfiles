@@ -18,6 +18,8 @@ DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/home/.claude"
 HOME_CLAUDE_DIR="${HOME}/.claude"
 COMMANDS_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/commands"
 COMMANDS_TARGET_DIR="${HOME_CLAUDE_DIR}/commands"
+AGENTS_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/agents"
+AGENTS_TARGET_DIR="${HOME_CLAUDE_DIR}/agents"
 
 # .claude ディレクトリが存在しない場合は作成
 if [ ! -d "$HOME_CLAUDE_DIR" ]; then
@@ -29,6 +31,12 @@ fi
 if [ ! -d "$COMMANDS_TARGET_DIR" ]; then
   echo -e "${BLUE}📁 ディレクトリを作成:${NC} $COMMANDS_TARGET_DIR"
   mkdir -p "$COMMANDS_TARGET_DIR"
+fi
+
+# agents ディレクトリが存在しない場合は作成
+if [ ! -d "$AGENTS_TARGET_DIR" ]; then
+  echo -e "${BLUE}📁 ディレクトリを作成:${NC} $AGENTS_TARGET_DIR"
+  mkdir -p "$AGENTS_TARGET_DIR"
 fi
 
 echo ""
@@ -111,6 +119,40 @@ else
   echo -e "${YELLOW}⚠️  警告:${NC} $COMMANDS_SOURCE_DIR が見つかりません"
 fi
 
+# agents ディレクトリ内のファイルをリンク
+agents_created=0
+agents_skipped=0
+
+if [ -d "$AGENTS_SOURCE_DIR" ]; then
+  for file in "$AGENTS_SOURCE_DIR"/*.md; do
+    [ -e "$file" ] || continue
+
+    filename=$(basename "$file")
+    target_link="$AGENTS_TARGET_DIR/$filename"
+
+    if [ -L "$target_link" ]; then
+      current_target=$(readlink "$target_link")
+      if [ "$current_target" = "$file" ]; then
+        echo -e "${YELLOW}⏭️  スキップ:${NC} $filename (既に正しくリンクされています)"
+        ((agents_skipped++))
+      else
+        echo -e "${GREEN}🔄 更新:${NC} $filename"
+        rm "$target_link"
+        ln -s "$file" "$target_link"
+        ((agents_created++))
+      fi
+    elif [ -e "$target_link" ]; then
+      echo -e "${RED}⚠️  警告:${NC} $filename は通常のファイルとして存在します。手動で確認してください。"
+    else
+      echo -e "${GREEN}✅ 作成:${NC} $filename"
+      ln -s "$file" "$target_link"
+      ((agents_created++))
+    fi
+  done
+else
+  echo -e "${YELLOW}⚠️  警告:${NC} $AGENTS_SOURCE_DIR が見つかりません"
+fi
+
 # サマリー表示
 echo ""
 echo "📊 Claude セットアップ完了:"
@@ -120,6 +162,9 @@ echo "      ⏭️ スキップ: $skipped"
 echo "   📋 Commands:"
 echo "      ✅ 新規作成: $commands_created"
 echo "      ⏭️ スキップ: $commands_skipped"
+echo "   📋 Agents:"
+echo "      ✅ 新規作成: $agents_created"
+echo "      ⏭️ スキップ: $agents_skipped"
 
 echo ""
 echo "✨ Claude Commands のセットアップ・同期が完了しました！"
