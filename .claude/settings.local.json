@@ -13,7 +13,9 @@
       "Bash(mise where:*)",
       "Bash(mise install:*)",
       "Bash(git reset:*)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(node /Users/kei/dotfiles/scripts/format-agents.js:*)",
+      "Bash(git restore:*)"
     ],
     "deny": []
   },
