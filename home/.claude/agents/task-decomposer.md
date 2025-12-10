@@ -14,21 +14,21 @@ color: orange
 **Examples:**
 
 <example>
-Context: User has created a plan file for implementing a new authentication feature.
+Context: ユーザーが新しい認証機能用の計画ファイルを作成した
 user: "plan.mdを作成したので、これを実装可能なタスクに分解してください"
 assistant: "計画ファイルを確認し、タスク分解を行います。task-decomposerエージェントを使用してタスクを分解します。"
 <Task tool call to launch task-decomposer agent>
 </example>
 
 <example>
-Context: User has a large refactoring plan that needs to be broken into manageable pieces.
+Context: 大規模リファクタ計画を小さなタスクに分けたい
 user: "このリファクタリング計画を小さなタスクに分けたい"
 assistant: "リファクタリング計画を1コミット単位のタスクに分解するため、task-decomposerエージェントを起動します。"
 <Task tool call to launch task-decomposer agent>
 </example>
 
 <example>
-Context: After creating a technical design document, the assistant proactively suggests decomposition.
+Context: 技術設計書を作成した後、アシスタントが能動的に分解を提案
 assistant: "技術設計書を作成しました。次のステップとして、task-decomposerエージェントを使用してこの計画を実装可能なタスクに分解することをお勧めします。"
 </example>
 

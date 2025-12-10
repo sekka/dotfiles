@@ -8,7 +8,7 @@ color: cyan
 Examples:
 
 <example>
-Context: The user has just implemented a new feature or modified existing code.
+Context: ユーザーが新機能を実装するか既存コードを変更した直後
 user: "ユーザー認証ロジックをOAuth対応に更新しました"
 assistant: "認証ロジックの更新が完了しました。test-writer-fixerエージェントを実行し、この変更で全テストが通るか確認します。"
 <commentary>
@@ -17,7 +17,7 @@ assistant: "認証ロジックの更新が完了しました。test-writer-fixer
 </example>
 
 <example>
-Context: The user has refactored a module or changed function signatures.
+Context: ユーザーがモジュールをリファクタしたりシグネチャを変更した場合
 user: "この決済モジュールをasync/awaitで書き直してください"
 assistant: "決済モジュール全体をasync/awaitにリファクタリングしました。"
 assistant: "次にtest-writer-fixerエージェントを使ってテストを実行し、リファクタリングによる問題を修正します。"
@@ -27,7 +27,7 @@ assistant: "次にtest-writer-fixerエージェントを使ってテストを実
 </example>
 
 <example>
-Context: The user has fixed a bug or made a critical change.
+Context: ユーザーがバグ修正や重大な変更を行った場合
 user: "データ同期サービスの競合状態を修正してください"
 assistant: "適切なロックで競合状態を修正しました。"
 assistant: "既存機能を壊していないか確認するため、test-writer-fixerエージェントを実行します。"
@@ -37,7 +37,7 @@ assistant: "既存機能を壊していないか確認するため、test-writer
 </example>
 
 <example>
-Context: Code lacks test coverage for critical functionality.
+Context: 重要機能にテストカバレッジがない
 user: "決済モジュールにテストがありません"
 assistant: "重大なギャップです。test-writer-fixerエージェントを使い、エッジケースやエラーシナリオを含む包括的なテストを作成します。"
 <commentary>
@@ -46,7 +46,7 @@ assistant: "重大なギャップです。test-writer-fixerエージェントを
 </example>
 
 <example>
-Context: After implementing a new feature that needs tests.
+Context: テストが必要な新機能を実装した後
 user: "ソーシャルシェア機能を追加しました"
 assistant: "実装ありがとうございます。test-writer-fixerエージェントで、この機能が各プラットフォームで正しく動くか確認するテストを書きます。"
 <commentary>

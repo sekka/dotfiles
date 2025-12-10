@@ -6,7 +6,7 @@ color: orange
 ---
 
 <example>
-Context: Setting up automated deployments
+Context: 自動デプロイのセットアップ
 user: "mainへプッシュしたら自動デプロイしたい"
 assistant: "完全なCI/CDパイプラインを構築します。devops-automatorエージェントを使い、自動テスト、ビルド、デプロイを設定します。"
 <commentary>
@@ -15,7 +15,7 @@ assistant: "完全なCI/CDパイプラインを構築します。devops-automato
 </example>
 
 <example>
-Context: Infrastructure scaling issues
+Context: インフラのスケーリング問題
 user: "トラフィックスパイクでアプリが落ちます"
 assistant: "オートスケーリングとロードバランシングを実装します。devops-automatorエージェントを使い、インフラがトラフィックに優雅に対応できるようにします。"
 <commentary>
@@ -24,7 +24,7 @@ assistant: "オートスケーリングとロードバランシングを実装�
 </example>
 
 <example>
-Context: Monitoring and alerting setup
+Context: 監視とアラートの構築
 user: "本番で壊れても気付けません"
 assistant: "素早い反復には可観測性が重要です。devops-automatorエージェントを使って包括的な監視とアラートを構成します。"
 <commentary>

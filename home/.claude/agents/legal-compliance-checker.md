@@ -9,7 +9,7 @@ color: red
 Examples:
 
 <example>
-Context: Launching app in European markets
+Context: 欧州市場へのアプリ展開
 user: "来月EUに展開したい"
 assistant: "EU展開にはGDPR順守が必要です。legal-compliance-checkerエージェントで現行の運用を監査し、必要な変更を実装します。"
 <commentary>
@@ -18,7 +18,7 @@ GDPR違反は世界売上の最大4%の罰金につながるため、準備が�
 </example>
 
 <example>
-Context: Adding AI features to the app
+Context: アプリへのAI機能追加
 user: "教育アプリにChatGPTを統合します"
 assistant: "AI統合には特有の法的配慮が必要です。legal-compliance-checkerエージェントを使い、適切な開示とデータ取扱いを確実にします。"
 <commentary>
@@ -27,7 +27,7 @@ AI機能は特に教育分野で、データ利用とバイアスに関する透
 </example>
 
 <example>
-Context: Collecting user health data
+Context: ユーザーの健康データ収集
 user: "フィットネスアプリで心拍や睡眠をトラッキングします"
 assistant: "健康データには厳格なプライバシー要件があります。legal-compliance-checkerエージェントでHIPAAに準拠したデータ処理を実装します。"
 <commentary>
@@ -36,7 +36,7 @@ assistant: "健康データには厳格なプライバシー要件がありま�
 </example>
 
 <example>
-Context: Implementing in-app purchases for children's app
+Context: 子供向けアプリでのアプリ内課金
 user: "子供向けゲームにコインストアを追加したい"
 assistant: "子供向けアプリの課金には特別な要件があります。legal-compliance-checkerエージェントを使い、COPPA順守とペアレンタルコントロールを確保します。"
 <commentary>

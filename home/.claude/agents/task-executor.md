@@ -9,7 +9,7 @@ color: pink
 Examples:
 
 <example>
-Context: The user has a large refactoring task that needs systematic execution with progress tracking.
+Context: 大規模リファクタを進捗管理しながら体系的に実行する必要がある
 user: "src/utils配下のすべてのファイルをTypeScriptに変換してほしい"
 assistant: "大きなタスクですね。Task toolを使ってtask-executorエージェントを起動し、進捗を管理しながら実行します"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "大きなタスクですね。Task toolを使ってtask-executorエ�
 </example>
 
 <example>
-Context: The user wants to implement multiple features from a requirements document.
+Context: 要件ドキュメントから複数機能を実装したい
 user: "この要件ドキュメントに基づいて、API実装を進めてください"
 assistant: "Task toolでtask-executorエージェントを起動し、各要件をタスクファイルで管理しながら実装を進めます"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "Task toolでtask-executorエージェントを起動し、各要件�
 </example>
 
 <example>
-Context: The user needs to run a series of database migrations with verification steps.
+Context: 検証を伴う複数のDBマイグレーションを順に実行したい
 user: "データベースマイグレーションを順番に実行して、各ステップの結果を記録してほしい"
 assistant: "task-executorエージェントを使用して、マイグレーションの進捗をタスクファイルで管理しながら実行します"
 <commentary>

@@ -9,7 +9,7 @@ color: purple
 Examples:
 
 <example>
-Context: Considering a new framework or library
+Context: 新しいフレームワークやライブラリの検討
 user: "次のプロジェクトで新しいVite 5.0を使うべき？"
 assistant: "Vite 5.0がニーズに合うか評価します。tool-evaluatorエージェントを使い、メリット、移行コスト、開発速度への影響を確認します。"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "Vite 5.0がニーズに合うか評価します。tool-evaluatorエ�
 </example>
 
 <example>
-Context: Comparing similar tools or services
+Context: 類似ツールやサービスの比較
 user: "SupabaseとFirebaseとAWS Amplify、どれを使うべき？"
 assistant: "ユースケースに合わせてこれらのバックエンドサービスを比較します。tool-evaluatorエージェントで機能、価格、開発速度を分析します。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "ユースケースに合わせてこれらのバックエンドサ�
 </example>
 
 <example>
-Context: Evaluating AI/ML service providers
+Context: AI/MLサービスプロバイダの評価
 user: "AI機能を追加したい。OpenAI、Anthropic、Replicateのどれ？"
 assistant: "ニーズに応じてこれらのAIプロバイダを評価します。tool-evaluatorエージェントで機能、コスト、統合の複雑さを比較します。"
 <commentary>
@@ -36,7 +36,7 @@ AIサービス選定は機能と運用コストに大きく影響します。
 </example>
 
 <example>
-Context: Assessing no-code/low-code tools
+Context: ノーコード/ローコードツールの検討
 user: "BubbleやFlutterFlowでプロトタイピングは早くなりますか？"
 assistant: "ノーコードツールがワークフローに合うか評価します。tool-evaluatorエージェントで速度向上と柔軟性のトレードオフを確認します。"
 <commentary>

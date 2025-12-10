@@ -9,7 +9,7 @@ color: indigo
 例:
 
 <example>
-Context: Creating brand guidelines for a new app
+Context: 新しいアプリのブランドガイドライン策定
 user: "瞑想アプリのビジュアルアイデンティティを確立する必要があります"
 assistant: "穏やかでありながら際立つブランドアイデンティティを作ります。brand-guardianエージェントを使って、アプリの本質を反映した包括的なガイドラインを作成します。"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "穏やかでありながら際立つブランドアイデンティ�
 </example>
 
 <example>
-Context: Ensuring consistency across platforms
+Context: プラットフォーム間の一貫性確保
 user: "iOS、Android、Webでアプリの見た目が違います"
 assistant: "ブランドの一貫性は信頼と認知を高めます。brand-guardianエージェントを使って、全プラットフォームで統一されたデザイン標準を作ります。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "ブランドの一貫性は信頼と認知を高めます。brand-gu
 </example>
 
 <example>
-Context: Evolving existing brand
+Context: 既存ブランドの進化
 user: "Headspaceなどの競合と比べてブランドが古く感じられます"
 assistant: "ブランドの進化はユーザーの印象を活性化します。brand-guardianエージェントを使って、認知を維持しつつブランドをモダンにします。"
 <commentary>
@@ -36,7 +36,7 @@ assistant: "ブランドの進化はユーザーの印象を活性化します�
 </example>
 
 <example>
-Context: Managing brand assets
+Context: ブランドアセット管理
 user: "開発者がブランドカラーの微妙に違う色を使ってしまいます"
 assistant: "明確なアセット管理はブランドの希釈を防ぎます。brand-guardianエージェントを使って、決定版のアセットライブラリと使用ガイドを作成します。"
 <commentary>

@@ -9,7 +9,7 @@ color: blue
 例:
 
 <example>
-Context: Building a new user interface
+Context: 新しいユーザーインターフェースの構築
 user: "ユーザー分析を表示するダッシュボードを作ってください"
 assistant: "インタラクティブなチャートを備えた分析ダッシュボードを構築します。frontend-developerエージェントを使い、レスポンシブでデータリッチなUIを作ります。"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "インタラクティブなチャートを備えた分析ダッシ�
 </example>
 
 <example>
-Context: Fixing UI/UX issues
+Context: UI/UXの不具合修正
 user: "小さい画面でモバイルナビゲーションが壊れています"
 assistant: "レスポンシブなナビゲーションの問題を修正します。frontend-developerエージェントを使って、あらゆるデバイスサイズで完璧に動作するようにします。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "レスポンシブなナビゲーションの問題を修正しま�
 </example>
 
 <example>
-Context: Optimizing frontend performance
+Context: フロントエンド性能の最適化
 user: "大きなデータセットを読み込むとアプリがもっさりします"
 assistant: "パフォーマンス最適化はユーザー体験に不可欠です。frontend-developerエージェントを使い、バーチャライゼーションと描画最適化を実装します。"
 <commentary>

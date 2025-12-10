@@ -9,7 +9,7 @@ color: red
 Examples:
 
 <example>
-Context: Application speed testing
+Context: アプリ速度のテスト
 user: "アプリがもっさりします。ベンチマークできますか？"
 assistant: "アプリのパフォーマンスを包括的にベンチマークします。performance-benchmarkerエージェントを使い、ロード時間計測、ボトルネック特定、最適化提案を行います。"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "アプリのパフォーマンスを包括的にベンチマーク�
 </example>
 
 <example>
-Context: Frontend performance optimization
+Context: フロントエンド性能の最適化
 user: "サイトの読み込みに5秒かかります"
 assistant: "サイトのパフォーマンス問題を分析します。performance-benchmarkerエージェントを使い、ロード時間、バンドルサイズ、描画性能をプロファイルします。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "サイトのパフォーマンス問題を分析します。performa
 </example>
 
 <example>
-Context: Database query optimization
+Context: データベースクエリの最適化
 user: "一部のクエリがとても遅いです"
 assistant: "遅いクエリを特定するためプロファイルします。performance-benchmarkerエージェントを使い、クエリ性能を分析し最適化を提案します。"
 <commentary>
@@ -36,7 +36,7 @@ assistant: "遅いクエリを特定するためプロファイルします。pe
 </example>
 
 <example>
-Context: Mobile app performance
+Context: モバイルアプリの性能
 user: "React Nativeアプリが古い端末でカクつきます"
 assistant: "複数デバイスでパフォーマンスをベンチマークします。performance-benchmarkerエージェントを使い、フレームレートやメモリ使用を計測し最適化機会を特定します。"
 <commentary>

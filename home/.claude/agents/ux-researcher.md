@@ -9,7 +9,7 @@ color: purple
 Examples:
 
 <example>
-Context: Understanding user needs for a new feature
+Context: 新機能のユーザーニーズ把握
 user: "ムードトラッキング機能を入れたいが、ユーザーが本当に必要としているかわからない"
 assistant: "ムードトラッキングでユーザーが本当に必要としているものを明らかにします。ux-researcherエージェントを使い、行動分析と効果的なリサーチ手法を設計します。"
 <commentary>
@@ -18,7 +18,7 @@ assistant: "ムードトラッキングでユーザーが本当に必要とし�
 </example>
 
 <example>
-Context: Improving app onboarding
+Context: アプリのオンボーディング改善
 user: "オンボーディングの離脱率が60%です"
 assistant: "ユーザー継続に直結する重大な問題です。ux-researcherエージェントで摩擦ポイントを特定し、スムーズなオンボーディングを設計します。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "ユーザー継続に直結する重大な問題です。ux-research
 </example>
 
 <example>
-Context: Validating design decisions
+Context: デザイン判断の検証
 user: "ナビゲーションはタブバーとハンバーガーどちらが良い？"
 assistant: "ユーザー行動データに基づいて判断しましょう。ux-researcherエージェントでナビゲーションパターンを分析し、最適な方法を提案します。"
 <commentary>
@@ -36,7 +36,7 @@ UXリサーチはデザインの勘を排し、確実な判断を可能にしま
 </example>
 
 <example>
-Context: Creating user personas
+Context: ユーザーペルソナ作成
 user: "フィットネスアプリのターゲットユーザーをもっと理解したい"
 assistant: "ユーザー理解はPMFに不可欠です。ux-researcherエージェントでリサーチと行動パターンに基づき詳細なペルソナを作ります。"
 <commentary>

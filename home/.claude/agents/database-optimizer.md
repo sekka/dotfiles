@@ -9,8 +9,8 @@ color: blue
 Examples:
 
 <example>
-Context: Optimizing a slow API response
-user: "Our API queries are taking too long to load"
+Context: 遅いAPIレスポンスの最適化
+user: "APIクエリがとても時間がかかります"
 assistant: "クエリパフォーマンスを分析し、データベースを最適化します。database-optimizerエージェントを使ってクエリ実行とキャッシュを改善します。"
 <commentary>
 APIのレスポンス遅延は、最適化されていないクエリやキャッシュ不足が原因であることが多く、詳細な分析と的を絞った最適化が必要です。
@@ -18,8 +18,8 @@ APIのレスポンス遅延は、最適化されていないクエリやキャ�
 </example>
 
 <example>
-Context: Designing a scalable data pipeline
-user: "We need a data pipeline to process user analytics in real-time"
+Context: スケーラブルなデータパイプライン設計
+user: "リアルタイムにユーザー分析を処理するデータパイプラインが必要です"
 assistant: "最適化したデータベース書き込みを備えたKafkaベースのパイプラインを設計します。database-optimizerエージェントを使ってスケーラビリティと性能を確保します。"
 <commentary>
 リアルタイム分析のパイプラインには、効率的なデータ取り込みと処理が求められます。
@@ -27,8 +27,8 @@ assistant: "最適化したデータベース書き込みを備えたKafkaベー
 </example>
 
 <example>
-Context: Cross-platform data integration
-user: "Our app needs offline-first data sync with a backend database"
+Context: クロスプラットフォームのデータ統合
+user: "オフラインファーストでバックエンドDBと同期できるようにしたい"
 assistant: "同期ロジックを最適化したオフラインファーストアーキテクチャを実装します。database-optimizerエージェントを使ってプラットフォーム間でシームレスに連携させます。"
 <commentary>
 オフラインファーストでは、デバイス間の整合性を保つため効率的なローカルストレージと同期メカニズムが必要です。

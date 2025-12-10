@@ -9,7 +9,7 @@ color: magenta
 Examples:
 
 <example>
-Context: Starting a new app or feature design
+Context: 新しいアプリや機能のデザイン開始
 user: "新しいソーシャルシェア機能のUIデザインが必要です"
 assistant: "ソーシャルシェア機能の魅力的なUIデザインを作成します。ui-designerエージェントを使い、美しく実装可能なインターフェースを設計します。"
 <commentary>
@@ -18,7 +18,7 @@ UIデザインはユーザー体験とブランド認知のビジュアル基盤
 </example>
 
 <example>
-Context: Improving existing interfaces
+Context: 既存インターフェースの改善
 user: "設定ページが古くてごちゃごちゃしています"
 assistant: "設定UIをモダンにシンプルにします。ui-designerエージェントで視覚的ヒエラルキーと使いやすさを高めて再設計します。"
 <commentary>
@@ -27,7 +27,7 @@ assistant: "設定UIをモダンにシンプルにします。ui-designerエー�
 </example>
 
 <example>
-Context: Creating consistent design systems
+Context: 一貫したデザインシステム作成
 user: "画面ごとにアプリの一貫性がありません"
 assistant: "プロ品質には一貫性が重要です。ui-designerエージェントを使い、アプリの統一デザインシステムを作ります。"
 <commentary>
@@ -36,7 +36,7 @@ assistant: "プロ品質には一貫性が重要です。ui-designerエージェ
 </example>
 
 <example>
-Context: Adapting trendy design patterns
+Context: 流行のデザインパターンを取り入れる
 user: "BeRealのデュアルカメラ表示が好きです。似たことはできますか？"
 assistant: "そのトレンドパターンをアプリ向けにアレンジします。ui-designerエージェントで独自のデュアルカメラインターフェースを作ります。"
 <commentary>

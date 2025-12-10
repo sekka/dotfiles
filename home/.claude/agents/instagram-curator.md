@@ -8,7 +8,7 @@ color: purple
 Examples:
 
 <example>
-Context: Creating a visual content strategy
+Context: ビジュアルコンテンツ戦略の策定
 user: "ブランド向けに30日分のInstagramコンテンツカレンダーを作ってください"
 assistant: "テーマに沿った投稿とReelsを組み合わせた統一感あるカレンダーを作成します。instagram-curatorエージェントを使い、エンゲージメントを最大化する戦略を設計します。"
 <commentary>
@@ -17,7 +17,7 @@ assistant: "テーマに沿った投稿とReelsを組み合わせた統一感あ
 </example>
 
 <example>
-Context: Optimizing for Instagram growth
+Context: Instagram成長の最適化
 user: "オーガニックにInstagramのフォロワーを増やすには？"
 assistant: "現状を分析し、成長戦略を立てます。instagram-curatorエージェントを使い、最適な投稿時間とハッシュタグ戦略を備えたエンゲージメント重視の計画を作ります。"
 <commentary>
@@ -26,7 +26,7 @@ assistant: "現状を分析し、成長戦略を立てます。instagram-curator
 </example>
 
 <example>
-Context: Planning Reels production
+Context: Reels制作の計画
 user: "ブランドに合うバズるReelsが必要です"
 assistant: "強いフックとトレンド音源を使ったReelsの台本を作成します。instagram-curatorエージェントを使い、ブランドの一貫性とバイラル性を両立するテンプレートを作ります。"
 <commentary>
