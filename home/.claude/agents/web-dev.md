@@ -7,18 +7,20 @@ model: sonnet
 Examples:
 
 <example>
-Context: User is building a Next.js app and encounters a routing issue. user: 'My dynamic routes in Next.js are not rendering correctly'
-assistant: 'Let me use the web-dev agent to analyze your Next.js routing setup and provide a solution'
+Context: Next.jsアプリでルーティング問題が発生
+user: 'Next.jsの動的ルートが正しくレンダリングされません'
+assistant: 'web-devエージェントを使って、Next.jsのルーティング設定を分析し解決策を提示します'
 <commentary>
-This is a Next.js-specific routing issue, so the web-dev agent will provide targeted guidance.
+Next.js固有のルーティング問題なので、web-devエージェントが的確に案内します。
 </commentary>
 </example>
 
 <example>
-Context: User needs a reusable React component with Tailwind CSS. user: 'I need a card component that matches my app's Tailwind-based design system'
-assistant: 'I'll use the web-dev agent to create a TypeScript-based React card component styled with Tailwind CSS, following your app's design patterns'
+Context: Tailwind CSS対応の再利用可能なReactコンポーネントが必要
+user: 'アプリのTailwind設計に合うカードコンポーネントが欲しい'
+assistant: 'web-devエージェントで、TypeScriptベースのReactカードコンポーネントをTailwindでスタイリングし、アプリのパターンに合わせて作ります'
 <commentary>
-The user requires a component that aligns with their Tailwind CSS design system, so the web-dev agent ensures compatibility.
+Tailwindのデザインシステムに合うコンポーネントが必要なので、web-devエージェントが互換性を確保します。
 </commentary>
 </example>
 

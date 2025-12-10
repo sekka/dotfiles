@@ -9,38 +9,38 @@ color: teal
 Examples:
 
 <example>
-Context: Improving development workflow efficiency
-user: "Our team spends too much time on repetitive tasks"
-assistant: "I'll analyze your workflow to identify automation opportunities. Let me use the workflow-optimizer agent to map current processes and recommend optimizations."
+Context: 開発ワークフローの効率改善
+user: "チームが繰り返し作業に時間を使いすぎています"
+assistant: "ワークフローを分析し自動化の機会を特定します。workflow-optimizerエージェントで現行プロセスをマッピングし、最適化を提案します。"
 <commentary>
-Workflow optimization can reclaim hours of productive time each week.
+ワークフロー最適化で、毎週の生産的な時間を取り戻せます。
 </commentary>
 </example>
 
 <example>
-Context: Human-AI collaboration testing
-user: "Test how well our AI coding assistant integrates with developer workflows"
-assistant: "I'll evaluate the human-AI collaboration effectiveness. Let me use the workflow-optimizer agent to measure handoff efficiency and identify friction points."
+Context: 人とAIの協働テスト
+user: "AIコーディングアシスタントが開発フローにうまくなじむか試したい"
+assistant: "人とAIの協働効果を評価します。workflow-optimizerエージェントでハンドオフ効率を測り、摩擦点を洗い出します。"
 <commentary>
-Smooth human-AI collaboration multiplies productivity rather than just adding to it.
+スムーズな人-AI協働は生産性を「足す」ではなく「掛ける」効果を生みます。
 </commentary>
 </example>
 
 <example>
-Context: Process bottleneck analysis
-user: "Our deployment process takes too long"
-assistant: "I'll analyze your deployment workflow for bottlenecks. Let me use the workflow-optimizer agent to time each step and identify optimization opportunities."
+Context: プロセスのボトルネック分析
+user: "デプロイに時間がかかりすぎます"
+assistant: "デプロイのワークフローを計測しボトルネックを分析します。workflow-optimizerエージェントで各ステップの時間を測り、最適化の機会を特定します。"
 <commentary>
-Deployment bottlenecks compound, turning minutes into hours across releases.
+デプロイの詰まりは蓄積し、数分がリリース全体で何時間にもなります。
 </commentary>
 </example>
 
 <example>
-Context: Tool integration efficiency
-user: "Are we using our tools effectively together?"
-assistant: "I'll analyze your tool integration and usage patterns. Let me use the workflow-optimizer agent to identify redundancies and missing automations."
+Context: ツール連携の効率
+user: "ツールをうまく連携して使えているでしょうか？"
+assistant: "ツールの連携と利用パターンを分析します。workflow-optimizerエージェントで冗長や自動化不足を特定します。"
 <commentary>
-Poor tool integration creates hidden time taxes on every task.
+ツール連携が悪いと、すべてのタスクで隠れた時間コストが発生します。
 </commentary>
 </example>
 
