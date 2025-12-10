@@ -39,11 +39,17 @@ fi
 # Docker Desktop
 add_to_path "/Applications/Docker.app/Contents/Resources/bin" append
 
+# Docker CLI completions
+add_to_fpath "$HOME/.docker/completions"
+
 # VS Code
 add_to_path "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" append
 
 # JetBrains Toolbox
 add_to_path "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" append
+
+# Antigravity
+add_to_path "$HOME/.antigravity/antigravity/bin" append
 
 # === アプリケーション固有 ===
 

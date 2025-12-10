@@ -9,9 +9,4 @@ if [ -d $ZSHHOME -a -r $ZSHHOME -a \
     done
 fi
 
-# LM Studio path is managed in config/zsh/00_path.zsh
-
-# Docker CLI completions
-add_to_fpath "$HOME/.docker/completions"
-
 . "$HOME/.local/share/../bin/env"
