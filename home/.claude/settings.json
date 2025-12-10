@@ -6,7 +6,7 @@
     "type": "command",
     "command": "~/.claude/statusline.js"
   },
-  "alwaysThinkingEnabled": false,
+  "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753939126517
   }
