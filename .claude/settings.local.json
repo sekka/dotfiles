@@ -10,14 +10,15 @@
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
       "Bash(git merge:*)",
-      "Bash(mise where:*)",
-      "Bash(mise install:*)",
       "Bash(git reset:*)",
       "Bash(git diff:*)",
-      "Bash(node /Users/kei/dotfiles/scripts/format-agents.js:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(mise where:*)",
+      "Bash(mise install:*)"
     ],
-    "deny": []
+    "deny": [
+      "Read(./.env.*)"
+    ]
   },
   "enableAllProjectMcpServers": true
 }
