@@ -1,22 +1,34 @@
 ---
-description: "HTML/CSSをセマンティクス・アクセシビリティ・SEO観点で改善"
+description: HTML/CSSをセマンティクス・アクセシビリティ・SEO観点で改善
+argument-hint: [対象ファイル]
 ---
 
-# HTML/CSS改善タスク
+# HTML/CSS 改善タスク
 
 対象: $ARGUMENTS
 
 ## 実行内容
 
-以下の3ステップで対応してください。
+以下の 3 ステップで対応してください。
 
 ### Step 1: 調査
 
 対象ファイルを読み込み、現状の問題点を洗い出してください。
+可能であれば以下のツールも実行：
+
+- Lighthouse（パフォーマンス、アクセシビリティ、SEO スコア）
+- axe-core 等のアクセシビリティ検証ツール
 
 ### Step 2: 検討
 
-問題点に対する改善案を提示してください。改善の優先度（高/中/低）も示してください。
+問題点に対する改善案を提示してください。
+
+分類：
+
+- **自動修正可能**: コードの変更のみで修正できる項目
+- **手動確認必要**: デザイン判断やコンテンツ変更が必要な項目
+
+改善の優先度（高/中/低）も示してください。
 
 ### Step 3: 対応
 
@@ -26,23 +38,23 @@ description: "HTML/CSSをセマンティクス・アクセシビリティ・SEO�
 
 ### 1. セマンティクス
 
-- [ ] 適切なHTML5要素の使用（`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`）
-- [ ] 見出しの階層構造（h1→h2→h3の順序）
+- [ ] 適切な HTML5 要素の使用（`<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`）
+- [ ] 見出しの階層構造（h1→h2→h3 の順序）
 - [ ] リストの適切な使用（`<ul>`, `<ol>`, `<dl>`）
-- [ ] `<div>`/`<span>`の過剰使用がないか
-- [ ] `<button>`と`<a>`の使い分け
-- [ ] `<figure>`/`<figcaption>`の適切な使用
-- [ ] `<time>`要素の使用
-- [ ] `<address>`要素の使用
+- [ ] `<div>`/`<span>` の過剰使用がないか
+- [ ] `<button>` と `<a>` の使い分け
+- [ ] `<figure>`/`<figcaption>` の適切な使用
+- [ ] `<time>` 要素の使用
+- [ ] `<address>` 要素の使用
 
-### 2. アクセシビリティ（WCAG 2.1準拠）
+### 2. アクセシビリティ（WCAG 2.1 準拠）
 
-- [ ] 画像の`alt`属性（装飾画像は`alt=""`）
+- [ ] 画像の `alt` 属性（装飾画像は `alt=""`）
 - [ ] フォームラベルの関連付け（`<label for="">`）
-- [ ] キーボード操作可能か（tabindex、focus状態）
-- [ ] WAI-ARIA属性の適切な使用（aria-label, aria-labelledby, aria-describedby）
+- [ ] キーボード操作可能か（tabindex、focus 状態）
+- [ ] WAI-ARIA 属性の適切な使用（aria-label, aria-labelledby, aria-describedby）
 - [ ] ランドマークロール（banner, navigation, main, contentinfo）
-- [ ] コントラスト比（テキスト4.5:1以上、大きいテキスト3:1以上）
+- [ ] コントラスト比（テキスト 4.5:1 以上、大きいテキスト 3:1 以上）
 - [ ] フォーカスインジケーターの視認性
 - [ ] スキップリンクの有無
 - [ ] 言語属性（`lang="ja"`）
@@ -50,39 +62,27 @@ description: "HTML/CSSをセマンティクス・アクセシビリティ・SEO�
 ### 3. SEO
 
 - [ ] メタタグ（title, description, keywords）
-- [ ] OGPタグ（og:title, og:description, og:image, og:url）
+- [ ] OGP タグ（og:title, og:description, og:image, og:url）
 - [ ] 構造化データ（JSON-LD）
 - [ ] canonical URL
-- [ ] 見出しタグの適切な使用（h1は1ページ1つ）
-- [ ] 画像の最適化（width/height属性、loading="lazy"）
+- [ ] 見出しタグの適切な使用（h1 は 1 ページ 1 つ）
+- [ ] 画像の最適化（width/height 属性、loading="lazy"）
 - [ ] 内部リンクの構造
 - [ ] パンくずリストの実装
 
-### 4. フレームワーク作法・ベストプラクティス
+### 4. Core Web Vitals
+
+- [ ] LCP（Largest Contentful Paint）: 2.5 秒以内
+- [ ] FID（First Input Delay）: 100ms 以内
+- [ ] CLS（Cumulative Layout Shift）: 0.1 以下
+- [ ] 画像の width/height 指定（CLS 対策）
+- [ ] フォントの最適化（font-display: swap）
+- [ ] クリティカル CSS のインライン化
+
+### 5. フレームワーク作法・ベストプラクティス
 
 使用しているフレームワークの公式ドキュメント・推奨パターンに従っているか確認してください。
-不明な場合はContext7 MCPで最新のベストプラクティスを調査してください。
-下記に挙げているのは例です。プロジェクト内で実際にどのフレームワークを使用しているかはpackage.jsonなどを参照して具体化してから調査してください。
-
-#### HTML/テンプレートフレームワーク
-
-- **Astro**: コンポーネント分割、`client:*`ディレクティブの適切な使用、`Astro.props`の型定義
-- **Next.js**: App Router/Pages Router の使い分け、`Image`コンポーネント、メタデータAPI
-- **Nuxt.js**: `<NuxtLink>`の使用、`useFetch`/`useAsyncData`、SEOモジュール
-- **SvelteKit**: `+page.svelte`/`+layout.svelte`構造、`load`関数
-
-#### CSSフレームワーク
-
-- **Tailwind CSS**: ユーティリティクラスの適切な使用、カスタム値`[xxx]`より標準クラス優先、`@apply`の最小化
-- **Bootstrap**: グリッドシステム、コンポーネントクラスの正しい組み合わせ
-- **Sass/SCSS**: ネストの深さ制限、変数・ミックスインの活用、BEM命名規則
-
-#### JavaScriptフレームワーク
-
-- **React**: コンポーネント分割、hooks のルール、key属性、memo/useCallback の適切な使用
-- **Vue.js**: Composition API/Options API、`v-for`の`key`、`computed`/`watch`の使い分け
-- **Svelte**: リアクティブ宣言`$:`、ストア、イベントディスパッチ
-- **Alpine.js**: `x-data`/`x-bind`/`x-on`の適切な使用、`$refs`の活用
+不明な場合は Context7 MCP で最新のベストプラクティスを調査してください。
 
 #### 共通チェック項目
 
@@ -90,7 +90,7 @@ description: "HTML/CSSをセマンティクス・アクセシビリティ・SEO�
 - [ ] 非推奨（deprecated）な機能を使用していないか
 - [ ] フレームワーク提供のコンポーネント/ユーティリティを活用しているか
 - [ ] パフォーマンス最適化のベストプラクティスに従っているか
-- [ ] TypeScript型定義が適切か（使用している場合）
+- [ ] TypeScript 型定義が適切か（使用している場合）
 
 ## 出力形式
 
@@ -99,14 +99,15 @@ description: "HTML/CSSをセマンティクス・アクセシビリティ・SEO�
 ```markdown
 ## 発見した問題点
 
-| #   | ファイル  | 行  | 観点           | 優先度 | 問題内容 | 改善案 |
-| --- | --------- | --- | -------------- | ------ | -------- | ------ |
-| 1   | xxx.astro | 10  | セマンティクス | 高     | ...      | ...    |
+| #   | ファイル  | 行  | 観点           | 優先度 | 修正種別 | 問題内容 | 改善案 |
+| --- | --------- | --- | -------------- | ------ | -------- | -------- | ------ |
+| 1   | xxx.astro | 10  | セマンティクス | 高     | 自動     | ...      | ...    |
+| 2   | xxx.astro | 25  | a11y           | 中     | 手動     | ...      | ...    |
 ```
 
 ## 注意事項
 
 - 既存のデザインやレイアウトを崩さないこと
-- Tailwind CSSのクラス命名規則に従うこと
-- Astroコンポーネントの構造を理解した上で修正すること
-- 修正前後のdiffを明確に示すこと
+- プロジェクトの CSS フレームワーク（Tailwind CSS 等）の命名規則に従うこと
+- フレームワーク（Astro, Next.js 等）のコンポーネント構造を理解した上で修正すること
+- 修正前後の diff を明確に示すこと
