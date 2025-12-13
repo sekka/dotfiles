@@ -22,19 +22,14 @@ AGENTS_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/agents"
 AGENTS_TARGET_DIR="${HOME_CLAUDE_DIR}/agents"
 SKILLS_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/skills"
 SKILLS_TARGET_DIR="${HOME_CLAUDE_DIR}/skills"
+RULES_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/rules"
+RULES_TARGET_DIR="${HOME_CLAUDE_DIR}/rules"
 
 # .claude ディレクトリが存在しない場合は作成
 if [ ! -d "$HOME_CLAUDE_DIR" ]; then
   printf "%b\n" "${BLUE}📁 ディレクトリを作成:${NC} $HOME_CLAUDE_DIR"
   mkdir -p "$HOME_CLAUDE_DIR"
 fi
-
-for dir in "$COMMANDS_TARGET_DIR" "$AGENTS_TARGET_DIR" "$SKILLS_TARGET_DIR"; do
-  if [ ! -d "$dir" ]; then
-    printf "%b\n" "${BLUE}📁 ディレクトリを作成:${NC} $dir"
-    mkdir -p "$dir"
-  fi
-done
 
 echo ""
 echo "🔗 Claude設定ファイルのシンボリックリンクを作成..."
@@ -79,79 +74,47 @@ for file in "${CLAUDE_FILES[@]}"; do
   fi
 done
 
-link_dir() {
+# フォルダ単位でシンボリックリンクを作成
+link_folder() {
   local label="$1"
   local source_dir="$2"
   local target_dir="$3"
-  local created_var="$4"
-  local skipped_var="$5"
-  local create_cnt=0
-  local skip_cnt=0
 
   echo ""
   echo "📋 ${label} のシンボリックリンクを作成..."
 
-  if [ -d "$source_dir" ]; then
-    for file in "$source_dir"/*.md; do
-      [ -e "$file" ] || continue
-
-      local filename target_link current_target
-      filename=$(basename "$file")
-      target_link="$target_dir/$filename"
-
-      if [ -L "$target_link" ]; then
-        current_target=$(readlink "$target_link")
-        if [ "$current_target" = "$file" ]; then
-          printf "%b\n" "${YELLOW}⏭️  スキップ:${NC} $filename (既に正しくリンクされています)"
-          ((skip_cnt++))
-        else
-          printf "%b\n" "${GREEN}🔄 更新:${NC} $filename"
-          rm "$target_link"
-          ln -s "$file" "$target_link"
-          ((create_cnt++))
-        fi
-      elif [ -e "$target_link" ]; then
-        printf "%b\n" "${RED}⚠️  警告:${NC} $filename は通常のファイルとして存在します。手動で確認してください。"
-      else
-        printf "%b\n" "${GREEN}✅ 作成:${NC} $filename"
-        ln -s "$file" "$target_link"
-        ((create_cnt++))
-      fi
-    done
-  else
+  if [ ! -d "$source_dir" ]; then
     printf "%b\n" "${YELLOW}⚠️  警告:${NC} $source_dir が見つかりません"
+    return
   fi
 
-  printf -v "$created_var" "%s" "$create_cnt"
-  printf -v "$skipped_var" "%s" "$skip_cnt"
+  if [ -L "$target_dir" ]; then
+    current_target=$(readlink "$target_dir")
+    if [ "$current_target" = "$source_dir" ]; then
+      printf "%b\n" "${YELLOW}⏭️  スキップ:${NC} $label (既に正しくリンクされています)"
+    else
+      printf "%b\n" "${GREEN}🔄 更新:${NC} $label"
+      rm "$target_dir"
+      ln -s "$source_dir" "$target_dir"
+    fi
+  elif [ -d "$target_dir" ]; then
+    printf "%b\n" "${RED}⚠️  警告:${NC} $target_dir は通常のディレクトリとして存在します。手動で確認してください。"
+  else
+    printf "%b\n" "${GREEN}✅ 作成:${NC} $label"
+    ln -s "$source_dir" "$target_dir"
+  fi
 }
 
-commands_created=0
-commands_skipped=0
-agents_created=0
-agents_skipped=0
-skills_created=0
-skills_skipped=0
-
-link_dir "Commands" "$COMMANDS_SOURCE_DIR" "$COMMANDS_TARGET_DIR" commands_created commands_skipped
-link_dir "Agents" "$AGENTS_SOURCE_DIR" "$AGENTS_TARGET_DIR" agents_created agents_skipped
-link_dir "Skills" "$SKILLS_SOURCE_DIR" "$SKILLS_TARGET_DIR" skills_created skills_skipped
+link_folder "Commands" "$COMMANDS_SOURCE_DIR" "$COMMANDS_TARGET_DIR"
+link_folder "Agents" "$AGENTS_SOURCE_DIR" "$AGENTS_TARGET_DIR"
+link_folder "Skills" "$SKILLS_SOURCE_DIR" "$SKILLS_TARGET_DIR"
+link_folder "Rules" "$RULES_SOURCE_DIR" "$RULES_TARGET_DIR"
 
 # サマリー表示
 echo ""
 echo "📊 Claude セットアップ完了:"
-echo "   📄 設定ファイル:"
-echo "      ✅ 新規作成: $created"
-echo "      ⏭️ スキップ: $skipped"
-echo "   📋 Commands:"
-echo "      ✅ 新規作成: $commands_created"
-echo "      ⏭️ スキップ: $commands_skipped"
-echo "   📋 Agents:"
-echo "      ✅ 新規作成: $agents_created"
-echo "      ⏭️ スキップ: $agents_skipped"
-echo "   📋 Skills:"
-echo "      ✅ 新規作成: $skills_created"
-echo "      ⏭️ スキップ: $skills_skipped"
+echo "   📄 設定ファイル: 新規作成 $created / スキップ $skipped"
+echo "   📁 Commands, Agents, Skills, Rules: フォルダ単位でリンク済み"
 
 echo ""
 echo "✨ Claude Commands のセットアップ・同期が完了しました！"
