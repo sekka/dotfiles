@@ -1,11 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "Bash(cat:*)",
       "Bash(find:*)",
-      "Bash(ls:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
-      "Bash(mkdir:*)",
       "Bash(git add:*)",
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
@@ -13,12 +10,18 @@
       "Bash(git reset:*)",
       "Bash(git diff:*)",
       "Bash(git restore:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
       "Bash(mise where:*)",
-      "Bash(mise install:*)"
+      "Bash(mise install:*)",
+      "Bash(mkdir:*)",
+      "Bash(rg:*)",
+      "Bash(wc:*)",
+      "WebFetch(domain:*)",
+      "WebSearch"
     ],
-    "deny": [
-      "Read(./.env.*)"
-    ]
+    "deny": ["Read(./.env.*)"]
   },
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
 }
