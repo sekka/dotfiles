@@ -1,7 +1,82 @@
 # --------------------------------------
-# Centralized PATH Management
+# Environment & PATH Management
 # --------------------------------------
-# このファイルですべてのPATH設定を一元管理する
+# helpers, platform, environmentを統合
+
+# ======================
+# Helper Functions
+# ======================
+
+# Function to add a directory to PATH only if it exists and is not already in PATH
+add_to_path() {
+    local dir="$1"
+    local position="${2:-prepend}"  # prepend or append
+
+    # Check if directory exists
+    if [[ ! -d "$dir" ]]; then
+        return 1
+    fi
+
+    # Check if already in PATH
+    case ":$PATH:" in
+        *":$dir:"*) return 0 ;;  # Already in PATH
+    esac
+
+    # Add to PATH
+    if [[ "$position" == "append" ]]; then
+        export PATH="$PATH:$dir"
+    else
+        export PATH="$dir:$PATH"
+    fi
+}
+
+# Function to add a directory to fpath only if it exists and is not already in fpath
+add_to_fpath() {
+    local dir="$1"
+
+    # Check if directory exists
+    if [[ ! -d "$dir" ]]; then
+        return 1
+    fi
+
+    # Check if already in fpath
+    local already_in_fpath=false
+    for fp in $fpath; do
+        if [[ "$fp" == "$dir" ]]; then
+            already_in_fpath=true
+            break
+        fi
+    done
+
+    if [[ "$already_in_fpath" == false ]]; then
+        fpath=("$dir" $fpath)
+    fi
+}
+
+# ======================
+# Platform-specific Settings
+# ======================
+
+# OS別設定
+case ${OSTYPE} in
+    darwin*)
+        # macOS用設定
+        export CLICOLOR=1
+        # Note: ls alias moved to main aliases.zsh with eza
+        ;;
+    linux*)
+        # Linux用設定
+        # 必要に応じて設定を追加
+        ;;
+    *)
+        # その他のOS用設定
+        ;;
+esac
+
+# ======================
+# Centralized PATH Management
+# ======================
+# すべてのPATH設定を一元管理する
 # 重複を防ぐため、add_to_path関数を使用してパスを追加する
 
 # === 基本システムパス ===
@@ -70,13 +145,17 @@ if [[ -d "$HOME/.local/aws-cli/v2/current/bin" ]]; then
     add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 fi
 
-# === Core Functions ===
+# ======================
+# Core Functions
+# ======================
+
 # ディレクトリ変更時自動実行
 function chpwd() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
     if [[ $file_count -lt 500 ]]; then
-        eza --long --all --binary --bytes --group --header --links --inode --modified --created --changed --git --git-repos --time-style long-iso
+        eza --long --all --binary --bytes --group --header --links --inode \
+            --modified --created --changed --git --git-repos --time-style long-iso
     else
         ls
     fi
@@ -85,7 +164,10 @@ function chpwd() {
 # PATH表示関数
 function path_show() { echo -e ${PATH//:/'\n'} }
 
-# === PATH管理ユーティリティ ===
+# ======================
+# PATH Management Utilities
+# ======================
+
 # デバッグ用：重複したPATHエントリを表示
 check_path_duplicates() {
     echo "=== PATH Entries ==="
@@ -95,7 +177,6 @@ check_path_duplicates() {
     echo "$PATH" | tr ':' '\n' | sort | uniq -d
 }
 
-# === PATH最適化機能 ===
 # 重複を削除してPATHを最適化
 optimize_path() {
     local new_path=""
@@ -114,5 +195,6 @@ optimize_path() {
     done
 
     export PATH="$new_path"
-    echo "PATH optimized. Removed $(( $(echo "$PATH" | tr ':' '\n' | wc -l) - $(echo "$new_path" | tr ':' '\n' | wc -l) )) duplicate entries."
+    echo "PATH optimized. Removed $(( $(echo "$PATH" | tr ':' '\n' | wc -l) - \
+         $(echo "$new_path" | tr ':' '\n' | wc -l) )) duplicate entries."
 }
