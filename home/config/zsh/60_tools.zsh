@@ -254,22 +254,28 @@ function fssh() {
 
 # Git差分アーカイブ作成関数
 function git_diff_archive() {
-  local diff=""
   local h="HEAD"
+  local files=()
+
   if [ $# -eq 1 ]; then
-    if expr "$1" : '[0-9]*$' > /dev/null ; then
-      diff="HEAD~${1} HEAD"
+    # 数値チェック（exprの代わりに正規表現を使用）
+    if [[ "$1" =~ ^[0-9]+$ ]]; then
+      # コマンドインジェクションを防ぐため、evalを使わずに配列で処理
+      files=(${(f)"$(git diff --diff-filter=d --name-only HEAD~${1} HEAD)"})
     else
-      diff="${1} HEAD"
+      files=(${(f)"$(git diff --diff-filter=d --name-only ${1} HEAD)"})
     fi
   elif [ $# -eq 2 ]; then
-    diff="${2} ${1}"
-    h=$1
+    h="$1"
+    files=(${(f)"$(git diff --diff-filter=d --name-only ${2} ${1})"})
   fi
-  if [ "$diff" != "" ]; then
-    diff="git diff --diff-filter=d --name-only ${diff}"
+
+  if [ ${#files[@]} -gt 0 ]; then
+    git archive --format=zip --prefix=root/ "$h" "${files[@]}" -o archive.zip
+  else
+    # ファイルがない場合は空のアーカイブを作成
+    git archive --format=zip --prefix=root/ "$h" -o archive.zip
   fi
-  git archive --format=zip --prefix=root/ $h `eval $diff` -o archive.zip
 }
 
 # ======================

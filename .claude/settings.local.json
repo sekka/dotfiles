@@ -22,7 +22,6 @@
       "mcp__serena__list_dir",
       "Bash(tree:*)",
       "Bash(xargs:*)",
-      "Bash(do basename \"$agent\" .md)",
       "SlashCommand(/pr)"
     ],
     "deny": ["Read(./.env.*)"]

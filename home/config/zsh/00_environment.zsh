@@ -150,7 +150,10 @@ fi
 # ======================
 
 # ディレクトリ変更時自動実行
-function chpwd() {
+# add-zsh-hookを使用して他のプラグインとの競合を回避
+autoload -Uz add-zsh-hook
+
+function _chpwd_list_directory() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
     if [[ $file_count -lt 500 ]]; then
@@ -160,6 +163,8 @@ function chpwd() {
         ls
     fi
 }
+
+add-zsh-hook chpwd _chpwd_list_directory
 
 # PATH表示関数
 function path_show() { echo -e ${PATH//:/'\n'} }
@@ -179,11 +184,12 @@ check_path_duplicates() {
 
 # 重複を削除してPATHを最適化
 optimize_path() {
+    local old_path="$PATH"
     local new_path=""
     local IFS=':'
     local seen=()
 
-    for dir in $PATH; do
+    for dir in $old_path; do
         if [[ ! " ${seen[@]} " =~ " ${dir} " ]]; then
             seen+=("$dir")
             if [[ -z "$new_path" ]]; then
@@ -195,6 +201,6 @@ optimize_path() {
     done
 
     export PATH="$new_path"
-    echo "PATH optimized. Removed $(( $(echo "$PATH" | tr ':' '\n' | wc -l) - \
+    echo "PATH optimized. Removed $(( $(echo "$old_path" | tr ':' '\n' | wc -l) - \
          $(echo "$new_path" | tr ':' '\n' | wc -l) )) duplicate entries."
 }
