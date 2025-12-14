@@ -331,7 +331,7 @@ function commands () {
         echo "Error: jq is not installed" >&2
         return 1
     fi
-    cat package.json | jq -r '.scripts | keys[]'
+    jq -r '.scripts | keys[]' package.json
 }
 
 # anyframe

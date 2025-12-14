@@ -159,8 +159,7 @@ PROMPT+="%B❯❯%b"
 PROMPT+=" "
 
 # スペルミス修正時のプロンプト
-SPROMPT="%{$fg[red]%}%{$suggest%}(*'~'%)? < もしかして %B%r%b %{$fg[red]%}? \
-[そう!(y), 違う!(n),a,e]:${reset_color} "
+SPROMPT=$'%{\e[31m%}(*\'~\'%)? < もしかして %B%r%b %{\e[31m%}?\n[そう!(y), 違う!(n),a,e]:%{\e[0m%} '
 
 # 単語選択スタイル設定
 autoload -Uz select-word-style

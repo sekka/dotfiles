@@ -166,6 +166,7 @@ function path_show() { echo -e ${PATH//:/'\n'} }
 # ======================
 
 # デバッグ用：重複したPATHエントリを表示
+# 使用方法: check_path_duplicates を実行してPATHの重複を確認
 check_path_duplicates() {
     echo "=== PATH Entries ==="
     echo "$PATH" | tr ':' '\n' | nl
@@ -175,6 +176,9 @@ check_path_duplicates() {
 }
 
 # 重複を削除してPATHを最適化
+# 使用方法: optimize_path を実行してPATHから重複エントリを削除
+# Note: これは手動実行用のユーティリティ関数です。
+#       自動起動時には実行されません。必要に応じて手動で実行してください。
 optimize_path() {
     # zshのpath配列を使用してより安全に重複削除
     local -a old_path_array
