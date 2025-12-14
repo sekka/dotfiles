@@ -291,15 +291,15 @@ function git_diff_archive() {
 # ======================
 
 function peco-select-history() {
-    local tac
-    if which tac > /dev/null; then
-        tac="tac"
+    # evalを使わずに条件分岐で直接実行（セキュリティ向上）
+    if command -v tac >/dev/null 2>&1; then
+        BUFFER=$(\history -n 1 | tac | peco --query "$LBUFFER")
+    elif command -v tail >/dev/null 2>&1; then
+        BUFFER=$(\history -n 1 | tail -r | peco --query "$LBUFFER")
     else
-        tac="tail -r"
+        echo "Error: Neither 'tac' nor 'tail' command available"
+        return 1
     fi
-    BUFFER=$(\history -n 1 | \
-        eval $tac | \
-        peco --query "$LBUFFER")
     CURSOR=$#BUFFER
     zle clear-screen
 }
