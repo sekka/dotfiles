@@ -18,7 +18,11 @@
       "Bash(rg:*)",
       "Bash(wc:*)",
       "WebFetch(domain:*)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__serena__list_dir",
+      "Bash(tree:*)",
+      "Bash(xargs:*)",
+      "SlashCommand(/pr)"
     ],
     "deny": ["Read(./.env.*)"]
   },

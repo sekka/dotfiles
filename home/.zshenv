@@ -5,7 +5,7 @@
 # Only put absolutely essential environment variables here
 
 # Load PATH helper functions (lightweight)
-source "$HOME/dotfiles/home/config/zsh/00_helpers.zsh"
+source "$HOME/dotfiles/home/config/zsh/00_environment.zsh"
 
 # PATH management is now centralized in config/zsh/00_path.zsh
 
