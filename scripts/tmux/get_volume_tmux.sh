@@ -4,7 +4,8 @@ sound_info=$(osascript -e 'get volume settings')
 # echo -n "#[bold][#[default]"
 
 if [[ "$(echo "$sound_info" | awk '{print $8}')" == "muted:false" ]]; then
-  sound_volume=$(( $(echo "$sound_info" | awk '{print $2}' | sed "s/[^0-9]//g") / 6 ))
+  volume_raw=$(echo "$sound_info" | awk '{print $2}' | sed "s/[^0-9]//g")
+  sound_volume=$(( ${volume_raw:-0} / 6 ))
   local i=0
   while [[ $i -lt $sound_volume ]]; do
     (( i++ ))

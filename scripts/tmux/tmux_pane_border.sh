@@ -2,9 +2,9 @@
 
 if [[ $1 == "ssh" ]]; then
   pane_pid=$2
-  info=$({ pgrep -flaP "$pane_pid" ; ps -o command -p "$pane_pid"; } | xargs -I{} echo {} | awk '/ssh/' | sed -E 's/^[0-9]*[[:blank:]]*ssh //')
+  info=$({ pgrep -flaP "$pane_pid" ; ps -o command -p "$pane_pid"; } | awk '/ssh/' | sed -E 's/^[0-9]*[[:blank:]]*ssh //')
   port=$(echo "$info" | grep -Eo '\-p ([0-9]+)'|sed 's/-p //')
-  if [[ -z $port ]]; then
+  if [[ -z "$port" ]]; then
     local port=22
   fi
   info=$(echo "$info" | sed 's/\-p '"$port"'//g')
