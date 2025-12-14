@@ -121,7 +121,8 @@ function fzf-src() {
     selected_dir=$(ghq list -p 2>/dev/null | fzf --query "$LBUFFER" --preview "bat --color=always --style=header,grid --line-range :80 {}/README.* 2>/dev/null || ls -la {}") || return
 
     if [[ -n "$selected_dir" ]] && [[ -d "$selected_dir" ]]; then
-        BUFFER="cd ${selected_dir}"
+        # スペースを含むパスに対応するためクォート
+        BUFFER="cd -- ${(qq)selected_dir}"
         zle accept-line
     else
         echo "Error: Invalid directory selected"
@@ -176,7 +177,8 @@ alias fbrm='fzf-git-branch -r'
 # 使用例: fcdまたはfcd ~/projectsで指定ディレクトリ以下を検索
 function fcd() {
     local dir
-    dir=$(find ${1:-.} -type d \
+    # スペースを含むパスに対応するためクォート
+    dir=$(find "${1:-.}" -type d \
         -not -path '*/\.*' \
         -not -path '*/node_modules/*' \
         -not -path '*/target/*' \
@@ -216,8 +218,10 @@ function fadd() {
     fi
 
     local files
-    # git diff --name-onlyを使用してより安全にファイル名を取得
-    files=$(git diff --name-only --diff-filter=ACMRU | fzf \
+    # NUL区切りで安全にファイル名を処理（スペース・改行対応）
+    files=$(git diff -z --name-only --diff-filter=ACMRU | fzf \
+        --read0 \
+        --print0 \
         --multi \
         --preview "git diff --color=always {} 2>/dev/null || cat {}" \
         --preview-window=right:60%:wrap \
@@ -226,9 +230,9 @@ function fadd() {
     )
 
     if [[ -n "$files" ]]; then
-        echo "$files" | xargs -I {} git add {}
+        echo "$files" | xargs -0 git add
         echo "Added files:"
-        echo "$files"
+        echo "$files" | tr '\0' '\n'
     fi
 }
 

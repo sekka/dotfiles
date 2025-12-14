@@ -176,23 +176,14 @@ check_path_duplicates() {
 
 # 重複を削除してPATHを最適化
 optimize_path() {
-    local old_path="$PATH"
-    local new_path=""
-    local IFS=':'
-    local seen=()
+    # zshのpath配列を使用してより安全に重複削除
+    local -a old_path_array
+    old_path_array=("${path[@]}")
+    local old_count=${#old_path_array}
 
-    for dir in $old_path; do
-        if [[ ! " ${seen[@]} " =~ " ${dir} " ]]; then
-            seen+=("$dir")
-            if [[ -z "$new_path" ]]; then
-                new_path="$dir"
-            else
-                new_path="$new_path:$dir"
-            fi
-        fi
-    done
+    # typeset -U で重複を削除（zsh組み込み機能）
+    typeset -U path
 
-    export PATH="$new_path"
-    echo "PATH optimized. Removed $(( $(echo "$old_path" | tr ':' '\n' | wc -l) - \
-         $(echo "$new_path" | tr ':' '\n' | wc -l) )) duplicate entries."
+    local new_count=${#path}
+    echo "PATH optimized. Removed $(( old_count - new_count )) duplicate entries."
 }

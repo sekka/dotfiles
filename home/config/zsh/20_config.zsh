@@ -47,7 +47,7 @@ setopt path_dirs              # スラッシュを含むコマンド名でもパ
 
 # === ジョブ制御 ===
 setopt long_list_jobs         # ジョブの詳細情報を表示
-setopt check_jobs             # ログアウト時に実行中のジョブを確認
+setopt check_jobs             # ログアウト時に実行中のジョブを確認（セキュリティ重視）
 
 # === コマンドライン編集 ===
 setopt combining_chars        # 結合文字を正しく表示
@@ -63,7 +63,7 @@ setopt pipe_fail              # パイプラインの右側のエラーを全体
 # === パフォーマンス強化 ===
 setopt no_bg_nice             # バックグラウンドジョブの優先度を下げない
 setopt no_hup                 # シェル終了時にジョブにHUPシグナルを送らない
-setopt no_check_jobs          # シェル終了時にジョブの確認をスキップ（高速化）
+# Note: check_jobs（50行目）を優先し、セキュリティを重視
 
 # ======================
 # History Configuration
@@ -125,7 +125,7 @@ zstyle ":vcs_info:git:*" stagedstr "+"
 zstyle ":vcs_info:git:*" unstagedstr "*"
 
 # プロンプト更新処理
-precmd () {
+function _update_prompt() {
     psvar=()
     LANG=en_US.UTF-8 vcs_info
     [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
@@ -134,6 +134,9 @@ precmd () {
         tmux refresh-client -S
     fi
 }
+
+# add-zsh-hookを使用して他のプラグインとの競合を回避
+add-zsh-hook precmd _update_prompt
 
 # プロンプト表示設定
 OK="[*'-']"
