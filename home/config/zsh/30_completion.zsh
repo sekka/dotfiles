@@ -77,7 +77,8 @@ bindkey -e
 # 親ディレクトリ移動関数
 function cdup() {
    echo
-   cd ..
-   zle reset-prompt
+   if cd ..; then
+       zle reset-prompt
+   fi
 }
 zle -N cdup

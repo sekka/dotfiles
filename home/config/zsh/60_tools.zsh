@@ -56,7 +56,12 @@ zplug load
 
 # プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
-export ENHANCD_FILTER=peco
+# enhancdのフィルター設定（fzf優先、なければpeco）
+if command -v fzf >/dev/null 2>&1; then
+    export ENHANCD_FILTER=fzf
+elif command -v peco >/dev/null 2>&1; then
+    export ENHANCD_FILTER=peco
+fi
 export EMOJI_CLI_FILTER=fzf
 export ZSH_HISTORY_KEYBIND_GET='^r'
 export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
@@ -314,6 +319,15 @@ function peco-src () {
 # bindkey '^]' peco-src
 
 function commands () {
+    # package.jsonとjqの存在確認
+    if [[ ! -f package.json ]]; then
+        echo "Error: package.json not found in current directory" >&2
+        return 1
+    fi
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "Error: jq is not installed" >&2
+        return 1
+    fi
     cat package.json | jq -r '.scripts | keys[]'
 }
 
@@ -346,7 +360,11 @@ function tmux_automatically_attach_session()
 
         if is_tmux_runnning; then
             # tmuxが実行中の場合
-            echo :beer: :relaxed: | emojify
+            if is_exists 'emojify'; then
+                echo :beer: :relaxed: | emojify
+            else
+                echo "tmux is running."
+            fi
         elif is_screen_running; then
             # GNU Screenが実行中の場合
             echo "This is on screen."
@@ -364,7 +382,7 @@ function tmux_automatically_attach_session()
             if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
                 tmux list-sessions
                 echo -n "tmux: attach? (y/N/num) "
-                read
+                read -r
                 # y、Y、または空の入力であればセッションにアタッチ
                 if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
                     tmux attach-session
@@ -391,6 +409,12 @@ function tmux_automatically_attach_session()
 
                 # フォールバック: 従来の設定ファイルパス
                 [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
+
+                # 設定ファイルの存在確認
+                if [[ ! -f "$tmux_config_file" ]]; then
+                    echo "Error: tmux config file not found" >&2
+                    return 1
+                fi
 
                 # ヒアドキュメントを使用して設定を作成
                 tmux -f <(cat <<EOF

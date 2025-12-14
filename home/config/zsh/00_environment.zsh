@@ -39,16 +39,8 @@ add_to_fpath() {
         return 1
     fi
 
-    # Check if already in fpath
-    local already_in_fpath=false
-    for fp in $fpath; do
-        if [[ "$fp" == "$dir" ]]; then
-            already_in_fpath=true
-            break
-        fi
-    done
-
-    if [[ "$already_in_fpath" == false ]]; then
+    # Check if already in fpath using pattern matching (consistent with add_to_path)
+    if [[ ! " ${fpath[*]} " =~ " ${dir} " ]]; then
         fpath=("$dir" $fpath)
     fi
 }
