@@ -39,8 +39,8 @@ add_to_fpath() {
         return 1
     fi
 
-    # Check if already in fpath using pattern matching (consistent with add_to_path)
-    if [[ ! " ${fpath[*]} " =~ " ${dir} " ]]; then
+    # Check if already in fpath using zsh array subscript (more robust)
+    if [[ -z "${fpath[(r)${dir}]}" ]]; then
         fpath=("$dir" $fpath)
     fi
 }
@@ -148,7 +148,7 @@ autoload -Uz add-zsh-hook
 function _chpwd_list_directory() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
-    if [[ $file_count -lt 500 ]]; then
+    if [[ $file_count -lt 500 ]] && command -v eza >/dev/null 2>&1; then
         eza --long --all --binary --bytes --group --header --links --inode \
             --modified --created --changed --git --git-repos --time-style long-iso
     else

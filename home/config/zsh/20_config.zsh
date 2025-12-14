@@ -130,7 +130,7 @@ precmd () {
     LANG=en_US.UTF-8 vcs_info
     [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-    if [ ! -z $TMUX ]; then
+    if [[ -n "$TMUX" ]]; then
         tmux refresh-client -S
     fi
 }

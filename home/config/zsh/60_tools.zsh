@@ -25,34 +25,34 @@ fi
 
 if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
     source "$ZPLUG_HOME/init.zsh"
+
+    # コアプラグイン（即座に読み込み）
+    zplug "zsh-users/zsh-syntax-highlighting"       # シンタックスハイライト
+    zplug "zsh-users/zsh-autosuggestions"           # 入力サジェスト
+    zplug "zsh-users/zsh-completions"               # 入力補完
+
+    # 条件付き読み込み（コマンドが利用可能な場合のみ）
+    zplug "zsh-users/zsh-history-substring-search", defer:1
+    zplug "mollifier/anyframe", if:"command -v peco || command -v fzf"
+    zplug "b4b4r07/easy-oneliner", if:"command -v fzf"
+    zplug "b4b4r07/enhancd", use:init.sh, if:"command -v peco || command -v fzf"
+
+    # 使用頻度の低いプラグイン（遅延読み込み）
+    zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"
+    zplug "b4b4r07/history", defer:2
+    zplug "arks22/tmuximum", as:command, defer:2, if:"command -v tmux"
+
+    # プラグイン自動インストール
+    if ! zplug check; then
+        echo "Installing missing zplug plugins..."
+        zplug install
+    fi
+
+    zplug load
 else
     echo "Warning: zplug not found. Please install via 'brew install zplug'"
-    return
+    # zplugが利用不可の場合でも、他のツール（fzf, peco, tmux）の初期化は継続
 fi
-
-# コアプラグイン（即座に読み込み）
-zplug "zsh-users/zsh-syntax-highlighting"       # シンタックスハイライト
-zplug "zsh-users/zsh-autosuggestions"           # 入力サジェスト
-zplug "zsh-users/zsh-completions"               # 入力補完
-
-# 条件付き読み込み（コマンドが利用可能な場合のみ）
-zplug "zsh-users/zsh-history-substring-search", defer:1
-zplug "mollifier/anyframe", if:"command -v peco || command -v fzf"
-zplug "b4b4r07/easy-oneliner", if:"command -v fzf"
-zplug "b4b4r07/enhancd", use:init.sh, if:"command -v peco || command -v fzf"
-
-# 使用頻度の低いプラグイン（遅延読み込み）
-zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"
-zplug "b4b4r07/history", defer:2
-zplug "arks22/tmuximum", as:command, defer:2, if:"command -v tmux"
-
-# プラグイン自動インストール
-if ! zplug check; then
-    echo "Installing missing zplug plugins..."
-    zplug install
-fi
-
-zplug load
 
 # プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
@@ -83,19 +83,17 @@ function fzf-select-history() {
         return 1
     fi
 
-    local tac selected
-    # tacコマンドの検出（よりポータブルな方法）
+    local selected
+    # 履歴の取得と選択（エラーハンドリング付き）
+    # tacコマンドの検出（より安全な方法でevalを使わない）
     if command -v tac >/dev/null 2>&1; then
-        tac="tac"
+        selected=$(history -n 1 | tac | fzf --query "$LBUFFER") || return
     elif command -v tail >/dev/null 2>&1; then
-        tac="tail -r"
+        selected=$(history -n 1 | tail -r | fzf --query "$LBUFFER") || return
     else
         echo "Error: Neither 'tac' nor 'tail' command available"
         return 1
     fi
-
-    # 履歴の取得と選択（エラーハンドリング付き）
-    selected=$(history -n 1 | eval "$tac" | fzf --query "$LBUFFER") || return
 
     if [[ -n "$selected" ]]; then
         BUFFER="$selected"
@@ -218,7 +216,8 @@ function fadd() {
     fi
 
     local files
-    files=$(git status --porcelain | awk '{print $2}' | fzf \
+    # git diff --name-onlyを使用してより安全にファイル名を取得
+    files=$(git diff --name-only --diff-filter=ACMRU | fzf \
         --multi \
         --preview "git diff --color=always {} 2>/dev/null || cat {}" \
         --preview-window=right:60%:wrap \
@@ -227,7 +226,7 @@ function fadd() {
     )
 
     if [[ -n "$files" ]]; then
-        echo "$files" | xargs git add
+        echo "$files" | xargs -I {} git add {}
         echo "Added files:"
         echo "$files"
     fi
