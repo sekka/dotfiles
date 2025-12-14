@@ -33,7 +33,7 @@ created=0
 skipped=0
 
 for file in "${DOT_FILES[@]}"; do
-  if [ -e "$HOME/$file" ]; then
+  if [[ -e "$HOME/$file" ]]; then
     echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に存在)"
     ((skipped++))
   else
@@ -51,13 +51,13 @@ CONFIG_DIRS=(
 )
 
 # .config ディレクトリが存在しない場合は作成
-if [ ! -d "$HOME/.config" ]; then
+if [[ ! -d "$HOME/.config" ]]; then
   mkdir -p "$HOME/.config"
   echo "📁 .config ディレクトリを作成しました"
 fi
 
 for dirs in "${CONFIG_DIRS[@]}"; do
-  if [ -e "$HOME/.config/$dirs" ]; then
+  if [[ -e "$HOME/.config/$dirs" ]]; then
     echo -e "${YELLOW}⏭️  スキップ:${NC} $dirs (既に存在)"
     ((skipped++))
   else

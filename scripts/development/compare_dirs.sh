@@ -25,15 +25,15 @@ while getopts ":a:" opt; do
 done
 shift $((OPTIND - 1))
 
-[ $# -eq 2 ] || usage
+[[ $# -eq 2 ]] || usage
 dir1="$1"
 dir2="$2"
 
-[ -d "$dir1" ] || {
+[[ -d "$dir1" ]] || {
   echo "Not a directory: $dir1"
   exit 2
 }
-[ -d "$dir2" ] || {
+[[ -d "$dir2" ]] || {
   echo "Not a directory: $dir2"
   exit 2
 }
@@ -41,7 +41,7 @@ dir2="$2"
 # --- helpers ---
 hash_file() {
   local f="$1"
-  if [ "$algo" = "sha256" ]; then
+  if [[ "$algo" == "sha256" ]]; then
     shasum -a 256 "$f" | awk '{print $1}'
   else
     md5 -q "$f"
@@ -89,7 +89,7 @@ comm -12 "$tmp1" "$tmp2" >"$common"
 diff_found=0
 
 # --- only in dir1 ---
-if [ -n "$only1" ]; then
+if [[ -n "$only1" ]]; then
   diff_found=1
   echo ""
   echo "➖ ONLY in dir1"
@@ -98,7 +98,7 @@ if [ -n "$only1" ]; then
 fi
 
 # --- only in dir2 ---
-if [ -n "$only2" ]; then
+if [[ -n "$only2" ]]; then
   diff_found=1
   echo ""
   echo "➕ ONLY in dir2"
@@ -110,7 +110,7 @@ fi
 echo ""
 echo "🔍 Checking common files..."
 while IFS= read -r rel; do
-  [ -z "$rel" ] && continue
+  [[ -z "$rel" ]] && continue
   f1="$dir1/$rel"
   f2="$dir2/$rel"
 
@@ -125,7 +125,7 @@ while IFS= read -r rel; do
     continue
   }
 
-  if [ "$s1" -ne "$s2" ]; then
+  if [[ "$s1" -ne "$s2" ]]; then
     echo "🟡 DIFF(size) : $rel  ($s1 vs $s2 bytes)"
     diff_found=1
     continue
@@ -134,7 +134,7 @@ while IFS= read -r rel; do
   h1=$(hash_file "$f1")
   h2=$(hash_file "$f2")
 
-  if [ "$h1" = "$h2" ]; then
+  if [[ "$h1" == "$h2" ]]; then
     echo "✅ SAME        : $rel"
   else
     echo "🟡 DIFF(hash) : $rel"
@@ -145,7 +145,7 @@ while IFS= read -r rel; do
 done <"$common"
 
 echo ""
-if [ "$diff_found" -eq 0 ]; then
+if [[ "$diff_found" -eq 0 ]]; then
   echo "🎉 完全一致：ファイル構成と内容が同一です。"
 else
   echo "⚠️  差分あり：詳細は上記を確認してください。"

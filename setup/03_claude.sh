@@ -26,7 +26,7 @@ RULES_SOURCE_DIR="${DOTFILES_CLAUDE_DIR}/rules"
 RULES_TARGET_DIR="${HOME_CLAUDE_DIR}/rules"
 
 # .claude ディレクトリが存在しない場合は作成
-if [ ! -d "$HOME_CLAUDE_DIR" ]; then
+if [[ ! -d "$HOME_CLAUDE_DIR" ]]; then
   printf "%b\n" "${BLUE}📁 ディレクトリを作成:${NC} $HOME_CLAUDE_DIR"
   mkdir -p "$HOME_CLAUDE_DIR"
 fi
@@ -49,14 +49,14 @@ for file in "${CLAUDE_FILES[@]}"; do
   target_file="$HOME_CLAUDE_DIR/$file"
 
   # ソースファイルが存在するかチェック
-  if [ ! -f "$source_file" ]; then
+  if [[ ! -f "$source_file" ]]; then
     printf "%b\n" "${YELLOW}⚠️  警告:${NC} $file がソースディレクトリに見つかりません"
     continue
   fi
 
-  if [ -L "$target_file" ]; then
+  if [[ -L "$target_file" ]]; then
     current_target=$(readlink "$target_file")
-    if [ "$current_target" = "$source_file" ]; then
+    if [[ "$current_target" == "$source_file" ]]; then
       printf "%b\n" "${YELLOW}⏭️  スキップ:${NC} $file (既に正しくリンクされています)"
       ((skipped++))
     else
@@ -65,7 +65,7 @@ for file in "${CLAUDE_FILES[@]}"; do
       ln -s "$source_file" "$target_file"
       ((created++))
     fi
-  elif [ -f "$target_file" ]; then
+  elif [[ -f "$target_file" ]]; then
     printf "%b\n" "${RED}⚠️  警告:${NC} $file は通常のファイルとして存在します。手動で確認してください。"
   else
     printf "%b\n" "${GREEN}✅ 作成:${NC} $file"
@@ -83,21 +83,21 @@ link_folder() {
   echo ""
   echo "📋 ${label} のシンボリックリンクを作成..."
 
-  if [ ! -d "$source_dir" ]; then
+  if [[ ! -d "$source_dir" ]]; then
     printf "%b\n" "${YELLOW}⚠️  警告:${NC} $source_dir が見つかりません"
     return
   fi
 
-  if [ -L "$target_dir" ]; then
+  if [[ -L "$target_dir" ]]; then
     current_target=$(readlink "$target_dir")
-    if [ "$current_target" = "$source_dir" ]; then
+    if [[ "$current_target" == "$source_dir" ]]; then
       printf "%b\n" "${YELLOW}⏭️  スキップ:${NC} $label (既に正しくリンクされています)"
     else
       printf "%b\n" "${GREEN}🔄 更新:${NC} $label"
       rm "$target_dir"
       ln -s "$source_dir" "$target_dir"
     fi
-  elif [ -d "$target_dir" ]; then
+  elif [[ -d "$target_dir" ]]; then
     printf "%b\n" "${RED}⚠️  警告:${NC} $target_dir は通常のディレクトリとして存在します。手動で確認してください。"
   else
     printf "%b\n" "${GREEN}✅ 作成:${NC} $label"

@@ -1,17 +1,17 @@
 #!/bin/zsh
 
-if [[ $1 = "ssh" ]]; then
+if [[ $1 == "ssh" ]]; then
   pane_pid=$2
-  info=$({ pgrep -flaP $pane_pid ; ps -o command -p $pane_pid; } | xargs -I{} echo {} | awk '/ssh/' | sed -E 's/^[0-9]*[[:blank:]]*ssh //')
-  port=$(echo $info | grep -Eo '\-p ([0-9]+)'|sed 's/-p //')
-  if [ -z $port ]; then
+  info=$({ pgrep -flaP "$pane_pid" ; ps -o command -p "$pane_pid"; } | xargs -I{} echo {} | awk '/ssh/' | sed -E 's/^[0-9]*[[:blank:]]*ssh //')
+  port=$(echo "$info" | grep -Eo '\-p ([0-9]+)'|sed 's/-p //')
+  if [[ -z $port ]]; then
     local port=22
   fi
-  info=$(echo $info | sed 's/\-p '"$port"'//g')
-  user=$(echo $info | awk '{print $NF}' | cut -f1 -d@)
-  host=$(echo $info | awk '{print $NF}' | cut -f2 -d@)
+  info=$(echo "$info" | sed 's/\-p '"$port"'//g')
+  user=$(echo "$info" | awk '{print $NF}' | cut -f1 -d@)
+  host=$(echo "$info" | awk '{print $NF}' | cut -f2 -d@)
 
-  if [ $user = $host ]; then
+  if [[ $user == $host ]]; then
     user=$(whoami)
     list=$(awk '
       $1 == "Host" {
@@ -26,7 +26,7 @@ if [[ $1 = "ssh" ]]; then
         printf "%s|%s\n", host, $0;
       }' ~/.ssh/config
     )
-    echo $list | while read line; do
+    echo "$list" | while read line; do
       host_user=${line#*|}
       if [[ "$host" =~ $line ]]; then
         user=$host_user
@@ -38,14 +38,14 @@ if [[ $1 = "ssh" ]]; then
   git_info=""
   directory=""
 else
-  if git_status=$(cd $3 && git status 2>/dev/null ); then
-    git_branch="$(echo $git_status| awk 'NR==1 {print $3}')"
+  if git_status=$(cd "$3" && git status 2>/dev/null ); then
+    git_branch="$(echo "$git_status"| awk 'NR==1 {print $3}')"
     case $git_status in
       *Changes\ not\ staged* ) state="#[bold,bg=yellow,fg=black] ± #[fg=default]" ;;
       *Changes\ to\ be\ committed* ) state="#[bold,bg=blue,fg=black] + #[default]" ;;
       * ) state="#[bold,bg=green,fg=black] ✔ #[default]" ;;
     esac
-    if [[ $git_branch = "master" ]]; then
+    if [[ "$git_branch" == "master" ]]; then
       git_info="#[underscore]#[bg=default,fg=black] \ue0a0 ${git_branch} #[default]${state}"
     else
       git_info="#[underscore]#[bg=default,fg=black] \ue0a0 ${git_branch} #[default]${state}"

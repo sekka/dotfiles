@@ -6,7 +6,7 @@
 set -e
 
 # 引数チェック
-if [ $# -lt 3 ]; then
+if [[ $# -lt 3 ]]; then
   echo "使用法: $0 <URL> <実行回数> <間隔(秒)> [出力ディレクトリ] [--auth] [--profile=ProfileName]"
   echo "例: $0 https://example.com 5 60 ./results"
   echo "例（認証必要）: $0 https://example.com 5 60 ./results --auth"
@@ -14,10 +14,10 @@ if [ $# -lt 3 ]; then
   echo ""
   echo "利用可能なプロファイル:"
   CHROME_DIR="$HOME/Library/Application Support/Google/Chrome"
-  if [ -d "$CHROME_DIR" ]; then
+  if [[ -d "$CHROME_DIR" ]]; then
     # プロファイルディレクトリを安全に列挙
     for profile_dir in "$CHROME_DIR"/Default "$CHROME_DIR"/Profile*; do
-      if [ -d "$profile_dir" ]; then
+      if [[ -d "$profile_dir" ]]; then
         basename="$(basename "$profile_dir")"
         echo "  - $basename"
       fi
@@ -64,19 +64,19 @@ echo "URL: $URL"
 echo "実行回数: $COUNT"
 echo "間隔: ${INTERVAL}秒"
 echo "出力先: $OUTPUT_DIR"
-if [ "$USE_AUTH" = true ]; then
+if [[ "$USE_AUTH" == true ]]; then
   echo "認証: 有効（Chromeプロファイル使用）"
   echo "プロファイル: $CHROME_PROFILE"
 
   # プロファイルの存在チェック
   CHROME_DIR="$HOME/Library/Application Support/Google/Chrome"
   PROFILE_PATH="$CHROME_DIR/$CHROME_PROFILE"
-  if [ ! -d "$PROFILE_PATH" ]; then
+  if [[ ! -d "$PROFILE_PATH" ]]; then
     echo "❌ エラー: プロファイル '$CHROME_PROFILE' が見つかりません"
     echo "利用可能なプロファイル:"
     # プロファイルディレクトリを安全に列挙
     for profile_dir in "$CHROME_DIR"/Default "$CHROME_DIR"/Profile*; do
-      if [ -d "$profile_dir" ]; then
+      if [[ -d "$profile_dir" ]]; then
         basename="$(basename "$profile_dir")"
         echo "  - $basename"
       fi
@@ -100,7 +100,7 @@ for i in $(seq 1 "$COUNT"); do
   OUTPUT_FILE="$OUTPUT_DIR/lighthouse_${URL_SANITIZED}_${TIMESTAMP}.json"
 
   # Chrome設定を認証オプションに応じて変更
-  if [ "$USE_AUTH" = true ]; then
+  if [[ "$USE_AUTH" == true ]]; then
     CHROME_USER_DATA_DIR="$HOME/Library/Application Support/Google/Chrome"
     CHROME_FLAGS="--user-data-dir=$CHROME_USER_DATA_DIR --profile-directory=$CHROME_PROFILE"
     echo "  🔐 認証付きモード（$CHROME_PROFILE）で分析中..."
@@ -131,7 +131,7 @@ for i in $(seq 1 "$COUNT"); do
   echo "  結果保存: $OUTPUT_FILE"
 
   # 最後の実行でない場合は待機
-  if [ "$i" -lt "$COUNT" ]; then
+  if [[ "$i" -lt "$COUNT" ]]; then
     echo "  ${INTERVAL}秒待機中..."
     sleep "$INTERVAL"
   fi
@@ -154,7 +154,7 @@ echo "=== Lighthouse分析サマリー ===" >"$SUMMARY_FILE"
 # JSONファイルから主要スコアを抽出
 echo "各実行のスコア:" >>"$SUMMARY_FILE"
 for json_file in "$OUTPUT_DIR"/lighthouse_"${URL_SANITIZED}"_*.json; do
-  if [ -f "$json_file" ]; then
+  if [[ -f "$json_file" ]]; then
     filename=$(basename "$json_file")
     echo "ファイル: $filename" >>"$SUMMARY_FILE"
 

@@ -16,7 +16,7 @@ battery_quantity=$(echo "$battery" | awk '{print $2}')
 
 if [[ ! $battery =~ "discharging" ]]; then
   echo "#[bg=blue,fg=white] ⚡ $battery_quantity% #[default]"
-elif [ "$battery_quantity" -le 15 ]; then
+elif [[ "$battery_quantity" -le 15 ]]; then
   echo "#[bg=red,fg=white] $battery_quantity% #[default]"
 else
   echo "#[bg=blue,fg=white] $battery_quantity% #[default]"

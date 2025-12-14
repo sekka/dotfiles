@@ -12,13 +12,13 @@ NC='\033[0m' # No Color
 echo "🔧 Git hooks をセットアップしています..."
 
 # .git ディレクトリの存在確認
-if [ ! -d ".git" ]; then
+if [[ ! -d ".git" ]]; then
   echo -e "${RED}❌ .git ディレクトリが見つかりません。Gitリポジトリのルートで実行してください。${NC}"
   exit 1
 fi
 
 # .githooks ディレクトリの存在確認
-if [ ! -d ".githooks" ]; then
+if [[ ! -d ".githooks" ]]; then
   echo -e "${RED}❌ .githooks ディレクトリが見つかりません。${NC}"
   exit 1
 fi
@@ -29,7 +29,7 @@ mkdir -p .git/hooks
 # hooks のコピー
 copied=0
 for hook in .githooks/*; do
-  if [ -f "$hook" ]; then
+  if [[ -f "$hook" ]]; then
     hook_name=$(basename "$hook")
     target=".git/hooks/$hook_name"
 
