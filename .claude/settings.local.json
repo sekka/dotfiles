@@ -23,7 +23,8 @@
       "Bash(tree:*)",
       "Bash(xargs:*)",
       "Bash(for agent in /Users/kei/dotfiles/home/.claude/agents/*.md)",
-      "Bash(do basename \"$agent\" .md)"
+      "Bash(do basename \"$agent\" .md)",
+      "SlashCommand(/pr)"
     ],
     "deny": ["Read(./.env.*)"]
   },
