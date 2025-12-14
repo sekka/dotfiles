@@ -2,7 +2,7 @@
 
 ## debug mode
 #DEBUG="yes"
-if [ "$DEBUG" = "yes" ]; then
+if [[ "$DEBUG" == "yes" ]]; then
   set -x
 fi
 

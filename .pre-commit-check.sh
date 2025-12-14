@@ -27,7 +27,7 @@ for task in "${tasks[@]}"; do
 done
 
 # 結果の確認
-if [ ${#failed_tasks[@]} -eq 0 ]; then
+if [[ ${#failed_tasks[@]} -eq 0 ]]; then
   echo -e "${GREEN}✨ 全てのチェックが成功しました！commitを続行できます。${NC}"
   exit 0
 else

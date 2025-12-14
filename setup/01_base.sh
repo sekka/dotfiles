@@ -15,7 +15,7 @@ softwareupdate --install-rosetta
 echo "# ======================================================================================="
 echo "# Homebrewを導入する"
 
-if [ ! -f /opt/homebrew/bin/brew ]; then
+if [[ ! -f /opt/homebrew/bin/brew ]]; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 else
@@ -37,7 +37,7 @@ WHICH_ZSH="$(which zsh)"
 echo "$WHICH_ZSH"
 
 echo "# zshをshellリストに追加する"
-if [ ! "$ETC_SHELLS" = "$WHICH_ZSH" ]; then
+if [[ "$ETC_SHELLS" != "$WHICH_ZSH" ]]; then
   echo "Adding zsh..."
   # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
   sudo sh -c 'echo $(which zsh) >> /etc/shells'
@@ -46,7 +46,7 @@ else
 fi
 
 echo "# デフォルトシェルをzshに変更する"
-if [ ! "$SHELL" = "$WHICH_ZSH" ]; then
+if [[ "$SHELL" != "$WHICH_ZSH" ]]; then
   echo "Changing default Shell..."
   chsh -s /opt/homebrew/bin/zsh
 else
@@ -56,4 +56,4 @@ fi
 echo "# ======================================================================================="
 echo "# SHELLの再起動"
 
-exec $SHELL -l
+exec "$SHELL" -l

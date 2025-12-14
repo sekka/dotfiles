@@ -35,7 +35,7 @@ gibo update
 
 echo "# ======================================================================================="
 echo "# copy cot"
-if [ ! -f /usr/local/bin/cot ]; then
+if [[ ! -f "/usr/local/bin/cot" ]]; then
   echo "Copying Cot..."
   sudo ln -s /Applications/CotEditor.app/Contents/SharedSupport/bin/cot /usr/local/bin/cot
 else
