@@ -22,6 +22,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
 
 # === システムモニタ ===
+brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ
 brew "htop"               # https://formulae.brew.sh/formula/htop             # プロセスビューワ
 brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
 brew "zenith"             # https://formulae.brew.sh/formula/zenith           # ターミナルシステムモニタ
