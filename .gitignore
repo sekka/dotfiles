@@ -126,3 +126,5 @@ DerivedData/
 
 .env
 package-lock.json
+
+.sqlite
