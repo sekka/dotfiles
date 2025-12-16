@@ -366,6 +366,8 @@ pnpm = "latest"
 "npm:lighthouse" = "latest"
 "npm:npm-check" = "latest"
 "npm:npm-check-updates" = "latest"
+"npm:oxfmt" = "latest"
+"npm:oxlint" = "latest"
 
 rust = "stable"
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
