@@ -155,6 +155,11 @@ run = "codemass"
 description = "serena-mcp-serverを起動"
 run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
 
+# cc-sdd
+[tasks.ccsdd-install]
+description = "cc-sddを導入"
+run = "npx cc-sdd@latest --lang ja"
+
 # --------------------------------------
 # mise自体の管理
 # --------------------------------------
@@ -362,20 +367,21 @@ pnpm = "latest"
 "npm:npm-check-updates" = "latest"
 
 rust = "stable"
-# "cargo:zellij" = "latest"       # https://crates.io/crates/zellij すごいtmux
-# "cargo:starship" = "latest"     # https://crates.io/crates/starship すごいプロンプト
-"cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
-"cargo:bat" = "latest"          # https://crates.io/crates/bat すごいcat
-"cargo:hexyl" = "latest"        # https://crates.io/crates/hexyl すごいod
-"cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
-"cargo:procs" = "latest"        # https://crates.io/crates/procs すごいps
-"cargo:hgrep" = "latest"        # https://crates.io/crates/hgrep すごいgrep
-"cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
-"cargo:fd-find" = "latest"      # https://crates.io/crates/fd-find すごいfind
-"cargo:hx" = "latest"           # https://crates.io/crates/hx HTTPie / 高機能cURL
-"cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
-"cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
+"cargo:bat" = "latest"          # https://crates.io/crates/bat すごいcat
+"cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
+"cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
+"cargo:fd-find" = "latest"      # https://crates.io/crates/fd-find すごいfind
+"cargo:hexyl" = "latest"        # https://crates.io/crates/hexyl すごいod
+"cargo:hgrep" = "latest"        # https://crates.io/crates/hgrep すごいgrep
+"cargo:hx" = "latest"           # https://crates.io/crates/hx HTTPie / 高機能cURL
+"cargo:needle-cli" = "latest"   # https://crates.io/crates/needle-cli GitHub PRs レビュー支援
+"cargo:procs" = "latest"        # https://crates.io/crates/procs すごいps
+"cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
+"cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
+"cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
+# "cargo:starship" = "latest"   # https://crates.io/crates/starship すごいプロンプト
+# "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
 go = "latest"

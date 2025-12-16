@@ -83,6 +83,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 
 # === ユーティリティ ===
 #cask "1password"
+#cask "1password-cli"
 #cask "abyssoft-teleport"
 #cask "aldente"
 #cask "alfred"
