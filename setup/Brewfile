@@ -31,6 +31,7 @@ brew "zenith"             # https://formulae.brew.sh/formula/zenith           # 
 brew "direnv"             # https://formulae.brew.sh/formula/direnv           # ディレクトリ毎環境変数管理ツール
 brew "mise"               # https://formulae.brew.sh/formula/mise             # タスクランナー
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
+brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Dock管理ツール
 
 # === gitクライアント ===
 brew "gitui"              # https://formulae.brew.sh/formula/gitui            # gitクライアント
