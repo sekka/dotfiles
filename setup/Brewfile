@@ -119,6 +119,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "onyx"
 #cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package"
 #cask "sensei"
+#cask "smoothcsv"
 #cask "spotify"
 #cask "the-unarchiver"
 #cask "transmission"
