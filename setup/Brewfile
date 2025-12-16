@@ -4,9 +4,11 @@ cask_args appdir: "/Applications"
 brew "m-cli"              # https://formulae.brew.sh/formula/m-cli            # Mac便利ツール
 brew "mas"                # https://formulae.brew.sh/formula/mas              # Mac App Store操作用ツール
 
-# === ターミナル ===
+# === tmux ===
 brew "tmux"               # https://formulae.brew.sh/formula/tmux             # ターミナルマルチプレクサ
 brew "reattach-to-user-namespace" # https://formulae.brew.sh/formula/reattach-to-user-namespace # tmux便利ツール
+
+# === ターミナル ===
 brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
 brew "peco"               # https://formulae.brew.sh/formula/peco             # インクリメンタルサーチ
 brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
