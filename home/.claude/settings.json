@@ -20,7 +20,8 @@
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true
+    "vercel@claude-plugins-official": true,
+    "claude-mem@thedotmack": true
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
