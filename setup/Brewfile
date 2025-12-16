@@ -40,11 +40,13 @@ brew "tig"                # https://formulae.brew.sh/formula/tig              # 
 
 # === git補助ツール ===
 brew "czg"                # https://formulae.brew.sh/formula/czg              # コミットメッセージ支援ツール
+brew "diff-so-fancy"      # https://formulae.brew.sh/formula/diff-so-fancy    # git diff見やすくするツール
 brew "gh"                 # https://formulae.brew.sh/formula/gh               # GitHubコマンドラインツール
 brew "ghq"                # https://formulae.brew.sh/formula/ghq              # git clone便利ツール
 brew "gibo"               # https://formulae.brew.sh/formula/gibo             # gitignoreボイラープレート
 brew "git"                # https://formulae.brew.sh/formula/git              # git
 brew "hub"                # https://formulae.brew.sh/formula/hub              # GitHubサポートツール
+brew "satococoa/tap/wtp"  # https://github.com/satococoa/wtp                  # GitHub Worktree Plus
 
 # === ウェブ開発 ===
 brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
@@ -102,6 +104,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "hyperswitch"
 #cask "karabiner-elements"
 #cask "keyboard-maestro"
+#cask "lzt1008/tap/powerflow"
 #cask "mac-mouse-fix"
 #cask "macwhisper"
 #cask "macwinzipper"
