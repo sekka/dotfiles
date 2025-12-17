@@ -128,3 +128,9 @@ DerivedData/
 package-lock.json
 
 .sqlite
+
+# Firebase
+firebase-debug.log
+
+# Build output
+target/
