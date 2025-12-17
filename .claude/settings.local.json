@@ -21,9 +21,10 @@
       "Bash(xargs:*)",
       "mcp__plugin_serena_serena__*",
       "mcp__plugin_playwright_playwright__*",
-      "WebFetch(domain:*)",
       "WebSearch",
-      "SlashCommand(/pr)"
+      "SlashCommand(/pr)",
+      "WebFetch(domain:ics.media)",
+      "WebFetch(domain:qiita.com)"
     ],
     "deny": [
       "Read(./.env.*)"
