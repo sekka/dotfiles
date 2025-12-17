@@ -179,6 +179,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "dash"
 #cask "docker"
 #cask "fork"
+#cask "ghostty"
 #cask "graphql-playground"
 #cask "hex-fiend"
 #cask "iterm2"
