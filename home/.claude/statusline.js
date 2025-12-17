@@ -56,18 +56,10 @@ process.stdin.on('end', async () => {
     }
 
     // Calculate token usage for current session
-    // current_usage を優先的に使用し、より正確なコンテキスト使用率を取得
     let totalTokens = 0;
 
-    if (data.context_window?.current_usage) {
-      // current_usage が利用可能な場合はそれを使用
-      const usage = data.context_window.current_usage;
-      totalTokens = (usage.input_tokens || 0) +
-        (usage.output_tokens || 0) +
-        (usage.cache_creation_input_tokens || 0) +
-        (usage.cache_read_input_tokens || 0);
-    } else if (sessionId) {
-      // current_usage が null の場合は、transcript ファイルから計算（フォールバック）
+    if (sessionId) {
+      // Find all transcript files
       const projectsDir = path.join(process.env.HOME, '.claude', 'projects');
 
       if (fs.existsSync(projectsDir)) {
