@@ -24,7 +24,12 @@
       "WebSearch",
       "SlashCommand(/pr)",
       "WebFetch(domain:ics.media)",
-      "WebFetch(domain:qiita.com)"
+      "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:gigazine.net)",
+      "WebFetch(domain:lisyarus.github.io)",
+      "WebFetch(domain:zenn.dev)",
+      "WebFetch(domain:azukiazusa.dev)",
+      "WebFetch(domain:coliss.com)"
     ],
     "deny": [
       "Read(./.env.*)"
