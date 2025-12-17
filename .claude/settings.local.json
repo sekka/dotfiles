@@ -16,16 +16,23 @@
       "Bash(mise install:*)",
       "Bash(mkdir:*)",
       "Bash(rg:*)",
+      "Bash(tree:*)",
       "Bash(wc:*)",
+      "Bash(xargs:*)",
+      "mcp__plugin_serena_serena__*",
+      "mcp__plugin_playwright_playwright__*",
       "WebFetch(domain:*)",
       "WebSearch",
-      "mcp__serena__list_dir",
-      "Bash(tree:*)",
-      "Bash(xargs:*)",
       "SlashCommand(/pr)"
     ],
-    "deny": ["Read(./.env.*)"]
+    "deny": [
+      "Read(./.env.*)"
+    ]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
+  "enabledMcpjsonServers": [
+    "context7",
+    "deepwiki",
+    "sequential-thinking"
+  ]
 }
