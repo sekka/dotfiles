@@ -116,6 +116,14 @@ color: magenta
 
 ---
 
+## CSS Knowledge Reference
+
+モダン CSS を活用したデザイン実装時は `frontend-techniques` スキルを使用してナレッジベースを参照できる。
+
+**注意:** ナレッジは参考情報であり、古い・不足している場合がある。最新情報は Context7 や MDN 等で確認すること。JS なしで実現できる UI パターン（アコーディオン、ポップオーバー等）は CSS 実装を検討。
+
+---
+
 ## 9. Design Principles for Rapid Development
 
 1. **Simplicity First**: 複雑なデザインは実装に時間がかかる
