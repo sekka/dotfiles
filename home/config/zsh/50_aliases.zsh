@@ -33,8 +33,8 @@ alias agh="ag --hidden --smart-case --stats --pager \"less -F -R\""
 
 alias rg="rg --smart-case --stats --pretty"
 alias vp="vim +PlugInstall +qall"
-alias nrun="npm run \$(commands | fzf)"
-alias yrun="yarn \$(commands | fzf)"
+alias nrun="npm run \$(npm-scripts | fzf)"
+alias yrun="yarn \$(npm-scripts | fzf)"
 alias mrun="mise run"
 
 # ======================
@@ -95,3 +95,8 @@ alias smu="git submodule foreach 'git checkout master; git pull'"
 # 差分表示
 alias gstt="git status -uno"
 alias gdiff="git diff --word-diff"
+
+# fzf連携（scripts/git/に移動済み）
+alias fshow="git-fzf-show"
+alias fadd="git-fzf-add"
+alias fssh="fzf-ssh"
