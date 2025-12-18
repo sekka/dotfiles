@@ -348,7 +348,6 @@ bindkey '^k' anyframe-widget-checkout-git-branch
 
 function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
 
-function is_osx() { [[ $OSTYPE == darwin* ]]; }
 function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
 function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
 function is_ssh_running() { [ ! -z "$SSH_CONNECTION" ]; }
@@ -391,31 +390,8 @@ function tmux_automatically_attach_session()
                 fi
             fi
 
-            # macOSであり、reattach-to-user-namespaceがインストールされている場合
-            if is_osx && is_exists 'reattach-to-user-namespace'; then
-                # パス変数の定義（XDG準拠）
-                local tmux_config_file="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
-                local dotfiles_dir="${HOME}/dotfiles"
-                local tmux_session_script="$dotfiles_dir/home/.tmux/new-session"
-
-                # フォールバック: 従来の設定ファイルパス
-                [[ ! -f "$tmux_config_file" ]] && tmux_config_file="$HOME/.tmux.conf"
-
-                # 設定ファイルの存在確認
-                if [[ ! -f "$tmux_config_file" ]]; then
-                    echo "Error: tmux config file not found" >&2
-                    return 1
-                fi
-
-                # ヒアドキュメントを使用して設定を作成
-                tmux -f <(cat <<EOF
-$(cat "$tmux_config_file")
-set-option -g default-command "reattach-to-user-namespace -l $SHELL"
-EOF
-                ) new-session \; source "$tmux_session_script" && echo "$(tmux -V) created new session supported OS X"
-            else
-                tmux new-session && echo "tmux created new session"
-            fi
+            # 新規セッション作成
+            tmux new-session && echo "tmux created new session"
         fi
     fi
 }

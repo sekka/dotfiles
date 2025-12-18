@@ -6,7 +6,6 @@ brew "mas"                # https://formulae.brew.sh/formula/mas              # 
 
 # === tmux ===
 brew "tmux"               # https://formulae.brew.sh/formula/tmux             # ターミナルマルチプレクサ
-brew "reattach-to-user-namespace" # https://formulae.brew.sh/formula/reattach-to-user-namespace # tmux便利ツール
 
 # === ターミナル ===
 brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
