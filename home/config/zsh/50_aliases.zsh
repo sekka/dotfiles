@@ -37,9 +37,6 @@ alias nrun="npm run \$(commands | fzf)"
 alias yrun="yarn \$(commands | fzf)"
 alias mrun="mise run"
 
-# Claude Commands同期
-alias claude-sync="$HOME/dotfiles/scripts/sync-claude-commands.sh"
-
 # ======================
 # Session Management
 # ======================

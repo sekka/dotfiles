@@ -7,7 +7,7 @@
 # Load PATH helper functions (lightweight)
 source "$HOME/dotfiles/home/config/zsh/00_environment.zsh"
 
-# PATH management is now centralized in config/zsh/00_path.zsh
+# PATH management is now centralized in config/zsh/00_environment.zsh
 
 # Prevent macOS /usr/libexec/path_helper from reordering PATH
 # macOSでは/etc/zprofileで/usr/libexec/path_helperが実行され、
@@ -31,7 +31,7 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
     export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
 fi
 
-# Language-specific paths are managed in config/zsh/00_path.zsh
+# Language-specific paths are managed in config/zsh/00_environment.zsh
 
 # NOTE: Heavy operations (direnv, cargo) moved to .zprofile
 # They will only run in login shells, not for every script execution

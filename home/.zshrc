@@ -9,4 +9,4 @@ if [ -d $ZSHHOME -a -r $ZSHHOME -a \
     done
 fi
 
-. "$HOME/.local/share/../bin/env"
+. "$HOME/.local/bin/env"

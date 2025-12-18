@@ -59,10 +59,6 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
 # enhancdのフィルター設定
 export ENHANCD_FILTER=fzf
 export EMOJI_CLI_FILTER=fzf
-export ZSH_HISTORY_KEYBIND_GET='^r'
-export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
-export ZSH_HISTORY_KEYBIND_ARROW_UP='^p'
-export ZSH_HISTORY_KEYBIND_ARROW_DOWN='^n'
 
 # FZF共通設定
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
@@ -138,11 +134,10 @@ function fzf-git-branch() {
         return 1
     fi
 
-    local branches branch include_remote=false
+    local branches branch
 
     # -rオプションでリモートブランチも含める
     if [[ "$1" == "-r" ]]; then
-        include_remote=true
         branches=$(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')
     else
         branches=$(git branch | sed 's/^[* ] //')
