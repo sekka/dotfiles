@@ -15,7 +15,7 @@
  *
  * 依存関係:
  *   - gh (GitHub CLI)（必須）
- *   - jq（必須）
+ *   - jq（不要 - TypeScript版では使用しない）
  *   - claude (Anthropic CLI)（オプション、ブランチ名生成に使用）
  *   - repo-setup（オプション、worktree作成後のセットアップに使用）
  *
@@ -238,8 +238,8 @@ export async function main(): Promise<number> {
     return 1;
   }
 
-  // 依存関係チェック
-  if (!(await checkDependencies(["gh", "jq", "git"]))) {
+  // 依存関係チェック（TypeScript版ではjqは不要）
+  if (!(await checkDependencies(["gh", "git"]))) {
     return 1;
   }
 

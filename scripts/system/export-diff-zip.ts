@@ -69,7 +69,6 @@ export async function exportDiffZip(ref1: string, ref2: string): Promise<boolean
   console.log(`${files.length}個のファイルをアーカイブします。`);
 
   // git archiveでZIP作成
-  const filesArg = files.join(" ");
   const result =
     await $`git archive --format=zip --prefix=archive/ ${ref1} ${files} -o archive.zip`.nothrow();
 
