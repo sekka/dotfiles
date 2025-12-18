@@ -130,6 +130,7 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "chatgpt"
 #cask "claude"
 #cask "claude-code"
+#cask "coderabbit"
 #cask "conductor"
 #cask "cursor"
 #cask "kiro"
