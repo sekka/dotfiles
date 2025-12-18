@@ -39,12 +39,11 @@
       "Bash(head:*)",
       "Bash(chmod:*)",
       "Bash(bun:*)",
+      "Skill(github-pr-review-operation)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
-      "Skill(github-pr-review-operation)",
       "Bash(gh api:*)",
-      "Bash(gh pr comment:*)",
-      "Bash(/Users/kei/.local/share/mise/installs/bun/latest/bin/bun test)"
+      "Bash(gh pr comment:*)"
     ],
     "deny": [
       "Read(./.env.*)"
