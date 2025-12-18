@@ -255,28 +255,28 @@ function fssh() {
 
 # Git差分アーカイブ作成関数
 function git_diff_archive() {
-  local h="HEAD"
-  local files=()
+    local h="HEAD"
+    local files=()
 
-  if [ $# -eq 1 ]; then
-    # 数値チェック（exprの代わりに正規表現を使用）
-    if [[ "$1" =~ ^[0-9]+$ ]]; then
-      # コマンドインジェクションを防ぐため、evalを使わずに配列で処理
-      files=(${(f)"$(git diff --diff-filter=d --name-only HEAD~${1} HEAD)"})
-    else
-      files=(${(f)"$(git diff --diff-filter=d --name-only ${1} HEAD)"})
+    if [ $# -eq 1 ]; then
+        # 数値チェック（exprの代わりに正規表現を使用）
+        if [[ "$1" =~ ^[0-9]+$ ]]; then
+            # コマンドインジェクションを防ぐため、evalを使わずに配列で処理
+            files=(${(f)"$(git diff --diff-filter=d --name-only HEAD~${1} HEAD)"})
+        else
+            files=(${(f)"$(git diff --diff-filter=d --name-only ${1} HEAD)"})
+        fi
+    elif [ $# -eq 2 ]; then
+        h="$1"
+        files=(${(f)"$(git diff --diff-filter=d --name-only ${2} ${1})"})
     fi
-  elif [ $# -eq 2 ]; then
-    h="$1"
-    files=(${(f)"$(git diff --diff-filter=d --name-only ${2} ${1})"})
-  fi
 
-  if [ ${#files[@]} -gt 0 ]; then
-    git archive --format=zip --prefix=root/ "$h" "${files[@]}" -o archive.zip
-  else
-    # ファイルがない場合は空のアーカイブを作成
-    git archive --format=zip --prefix=root/ "$h" -o archive.zip
-  fi
+    if [ ${#files[@]} -gt 0 ]; then
+        git archive --format=zip --prefix=root/ "$h" "${files[@]}" -o archive.zip
+    else
+        # ファイルがない場合は空のアーカイブを作成
+        git archive --format=zip --prefix=root/ "$h" -o archive.zip
+    fi
 }
 
 function commands () {
