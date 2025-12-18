@@ -37,7 +37,14 @@
       "Bash(command -v putclip:*)",
       "Bash(brew list:*)",
       "Bash(head:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(bun:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Skill(github-pr-review-operation)",
+      "Bash(gh api:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(/Users/kei/.local/share/mise/installs/bun/latest/bin/bun test)"
     ],
     "deny": [
       "Read(./.env.*)"
