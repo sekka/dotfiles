@@ -81,7 +81,6 @@ add_to_path "$HOME/dotfiles/scripts/git"
 add_to_path "$HOME/dotfiles/scripts/media"
 add_to_path "$HOME/dotfiles/scripts/setup"
 add_to_path "$HOME/dotfiles/scripts/system"
-add_to_path "$HOME/dotfiles/scripts/tmux"
 
 # === Homebrew ===
 # 環境変数は.zshenvで設定済み

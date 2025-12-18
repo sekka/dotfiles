@@ -213,8 +213,8 @@ run = "rtop"
 description = "全ファイルのformatを実行"
 run = """
 echo "🎨 Formatting files..."
-# シェルスクリプト（特定ファイルを除外）
-find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
+# シェルスクリプト
+find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
 # Markdown, YAML, JSON
 prettier --write "**/*.{md,yaml,yml,json}"
 # TOML
@@ -227,7 +227,7 @@ echo "✨ Formatting complete!"
 description = "シェルスクリプトのformatを実行"
 run = """
 echo "🎨 Formatting shell scripts..."
-find . -name "*.sh" -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -exec shfmt -w -s -i 2 {} +
+find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
 """
 
 # 全ファイルのLint
@@ -249,7 +249,7 @@ echo "✅ Lint checks completed"
 description = "シェルスクリプトのlintを実行"
 run = """
 echo "🔍 ShellCheck running..."
-find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./scripts/tmux/get_volume_tmux.sh" -not -path "./scripts/tmux/tmux_pane_border.sh" -not -path "./.git/*" -exec shellcheck {} +
+find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./.git/*" -exec shellcheck {} +
 """
 
 # Lintツールのセットアップ

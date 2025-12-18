@@ -32,7 +32,6 @@ repos:
       - id: shellcheck
         files: >
           ^(scripts/(setup|development|system|media)/.*\\.sh|
-            scripts/tmux/(?!get_volume_tmux|tmux_pane_border).*\\.sh|
             setup/.*\\.sh|\\.pre-commit-check\\.sh)
 
   - repo: https://github.com/scop/pre-commit-shfmt
@@ -42,7 +41,6 @@ repos:
         args: [-w, -s, -i, "2"]
         files: >
           ^(scripts/(setup|development|system|media)/.*\\.sh|
-            scripts/tmux/(?!get_volume_tmux|tmux_pane_border).*\\.sh|
             setup/.*\\.sh|\\.pre-commit-check\\.sh)
 
   # Markdown
