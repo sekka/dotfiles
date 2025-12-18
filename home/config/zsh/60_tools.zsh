@@ -359,11 +359,7 @@ function tmux_automatically_attach_session()
         # tmuxがインストールされていなければ終了
         ! is_exists 'tmux' && return 1
 
-        if is_exists 'emojify'; then
-            echo :beer: :relaxed: | emojify
-        else
-            echo "tmux is running."
-        fi
+        echo "tmux is running."
     else
         # tmuxが実行中でない場合
         if shell_has_started_interactively && ! is_ssh_running; then
