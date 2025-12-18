@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Claude Commands セットアップ・同期スクリプト
+# Claude & Serena セットアップ・同期スクリプト
 # 初回セットアップと日常的な同期の両方に対応
 # .envrcにより、dotfilesディレクトリ移動時に自動実行される
 
@@ -11,7 +11,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo "🤖 Claude Commands のセットアップ・同期を開始します..."
+echo "🤖 Claude & Serena のセットアップ・同期を開始します..."
 
 # ディレクトリの定義
 DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/home/.claude"
@@ -116,6 +116,63 @@ echo "📊 Claude セットアップ完了:"
 echo "   📄 設定ファイル: 新規作成 $created / スキップ $skipped"
 echo "   📁 Commands, Agents, Skills, Rules: フォルダ単位でリンク済み"
 
+# ========================================
+# Serena セットアップ
+# ========================================
+
 echo ""
-echo "✨ Claude Commands のセットアップ・同期が完了しました！"
+echo "🔧 Serena のセットアップ..."
+
+DOTFILES_SERENA_DIR="${HOME}/dotfiles/home/.serena"
+HOME_SERENA_DIR="${HOME}/.serena"
+
+# .serena ディレクトリが存在しない場合は作成
+if [[ ! -d "$HOME_SERENA_DIR" ]]; then
+  printf "%b\n" "${BLUE}📁 ディレクトリを作成:${NC} $HOME_SERENA_DIR"
+  mkdir -p "$HOME_SERENA_DIR"
+fi
+
+# Serena設定ファイル
+SERENA_FILES=(
+  "serena_config.yml"
+)
+
+serena_created=0
+serena_skipped=0
+
+for file in "${SERENA_FILES[@]}"; do
+  source_file="$DOTFILES_SERENA_DIR/$file"
+  target_file="$HOME_SERENA_DIR/$file"
+
+  if [[ ! -f "$source_file" ]]; then
+    printf "%b\n" "${YELLOW}⚠️  警告:${NC} $file がソースディレクトリに見つかりません"
+    continue
+  fi
+
+  if [[ -L "$target_file" ]]; then
+    current_target=$(readlink "$target_file")
+    if [[ "$current_target" == "$source_file" ]]; then
+      printf "%b\n" "${YELLOW}⏭️  スキップ:${NC} $file (既に正しくリンクされています)"
+      ((serena_skipped++))
+    else
+      printf "%b\n" "${GREEN}🔄 更新:${NC} $file"
+      rm "$target_file"
+      ln -s "$source_file" "$target_file"
+      ((serena_created++))
+    fi
+  elif [[ -f "$target_file" ]]; then
+    printf "%b\n" "${RED}⚠️  警告:${NC} $file は通常のファイルとして存在します。手動で確認してください。"
+  else
+    printf "%b\n" "${GREEN}✅ 作成:${NC} $file"
+    ln -s "$source_file" "$target_file"
+    ((serena_created++))
+  fi
+done
+
+echo ""
+echo "📊 Serena セットアップ完了:"
+echo "   📄 設定ファイル: 新規作成 $serena_created / スキップ $serena_skipped"
+
+echo ""
+echo "✨ Claude & Serena のセットアップ・同期が完了しました！"
 echo "💡 このスクリプトは .envrc により dotfiles ディレクトリ移動時に自動実行されます"

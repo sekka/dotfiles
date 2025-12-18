@@ -29,7 +29,9 @@
       "WebFetch(domain:lisyarus.github.io)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:azukiazusa.dev)",
-      "WebFetch(domain:coliss.com)"
+      "WebFetch(domain:coliss.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:oraios.github.io)"
     ],
     "deny": [
       "Read(./.env.*)"
