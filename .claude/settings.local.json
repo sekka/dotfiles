@@ -31,7 +31,12 @@
       "WebFetch(domain:azukiazusa.dev)",
       "WebFetch(domain:coliss.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:oraios.github.io)"
+      "WebFetch(domain:oraios.github.io)",
+      "Bash(command -v:*)",
+      "Bash(command -v xsel:*)",
+      "Bash(command -v putclip:*)",
+      "Bash(brew list:*)",
+      "Bash(color\" エイリアスを削除（colorコマンド未インストール）\n- クリップボード設定をmacOS専用に簡素化（xsel/putclip分岐削除）\n- nrun/yrunエイリアスをfzfに移行\n- zplugプラグイン条件をfzfのみに変更\n- mise tasksのpeco使用箇所をfzfに移行（プレビュー機能追加）\n- BrewfileからpecoをFE\nEOF\n\\)\")"
     ],
     "deny": [
       "Read(./.env.*)"
