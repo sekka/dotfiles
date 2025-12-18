@@ -349,31 +349,23 @@ bindkey '^k' anyframe-widget-checkout-git-branch
 function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
 
 function is_osx() { [[ $OSTYPE == darwin* ]]; }
-function is_screen_running() { [ ! -z "$STY" ]; }
 function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
 function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
 function is_ssh_running() { [ ! -z "$SSH_CONNECTION" ]; }
 function tmux_automatically_attach_session()
 {
-    # Screenまたはtmuxが既に実行中の場合
-    if is_screen_or_tmux_running; then
+    # tmuxが既に実行中の場合
+    if is_tmux_runnning; then
         # tmuxがインストールされていなければ終了
         ! is_exists 'tmux' && return 1
 
-        if is_tmux_runnning; then
-            # tmuxが実行中の場合
-            if is_exists 'emojify'; then
-                echo :beer: :relaxed: | emojify
-            else
-                echo "tmux is running."
-            fi
-        elif is_screen_running; then
-            # GNU Screenが実行中の場合
-            echo "This is on screen."
+        if is_exists 'emojify'; then
+            echo :beer: :relaxed: | emojify
+        else
+            echo "tmux is running."
         fi
     else
-        # Screenやtmuxが実行中でない場合
+        # tmuxが実行中でない場合
         if shell_has_started_interactively && ! is_ssh_running; then
             # 対話的なシェルであり、SSH経由でない場合
             if ! is_exists 'tmux'; then
