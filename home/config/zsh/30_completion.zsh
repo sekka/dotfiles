@@ -8,8 +8,10 @@
 # ======================
 
 # zsh-completions設定
-local zsh_completions_dir="/usr/local/share/zsh-completions"
-add_to_fpath "$zsh_completions_dir"
+# HOMEBREW_PREFIXは.zshenvで設定済み
+if [[ -n "$HOMEBREW_PREFIX" ]]; then
+    add_to_fpath "$HOMEBREW_PREFIX/share/zsh-completions"
+fi
 
 # 補完キャッシュディレクトリの設定
 ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
@@ -44,7 +46,6 @@ local system_paths=(
     /usr/local/sbin /usr/local/bin
     /usr/sbin /usr/bin
     /sbin /bin
-    /usr/X11R6/bin
 )
 zstyle ':completion:*:sudo:*' command-path "${system_paths[@]}"
 
@@ -73,12 +74,3 @@ zstyle ':completion:*' special-dirs true          # . と .. ディレクトリ�
 
 # Emacsキーバインド設定
 bindkey -e
-
-# 親ディレクトリ移動関数
-function cdup() {
-   echo
-   if cd ..; then
-       zle reset-prompt
-   fi
-}
-zle -N cdup

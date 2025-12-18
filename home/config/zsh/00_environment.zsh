@@ -56,13 +56,6 @@ case ${OSTYPE} in
         export CLICOLOR=1
         # Note: ls alias moved to main aliases.zsh with eza
         ;;
-    linux*)
-        # Linux用設定
-        # 必要に応じて設定を追加
-        ;;
-    *)
-        # その他のOS用設定
-        ;;
 esac
 
 # ======================
@@ -96,9 +89,7 @@ export GOPATH="${GOPATH:-$HOME/go}"
 add_to_path "$GOPATH/bin" append
 
 # Rust
-if [[ -d "$HOME/.cargo/bin" ]]; then
-    add_to_path "$HOME/.cargo/bin" append
-fi
+add_to_path "$HOME/.cargo/bin" append
 
 # === 開発ツール ===
 
