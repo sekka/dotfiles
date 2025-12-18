@@ -39,11 +39,12 @@ function sleep(ms: number): Promise<void> {
  */
 export async function connectToAirpods(): Promise<boolean> {
   // 接続を開始
-  await $`/usr/local/bin/bluetoothconnector -c ${AIR_PODS_ADDRESS}`.quiet().nothrow();
+  // 注意: bluetoothconnectorはPATHに存在する必要があります
+  await $`bluetoothconnector -c ${AIR_PODS_ADDRESS}`.quiet().nothrow();
 
   // 接続状態を確認
   for (let i = 0; i < MAX_RETRIES; i++) {
-    const result = await $`/usr/local/bin/bluetoothconnector -s ${AIR_PODS_ADDRESS}`
+    const result = await $`bluetoothconnector -s ${AIR_PODS_ADDRESS}`
       .quiet()
       .nothrow();
 

@@ -46,9 +46,10 @@ export function parseArgs(args: string[]): { headRef: string; fromRef: string } 
 
 /**
  * 差分ファイル一覧を取得
+ * -z フラグを使用してNUL区切りで取得し、スペースを含むファイル名に対応
  */
 export async function getDiffFiles(fromRef: string, toRef: string): Promise<string[]> {
-  const result = await $`git diff --diff-filter=d --name-only ${fromRef} ${toRef}`
+  const result = await $`git diff --diff-filter=d --name-only -z ${fromRef} ${toRef}`
     .quiet()
     .nothrow();
 
@@ -56,10 +57,10 @@ export async function getDiffFiles(fromRef: string, toRef: string): Promise<stri
     return [];
   }
 
+  // NUL区切り（\0）で分割
   return result.stdout
     .toString()
-    .trim()
-    .split("\n")
+    .split("\0")
     .filter((f) => f.length > 0);
 }
 

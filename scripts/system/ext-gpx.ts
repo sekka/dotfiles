@@ -14,6 +14,7 @@
 
 import { $ } from "bun";
 import { Glob } from "bun";
+import { basename, dirname, join } from "node:path";
 
 /**
  * MP4ファイルからGPXを抽出する
@@ -21,7 +22,13 @@ import { Glob } from "bun";
 export async function extractGpx(mp4File: string): Promise<boolean> {
   console.log(`変換開始: ${mp4File}`);
 
-  const result = await $`gopro2gpx -s -vvv ${mp4File} ${mp4File}`.quiet().nothrow();
+  // 出力パスを生成（拡張子を除いたベース名）
+  const dir = dirname(mp4File);
+  const base = basename(mp4File, ".mp4");
+  const outputPath = join(dir, base);
+
+  // gopro2gpxは出力パスに自動的に.gpx拡張子を追加する
+  const result = await $`gopro2gpx -s -vvv ${mp4File} ${outputPath}`.quiet().nothrow();
 
   if (result.exitCode === 0) {
     console.log("完了");
