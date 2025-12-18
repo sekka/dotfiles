@@ -47,7 +47,8 @@ export function parseArgs(args: string[]): {
   const count = parseInt(args[1], 10);
   const interval = parseInt(args[2], 10);
 
-  if (isNaN(count) || isNaN(interval)) {
+  // count と interval のバリデーション
+  if (isNaN(count) || isNaN(interval) || count <= 0 || interval < 0) {
     return null;
   }
 
@@ -61,7 +62,14 @@ export function parseArgs(args: string[]): {
     if (arg === "--auth") {
       useAuth = true;
     } else if (arg.startsWith("--profile=")) {
-      chromeProfile = arg.slice("--profile=".length);
+      const profile = arg.slice("--profile=".length);
+      // プロファイル名のバリデーション（英数字、スペース、ハイフン、アンダースコアのみ許可）
+      // シェルインジェクションを防止
+      if (!/^[a-zA-Z0-9\s_-]+$/.test(profile)) {
+        console.error(`エラー: 無効なプロファイル名です: ${profile}`);
+        return null;
+      }
+      chromeProfile = profile;
     } else if (!arg.startsWith("--")) {
       outputDir = arg;
     }

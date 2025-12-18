@@ -33,9 +33,21 @@ alias agh="ag --hidden --smart-case --stats --pager \"less -F -R\""
 
 alias rg="rg --smart-case --stats --pretty"
 alias vp="vim +PlugInstall +qall"
-alias nrun="npm run \$(npm-scripts.ts | fzf)"
-alias yrun="yarn \$(npm-scripts.ts | fzf)"
 alias mrun="mise run"
+
+# npm/yarnスクリプト実行用関数
+# シェルインジェクションを防ぐため、関数として定義しクォート処理
+nrun() {
+  local script
+  script=$(npm-scripts.ts | fzf) || return 1
+  [ -n "$script" ] && npm run "$script"
+}
+
+yrun() {
+  local script
+  script=$(npm-scripts.ts | fzf) || return 1
+  [ -n "$script" ] && yarn "$script"
+}
 
 # ======================
 # Session Management
