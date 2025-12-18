@@ -173,16 +173,19 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "parallels"
 #cask "utm"
 
+# === ターミナル ===
+#cask "ghostty"
+#cask "iterm2"
+#cask "warp"
+
 # === ウェブ開発 ===
 #cask "charles"
 #cask "contraste"
 #cask "dash"
 #cask "docker"
 #cask "fork"
-#cask "ghostty"
 #cask "graphql-playground"
 #cask "hex-fiend"
-#cask "iterm2"
 #cask "jasper-app"
 #cask "jetbrains-toolbox"
 #cask "ksdiff"
@@ -191,7 +194,6 @@ brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # 
 #cask "tower"
 #cask "transmit"
 #cask "visual-studio-code"
-#cask "warp"
 #cask "xbar"
 
 # === デザイン ===
