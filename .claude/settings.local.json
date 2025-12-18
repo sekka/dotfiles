@@ -36,7 +36,8 @@
       "Bash(command -v xsel:*)",
       "Bash(command -v putclip:*)",
       "Bash(brew list:*)",
-      "Bash(color\" エイリアスを削除（colorコマンド未インストール）\n- クリップボード設定をmacOS専用に簡素化（xsel/putclip分岐削除）\n- nrun/yrunエイリアスをfzfに移行\n- zplugプラグイン条件をfzfのみに変更\n- mise tasksのpeco使用箇所をfzfに移行（プレビュー機能追加）\n- BrewfileからpecoをFE\nEOF\n\\)\")"
+      "Bash(head:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [
       "Read(./.env.*)"
