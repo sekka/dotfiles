@@ -120,7 +120,7 @@ run = "difit --tui"
 
 [tasks.git-util-hbr]
 description = "リポジトリをブラウザで開く"
-run = "hub browse $(ghq list | peco | cut -d '/' -f 2,3)"
+run = "hub browse $(ghq list | fzf | cut -d '/' -f 2,3)"
 
 # Claude Code関係のファイルを一覧表示
 [tasks.llm-claude-ccexp]
@@ -308,9 +308,9 @@ run = "sh ~/dotfiles/setup/20_homebrew.sh && brew update && brew upgrade && brew
 
 # batでファイルプレビュー
 [tasks.util-bat]
-description = "pecoでファイルを選択してbatで表示"
+description = "fzfでファイルを選択してbatで表示"
 run = '''
-file=$(find . -maxdepth 1 -type f | sort | peco)
+file=$(find . -maxdepth 1 -type f | sort | fzf --preview "bat --color=always {}")
 if [ -n "$file" ]; then
     bat "$file"
 fi
@@ -318,9 +318,9 @@ fi
 
 # hexylでバイナリプレビュー
 [tasks.util-hexyl]
-description = "pecoでファイルを選択してhexylで表示"
+description = "fzfでファイルを選択してhexylで表示"
 run = '''
-file=$(find . -maxdepth 1 -type f | sort | peco)
+file=$(find . -maxdepth 1 -type f | sort | fzf --preview "hexyl --length 256 {}")
 if [ -n "$file" ]; then
     hexyl "$file"
 fi

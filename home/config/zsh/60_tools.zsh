@@ -1,7 +1,7 @@
 # --------------------------------------
 # Development Tools Integration
 # --------------------------------------
-# mise, zplug, fzf, git, peco, tmuxを統合
+# mise, zplug, fzf, git, tmuxを統合
 
 # ======================
 # mise - 開発環境管理ツール
@@ -33,9 +33,9 @@ if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
 
     # 条件付き読み込み（コマンドが利用可能な場合のみ）
     zplug "zsh-users/zsh-history-substring-search", defer:1
-    zplug "mollifier/anyframe", if:"command -v peco || command -v fzf"
+    zplug "mollifier/anyframe", if:"command -v fzf"
     zplug "b4b4r07/easy-oneliner", if:"command -v fzf"
-    zplug "b4b4r07/enhancd", use:init.sh, if:"command -v peco || command -v fzf"
+    zplug "b4b4r07/enhancd", use:init.sh, if:"command -v fzf"
 
     # 使用頻度の低いプラグイン（遅延読み込み）
     zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"
@@ -51,17 +51,13 @@ if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
     zplug load
 else
     echo "Warning: zplug not found. Please install via 'brew install zplug'"
-    # zplugが利用不可の場合でも、他のツール（fzf, peco, tmux）の初期化は継続
+    # zplugが利用不可の場合でも、他のツール（fzf, tmux）の初期化は継続
 fi
 
 # プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
-# enhancdのフィルター設定（fzf優先、なければpeco）
-if command -v fzf >/dev/null 2>&1; then
-    export ENHANCD_FILTER=fzf
-elif command -v peco >/dev/null 2>&1; then
-    export ENHANCD_FILTER=peco
-fi
+# enhancdのフィルター設定
+export ENHANCD_FILTER=fzf
 export EMOJI_CLI_FILTER=fzf
 export ZSH_HISTORY_KEYBIND_GET='^r'
 export ZSH_HISTORY_FILTER_OPTIONS='--filter-branch --filter-dir'
@@ -286,41 +282,6 @@ function git_diff_archive() {
   fi
 }
 
-# ======================
-# peco Functions
-# ======================
-
-function peco-select-history() {
-    # evalを使わずに条件分岐で直接実行（セキュリティ向上）
-    if command -v tac >/dev/null 2>&1; then
-        BUFFER=$(\history -n 1 | tac | peco --query "$LBUFFER")
-    elif command -v tail >/dev/null 2>&1; then
-        BUFFER=$(\history -n 1 | tail -r | peco --query "$LBUFFER")
-    else
-        echo "Error: Neither 'tac' nor 'tail' command available"
-        return 1
-    fi
-    CURSOR=$#BUFFER
-    zle clear-screen
-}
-# 無効化（fzfを使用）
-# fzfの方が高速で、プレビュー機能やより豊富なオプションを提供するため移行
-# zle -N peco-select-history
-# bindkey '^r' peco-select-history
-
-function peco-src () {
-    local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
-    if [ -n "$selected_dir" ]; then
-        BUFFER="cd ${selected_dir}"
-        zle accept-line
-    fi
-    zle clear-screen
-}
-# 無効化（fzfを使用）
-# fzfの方がファイルプレビュー機能があり、リポジトリの内容を確認しながら選択できるため移行
-# zle -N peco-src
-# bindkey '^]' peco-src
-
 function commands () {
     # package.jsonとjqの存在確認
     if [[ ! -f package.json ]]; then
@@ -346,8 +307,6 @@ bindkey '^k' anyframe-widget-checkout-git-branch
 # 既存セッションがあれば選択してアタッチ、なければ新規作成する。
 # SSH接続時は自動起動しない。
 
-function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
-
 function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
 function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
 function is_ssh_running() { [ ! -z "$SSH_CONNECTION" ]; }
@@ -356,14 +315,14 @@ function tmux_automatically_attach_session()
     # tmuxが既に実行中の場合
     if is_tmux_runnning; then
         # tmuxがインストールされていなければ終了
-        ! is_exists 'tmux' && return 1
+        ! command -v tmux >/dev/null 2>&1 && return 1
 
         echo "tmux is running."
     else
         # tmuxが実行中でない場合
         if shell_has_started_interactively && ! is_ssh_running; then
             # 対話的なシェルであり、SSH経由でない場合
-            if ! is_exists 'tmux'; then
+            if ! command -v tmux >/dev/null 2>&1; then
                 echo 'Error: tmux command not found' 2>&1
                 return 1
             fi

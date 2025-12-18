@@ -33,8 +33,8 @@ alias agh="ag --hidden --smart-case --stats --pager \"less -F -R\""
 
 alias rg="rg --smart-case --stats --pretty"
 alias vp="vim +PlugInstall +qall"
-alias nrun="npm run \$(commands | peco)"
-alias yrun="yarn \$(commands | peco)"
+alias nrun="npm run \$(commands | fzf)"
+alias yrun="yarn \$(commands | fzf)"
 alias mrun="mise run"
 
 # Claude Commands同期
@@ -66,7 +66,6 @@ alias -g L="| less -F -R"
 alias -g H="| head"
 alias -g T="| tail -F -R"
 alias -g G="| grep"
-alias -g CL="| color"
 
 alias grep="grep --color -n -I --exclude='*.svn-*' \
     --exclude='entries' --exclude='*/cache/*'"
@@ -75,14 +74,8 @@ alias grep="grep --color -n -I --exclude='*.svn-*' \
 # Clipboard Integration
 # ======================
 
-if which pbcopy >/dev/null 2>&1 ; then
-    # Mac
-    alias -g C="| pbcopy"
-elif which xsel >/dev/null 2>&1 ; then
-    alias -g C="| xsel --input --clipboard"
-elif which putclip >/dev/null 2>&1 ; then
-    alias -g C="| putclip"
-fi
+# macOS用（pbcopy）
+alias -g C="| pbcopy"
 
 # ======================
 # Git Aliases
