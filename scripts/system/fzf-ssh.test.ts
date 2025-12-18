@@ -2,9 +2,8 @@
  * fzf-ssh.ts のテスト
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { mkdir, rm, writeFile } from "node:fs/promises";
-import { tmpdir, homedir } from "node:os";
+import { describe, it, expect } from "bun:test";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
 

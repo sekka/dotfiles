@@ -57,6 +57,55 @@ describe("lighthouse-analyzer", () => {
       const result = parseArgs(["https://example.com", "5", "abc"]);
       expect(result).toBeNull();
     });
+
+    test("回数が0以下の場合はnullを返す", () => {
+      expect(parseArgs(["https://example.com", "0", "60"])).toBeNull();
+      expect(parseArgs(["https://example.com", "-1", "60"])).toBeNull();
+    });
+
+    test("間隔が負の場合はnullを返す", () => {
+      expect(parseArgs(["https://example.com", "5", "-1"])).toBeNull();
+    });
+
+    test("間隔が0の場合は有効", () => {
+      const result = parseArgs(["https://example.com", "5", "0"]);
+      expect(result).not.toBeNull();
+      expect(result!.interval).toBe(0);
+    });
+
+    test("プロファイル名に無効な文字が含まれる場合はnullを返す", () => {
+      // シェルインジェクションを防ぐため、特殊文字を含むプロファイル名は拒否
+      expect(
+        parseArgs(["https://example.com", "5", "60", "--profile=; rm -rf /"])
+      ).toBeNull();
+      expect(
+        parseArgs(["https://example.com", "5", "60", "--profile=test$(whoami)"])
+      ).toBeNull();
+      expect(
+        parseArgs(["https://example.com", "5", "60", "--profile=test`id`"])
+      ).toBeNull();
+    });
+
+    test("有効なプロファイル名は許可される", () => {
+      // 英数字、スペース、ハイフン、アンダースコアは許可
+      const result1 = parseArgs([
+        "https://example.com",
+        "5",
+        "60",
+        "--profile=Profile 1",
+      ]);
+      expect(result1).not.toBeNull();
+      expect(result1!.chromeProfile).toBe("Profile 1");
+
+      const result2 = parseArgs([
+        "https://example.com",
+        "5",
+        "60",
+        "--profile=Test_Profile-1",
+      ]);
+      expect(result2).not.toBeNull();
+      expect(result2!.chromeProfile).toBe("Test_Profile-1");
+    });
   });
 
   describe("sanitizeUrl", () => {

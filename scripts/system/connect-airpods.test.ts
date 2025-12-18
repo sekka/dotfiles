@@ -1,5 +1,4 @@
-import { describe, expect, test } from "bun:test";
-import { connectToAirpods } from "./connect-airpods";
+import { describe, test } from "bun:test";
 
 describe("connect-airpods", () => {
   describe("connectToAirpods", () => {
