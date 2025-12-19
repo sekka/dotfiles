@@ -39,7 +39,6 @@ if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
 
     # 使用頻度の低いプラグイン（遅延読み込み）
     zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"
-    zplug "b4b4r07/history", defer:2
     zplug "arks22/tmuximum", as:command, defer:2, if:"command -v tmux"
 
     # プラグイン自動インストール
@@ -125,11 +124,15 @@ function fzf-src() {
 zle -N fzf-src
 bindkey '^]' fzf-src
 
+# gitリポジトリ内かチェックするヘルパー関数
+function _is_git_repo() {
+    git rev-parse --git-dir >/dev/null 2>&1
+}
+
 # Gitブランチをfzfで選択してチェックアウト
 # 使用例: fbrまたはCtrl+Bでローカルブランチ、fbrmでリモートブランチも含む
 function fzf-git-branch() {
-    # gitリポジトリ内かチェック
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    if ! _is_git_repo; then
         echo "Not a git repository"
         return 1
     fi
@@ -180,120 +183,9 @@ function fcd() {
     ) && cd "$dir"
 }
 
-# Gitコミットログをfzfで閲覧・選択
-# 使用例: fshowでコミット一覧を表示、Enterで詳細表示
-function fshow() {
-    git log \
-        --graph \
-        --color=always \
-        --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
-    fzf --ansi \
-        --no-sort \
-        --reverse \
-        --tiebreak=index \
-        --bind=ctrl-s:toggle-sort \
-        --bind "ctrl-m:execute:
-                    (grep -o '[a-f0-9]\{7\}' | head -1 |
-                    xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
-                    {}
-    FZF-EOF"
-}
-
-# Gitの変更ファイルをfzfで選択してadd
-# 使用例: faddで変更ファイル一覧から選択、Tabで複数選択可能
-function fadd() {
-    # gitリポジトリ内かチェック
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
-        echo "Not a git repository"
-        return 1
-    fi
-
-    local files
-    # NUL区切りで安全にファイル名を処理（スペース・改行対応）
-    files=$(git diff -z --name-only --diff-filter=ACMRU | fzf \
-        --read0 \
-        --print0 \
-        --multi \
-        --preview "git diff --color=always {} 2>/dev/null || cat {}" \
-        --preview-window=right:60%:wrap \
-        --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
-        --bind "ctrl-d:execute(git diff --color=always {} | less -R)"
-    )
-
-    if [[ -n "$files" ]]; then
-        echo "$files" | xargs -0 git add
-        echo "Added files:"
-        echo "$files" | tr '\0' '\n'
-    fi
-}
-
-# SSH接続先をfzfで選択して接続
-# 使用例: fsshで~/.ssh/configに定義されたホスト一覧から選択
-function fssh() {
-    if [[ ! -f ~/.ssh/config ]]; then
-        echo "SSH config file not found"
-        return 1
-    fi
-
-    local host
-    host=$(awk '/^Host / {print $2}' ~/.ssh/config | grep -v '*' | fzf \
-        --preview "grep -A 10 '^Host {}' ~/.ssh/config" \
-        --preview-window=right:40%:wrap \
-        --header "Select SSH host"
-    )
-
-    if [[ -n "$host" ]]; then
-        ssh "$host"
-    fi
-}
-
-# ======================
-# Git Utilities
-# ======================
-
-# Git差分アーカイブ作成関数
-function git_diff_archive() {
-  local h="HEAD"
-  local files=()
-
-  if [ $# -eq 1 ]; then
-    # 数値チェック（exprの代わりに正規表現を使用）
-    if [[ "$1" =~ ^[0-9]+$ ]]; then
-      # コマンドインジェクションを防ぐため、evalを使わずに配列で処理
-      files=(${(f)"$(git diff --diff-filter=d --name-only HEAD~${1} HEAD)"})
-    else
-      files=(${(f)"$(git diff --diff-filter=d --name-only ${1} HEAD)"})
-    fi
-  elif [ $# -eq 2 ]; then
-    h="$1"
-    files=(${(f)"$(git diff --diff-filter=d --name-only ${2} ${1})"})
-  fi
-
-  if [ ${#files[@]} -gt 0 ]; then
-    git archive --format=zip --prefix=root/ "$h" "${files[@]}" -o archive.zip
-  else
-    # ファイルがない場合は空のアーカイブを作成
-    git archive --format=zip --prefix=root/ "$h" -o archive.zip
-  fi
-}
-
-function commands () {
-    # package.jsonとjqの存在確認
-    if [[ ! -f package.json ]]; then
-        echo "Error: package.json not found in current directory" >&2
-        return 1
-    fi
-    if ! command -v jq >/dev/null 2>&1; then
-        echo "Error: jq is not installed" >&2
-        return 1
-    fi
-    jq -r '.scripts | keys[]' package.json
-}
-
 # anyframe
 bindkey '^h' anyframe-widget-select-widget
 bindkey '^j' anyframe-widget-insert-git-branch
-bindkey '^k' anyframe-widget-checkout-git-branch
 
 # --------------------------------------
 # Tmux自動起動機能
@@ -302,52 +194,48 @@ bindkey '^k' anyframe-widget-checkout-git-branch
 # 既存セッションがあれば選択してアタッチ、なければ新規作成する。
 # SSH接続時は自動起動しない。
 
-function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
-function is_ssh_running() { [ ! -z "$SSH_CONNECTION" ]; }
+function is_tmux_running() { [[ -n "$TMUX" ]]; }
+function is_interactive_shell() { [[ -n "$PS1" ]]; }
+function is_ssh_session() { [[ -n "$SSH_CONNECTION" ]]; }
 function tmux_automatically_attach_session()
 {
+    # tmuxがインストールされていなければ終了
+    if ! command -v tmux >/dev/null 2>&1; then
+        return 1
+    fi
+
     # tmuxが既に実行中の場合
-    if is_tmux_runnning; then
-        # tmuxがインストールされていなければ終了
-        ! command -v tmux >/dev/null 2>&1 && return 1
+    if is_tmux_running; then
+        return 0
+    fi
 
-        echo "tmux is running."
-    else
-        # tmuxが実行中でない場合
-        if shell_has_started_interactively && ! is_ssh_running; then
-            # 対話的なシェルであり、SSH経由でない場合
-            if ! command -v tmux >/dev/null 2>&1; then
-                echo 'Error: tmux command not found' 2>&1
-                return 1
+    # 非対話シェルまたはSSH接続時は自動起動しない
+    if ! is_interactive_shell || is_ssh_session; then
+        return 0
+    fi
+
+    # tmuxセッションが存在し、未接続のセッションがある場合
+    if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
+        tmux list-sessions
+        echo -n "tmux: attach? (y/N/num) "
+        read -r
+        # y、Y、または空の入力であればセッションにアタッチ
+        if [[ "$REPLY" =~ ^[Yy]$ || -z "$REPLY" ]]; then
+            if tmux attach-session; then
+                echo "$(tmux -V) attached session"
+                return 0
             fi
-
-            # tmuxセッションが存在し、未接続のセッションがある場合
-            if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-                tmux list-sessions
-                echo -n "tmux: attach? (y/N/num) "
-                read -r
-                # y、Y、または空の入力であればセッションにアタッチ
-                if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
-                    tmux attach-session
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                # 数字が入力された場合、指定された番号のセッションにアタッチ
-                elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
-                    tmux attach -t "$REPLY"
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                fi
+        # 数字が入力された場合、指定された番号のセッションにアタッチ
+        elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+            if tmux attach -t "$REPLY"; then
+                echo "$(tmux -V) attached session"
+                return 0
             fi
-
-            # 新規セッション作成
-            tmux new-session && echo "tmux created new session"
         fi
     fi
+
+    # 新規セッション作成
+    tmux new-session && echo "tmux created new session"
 }
 
 # ログインシェルでのみtmux自動起動を実行

@@ -304,7 +304,7 @@ run = "source ~/.zshrc"
 [tasks.update-brew]
 alias = "ub"
 description = "Homebrew更新"
-run = "sh ~/dotfiles/setup/20_homebrew.sh && brew update && brew upgrade && brew cleanup"
+run = "sh ~/dotfiles/setup/10_homebrew.sh && brew update && brew upgrade && brew cleanup"
 
 # batでファイルプレビュー
 [tasks.util-bat]
