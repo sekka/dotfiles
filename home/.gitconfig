@@ -11,7 +11,7 @@
 	path = ~/.gitconfig_private
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path =
+	path = 
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
@@ -40,3 +40,5 @@
 	smudge = git vrc smudge --file %f
 	clean = git vrc clean --file %f
 	required = true
+[coderabbit]
+	machineId = cli/c879f183a72641dea6144e3c12b0f057
