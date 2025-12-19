@@ -37,12 +37,16 @@ alias mrun="mise run"
 
 # npm/yarnスクリプト実行用関数
 # シェルインジェクションを防ぐため、関数として定義しクォート処理
+
+# aliasとの競合を防ぐため、関数定義前に既存のaliasを削除
+unalias nrun 2>/dev/null
 nrun() {
   local script
   script=$(npm-scripts.ts | fzf) || return 1
   [ -n "$script" ] && npm run "$script"
 }
 
+unalias yrun 2>/dev/null
 yrun() {
   local script
   script=$(npm-scripts.ts | fzf) || return 1
