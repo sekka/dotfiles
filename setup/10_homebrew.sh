@@ -1,43 +1,12 @@
 #!/bin/bash
 # Brewfileからパッケージをインストール
 
-echo "# ======================================================================================="
-echo "# brew bundle --file=setup/Brewfile"
-brew bundle --file="$(dirname "$0")/Brewfile"
-
-echo "# ======================================================================================="
-echo "# brew outdated"
-brew outdated
-
-echo "# ======================================================================================="
-echo "# brew update"
-brew update
-
-echo "# ======================================================================================="
-echo "# brew upgrade"
-brew upgrade
-
-echo "# ======================================================================================="
-echo "# brew cleanup"
-brew cleanup
-
-echo "# ======================================================================================="
-echo "# brew doctor"
-brew doctor
-
-echo "# ======================================================================================="
-echo "# brew autoremove"
-brew autoremove
-
-#echo "# ======================================================================================="
-echo "# gibo update"
-gibo update
-
-echo "# ======================================================================================="
-echo "# copy cot"
-if [[ ! -f "/usr/local/bin/cot" ]]; then
-  echo "Copying Cot..."
-  sudo ln -s /Applications/CotEditor.app/Contents/SharedSupport/bin/cot /usr/local/bin/cot
-else
-  echo "Cot already installed."
-fi
+brew --version                                # Homebrewのバージョンを表示
+brew bundle --file="$(dirname "$0")/Brewfile" # brew bundle --file=setup/Brewfile
+brew outdated                                 # 古くなったパッケージを表示
+brew update                                   # Homebrewとパッケージ情報を最新に更新
+brew upgrade                                  # インストールされているパッケージを最新にアップグレード
+brew upgrade --cask --greedy                  # インストールされているCaskパッケージを最新にアップグレード
+brew cleanup                                  # 不要なファイルを削除してディスクスペースを解放
+brew doctor                                   # Homebrewの診断を実行して問題を検出
+brew autoremove                               # 依存関係がなくなったパッケージを自動的に削除
