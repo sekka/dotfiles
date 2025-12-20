@@ -43,7 +43,8 @@
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
       "Bash(gh api:*)",
-      "Bash(gh pr comment:*)"
+      "Bash(gh pr comment:*)",
+      "mcp__serena__*"
     ],
     "deny": [
       "Read(./.env.*)"
