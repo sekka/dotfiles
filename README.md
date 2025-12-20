@@ -92,7 +92,7 @@ dotfiles/
 
 ```bash
 # Git hooks設定
-./scripts/setup/setup-git-hooks.sh
+./scripts/setup/setup-git-hooks.ts
 
 # 手動チェック実行
 mise run lint      # Markdown, YAML, TOMLのlint
