@@ -166,6 +166,8 @@ zle -N fzf-git-branch
 bindkey "^b" fzf-git-branch
 alias fbr='fzf-git-branch'
 alias fbrm='fzf-git-branch -r'
+alias fgco='fzf-git-branch'
+alias fgcor='fzf-git-branch -r'
 
 # 追加fzf関数
 # ディレクトリをインタラクティブに選択して移動
