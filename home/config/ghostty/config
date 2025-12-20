@@ -25,9 +25,20 @@
 # ==========================
 # # The config file consists of simple key-value pairs,
 # # separated by equals signs.
-# font-family = Iosevka
-# window-padding-x = 2
-#
+font-family = "JetBrains Mono"
+font-size = 12
+font-thicken = false
+adjust-cell-height = 10%
+
+# theme = Solarized Dark Higher Contrast
+
+window-padding-x = 10
+window-padding-y = 10
+background-opacity = 0.80
+background-blur-radius = 10
+
+unfocused-split-opacity = 0.80
+
 # # Spacing around the equals sign does not matter.
 # # All of these are identical:
 # key=value
@@ -47,3 +58,26 @@
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
+
+# Custom Terminal.app theme colors
+# Extracted from home/config/terminal/Custom.terminal
+palette = 0=#718295
+palette = 1=#f08932
+palette = 2=#c4eb49
+palette = 3=#fae14a
+palette = 4=#50bbee
+palette = 5=#c1acf9
+palette = 6=#8dccfa
+palette = 7=#fafefa
+palette = 8=#718295
+palette = 9=#f08a36
+palette = 10=#c4eb49
+palette = 11=#fae14a
+palette = 12=#50bbee
+palette = 13=#beabf9
+palette = 14=#8dccfa
+palette = 15=#fafefa
+background = #0f2a32
+foreground = #fafefa
+selection-background = #ee609b
+bold-color = #fafefa
