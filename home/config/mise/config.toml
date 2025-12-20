@@ -385,7 +385,6 @@ rust = "stable"
 "cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
-# "cargo:starship" = "latest"   # https://crates.io/crates/starship すごいプロンプト
 # "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
