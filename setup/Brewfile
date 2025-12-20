@@ -140,6 +140,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "conductor"
 #cask "cursor"
 #cask "kiro"
+#cask "osaurus"
 
 # === エンタメ ===
 #cask "alcom"
