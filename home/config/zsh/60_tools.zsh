@@ -140,8 +140,9 @@ function fzf-git-branch() {
     local branches branch
 
     # -rオプションでリモートブランチも含める
+    # command grepでエイリアス（-n等）を回避
     if [[ "$1" == "-r" ]]; then
-        branches=$(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')
+        branches=$(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')
     else
         branches=$(git branch | sed 's/^[* ] //')
     fi
@@ -150,7 +151,7 @@ function fzf-git-branch() {
         --preview "git show --color=always --stat {}" \
         --preview-window=right:60%:wrap \
         --header "Select branch to checkout" \
-        --bind "ctrl-r:reload(git branch --all | grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')" \
+        --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')" \
         --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')"
     )
 
