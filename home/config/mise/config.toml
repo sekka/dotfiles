@@ -208,11 +208,29 @@ run = "rtop"
 # --------------------------------------
 # Lint & Format (pre-commit hook用)
 # --------------------------------------
+# TypeScriptのLint
+[tasks.typescript-lint]
+description = "TypeScriptファイルのlintを実行"
+run = """
+echo "🔍 Biome lint running..."
+bunx @biomejs/biome check scripts/
+"""
+
+# TypeScriptのフォーマット
+[tasks.typescript-format]
+description = "TypeScriptファイルのformatを実行"
+run = """
+echo "🎨 Biome format running..."
+bunx @biomejs/biome format --write scripts/
+"""
+
 # 全ファイルのフォーマット
 [tasks.shell-script-format]
 description = "全ファイルのformatを実行"
 run = """
 echo "🎨 Formatting files..."
+# TypeScript
+bunx @biomejs/biome format --write scripts/
 # シェルスクリプト
 find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
 # Markdown, YAML, JSON
