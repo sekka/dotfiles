@@ -247,6 +247,9 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "font-source-han-code-jp"
 #cask "font-udev-gothic"
 
+# === ターミナル用フォント ===
+cask "font-hack-nerd-font"
+
 # === CreativeCoding ===
 #cask "blender"
 #cask "magicalvoxel"
