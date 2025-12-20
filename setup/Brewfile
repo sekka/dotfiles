@@ -85,6 +85,8 @@ brew "specify"            # https://formulae.brew.sh/formula/specify          # 
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
 brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DLツール
+brew "shellcheck"         # https://formulae.brew.sh/formula/shellcheck       # シェルスクリプト静的解析ツール
+brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルスクリプトフォーマッタ
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
 brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # RAR解凍ツール
 
