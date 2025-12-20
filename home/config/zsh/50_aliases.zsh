@@ -8,8 +8,7 @@
 # ======================
 
 alias l="eza"
-alias lsa="eza --long --all --binary --bytes --group --header --links --inode \
-    --modified --created --changed --git --git-repos --time-style long-iso"
+alias lsa="eza --long --all --binary --bytes --header --changed --git --git-repos --icons auto --time-style long-iso --sort name --group-directories-first --hyperlink -F always"
 
 alias tree="tree -NC"
 alias rm="rm -i"
@@ -59,9 +58,7 @@ yrun() {
 
 alias t="tmux"
 alias td="tmux detach"
-alias ta="tmux attach"
-alias tat="tmux attach -t"
-alias tm="tmuximum"
+alias tm="tmuximum"  # セッション選択・作成・アタッチを対話的に実行
 
 # ======================
 # Directory Navigation
@@ -80,8 +77,7 @@ alias -g H="| head"
 alias -g T="| tail -F -R"
 alias -g G="| grep"
 
-alias grep="grep --color -n -I --exclude='*.svn-*' \
-    --exclude='entries' --exclude='*/cache/*'"
+alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
 
 # ======================
 # Clipboard Integration

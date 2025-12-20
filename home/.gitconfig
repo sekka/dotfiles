@@ -1,5 +1,6 @@
 [core]
 	excludesfile = ~/.gitignore_global
+	pager = delta
 [user]
 	name = hoge
 	email = hoge@example.com
@@ -42,3 +43,11 @@
 	required = true
 [coderabbit]
 	machineId = cli/c879f183a72641dea6144e3c12b0f057
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true  # use n and N to move between diff sections
+	dark = true      # or light = true, or omit for auto-detection
+	side-by-side = true
+[merge]
+	conflictStyle = zdiff3
