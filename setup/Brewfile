@@ -6,6 +6,7 @@ brew "mas"                # https://formulae.brew.sh/formula/mas              # 
 
 # === tmux ===
 brew "tmux"               # https://formulae.brew.sh/formula/tmux             # ターミナルマルチプレクサ
+brew "tpm"                # https://formulae.brew.sh/formula/tpm              # tmuxプラグインマネージャ
 
 # === ターミナル ===
 brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
