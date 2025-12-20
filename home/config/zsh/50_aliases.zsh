@@ -79,8 +79,7 @@ alias -g H="| head"
 alias -g T="| tail -F -R"
 alias -g G="| grep"
 
-alias grep="grep --color -n -I --exclude='*.svn-*' \
-    --exclude='entries' --exclude='*/cache/*'"
+alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
 
 # ======================
 # Clipboard Integration
