@@ -45,7 +45,9 @@
       "Bash(gh api:*)",
       "Bash(gh pr comment:*)",
       "mcp__serena__*",
-      "WebFetch(domain:ghostty.org)"
+      "WebFetch(domain:ghostty.org)",
+      "Bash(bunx @biomejs/biome check:*)",
+      "Skill(coderabbit-review)"
     ],
     "deny": [
       "Read(./.env.*)"
