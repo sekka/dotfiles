@@ -66,7 +66,7 @@ direnv reload
 
 ```bash
 # commit前のlint/formatチェックを自動化
-./scripts/setup/setup-git-hooks.sh
+./scripts/setup/setup-git-hooks.ts
 ```
 
 ---
@@ -94,21 +94,16 @@ dotfiles/
 │       └── iterm/                  # iTerm2設定
 ├── scripts/                        # 実行用スクリプト
 │   ├── development/                # 開発関連ツール
-│   │   ├── lighthouse-analyzer.sh  # Lighthouse分析
-│   │   └── compare_dirs.sh         # ディレクトリ比較（改善版）
+│   │   ├── lighthouse-analyzer.ts  # Lighthouse分析
+│   │   └── compare-dirs.ts         # ディレクトリ比較（改善版）
 │   ├── media/                      # メディア変換ツール
-│   │   ├── convert_img2webp.sh     # 画像WebP変換
-│   │   └── convert_m3u8ts2mp4.sh   # 動画変換
+│   │   ├── convert-img2webp.ts     # 画像WebP変換
+│   │   └── convert-m3u8ts2mp4.ts   # 動画変換
 │   ├── setup/                      # セットアップ関連
-│   │   └── setup-git-hooks.sh      # Git hooks設定
-│   ├── system/                     # システム関連ツール
-│   │   ├── connect_airpods.sh      # AirPods接続
-│   │   ├── export_diff_zip.sh      # 差分アーカイブ
-│   │   └── zipr.sh                 # 圧縮ツール
-│   └── tmux/                       # tmux関連スクリプト
-│       ├── get_battery_tmux.sh     # バッテリー情報
-│       ├── get_cpu_tmux.sh         # CPU使用率
-│       └── get_*_tmux.sh           # その他システム情報
+│   │   └── setup-git-hooks.ts      # Git hooks設定
+│   └── system/                     # システム関連ツール
+│       ├── export-diff-zip.ts      # 差分アーカイブ
+│       └── zipr.ts                 # 圧縮ツール
 ├── setup/                          # 初回セットアップ用
 │   ├── 01_base.sh                  # システム基盤セットアップ
 │   ├── 02_dotfiles.sh              # シンボリックリンク作成
