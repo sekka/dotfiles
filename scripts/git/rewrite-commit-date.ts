@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 /**
  * 特定のコミットの日時を書き換える
  *
@@ -25,8 +26,8 @@
  *   - すべてのブランチとタグの履歴が書き換えられます
  */
 
-import { $ } from "bun";
 import * as readline from "node:readline";
+import { $ } from "bun";
 
 /**
  * 引数をパースして結果を返す
@@ -34,48 +35,52 @@ import * as readline from "node:readline";
  * @returns パース結果、または無効な引数の場合はnull
  */
 export function parseArgs(args: string[]): {
-  committerDateNow: boolean;
-  commitHash: string;
-  newDate: string;
+	committerDateNow: boolean;
+	commitHash: string;
+	newDate: string;
 } | null {
-  if (args.length === 0) {
-    return null;
-  }
+	if (args.length === 0) {
+		return null;
+	}
 
-  if (args[0] === "--committer-date-now") {
-    if (args.length !== 3) {
-      return null;
-    }
-    return {
-      committerDateNow: true,
-      commitHash: args[1],
-      newDate: args[2],
-    };
-  } else {
-    if (args.length !== 2) {
-      return null;
-    }
-    return {
-      committerDateNow: false,
-      commitHash: args[0],
-      newDate: args[1],
-    };
-  }
+	if (args[0] === "--committer-date-now") {
+		if (args.length !== 3) {
+			return null;
+		}
+		return {
+			committerDateNow: true,
+			commitHash: args[1],
+			newDate: args[2],
+		};
+	} else {
+		if (args.length !== 2) {
+			return null;
+		}
+		return {
+			committerDateNow: false,
+			commitHash: args[0],
+			newDate: args[1],
+		};
+	}
 }
 
 /**
  * 使用方法を表示する
  */
 export function showUsage(): void {
-  const scriptName = "rewrite-commit-date";
-  console.error(`使用方法: ${scriptName} [--committer-date-now] <コミットハッシュ> "新しい日時"`);
-  console.error("");
-  console.error("例:");
-  console.error("  # 著者日時とコミッター日時を同じにする");
-  console.error(`  ${scriptName} 1a2b3c4d "2024-01-01 10:30:00"`);
-  console.error("");
-  console.error("  # 著者日時のみ設定し、コミッター日時は現在時刻にする");
-  console.error(`  ${scriptName} --committer-date-now 1a2b3c4d "2024-01-01 10:30:00"`);
+	const scriptName = "rewrite-commit-date";
+	console.error(
+		`使用方法: ${scriptName} [--committer-date-now] <コミットハッシュ> "新しい日時"`,
+	);
+	console.error("");
+	console.error("例:");
+	console.error("  # 著者日時とコミッター日時を同じにする");
+	console.error(`  ${scriptName} 1a2b3c4d "2024-01-01 10:30:00"`);
+	console.error("");
+	console.error("  # 著者日時のみ設定し、コミッター日時は現在時刻にする");
+	console.error(
+		`  ${scriptName} --committer-date-now 1a2b3c4d "2024-01-01 10:30:00"`,
+	);
 }
 
 /**
@@ -83,8 +88,8 @@ export function showUsage(): void {
  * @returns クリーンな場合はtrue
  */
 export async function isWorkingDirectoryClean(): Promise<boolean> {
-  const result = await $`git status --porcelain`.quiet();
-  return result.text().trim() === "";
+	const result = await $`git status --porcelain`.quiet();
+	return result.text().trim() === "";
 }
 
 /**
@@ -92,12 +97,14 @@ export async function isWorkingDirectoryClean(): Promise<boolean> {
  * @param shortHash - 短いハッシュ
  * @returns 完全なハッシュ、失敗した場合はnull
  */
-export async function resolveCommitHash(shortHash: string): Promise<string | null> {
-  const result = await $`git rev-parse ${shortHash}`.quiet().nothrow();
-  if (result.exitCode === 0) {
-    return result.text().trim();
-  }
-  return null;
+export async function resolveCommitHash(
+	shortHash: string,
+): Promise<string | null> {
+	const result = await $`git rev-parse ${shortHash}`.quiet().nothrow();
+	if (result.exitCode === 0) {
+		return result.text().trim();
+	}
+	return null;
 }
 
 /**
@@ -106,17 +113,17 @@ export async function resolveCommitHash(shortHash: string): Promise<string | nul
  * @returns 続行する場合はtrue
  */
 export async function confirmAction(message: string): Promise<boolean> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+	const rl = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
 
-  return new Promise((resolve) => {
-    rl.question(`${message} (y/N): `, (answer) => {
-      rl.close();
-      resolve(answer.toLowerCase() === "y");
-    });
-  });
+	return new Promise((resolve) => {
+		rl.question(`${message} (y/N): `, (answer) => {
+			rl.close();
+			resolve(answer.toLowerCase() === "y");
+		});
+	});
 }
 
 /**
@@ -127,105 +134,113 @@ export async function confirmAction(message: string): Promise<boolean> {
  * @returns 成功した場合はtrue
  */
 export async function rewriteCommitDate(
-  targetCommit: string,
-  newDate: string,
-  committerDateNow: boolean
+	targetCommit: string,
+	newDate: string,
+	committerDateNow: boolean,
 ): Promise<boolean> {
-  // 現在時刻を取得（RFC 2822形式）
-  const nowDate = new Date().toUTCString();
+	// 現在時刻を取得（RFC 2822形式）
+	const nowDate = new Date().toUTCString();
 
-  // 環境フィルタを構築
-  let envFilter: string;
-  if (committerDateNow) {
-    envFilter = `
+	// 環境フィルタを構築
+	let envFilter: string;
+	if (committerDateNow) {
+		envFilter = `
 if [ "\\$GIT_COMMIT" = "${targetCommit}" ]; then
     export GIT_AUTHOR_DATE='${newDate}';
     export GIT_COMMITTER_DATE='${nowDate}';
 fi
 `;
-  } else {
-    envFilter = `
+	} else {
+		envFilter = `
 if [ "\\$GIT_COMMIT" = "${targetCommit}" ]; then
     export GIT_AUTHOR_DATE='${newDate}';
     export GIT_COMMITTER_DATE='${newDate}';
 fi
 `;
-  }
+	}
 
-  // git filter-branchを実行
-  const result =
-    await $`git filter-branch --force --env-filter ${envFilter} --tag-name-filter cat -- --all`.nothrow();
+	// git filter-branchを実行
+	const result =
+		await $`git filter-branch --force --env-filter ${envFilter} --tag-name-filter cat -- --all`.nothrow();
 
-  if (result.exitCode !== 0) {
-    console.error("エラー: git filter-branch に失敗しました");
-    console.error(result.stderr.toString());
-    return false;
-  }
+	if (result.exitCode !== 0) {
+		console.error("エラー: git filter-branch に失敗しました");
+		console.error(result.stderr.toString());
+		return false;
+	}
 
-  return true;
+	return true;
 }
 
 /**
  * メイン関数
  */
 export async function main(): Promise<number> {
-  const args = process.argv.slice(2);
-  const parsed = parseArgs(args);
+	const args = process.argv.slice(2);
+	const parsed = parseArgs(args);
 
-  if (!parsed) {
-    showUsage();
-    return 1;
-  }
+	if (!parsed) {
+		showUsage();
+		return 1;
+	}
 
-  // 作業ディレクトリがクリーンか確認
-  if (!(await isWorkingDirectoryClean())) {
-    console.error(
-      "エラー: 作業ディレクトリがクリーンではありません。変更をコミットまたはスタッシュしてください。"
-    );
-    return 1;
-  }
+	// 作業ディレクトリがクリーンか確認
+	if (!(await isWorkingDirectoryClean())) {
+		console.error(
+			"エラー: 作業ディレクトリがクリーンではありません。変更をコミットまたはスタッシュしてください。",
+		);
+		return 1;
+	}
 
-  // コミットハッシュを解決
-  const fullHash = await resolveCommitHash(parsed.commitHash);
-  if (!fullHash) {
-    console.error(`エラー: コミット '${parsed.commitHash}' が見つかりません。`);
-    return 1;
-  }
+	// コミットハッシュを解決
+	const fullHash = await resolveCommitHash(parsed.commitHash);
+	if (!fullHash) {
+		console.error(`エラー: コミット '${parsed.commitHash}' が見つかりません。`);
+		return 1;
+	}
 
-  // 警告を表示
-  console.log("⚠️  警告: 'git filter-branch' による履歴書き換え");
-  console.log("すべてのブランチとタグの履歴が書き換えられます。");
-  console.log("この操作は破壊的です。事前にリポジトリのバックアップを強く推奨します。");
+	// 警告を表示
+	console.log("⚠️  警告: 'git filter-branch' による履歴書き換え");
+	console.log("すべてのブランチとタグの履歴が書き換えられます。");
+	console.log(
+		"この操作は破壊的です。事前にリポジトリのバックアップを強く推奨します。",
+	);
 
-  // 確認を求める
-  const confirmed = await confirmAction("続行しますか？");
-  if (!confirmed) {
-    console.log("中止しました。");
-    return 1;
-  }
+	// 確認を求める
+	const confirmed = await confirmAction("続行しますか？");
+	if (!confirmed) {
+		console.log("中止しました。");
+		return 1;
+	}
 
-  // 実行
-  const success = await rewriteCommitDate(fullHash, parsed.newDate, parsed.committerDateNow);
+	// 実行
+	const success = await rewriteCommitDate(
+		fullHash,
+		parsed.newDate,
+		parsed.committerDateNow,
+	);
 
-  if (!success) {
-    return 1;
-  }
+	if (!success) {
+		return 1;
+	}
 
-  console.log("");
-  console.log("✅ 'git filter-branch' が完了しました。");
-  console.log("コミット履歴が書き換えられました。");
-  console.log("'git log' で変更を確認してください。");
-  console.log("");
-  console.log("問題なければ、Gitが作成したバックアップを以下のコマンドで削除できます:");
-  console.log(
-    "git for-each-ref --format='%(refname)' refs/original/ | xargs -n 1 git update-ref -d"
-  );
+	console.log("");
+	console.log("✅ 'git filter-branch' が完了しました。");
+	console.log("コミット履歴が書き換えられました。");
+	console.log("'git log' で変更を確認してください。");
+	console.log("");
+	console.log(
+		"問題なければ、Gitが作成したバックアップを以下のコマンドで削除できます:",
+	);
+	console.log(
+		"git for-each-ref --format='%(refname)' refs/original/ | xargs -n 1 git update-ref -d",
+	);
 
-  return 0;
+	return 0;
 }
 
 // スクリプトとして直接実行された場合
 if (import.meta.main) {
-  const exitCode = await main();
-  process.exit(exitCode);
+	const exitCode = await main();
+	process.exit(exitCode);
 }

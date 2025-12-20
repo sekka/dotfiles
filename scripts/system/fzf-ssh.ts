@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+
 /**
  * fzf-ssh
  *
@@ -8,10 +9,10 @@
  *   fzf-ssh.ts
  */
 
-import { $ } from "bun";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { $ } from "bun";
 
 const SSH_CONFIG_PATH = join(homedir(), ".ssh", "config");
 
@@ -19,90 +20,92 @@ const SSH_CONFIG_PATH = join(homedir(), ".ssh", "config");
  * SSH設定ファイルが存在するか確認
  */
 export function sshConfigExists(): boolean {
-  return existsSync(SSH_CONFIG_PATH);
+	return existsSync(SSH_CONFIG_PATH);
 }
 
 /**
  * SSH設定からホスト一覧を取得
  */
 export async function getHosts(): Promise<string[]> {
-  const result =
-    await $`awk '/^Host / {print $2}' ${SSH_CONFIG_PATH} | grep -v '*'`
-      .quiet()
-      .nothrow();
+	const result =
+		await $`awk '/^Host / {print $2}' ${SSH_CONFIG_PATH} | grep -v '*'`
+			.quiet()
+			.nothrow();
 
-  if (result.exitCode !== 0 || !result.stdout.length) {
-    return [];
-  }
+	if (result.exitCode !== 0 || !result.stdout.length) {
+		return [];
+	}
 
-  return result.stdout
-    .toString()
-    .trim()
-    .split("\n")
-    .filter((h) => h.length > 0);
+	return result.stdout
+		.toString()
+		.trim()
+		.split("\n")
+		.filter((h) => h.length > 0);
 }
 
 /**
  * fzfでホストを選択
  */
-export async function selectHostWithFzf(hosts: string[]): Promise<string | null> {
-  if (hosts.length === 0) {
-    return null;
-  }
+export async function selectHostWithFzf(
+	hosts: string[],
+): Promise<string | null> {
+	if (hosts.length === 0) {
+		return null;
+	}
 
-  const input = hosts.join("\n");
-  const result = await $`echo ${input} | fzf \
+	const input = hosts.join("\n");
+	const result = await $`echo ${input} | fzf \
     --preview "grep -A 10 '^Host {}' ${SSH_CONFIG_PATH}" \
     --preview-window=right:40%:wrap \
     --header "Select SSH host"`
-    .quiet()
-    .nothrow();
+		.quiet()
+		.nothrow();
 
-  if (result.exitCode !== 0 || !result.stdout.length) {
-    return null;
-  }
+	if (result.exitCode !== 0 || !result.stdout.length) {
+		return null;
+	}
 
-  return result.stdout.toString().trim();
+	return result.stdout.toString().trim();
 }
 
 /**
  * SSHで接続
  */
 export async function connectToHost(host: string): Promise<void> {
-  // execで現在のプロセスを置き換え
-  const proc = Bun.spawn(["ssh", host], {
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  await proc.exited;
+	// execで現在のプロセスを置き換え
+	const proc = Bun.spawn(["ssh", host], {
+		stdin: "inherit",
+		stdout: "inherit",
+		stderr: "inherit",
+	});
+	await proc.exited;
 }
 
 /**
  * メイン処理
  */
 export async function main(): Promise<number> {
-  if (!sshConfigExists()) {
-    console.error("SSH config file not found");
-    return 1;
-  }
+	if (!sshConfigExists()) {
+		console.error("SSH config file not found");
+		return 1;
+	}
 
-  const hosts = await getHosts();
-  if (hosts.length === 0) {
-    console.error("No SSH hosts found in config");
-    return 1;
-  }
+	const hosts = await getHosts();
+	if (hosts.length === 0) {
+		console.error("No SSH hosts found in config");
+		return 1;
+	}
 
-  const selectedHost = await selectHostWithFzf(hosts);
-  if (!selectedHost) {
-    return 0;
-  }
+	const selectedHost = await selectHostWithFzf(hosts);
+	if (!selectedHost) {
+		return 0;
+	}
 
-  await connectToHost(selectedHost);
-  return 0;
+	await connectToHost(selectedHost);
+	return 0;
 }
 
 if (import.meta.main) {
-  const exitCode = await main();
-  process.exit(exitCode);
+	const exitCode = await main();
+	process.exit(exitCode);
 }

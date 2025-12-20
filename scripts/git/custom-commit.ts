@@ -27,14 +27,14 @@ const DEFAULT_TIMEZONE = "+0900";
  * @returns タイムゾーン付きの日付文字列
  */
 export function appendTokyoTimezone(dateStr: string): string {
-  // タイムゾーンのパターン: +HHMM または -HHMM
-  const timezonePattern = /[+-]\d{4}$/;
+	// タイムゾーンのパターン: +HHMM または -HHMM
+	const timezonePattern = /[+-]\d{4}$/;
 
-  if (timezonePattern.test(dateStr)) {
-    return dateStr;
-  }
+	if (timezonePattern.test(dateStr)) {
+		return dateStr;
+	}
 
-  return `${dateStr} ${DEFAULT_TIMEZONE}`;
+	return `${dateStr} ${DEFAULT_TIMEZONE}`;
 }
 
 /**
@@ -43,45 +43,47 @@ export function appendTokyoTimezone(dateStr: string): string {
  * @returns パース結果、または無効な引数の場合はnull
  */
 export function parseArgs(
-  args: string[]
+	args: string[],
 ): { authorDate: string; committerDate: string; message: string } | null {
-  if (args.length === 2) {
-    // 2引数: 日時 メッセージ
-    const date = appendTokyoTimezone(args[0]);
-    return {
-      authorDate: date,
-      committerDate: date,
-      message: args[1],
-    };
-  } else if (args.length === 3) {
-    // 3引数: 著者日時 コミッター日時 メッセージ
-    return {
-      authorDate: appendTokyoTimezone(args[0]),
-      committerDate: appendTokyoTimezone(args[1]),
-      message: args[2],
-    };
-  }
+	if (args.length === 2) {
+		// 2引数: 日時 メッセージ
+		const date = appendTokyoTimezone(args[0]);
+		return {
+			authorDate: date,
+			committerDate: date,
+			message: args[1],
+		};
+	} else if (args.length === 3) {
+		// 3引数: 著者日時 コミッター日時 メッセージ
+		return {
+			authorDate: appendTokyoTimezone(args[0]),
+			committerDate: appendTokyoTimezone(args[1]),
+			message: args[2],
+		};
+	}
 
-  return null;
+	return null;
 }
 
 /**
  * 使用方法を表示する
  */
 export function showUsage(): void {
-  const scriptName = "custom-commit";
-  console.error(`使用方法: ${scriptName} "日時" "コミットメッセージ"`);
-  console.error(`    または: ${scriptName} "著者日時" "コミッター日時" "コミットメッセージ"`);
-  console.error("");
-  console.error("例:");
-  console.error(`  ${scriptName} "2024-01-01 10:00:00" "feat: 新機能を追加"`);
-  console.error(
-    `  ${scriptName} "2024-01-01 10:00:00" "2024-01-01 10:05:00" "feat: 新機能を追加"`
-  );
-  console.error("");
-  console.error("注意:");
-  console.error("  - タイムゾーン省略時は +0900（東京）が自動付与されます");
-  console.error("  - 事前に git add でファイルをステージングしてください");
+	const scriptName = "custom-commit";
+	console.error(`使用方法: ${scriptName} "日時" "コミットメッセージ"`);
+	console.error(
+		`    または: ${scriptName} "著者日時" "コミッター日時" "コミットメッセージ"`,
+	);
+	console.error("");
+	console.error("例:");
+	console.error(`  ${scriptName} "2024-01-01 10:00:00" "feat: 新機能を追加"`);
+	console.error(
+		`  ${scriptName} "2024-01-01 10:00:00" "2024-01-01 10:05:00" "feat: 新機能を追加"`,
+	);
+	console.error("");
+	console.error("注意:");
+	console.error("  - タイムゾーン省略時は +0900（東京）が自動付与されます");
+	console.error("  - 事前に git add でファイルをステージングしてください");
 }
 
 /**
@@ -92,56 +94,56 @@ export function showUsage(): void {
  * @returns 成功した場合はtrue
  */
 export async function commitWithCustomDate(
-  authorDate: string,
-  committerDate: string,
-  message: string
+	authorDate: string,
+	committerDate: string,
+	message: string,
 ): Promise<boolean> {
-  try {
-    // 環境変数を設定してコミット
-    const result = await $`git commit -m ${message}`
-      .env({
-        ...process.env,
-        GIT_AUTHOR_DATE: authorDate,
-        GIT_COMMITTER_DATE: committerDate,
-      })
-      .nothrow();
+	try {
+		// 環境変数を設定してコミット
+		const result = await $`git commit -m ${message}`
+			.env({
+				...process.env,
+				GIT_AUTHOR_DATE: authorDate,
+				GIT_COMMITTER_DATE: committerDate,
+			})
+			.nothrow();
 
-    if (result.exitCode !== 0) {
-      console.error("エラー: git commit に失敗しました");
-      console.error(result.stderr.toString());
-      return false;
-    }
+		if (result.exitCode !== 0) {
+			console.error("エラー: git commit に失敗しました");
+			console.error(result.stderr.toString());
+			return false;
+		}
 
-    return true;
-  } catch (error) {
-    console.error("エラー:", error);
-    return false;
-  }
+		return true;
+	} catch (error) {
+		console.error("エラー:", error);
+		return false;
+	}
 }
 
 /**
  * メイン関数
  */
 export async function main(): Promise<number> {
-  const args = process.argv.slice(2);
-  const parsed = parseArgs(args);
+	const args = process.argv.slice(2);
+	const parsed = parseArgs(args);
 
-  if (!parsed) {
-    showUsage();
-    return 1;
-  }
+	if (!parsed) {
+		showUsage();
+		return 1;
+	}
 
-  const success = await commitWithCustomDate(
-    parsed.authorDate,
-    parsed.committerDate,
-    parsed.message
-  );
+	const success = await commitWithCustomDate(
+		parsed.authorDate,
+		parsed.committerDate,
+		parsed.message,
+	);
 
-  return success ? 0 : 1;
+	return success ? 0 : 1;
 }
 
 // スクリプトとして直接実行された場合
 if (import.meta.main) {
-  const exitCode = await main();
-  process.exit(exitCode);
+	const exitCode = await main();
+	process.exit(exitCode);
 }

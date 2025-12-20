@@ -19,37 +19,37 @@ import { $ } from "bun";
  * gitリポジトリ内かどうかを確認
  */
 export async function isGitRepository(): Promise<boolean> {
-  const result = await $`git rev-parse --git-dir`.quiet().nothrow();
-  return result.exitCode === 0;
+	const result = await $`git rev-parse --git-dir`.quiet().nothrow();
+	return result.exitCode === 0;
 }
 
 /**
  * コミットログを取得
  */
 export async function getCommitLog(args: string[] = []): Promise<string> {
-  const result =
-    await $`git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" ${args}`
-      .quiet()
-      .nothrow();
+	const result =
+		await $`git log --graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" ${args}`
+			.quiet()
+			.nothrow();
 
-  if (result.exitCode !== 0) {
-    return "";
-  }
+	if (result.exitCode !== 0) {
+		return "";
+	}
 
-  return result.stdout.toString();
+	return result.stdout.toString();
 }
 
 /**
  * fzfでコミットを選択して詳細表示
  */
 export async function showCommitsWithFzf(logOutput: string): Promise<void> {
-  if (!logOutput) {
-    console.log("No commits found");
-    return;
-  }
+	if (!logOutput) {
+		console.log("No commits found");
+		return;
+	}
 
-  // fzfでコミットを選択し、詳細を表示
-  await $`echo ${logOutput} | fzf --ansi \
+	// fzfでコミットを選択し、詳細を表示
+	await $`echo ${logOutput} | fzf --ansi \
     --no-sort \
     --reverse \
     --tiebreak=index \
@@ -65,19 +65,19 @@ FZF-EOF"`.nothrow();
  * メイン処理
  */
 export async function main(args: string[]): Promise<number> {
-  if (!(await isGitRepository())) {
-    console.error("Not a git repository");
-    return 1;
-  }
+	if (!(await isGitRepository())) {
+		console.error("Not a git repository");
+		return 1;
+	}
 
-  const logOutput = await getCommitLog(args);
-  await showCommitsWithFzf(logOutput);
+	const logOutput = await getCommitLog(args);
+	await showCommitsWithFzf(logOutput);
 
-  return 0;
+	return 0;
 }
 
 if (import.meta.main) {
-  const args = process.argv.slice(2);
-  const exitCode = await main(args);
-  process.exit(exitCode);
+	const args = process.argv.slice(2);
+	const exitCode = await main(args);
+	process.exit(exitCode);
 }
