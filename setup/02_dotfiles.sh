@@ -47,6 +47,7 @@ echo ""
 echo "📁 .config/ ディレクトリにシンボリックリンクを作成..."
 
 CONFIG_DIRS=(
+  ghostty
   mise
 )
 
