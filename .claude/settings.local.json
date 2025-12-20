@@ -44,7 +44,8 @@
       "Bash(gh pr diff:*)",
       "Bash(gh api:*)",
       "Bash(gh pr comment:*)",
-      "mcp__serena__*"
+      "mcp__serena__*",
+      "WebFetch(domain:ghostty.org)"
     ],
     "deny": [
       "Read(./.env.*)"
