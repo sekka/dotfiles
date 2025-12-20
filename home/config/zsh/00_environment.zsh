@@ -139,8 +139,7 @@ function _chpwd_list_directory() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
     if [[ $file_count -lt 500 ]] && command -v eza >/dev/null 2>&1; then
-        eza --long --all --binary --bytes --group --header --links --inode \
-            --modified --created --changed --git --git-repos --time-style long-iso
+        eza --long --all --binary --bytes --header --changed --git --git-repos --icons auto --time-style long-iso --sort name --group-directories-first --hyperlink -F always
     else
         ls
     fi

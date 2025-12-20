@@ -8,8 +8,7 @@
 # ======================
 
 alias l="eza"
-alias lsa="eza --long --all --binary --bytes --group --header --links --inode \
-    --modified --created --changed --git --git-repos --time-style long-iso"
+alias lsa="eza --long --all --binary --bytes --header --changed --git --git-repos --icons auto --time-style long-iso --sort name --group-directories-first --hyperlink -F always"
 
 alias tree="tree -NC"
 alias rm="rm -i"
