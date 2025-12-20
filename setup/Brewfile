@@ -58,6 +58,7 @@ brew "http-server"        # https://formulae.brew.sh/formula/http-server      # 
 brew "jq"                 # https://formulae.brew.sh/formula/jq               # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli            # MySQL便利ツール
 brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
+brew "xh"                 # https://formulae.brew.sh/formula/xh               # HTTPクライアント
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
