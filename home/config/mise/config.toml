@@ -295,7 +295,8 @@ run = "tmux source-file ~/.tmux.conf && tmux display-message 'tmux設定を再�
 # zsh設定再読み込み
 [tasks.system-zsh-reload]
 description = "zshの設定を再読み込み"
-run = "source ~/.zshrc"
+shell = "zsh -c"
+run = "source ~/.zshrc && echo '✅ zsh設定を再読み込みしました'"
 
 # --------------------------------------
 # ユーティリティ
