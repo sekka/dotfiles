@@ -9,18 +9,15 @@ brew "tmux"               # https://formulae.brew.sh/formula/tmux             # 
 brew "tpm"                # https://formulae.brew.sh/formula/tpm              # tmuxプラグインマネージャ
 
 # === ターミナル ===
-brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
-brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
+brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher    # 超すごいgrep
 brew "fpp"                # https://formulae.brew.sh/formula/fpp              # パスピッカー
-brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher      # 超すごいgrep
-brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher    # 超すごいgrep
-brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
-brew "tree"               # https://formulae.brew.sh/formula/tree             # ディレクトリツリー表示
-brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
-brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DLツール
-brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
-brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # RAR解凍ツール
+brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
+brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
+brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher  # 超すごいgrep
+brew "starship"           # https://formulae.brew.sh/formula/starship         # すごいプロンプト表示
+brew "tree"               # https://formulae.brew.sh/formula/tree             # ディレクトリツリー表示
+brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
 
 # === システムモニタ ===
 brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ
@@ -31,8 +28,9 @@ brew "zenith"             # https://formulae.brew.sh/formula/zenith           # 
 # === 開発一般 ===
 brew "direnv"             # https://formulae.brew.sh/formula/direnv           # ディレクトリ毎環境変数管理ツール
 brew "mise"               # https://formulae.brew.sh/formula/mise             # タスクランナー
+brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
+brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
-brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Dock管理ツール
 
 # === gitクライアント ===
 brew "gitui"              # https://formulae.brew.sh/formula/gitui            # gitクライアント
@@ -85,7 +83,10 @@ brew "specify"            # https://formulae.brew.sh/formula/specify          # 
 
 # === ユーティリティ ===
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
+brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
+brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DLツール
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
+brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # RAR解凍ツール
 
 # === ユーティリティ ===
 #cask "1password"
