@@ -47,6 +47,7 @@ brew "gh"                 # https://formulae.brew.sh/formula/gh               # 
 brew "ghq"                # https://formulae.brew.sh/formula/ghq              # git clone便利ツール
 brew "gibo"               # https://formulae.brew.sh/formula/gibo             # gitignoreボイラープレート
 brew "git"                # https://formulae.brew.sh/formula/git              # git
+brew "git-delta"          # https://formulae.brew.sh/formula/git-delta        # git diff見やすくするツール
 brew "hub"                # https://formulae.brew.sh/formula/hub              # GitHubサポートツール
 brew "satococoa/tap/wtp"  # https://github.com/satococoa/wtp                  # GitHub Worktree Plus
 
