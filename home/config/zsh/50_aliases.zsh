@@ -58,9 +58,7 @@ yrun() {
 
 alias t="tmux"
 alias td="tmux detach"
-alias ta="tmux attach"
-alias tat="tmux attach -t"
-alias tm="tmuximum"
+alias tm="tmuximum"  # セッション選択・作成・アタッチを対話的に実行
 
 # ======================
 # Directory Navigation

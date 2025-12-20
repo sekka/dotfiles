@@ -191,56 +191,12 @@ bindkey '^j' anyframe-widget-insert-git-branch
 # --------------------------------------
 # Tmux自動起動機能
 # --------------------------------------
-# このスクリプトはzshシェル起動時にtmuxセッションを自動的に管理する。
-# 既存セッションがあれば選択してアタッチ、なければ新規作成する。
-# SSH接続時は自動起動しない。
+# ログインシェルでtmuximumを起動し、セッション管理を行う
+# tmuximum: セッション選択・作成・アタッチを対話的に実行
 
-function is_tmux_running() { [[ -n "$TMUX" ]]; }
-function is_interactive_shell() { [[ -n "$PS1" ]]; }
-function is_ssh_session() { [[ -n "$SSH_CONNECTION" ]]; }
-function tmux_automatically_attach_session()
-{
-    # tmuxがインストールされていなければ終了
-    if ! command -v tmux >/dev/null 2>&1; then
-        return 1
-    fi
-
-    # tmuxが既に実行中の場合
-    if is_tmux_running; then
-        return 0
-    fi
-
-    # 非対話シェルまたはSSH接続時は自動起動しない
-    if ! is_interactive_shell || is_ssh_session; then
-        return 0
-    fi
-
-    # tmuxセッションが存在し、未接続のセッションがある場合
-    if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-        tmux list-sessions
-        echo -n "tmux: attach? (y/N/num) "
-        read -r
-        # y、Y、または空の入力であればセッションにアタッチ
-        if [[ "$REPLY" =~ ^[Yy]$ || -z "$REPLY" ]]; then
-            if tmux attach-session; then
-                echo "$(tmux -V) attached session"
-                return 0
-            fi
-        # 数字が入力された場合、指定された番号のセッションにアタッチ
-        elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
-            if tmux attach -t "$REPLY"; then
-                echo "$(tmux -V) attached session"
-                return 0
-            fi
-        fi
-    fi
-
-    # 新規セッション作成
-    tmux new-session && echo "tmux created new session"
-}
-
-# ログインシェルでのみtmux自動起動を実行
-# $SHLVLが1の場合は最初のシェル（ログインシェル）
 if [[ -o login ]] || [[ "$SHLVL" -eq 1 ]]; then
-    tmux_automatically_attach_session
+    # tmux未実行 & 対話シェル & 非SSH接続時のみ起動
+    if [[ -z "$TMUX" ]] && [[ -n "$PS1" ]] && [[ -z "$SSH_CONNECTION" ]]; then
+        command -v tmuximum >/dev/null 2>&1 && tmuximum
+    fi
 fi
