@@ -240,7 +240,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "font-google-sans-code"
 #cask "font-hackgen"
 #cask "font-intel-one-mono"
-#cask "font-jetbrains-mono"
+cask "font-jetbrains-mono"
 #cask "font-meslo-for-powerline"
 #cask "font-moralerspace"
 #cask "font-plemol-jp"
@@ -248,6 +248,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "font-udev-gothic"
 
 # === ターミナル用フォント ===
+# cask "font-hackgen-nerd"
 cask "font-hack-nerd-font"
 
 # === CreativeCoding ===
