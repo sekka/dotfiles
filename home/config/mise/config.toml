@@ -158,7 +158,7 @@ run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
 # cc-sdd
 [tasks.ccsdd-install]
 description = "cc-sddを導入"
-run = "npx cc-sdd@latest --lang ja"
+run = "npx cc-sdd@latest --lang ja --kiro-dir docs"
 
 # --------------------------------------
 # mise自体の管理
