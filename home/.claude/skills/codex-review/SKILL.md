@@ -201,7 +201,7 @@ codex login
 ### コマンドが見つからない
 
 ```bash
-mise install npm-openai-codex
+mise install npm:@openai/codex
 ```
 
 ### レビューが実行されない
