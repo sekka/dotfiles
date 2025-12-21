@@ -15,9 +15,9 @@ brew "fzf"                # https://formulae.brew.sh/formula/fzf              # 
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
 brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher  # 超すごいgrep
+brew "sheldon"            # https://formulae.brew.sh/formula/sheldon          # 高速zshプラグイン管理（Rust製）
 brew "starship"           # https://formulae.brew.sh/formula/starship         # すごいプロンプト表示
 brew "tree"               # https://formulae.brew.sh/formula/tree             # ディレクトリツリー表示
-brew "zplug"              # https://formulae.brew.sh/formula/zplug            # ターミナル用プラグイン管理
 
 # === システムモニタ ===
 brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ

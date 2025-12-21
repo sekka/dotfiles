@@ -1,7 +1,7 @@
 # --------------------------------------
 # Development Tools Integration
 # --------------------------------------
-# mise, zplug, fzf, git, tmuxを統合
+# mise, sheldon, fzf, git, tmuxを統合
 
 # ======================
 # mise - 開発環境管理ツール
@@ -14,43 +14,20 @@ if command -v mise >/dev/null 2>&1; then
 fi
 
 # ======================
-# zplug - Plugin Manager
+# sheldon - Plugin Manager
 # ======================
 
-# zplug初期化
-# HOMEBREW_PREFIXは.zshenvで設定済み
-if [[ -n "$HOMEBREW_PREFIX" ]] && [[ -d "$HOMEBREW_PREFIX/opt/zplug" ]]; then
-    export ZPLUG_HOME="$HOMEBREW_PREFIX/opt/zplug"
-fi
+if command -v sheldon >/dev/null 2>&1; then
+    # プラグインをロード（自動でインストール・更新）
+    eval "$(sheldon source)"
 
-if [[ -n "$ZPLUG_HOME" ]] && [[ -f "$ZPLUG_HOME/init.zsh" ]]; then
-    source "$ZPLUG_HOME/init.zsh"
-
-    # コアプラグイン（即座に読み込み）
-    zplug "zsh-users/zsh-syntax-highlighting"       # シンタックスハイライト
-    zplug "zsh-users/zsh-autosuggestions"           # 入力サジェスト
-    zplug "zsh-users/zsh-completions"               # 入力補完
-
-    # 条件付き読み込み（コマンドが利用可能な場合のみ）
-    zplug "zsh-users/zsh-history-substring-search", defer:1
-    zplug "mollifier/anyframe", if:"command -v fzf"
-    zplug "b4b4r07/easy-oneliner", if:"command -v fzf"
-    zplug "b4b4r07/enhancd", use:init.sh, if:"command -v fzf"
-
-    # 使用頻度の低いプラグイン（遅延読み込み）
-    zplug "b4b4r07/emoji-cli", defer:2, if:"command -v fzf"
-    zplug "arks22/tmuximum", as:command, defer:2, if:"command -v tmux"
-
-    # プラグイン自動インストール
-    if ! zplug check; then
-        echo "Installing missing zplug plugins..."
-        zplug install
+    # tmuximumの実行権限を付与（上流が権限未設定のため）
+    TMUXIMUM_PATH="${HOME}/.local/share/sheldon/repos/github.com/arks22/tmuximum/tmuximum"
+    if [[ -f "$TMUXIMUM_PATH" ]] && [[ ! -x "$TMUXIMUM_PATH" ]]; then
+        chmod +x "$TMUXIMUM_PATH" 2>/dev/null
     fi
-
-    zplug load
 else
-    echo "Warning: zplug not found. Please install via 'brew install zplug'"
-    # zplugが利用不可の場合でも、他のツール（fzf, tmux）の初期化は継続
+    echo "Warning: sheldon not found. Install via 'brew install sheldon'"
 fi
 
 # プラグイン設定
@@ -130,7 +107,7 @@ function _is_git_repo() {
 }
 
 # Gitブランチをfzfで選択してチェックアウト
-# 使用例: fbrまたはCtrl+Bでローカルブランチ、fbrmでリモートブランチも含む
+# 使用例: fbrまたはCtrl+Gでローカルブランチ、fbrmでリモートブランチも含む
 function fzf-git-branch() {
     if ! _is_git_repo; then
         echo "Not a git repository"
@@ -163,7 +140,7 @@ function fzf-git-branch() {
 }
 
 zle -N fzf-git-branch
-bindkey "^b" fzf-git-branch
+bindkey "^g" fzf-git-branch
 alias fbr='fzf-git-branch'
 alias fbrm='fzf-git-branch -r'
 alias fgco='fzf-git-branch'
