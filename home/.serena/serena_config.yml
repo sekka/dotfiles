@@ -79,5 +79,6 @@ token_count_estimator: CHAR_COUNT
 # create the project.yml file manually and then instruct Serena to activate
 # the project by its path for first-time activation.
 # NOTE: Make sure there are no name collisions in the names of registered projects.
-projects: []
+projects:
+- $HOME/dotfiles
 language_backend: LSP
