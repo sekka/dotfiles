@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Claude & Serena セットアップ・同期スクリプト
+# 開発ツール設定セットアップ・同期スクリプト
+# Claude, Serena, sheldon などの設定ファイルのシンボリックリンクを作成
 # 初回セットアップと日常的な同期の両方に対応
 # .envrcにより、dotfilesディレクトリ移動時に自動実行される
 
@@ -11,7 +12,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo "🤖 Claude & Serena のセットアップ・同期を開始します..."
+echo "🔧 開発ツール設定のセットアップ・同期を開始します..."
 
 # ディレクトリの定義
 DOTFILES_CLAUDE_DIR="${HOME}/dotfiles/home/.claude"
@@ -173,6 +174,28 @@ echo ""
 echo "📊 Serena セットアップ完了:"
 echo "   📄 設定ファイル: 新規作成 $serena_created / スキップ $serena_skipped"
 
+# ========================================
+# sheldon セットアップ
+# ========================================
+
 echo ""
-echo "✨ Claude & Serena のセットアップ・同期が完了しました！"
+echo "🐚 sheldon のセットアップ..."
+
+DOTFILES_SHELDON_DIR="${HOME}/dotfiles/home/config/sheldon"
+CONFIG_SHELDON_DIR="${HOME}/.config/sheldon"
+
+# .config ディレクトリが存在しない場合は作成
+if [[ ! -d "${HOME}/.config" ]]; then
+  printf "%b\n" "${BLUE}📁 ディレクトリを作成:${NC} ${HOME}/.config"
+  mkdir -p "${HOME}/.config"
+fi
+
+link_folder "sheldon" "$DOTFILES_SHELDON_DIR" "$CONFIG_SHELDON_DIR"
+
+echo ""
+echo "✨ 開発ツール設定のセットアップ・同期が完了しました！"
+echo "   🤖 Claude (AI開発支援)"
+echo "   🔧 Serena (セマンティックコーディング)"
+echo "   🐚 sheldon (zshプラグインマネージャー)"
+echo ""
 echo "💡 このスクリプトは .envrc により dotfiles ディレクトリ移動時に自動実行されます"
