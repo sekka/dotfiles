@@ -41,9 +41,9 @@ export EMOJI_CLI_FILTER=fzf
 
 # zsh-auto-notify設定
 # 実行時間がこの秒数を超えたコマンドは通知を表示
-export AUTO_NOTIFY_THRESHOLD=30  # デフォルト: 30秒
-export AUTO_NOTIFY_TITLE="Command Completed"
-export AUTO_NOTIFY_BODY="Finished in %elapsed seconds"
+export ZSH_AUTO_NOTIFY_THRESHOLD=30  # デフォルト: 30秒
+export ZSH_AUTO_NOTIFY_TITLE="Command Completed"
+export ZSH_AUTO_NOTIFY_BODY="Finished in %elapsed seconds"
 
 # zsh-you-should-use設定
 # エイリアス提案メッセージの表示位置（before: コマンド実行前、after: 実行後）
@@ -242,7 +242,12 @@ function fcd() {
     if command -v eza >/dev/null 2>&1; then
         preview_cmd="eza -la --git --color=always --group-directories-first {} 2>/dev/null"
     else
-        preview_cmd="ls -la --color=always {} 2>/dev/null"
+        # macOS/BSD互換性のため、OSに応じてカラーオプションを変更
+        if [[ "$(uname)" == "Darwin" ]]; then
+            preview_cmd="ls -laG {} 2>/dev/null"
+        else
+            preview_cmd="ls -la --color=always {} 2>/dev/null"
+        fi
     fi
 
     # ディレクトリ検索（fdが利用可能ならfdを使用、なければfind）

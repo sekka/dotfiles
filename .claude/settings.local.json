@@ -65,7 +65,8 @@
       "Bash(sheldon lock:*)",
       "WebFetch(domain:sheldon.cli.rs)",
       "Bash(bash:*)",
-      "Bash(sheldon source --help:*)"
+      "Bash(sheldon source --help:*)",
+      "Skill(multi-ai-review)"
     ],
     "deny": [
       "Read(./.env.*)"
