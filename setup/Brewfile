@@ -57,7 +57,7 @@ brew "jq"                 # https://formulae.brew.sh/formula/jq               # 
 brew "mycli"              # https://formulae.brew.sh/formula/mycli            # MySQL便利ツール
 brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
 brew "xh"                 # https://formulae.brew.sh/formula/xh               # HTTPクライアント
-brew "productdevbook/tap/pk"  #https://github.com/productdevbook/port-killer/issues/48  # ポート解放ツール
+# brew "productdevbook/tap/pk"  #https://github.com/productdevbook/port-killer/issues/48  # ポート解放ツール
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
