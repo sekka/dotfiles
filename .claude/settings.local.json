@@ -47,7 +47,19 @@
       "mcp__serena__*",
       "WebFetch(domain:ghostty.org)",
       "Bash(bunx @biomejs/biome check:*)",
-      "Skill(coderabbit-review)"
+      "Skill(claude-review)",
+      "Skill(coderabbit-review)",
+      "Skill(codex-review)",
+      "Skill(copilot-review)",
+      "Skill(gemini-review)",
+      "Bash(copilot --help:*)",
+      "Bash(copilot:*)",
+      "Bash(gemini --help:*)",
+      "Bash(gemini:*)",
+      "Bash(codex --help:*)",
+      "Bash(codex review --help:*)",
+      "Bash(codex review:*)",
+      "Bash(ghostty:*)"
     ],
     "deny": [
       "Read(./.env.*)"
