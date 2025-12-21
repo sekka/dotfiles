@@ -59,7 +59,8 @@
       "Bash(codex --help:*)",
       "Bash(codex review --help:*)",
       "Bash(codex review:*)",
-      "Bash(ghostty:*)"
+      "Bash(ghostty:*)",
+      "Bash(coderabbit review:*)"
     ],
     "deny": [
       "Read(./.env.*)"
