@@ -1,5 +1,18 @@
 # ワークフロールール
 
+## ツール選択の優先順位
+
+標準UNIXコマンドには高機能な代替ツールを優先的に使用する:
+
+- **ファイル操作**: `bat` (cat), `eza` (ls), `fd` (find)
+- **テキスト検索**: `ripgrep` / `rg` (grep), `ag`, `pt`
+- **プロセス監視**: `procs` (ps), `btop` (top)
+- **バイナリ**: `hexyl` (od), `hx` (hex viewer)
+- **HTTP**: `xh` (curl)
+- **ダウンロード**: `ruget` (wget)
+
+これらのツールは mise/cargo で管理され、すでに利用可能。
+
 ## 問題解決アプローチ
 
 - 大きな問題を小さな段階に分割する（A→A1→A2→A3→B）
@@ -39,6 +52,15 @@
 - `/commit`: 変更のコミット
 - `/generate-test`: テストコード生成
 - `/improve-html`: HTML/CSS 改善
+- `/multi-ai-review`: 複数AIで並行コードレビュー
+
+## コードレビュー
+
+- ユーザーが「レビュー」を依頼した場合、複数のAIツールを並行実行する
+- Bashツールで以下を同時呼び出し:
+  - `codex review --uncommitted`
+  - `gemini --yolo "git diffをレビューしてください"`
+- 各AIの結果を統合して表示
 
 ## Serena MCP 使用時
 
