@@ -1,0 +1,83 @@
+# --------------------------------------
+# Sheldon Plugin Configuration
+# --------------------------------------
+# Sheldon: 高速zshプラグイン管理ツール（Rust製）
+# https://sheldon.cli.rs/
+
+# ======================
+# Shell設定
+# ======================
+shell = "zsh"
+
+# ======================
+# カスタムテンプレート
+# ======================
+# defer読み込みは不要のため削除
+# sheldon自体が十分高速なため、全プラグインを即時読み込みで問題なし
+
+# ======================
+# コアプラグイン（即時読み込み）
+# ======================
+
+# シンタックスハイライト
+# コマンドライン入力時にリアルタイムで構文を色分け表示
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+
+# 入力サジェスト
+# 履歴に基づいてコマンド入力を予測・提案
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+
+# 入力補完
+# より高度な補完候補を提供
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+
+# ======================
+# 履歴検索
+# ======================
+
+# 部分文字列履歴検索
+# Ctrl+P/Ctrl+Nで履歴を部分一致検索
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+
+# ======================
+# fzf連携プラグイン
+# ======================
+# Note: これらのプラグインはfzfが必要
+# 60_tools.zshでfzfの存在確認後に読み込みを制御
+
+# anyframe - fzf連携フレームワーク
+# 様々なデータソースをfzfで選択可能に
+[plugins.anyframe]
+github = "mollifier/anyframe"
+
+# easy-oneliner - ワンライナー管理
+# よく使うコマンドをfzfで検索・実行
+[plugins.easy-oneliner]
+github = "b4b4r07/easy-oneliner"
+
+# enhancd - 拡張cd
+# ディレクトリ移動履歴をfzfで選択
+[plugins.enhancd]
+github = "b4b4r07/enhancd"
+use = ["init.sh"]
+
+# emoji-cli - 絵文字選択
+# 絵文字をfzfで検索・入力
+[plugins.emoji-cli]
+github = "b4b4r07/emoji-cli"
+
+# ======================
+# tmux連携プラグイン
+# ======================
+# Note: このプラグインはtmuxが必要
+# 60_tools.zshでtmuxの存在確認後に読み込みを制御
+
+# tmuximum - tmuxセッション管理
+# セッション選択・作成・アタッチを対話的に実行
+[plugins.tmuximum]
+github = "arks22/tmuximum"
+apply = ["PATH"]
