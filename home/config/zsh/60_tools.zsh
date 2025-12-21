@@ -39,6 +39,18 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
 export ENHANCD_FILTER=fzf
 export EMOJI_CLI_FILTER=fzf
 
+# zsh-auto-notify設定
+# 実行時間がこの秒数を超えたコマンドは通知を表示
+export AUTO_NOTIFY_THRESHOLD=30  # デフォルト: 30秒
+export AUTO_NOTIFY_TITLE="Command Completed"
+export AUTO_NOTIFY_BODY="Finished in %elapsed seconds"
+
+# zsh-you-should-use設定
+# エイリアス提案メッセージの表示位置（before: コマンド実行前、after: 実行後）
+export YSU_MESSAGE_POSITION="after"
+# 提案を無視するコマンド（スペース区切り）
+export YSU_IGNORED_ALIASES=("g")  # 短すぎるエイリアスは無視
+
 # ======================
 # FZF Configuration
 # ======================

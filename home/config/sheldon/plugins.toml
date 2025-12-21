@@ -19,10 +19,11 @@ shell = "zsh"
 # コアプラグイン（即時読み込み）
 # ======================
 
-# シンタックスハイライト
+# シンタックスハイライト（高速版）
 # コマンドライン入力時にリアルタイムで構文を色分け表示
-[plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
+# zsh-syntax-highlightingの高速実装版
+[plugins.fast-syntax-highlighting]
+github = "zdharma-continuum/fast-syntax-highlighting"
 
 # 入力サジェスト
 # 履歴に基づいてコマンド入力を予測・提案
@@ -33,6 +34,11 @@ github = "zsh-users/zsh-autosuggestions"
 # より高度な補完候補を提供
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
+
+# 括弧・クォート自動閉じ
+# 括弧、クォート、バッククォートなどを自動で閉じる
+[plugins.zsh-autopair]
+github = "hlissner/zsh-autopair"
 
 # ======================
 # 履歴検索
@@ -69,6 +75,32 @@ use = ["init.sh"]
 # 絵文字をfzfで検索・入力
 [plugins.emoji-cli]
 github = "b4b4r07/emoji-cli"
+
+# ======================
+# 開発効率化プラグイン
+# ======================
+
+# forgit - Git操作をfzfで強化
+# git add, log, diff, checkout などをインタラクティブに
+# エイリアス: ga, glo, gd, gcf など
+[plugins.forgit]
+github = "wfxr/forgit"
+
+# zsh-you-should-use - エイリアス学習支援
+# 既存のエイリアスがあるコマンドを実行すると提案
+# エイリアス活用を促進し、効率化を支援
+[plugins.zsh-you-should-use]
+github = "MichaelAquilina/zsh-you-should-use"
+
+# ======================
+# 通知プラグイン
+# ======================
+
+# zsh-auto-notify - 長時間実行コマンドの完了通知
+# デフォルト: 30秒以上かかったコマンドは通知
+# ZSH_AUTO_NOTIFY_THRESHOLD=数値 で閾値変更可能
+[plugins.zsh-auto-notify]
+github = "MichaelAquilina/zsh-auto-notify"
 
 # ======================
 # tmux連携プラグイン
