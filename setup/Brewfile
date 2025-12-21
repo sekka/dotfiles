@@ -135,6 +135,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 
 # === AI ===
 #cask "antigravity"
+#cask "athas"
 #cask "chatgpt"
 #cask "claude"
 #cask "claude-code"
