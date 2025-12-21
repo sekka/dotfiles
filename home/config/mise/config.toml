@@ -305,6 +305,12 @@ run = "env | sort"
 description = "SHELL再起動"
 run = "exec $SHELL -l"
 
+# Ghostty設定再読み込み
+[tasks.system-ghostty-reload]
+alias = "gr"
+description = "Ghostty設定を再読み込み"
+run = "echo '💡 Cmd + Shift + , を押してGhosttyの設定を再読み込みしてください'"
+
 # tmux設定再読み込み
 [tasks.system-tmux-reload]
 description = "tmux設定を再読み込み"

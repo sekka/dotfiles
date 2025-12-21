@@ -25,17 +25,18 @@
 # ==========================
 # # The config file consists of simple key-value pairs,
 # # separated by equals signs.
-font-family = "JetBrains Mono"
+font-family = "UDEV Gothic 35LG"
 font-size = 12
 font-thicken = false
-adjust-cell-height = 10%
+font-feature = [ "-dlig" ]
+adjust-cell-height = 20%
 
 # theme = Solarized Dark Higher Contrast
 
 window-padding-x = 10
 window-padding-y = 10
-background-opacity = 0.80
-background-blur-radius = 10
+background-opacity = 0.70
+background-blur-radius = 20
 
 # unfocused-split-opacity = 0.80
 
