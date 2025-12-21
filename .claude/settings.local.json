@@ -60,7 +60,12 @@
       "Bash(codex review --help:*)",
       "Bash(codex review:*)",
       "Bash(ghostty:*)",
-      "Bash(coderabbit review:*)"
+      "Bash(coderabbit review:*)",
+      "Bash(eza:*)",
+      "Bash(sheldon lock:*)",
+      "WebFetch(domain:sheldon.cli.rs)",
+      "Bash(bash:*)",
+      "Bash(sheldon source --help:*)"
     ],
     "deny": [
       "Read(./.env.*)"
