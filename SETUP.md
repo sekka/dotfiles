@@ -150,6 +150,26 @@ echo "# 新しいコマンド" > ~/dotfiles/home/.claude/commands/new-command.md
 ./setup/02_dotfiles.sh
 ```
 
+### Claude Code プラグイン
+
+各環境でマーケットプレイスの追加とプラグインのインストールが必要です：
+
+```bash
+# claude-mem（セッション間メモリ）
+claude /plugin marketplace add thedotmack/claude-mem
+claude /plugin install claude-mem@thedotmack
+
+# claude-mem-japanese（claude-mem日本語対応）
+claude /plugin marketplace add Chachamaru127/claude-mem-jp
+claude /plugin install claude-mem-japanese@claude-mem-jp
+
+# claude-code-harness（コード管理ツール）
+claude /plugin marketplace add Chachamaru127/claude-code-harness
+claude /plugin install claude-code-harness@claude-code-harness-marketplace
+```
+
+プラグインのインストール後はClaude Codeの再起動が必要です。
+
 ### コード品質チェック
 
 ```bash
