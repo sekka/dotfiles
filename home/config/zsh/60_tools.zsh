@@ -37,11 +37,11 @@ fi
 # プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
 
-# enhancd - cd拡張プラグイン（popup対応）
-export ENHANCD_FILTER="fzf-tmux -p 90%,90% --"
+# enhancd - cd拡張プラグイン（FZF_TMUX=1により自動popup対応）
+export ENHANCD_FILTER="fzf"
 
-# emoji-cli - 絵文字選択（popup対応）
-export EMOJI_CLI_FILTER="fzf-tmux -p 90%,90% --"
+# emoji-cli - 絵文字選択（FZF_TMUX=1により自動popup対応）
+export EMOJI_CLI_FILTER="fzf"
 
 # forgit - Git操作をfzfで強化（popup対応）
 export FORGIT_FZF_DEFAULT_OPTS="
@@ -119,14 +119,14 @@ function fzf-select-history() {
     local selected
     # 履歴の取得と選択（新しい順）
     if command -v tac >/dev/null 2>&1; then
-        selected=$(history -n 1 | tac | fzf-tmux -p 90%,90% -- \
+        selected=$(history -n 1 | tac | fzf \
             --query "$LBUFFER" \
             --header "📜 Command History | Enter: Execute | Esc: Cancel" \
             --preview "echo {}" \
             --preview-window=up:3:wrap
         ) || return
     elif command -v tail >/dev/null 2>&1; then
-        selected=$(history -n 1 | tail -r | fzf-tmux -p 90%,90% -- \
+        selected=$(history -n 1 | tail -r | fzf \
             --query "$LBUFFER" \
             --header "📜 Command History | Enter: Execute | Esc: Cancel" \
             --preview "echo {}" \
@@ -207,7 +207,7 @@ function fzf-src() {
         fi
     "
 
-    selected_dir=$(ghq list -p 2>/dev/null | fzf-tmux -p 90%,90% -- \
+    selected_dir=$(ghq list -p 2>/dev/null | fzf \
         --query "$LBUFFER" \
         --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
         --preview "$preview_cmd" \
@@ -278,7 +278,7 @@ function fcd() {
             --exclude .git \
             --exclude node_modules \
             --exclude target \
-            . "$base_dir" 2>/dev/null | fzf-tmux -p 90%,90% -- \
+            . "$base_dir" 2>/dev/null | fzf \
             --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
             --preview "$preview_cmd" \
             --preview-window=right:50%:wrap
@@ -288,7 +288,7 @@ function fcd() {
             -not -path '*/\.*' \
             -not -path '*/node_modules/*' \
             -not -path '*/target/*' \
-            2>/dev/null | fzf-tmux -p 90%,90% -- \
+            2>/dev/null | fzf \
             --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
             --preview "$preview_cmd" \
             --preview-window=right:50%:wrap
@@ -350,7 +350,7 @@ function fzf-git-branch() {
     fi
 
     # fzfでブランチ選択
-    branch=$(echo "$branches" | fzf-tmux -p 90%,90% -- \
+    branch=$(echo "$branches" | fzf \
         --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
         --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
         --preview-window=right:60%:wrap \
@@ -389,8 +389,8 @@ alias fgcor='fzf-git-branch -r'  # git checkout (remote) のエイリアス
 # anyframe Plugin
 # ======================
 
-# anyframe設定（popup対応）
-export ANYFRAME_SELECTOR="fzf-tmux -p 90%,90% --"
+# anyframe設定（FZF_TMUX=1により自動popup対応）
+export ANYFRAME_SELECTOR="fzf"
 
 # anyframe keybindings
 bindkey '^h' anyframe-widget-select-widget
