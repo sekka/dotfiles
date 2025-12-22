@@ -40,11 +40,27 @@ created=0
 skipped=0
 
 for file in "${DOT_FILES[@]}"; do
-  if [[ -e "$HOME/$file" ]]; then
-    echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に存在)"
-    ((skipped++))
+  source_file="$HOME/dotfiles/home/$file"
+  target_file="$HOME/$file"
+
+  if [[ -L $target_file ]]; then
+    # シンボリックリンクの場合、リンク先を確認
+    current_target=$(readlink "$target_file")
+    if [[ $current_target == "$source_file" ]]; then
+      echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に正しくリンクされています)"
+      ((skipped++))
+    else
+      echo -e "${GREEN}🔄 更新:${NC} $file (リンク先: $current_target → $source_file)"
+      rm "$target_file"
+      ln -s "$source_file" "$target_file"
+      ((created++))
+    fi
+  elif [[ -e $target_file ]]; then
+    # 実体ファイル/ディレクトリの場合
+    echo -e "${RED}⚠️  警告:${NC} $file は実体として存在します。手動で確認してください。"
   else
-    ln -s "$HOME/dotfiles/home/$file" "$HOME/$file"
+    # 存在しない場合、新規作成
+    ln -s "$source_file" "$target_file"
     echo -e "${GREEN}✅ 作成:${NC} $file"
     ((created++))
   fi
@@ -71,11 +87,27 @@ CONFIG_DIRS=(
 )
 
 for dirs in "${CONFIG_DIRS[@]}"; do
-  if [[ -e "$HOME/.config/$dirs" ]]; then
-    echo -e "${YELLOW}⏭️  スキップ:${NC} $dirs (既に存在)"
-    ((skipped++))
+  source_dir="$HOME/dotfiles/home/config/$dirs"
+  target_dir="$HOME/.config/$dirs"
+
+  if [[ -L $target_dir ]]; then
+    # シンボリックリンクの場合、リンク先を確認
+    current_target=$(readlink "$target_dir")
+    if [[ $current_target == "$source_dir" ]]; then
+      echo -e "${YELLOW}⏭️  スキップ:${NC} $dirs (既に正しくリンクされています)"
+      ((skipped++))
+    else
+      echo -e "${GREEN}🔄 更新:${NC} $dirs (リンク先: $current_target → $source_dir)"
+      rm "$target_dir"
+      ln -s "$source_dir" "$target_dir"
+      ((created++))
+    fi
+  elif [[ -e $target_dir ]]; then
+    # 実体ディレクトリの場合
+    echo -e "${RED}⚠️  警告:${NC} $dirs は実体ディレクトリとして存在します。手動で確認してください。"
   else
-    ln -s "$HOME/dotfiles/home/config/$dirs" "$HOME/.config/$dirs"
+    # 存在しない場合、新規作成
+    ln -s "$source_dir" "$target_dir"
     echo -e "${GREEN}✅ 作成:${NC} $dirs"
     ((created++))
   fi
