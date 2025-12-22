@@ -71,7 +71,9 @@
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack status)",
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack pull)",
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack restore:*)",
-      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack clean:*)"
+      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack clean:*)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)"
     ],
     "deny": [
       "Read(./.env.*)"

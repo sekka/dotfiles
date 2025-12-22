@@ -96,7 +96,7 @@ PR URLを指定してレビューしてください
 codex review --uncommitted
 gemini --yolo "$(git diff HEAD)をレビューしてください"
 copilot -p "$(git diff HEAD)をレビューしてください" --allow-all-tools
-coderabbit review --plain --type uncommitted
+coderabbit review --prompt-only --type uncommitted
 ```
 
 #### ブランチ比較の場合
@@ -105,7 +105,7 @@ coderabbit review --plain --type uncommitted
 codex review --base <branch>
 gemini --yolo "$(git diff <branch>..HEAD)をレビューしてください"
 copilot -p "$(git diff <branch>..HEAD)をレビューしてください" --allow-all-tools
-coderabbit review --plain --base <branch>
+coderabbit review --prompt-only --base <branch>
 ```
 
 #### 範囲指定の場合
@@ -115,7 +115,7 @@ coderabbit review --plain --base <branch>
 codex review --base <range-start>
 gemini --yolo "$(git diff <range>)をレビューしてください"
 copilot -p "$(git diff <range>)をレビューしてください" --allow-all-tools
-coderabbit review --plain --base <range-start>
+coderabbit review --prompt-only --base <range-start>
 ```
 
 #### PR指定の場合
@@ -137,7 +137,7 @@ $PR_DIFF"
 copilot -p "以下のPR差分をレビューしてください：
 
 $PR_DIFF" --allow-all-tools
-coderabbit review --plain --type uncommitted  # PRをチェックアウト後に実行
+coderabbit review --prompt-only --type uncommitted  # PRをチェックアウト後に実行
 ```
 
 ### 3. 並行実行の実装
@@ -155,7 +155,7 @@ GEMINI_PID=$!
 copilot -p "$(git diff <target>)をレビュー" --allow-all-tools > /tmp/copilot_review.txt 2>&1 &
 COPILOT_PID=$!
 
-coderabbit review <options> > /tmp/coderabbit_review.txt 2>&1 &
+coderabbit review --prompt-only <options> > /tmp/coderabbit_review.txt 2>&1 &
 CODERABBIT_PID=$!
 
 # すべての完了を待機
