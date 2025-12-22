@@ -63,9 +63,9 @@ unalias mrun 2>/dev/null
 mrun() {
   local task
   if [[ -n "$TMUX" ]]; then
-    task=$(mise tasks ls --no-header 2>/dev/null | fzf-tmux -p 90%,90% --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=up:3:wrap) || return 1
+    task=$(mise tasks ls --no-header 2>/dev/null | fzf-tmux -p 90%,90% --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=right:60%:wrap) || return 1
   else
-    task=$(mise tasks ls --no-header 2>/dev/null | fzf --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=up:3:wrap) || return 1
+    task=$(mise tasks ls --no-header 2>/dev/null | fzf --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=right:60%:wrap) || return 1
   fi
   # 最初の列（タスク名）を抽出
   local task_name=$(echo "$task" | awk '{print $1}')

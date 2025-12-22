@@ -133,14 +133,14 @@ function fzf-select-history() {
                 --query "$LBUFFER" \
                 --header "📜 Command History | Enter: Execute | Esc: Cancel" \
                 --preview "echo {}" \
-                --preview-window=up:3:wrap
+                --preview-window=right:60%:wrap
             ) || return
         else
             selected=$(history -n 1 | tac | fzf \
                 --query "$LBUFFER" \
                 --header "📜 Command History | Enter: Execute | Esc: Cancel" \
                 --preview "echo {}" \
-                --preview-window=up:3:wrap
+                --preview-window=right:60%:wrap
             ) || return
         fi
     elif command -v tail >/dev/null 2>&1; then
@@ -149,14 +149,14 @@ function fzf-select-history() {
                 --query "$LBUFFER" \
                 --header "📜 Command History | Enter: Execute | Esc: Cancel" \
                 --preview "echo {}" \
-                --preview-window=up:3:wrap
+                --preview-window=right:60%:wrap
             ) || return
         else
             selected=$(history -n 1 | tail -r | fzf \
                 --query "$LBUFFER" \
                 --header "📜 Command History | Enter: Execute | Esc: Cancel" \
                 --preview "echo {}" \
-                --preview-window=up:3:wrap
+                --preview-window=right:60%:wrap
             ) || return
         fi
     else
