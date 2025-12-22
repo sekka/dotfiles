@@ -49,10 +49,8 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
 	}
 
 	// tmuxセッション内ならpopup表示、外なら通常のfzf
-	const fzfCmd = process.env.TMUX ? "fzf-tmux -p 90%,90% --" : "fzf";
-
-	// fzfでコミットを選択し、詳細を表示
-	await $`echo ${logOutput} | ${fzfCmd} --ansi \
+	if (process.env.TMUX) {
+		await $`echo ${logOutput} | fzf-tmux -p 90%,90% -- --ansi \
     --no-sort \
     --reverse \
     --tiebreak=index \
@@ -62,6 +60,18 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
       xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
       {}
 FZF-EOF"`.nothrow();
+	} else {
+		await $`echo ${logOutput} | fzf --ansi \
+    --no-sort \
+    --reverse \
+    --tiebreak=index \
+    --bind=ctrl-s:toggle-sort \
+    --bind "ctrl-m:execute:
+      (grep -o '[a-f0-9]\\{7\\}' | head -1 |
+      xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+      {}
+FZF-EOF"`.nothrow();
+	}
 }
 
 /**

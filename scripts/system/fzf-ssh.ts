@@ -54,15 +54,23 @@ export async function selectHostWithFzf(
 	}
 
 	// tmuxセッション内ならpopup表示、外なら通常のfzf
-	const fzfCmd = process.env.TMUX ? "fzf-tmux -p 90%,90% --" : "fzf";
-
 	const input = hosts.join("\n");
-	const result = await $`echo ${input} | ${fzfCmd} \
+	let result: Awaited<ReturnType<typeof $>>;
+	if (process.env.TMUX) {
+		result = await $`echo ${input} | fzf-tmux -p 90%,90% -- \
     --preview "grep -A 10 '^Host {}' ${SSH_CONFIG_PATH}" \
     --preview-window=right:40%:wrap \
     --header "Select SSH host"`
-		.quiet()
-		.nothrow();
+			.quiet()
+			.nothrow();
+	} else {
+		result = await $`echo ${input} | fzf \
+    --preview "grep -A 10 '^Host {}' ${SSH_CONFIG_PATH}" \
+    --preview-window=right:40%:wrap \
+    --header "Select SSH host"`
+			.quiet()
+			.nothrow();
+	}
 
 	if (result.exitCode !== 0 || !result.stdout.length) {
 		return null;
