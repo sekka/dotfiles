@@ -19,18 +19,22 @@ set diff-context = 6
 # ========================================
 # git-delta統合
 # ========================================
-# Dキー: deltaによる通常のdiff表示
-# Sキー: deltaによるside-by-side diff表示
+# Ctrl+d: deltaによる通常のdiff表示
+# Ctrl+s: deltaによるside-by-side diff表示
 # 参考: https://gist.github.com/kmatt/4ee3c24ab077ae556fb15563fd08469b
+#
+# 注: D/Sキーはデフォルト機能に割り当て済みのため、Ctrl+キーを使用
+#   D: 日付表示の切り替え
+#   S: statusビューを表示
 
 # diffビューでdeltaを使用
-bind diff D !git show %(commit) | delta --paging always --dark
-bind diff S !git show %(commit) | delta --paging always --dark --side-by-side
+bind diff <Ctrl-d> !git show %(commit) | delta --paging always --dark
+bind diff <Ctrl-s> !git show %(commit) | delta --paging always --dark --side-by-side
 
 # stageビューでdeltaを使用
-bind stage D !git diff %(file) | delta --paging always --dark
-bind stage S !git diff %(file) | delta --paging always --dark --side-by-side
+bind stage <Ctrl-d> !git diff %(file) | delta --paging always --dark
+bind stage <Ctrl-s> !git diff %(file) | delta --paging always --dark --side-by-side
 
 # statusビューでdeltaを使用
-bind status D !git diff %(file) | delta --paging always --dark
-bind status S !git diff %(file) | delta --paging always --dark --side-by-side
+bind status <Ctrl-d> !git diff %(file) | delta --paging always --dark
+bind status <Ctrl-s> !git diff %(file) | delta --paging always --dark --side-by-side
