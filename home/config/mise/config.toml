@@ -297,6 +297,26 @@ description = "dotfilesのシンボリックリンクを作成"
 run = "bash ~/dotfiles/setup/02_dotfiles.sh"
 
 # --------------------------------------
+# Docker/Container
+# --------------------------------------
+# Colima起動
+[tasks.docker-colima-start]
+alias = "cs"
+description = "Colimaを起動（Docker Desktop代替）"
+run = "colima start"
+
+# Colima停止
+[tasks.docker-colima-stop]
+alias = "cx"
+description = "Colimaを停止"
+run = "colima stop"
+
+# Colima状態確認
+[tasks.docker-colima-status]
+description = "Colimaの状態を確認"
+run = "colima status"
+
+# --------------------------------------
 # システム管理
 # --------------------------------------
 # スリープ防止（手動終了するまで）
