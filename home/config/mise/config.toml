@@ -175,11 +175,11 @@ alias = "ml"
 description = "インストール済みツール一覧"
 run = "mise list"
 
-# mise更新
+# mise更新（Homebrew経由）
 [tasks.mise-self-update]
 alias = "msu"
-description = "mise本体更新"
-run = "mise self-update"
+description = "mise本体更新（Homebrew経由）"
+run = "brew upgrade mise"
 
 # mise upgrade
 [tasks.mise-upgrade]
