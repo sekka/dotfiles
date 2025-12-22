@@ -482,7 +482,7 @@ function gifit() {
                 --header "> difit \$TO \$FROM~1" \
                 --prompt "Select \$FROM>" \
                 --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=right:60%:wrap
+                --preview-window=top:3:wrap
         ) || return
     else
         from_commit=$(git log --oneline --decorate -100 --color=always | \
@@ -491,7 +491,7 @@ function gifit() {
                 --header "> difit \$TO \$FROM~1" \
                 --prompt "Select \$FROM>" \
                 --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=right:60%:wrap
+                --preview-window=top:3:wrap
         ) || return
     fi
     from_hash="${from_commit%% *}"
@@ -504,7 +504,7 @@ function gifit() {
                 --header "> difit \$TO $from_hash~1" \
                 --prompt "Select \$TO>" \
                 --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=right:60%:wrap
+                --preview-window=top:3:wrap
         ) || return
     else
         to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
@@ -513,7 +513,7 @@ function gifit() {
                 --header "> difit \$TO $from_hash~1" \
                 --prompt "Select \$TO>" \
                 --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=right:60%:wrap
+                --preview-window=top:3:wrap
         ) || return
     fi
     to_hash="${to_commit%% *}"
