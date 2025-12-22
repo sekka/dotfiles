@@ -19,22 +19,23 @@ set diff-context = 6
 # ========================================
 # git-delta統合
 # ========================================
-# Ctrl+d: deltaによる通常のdiff表示
-# Ctrl+s: deltaによるside-by-side diff表示
+# @キー: deltaによる通常のdiff表示
+# #キー: deltaによるside-by-side diff表示
 # 参考: https://gist.github.com/kmatt/4ee3c24ab077ae556fb15563fd08469b
 #
-# 注: D/Sキーはデフォルト機能に割り当て済みのため、Ctrl+キーを使用
-#   D: 日付表示の切り替え
-#   S: statusビューを表示
+# 注:
+# - D/Sキー: デフォルト機能に割り当て済み
+# - Ctrl+d/s: デフォルト機能に割り当て済み（半ページスクロール等）
+# - sh -c 必要: パイプを正しく処理するためシェル経由で実行
 
 # diffビューでdeltaを使用
-bind diff <Ctrl-d> !git show %(commit) | delta --paging always --dark
-bind diff <Ctrl-s> !git show %(commit) | delta --paging always --dark --side-by-side
+bind diff @ !sh -c "git show %(commit) | delta --paging always --dark"
+bind diff # !sh -c "git show %(commit) | delta --paging always --dark --side-by-side"
 
 # stageビューでdeltaを使用
-bind stage <Ctrl-d> !git diff %(file) | delta --paging always --dark
-bind stage <Ctrl-s> !git diff %(file) | delta --paging always --dark --side-by-side
+bind stage @ !sh -c "git diff %(file) | delta --paging always --dark"
+bind stage # !sh -c "git diff %(file) | delta --paging always --dark --side-by-side"
 
 # statusビューでdeltaを使用
-bind status <Ctrl-d> !git diff %(file) | delta --paging always --dark
-bind status <Ctrl-s> !git diff %(file) | delta --paging always --dark --side-by-side
+bind status @ !sh -c "git diff %(file) | delta --paging always --dark"
+bind status # !sh -c "git diff %(file) | delta --paging always --dark --side-by-side"
