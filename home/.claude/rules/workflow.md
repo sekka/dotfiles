@@ -6,6 +6,7 @@
 
 - **ファイル操作**: `bat` (cat), `eza` (ls), `fd` (find)
 - **テキスト検索**: `ripgrep` / `rg` (grep), `ag`, `pt`
+- **ログ表示**: `tspin` (tail) - 構文ハイライト付き高速ログビューアー
 - **プロセス監視**: `procs` (ps), `btop` (top)
 - **バイナリ**: `hexyl` (od), `hx` (hex viewer)
 - **HTTP**: `xh` (curl)
