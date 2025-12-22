@@ -41,14 +41,22 @@ alias mrun="mise run"
 unalias nrun 2>/dev/null
 nrun() {
   local script
-  script=$(npm-scripts.ts | fzf) || return 1
+  if [[ -n "$TMUX" ]]; then
+    script=$(npm-scripts.ts | fzf-tmux -p 90%,90%) || return 1
+  else
+    script=$(npm-scripts.ts | fzf) || return 1
+  fi
   [ -n "$script" ] && npm run "$script"
 }
 
 unalias yrun 2>/dev/null
 yrun() {
   local script
-  script=$(npm-scripts.ts | fzf) || return 1
+  if [[ -n "$TMUX" ]]; then
+    script=$(npm-scripts.ts | fzf-tmux -p 90%,90%) || return 1
+  else
+    script=$(npm-scripts.ts | fzf) || return 1
+  fi
   [ -n "$script" ] && yarn "$script"
 }
 
