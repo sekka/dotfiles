@@ -11,48 +11,45 @@
 ./setup/01_base.sh
 ```
 
-### 2. dotfiles のシンボリックリンク作成
+### 2. 全設定ファイルのシンボリックリンク作成
 
 ```bash
-# home/ ディレクトリからホームディレクトリへシンボリックリンクを作成
+# home/ ディレクトリから全設定のシンボリックリンクを一括作成
 ./setup/02_dotfiles.sh
 ```
 
-対象ファイル：
+作成される設定：
 
+**ホームディレクトリ直下:**
 - `.zshrc`, `.zshenv`, `.zprofile` - zsh設定
 - `.gitconfig`, `.gitignore_global` - Git設定
-- `.tmux.conf` - tmux設定
-- `.vimrc` - vim設定
-- `.claude`, `.gemini` - AI設定ディレクトリ
-- その他の個人設定ファイル
+- `.tmux.conf`, `.vimrc` - その他の設定
 
-### 3. Claude Commands のセットアップ
+**~/.config/ 配下:**
+- `ghostty/` - ターミナル設定
+- `mise/` - ツールバージョン管理
+- `sheldon/` - zshプラグイン管理
 
-```bash
-# Claude設定ファイルとCommandsのシンボリックリンクを作成
-./setup/03_claude.sh
-```
+**AI開発支援ツール:**
+- `~/.claude/` - Claude設定（CLAUDE.md, settings.json, commands等）
+- `~/.serena/` - Serena設定（セマンティックコーディング）
 
-このスクリプトは以降 `.envrc` により自動実行されます。
-
-### 4. アプリケーションのインストール
+### 3. アプリケーションのインストール
 
 ```bash
 # Homebrewからアプリをインストール（Brewfile使用）
-./setup/20_homebrew.sh
+./setup/10_homebrew.sh
 ```
 
 ---
 
-## ⚡ 自動同期機能
+## ⚡ 自動化機能
 
 ### direnv による自動実行
 
 `dotfiles/` ディレクトリに移動するたびに以下が自動実行されます：
 
-- Claude Commands の同期（`setup/03_claude.sh`）
-- 新しいコマンドファイルの自動リンク作成
+- Git hooks のセットアップ（commit前のlint/formatチェック）
 
 ```bash
 # direnv が正常に動作しているか確認
@@ -61,6 +58,8 @@ direnv status
 # 手動で再読み込み
 direnv reload
 ```
+
+**注**: 設定ファイルのシンボリックリンクは初回セットアップ時のみ必要です。`02_dotfiles.sh` 実行後は、設定ファイルの編集が自動的に反映されます。
 
 ### Git hooks の設定
 
@@ -81,21 +80,29 @@ dotfiles/
 │   ├── .zprofile                   # zshログイン設定
 │   ├── .gitconfig                  # Git設定
 │   ├── .tmux.conf                  # tmux設定
+│   ├── .tmux/                      # tmux追加設定
 │   ├── .vimrc                      # vim設定
-│   ├── .claude/                    # Claude設定
+│   ├── .claude/                    # Claude AI設定
 │   │   ├── CLAUDE.md               # Claude共通設定・作業ルール
-│   │   ├── settings.json           # Claude設定（シンプル化済み）
-│   │   └── commands/               # Claudeコマンド
-│   ├── .gemini/                    # Gemini設定
+│   │   ├── settings.json           # Claude設定
+│   │   ├── commands/               # カスタムコマンド
+│   │   ├── agents/                 # エージェント定義
+│   │   ├── skills/                 # スキル定義
+│   │   └── rules/                  # ルール定義
+│   ├── .serena/                    # Serena設定
+│   │   └── serena_config.yml       # Serena設定ファイル
 │   ├── .mcp.json                   # MCP設定（各種MCPサーバー統合）
 │   └── config/                     # .config/用設定
-│       ├── mise/config.toml        # mise設定（タスク・ツール管理、LLMタスク追加）
-│       ├── zsh/                    # zsh設定ファイル群
-│       └── iterm/                  # iTerm2設定
+│       ├── ghostty/                # ターミナル設定
+│       ├── mise/                   # ツールバージョン管理
+│       ├── sheldon/                # zshプラグインマネージャー
+│       ├── terminal/               # ターミナル設定
+│       └── zsh/                    # zsh設定ファイル群
 ├── scripts/                        # 実行用スクリプト
 │   ├── development/                # 開発関連ツール
 │   │   ├── lighthouse-analyzer.ts  # Lighthouse分析
-│   │   └── compare-dirs.ts         # ディレクトリ比較（改善版）
+│   │   └── compare-dirs.ts         # ディレクトリ比較
+│   ├── git/                        # Git関連ツール
 │   ├── media/                      # メディア変換ツール
 │   │   ├── convert-img2webp.ts     # 画像WebP変換
 │   │   └── convert-m3u8ts2mp4.ts   # 動画変換
@@ -106,12 +113,11 @@ dotfiles/
 │       └── zipr.ts                 # 圧縮ツール
 ├── setup/                          # 初回セットアップ用
 │   ├── 01_base.sh                  # システム基盤セットアップ
-│   ├── 02_dotfiles.sh              # シンボリックリンク作成
-│   ├── 03_claude.sh                # Claude設定セットアップ・同期
-│   ├── Brewfile                    # Homebrew設定
-│   ├── 20_homebrew.sh              # Homebrewアプリ
-│   └── 23_web.sh                   # Web開発ツール
-├── .envrc                          # direnv設定（自動同期）
+│   ├── 02_dotfiles.sh              # 全設定ファイルのシンボリックリンク作成
+│   ├── 10_homebrew.sh              # Homebrewアプリインストール
+│   ├── 11_web.sh                   # Web開発ツール
+│   └── Brewfile                    # Homebrew設定
+├── .envrc                          # direnv設定（Git hooks自動セットアップ）
 ├── .gitignore                      # Git除外設定
 └── README.md, SETUP.md             # ドキュメント
 ```
@@ -131,14 +137,15 @@ vim ~/dotfiles/home/.gitconfig
 ./setup/02_dotfiles.sh  # 再実行でシンボリックリンク作成
 ```
 
-### Claude Commands の管理
+### Claude設定の管理
 
 ```bash
-# 新しいコマンドファイルを追加
+# Claudeコマンドやスキルを追加
 echo "# 新しいコマンド" > ~/dotfiles/home/.claude/commands/new-command.md
 
-# direnv により自動同期される（または手動実行）
-./setup/03_claude.sh
+# シンボリックリンクにより自動的に反映される
+# 再リンクが必要な場合のみ以下を実行
+./setup/02_dotfiles.sh
 ```
 
 ### コード品質チェック
@@ -184,14 +191,14 @@ direnv allow
 cd .. && cd ~/dotfiles  # ディレクトリ再入で実行確認
 ```
 
-### Claude Commands の確認
+### Claude設定の確認
 
 ```bash
-# Claude Commands の同期状態確認
-ls -la ~/.claude/commands/
+# Claude設定のシンボリックリンク状態確認
+ls -la ~/.claude/
 
-# 手動同期実行
-./setup/03_claude.sh
+# シンボリックリンクの再作成が必要な場合
+./setup/02_dotfiles.sh
 ```
 
 ---
@@ -199,6 +206,14 @@ ls -la ~/.claude/commands/
 ## ⚠️ 重要な変更点
 
 ### 最近の主な変更
+
+#### 2025年12月
+
+1. **セットアップスクリプトの統合**
+   - `03_dev_configs.sh` を `02_dotfiles.sh` に統合
+   - 全ての設定ファイルのシンボリックリンク作成を一元化
+   - 初回セットアップが2ステップで完了（01→02のみ）
+   - direnvによる自動同期は不要に（Git hooksのみ自動実行）
 
 #### 2025年1月
 
@@ -218,22 +233,8 @@ ls -la ~/.claude/commands/
    - CLAUDE.mdのAI署名ルール明確化
    - settings.jsonのシンプル化
 
-### v2.0での主な変更
-
-1. **ディレクトリ構造の整理**
-   - 個人設定ファイルを `home/` に集約
-   - リポジトリ管理用ファイルと明確に分離
-
-2. **自動同期機能の強化**
-   - direnv による Claude Commands 自動同期
-   - 重複スクリプトの統合
-
-3. **セットアップスクリプトの最適化**
-   - `setup/03_claude.sh` が初回と日常の両方を担当
-   - `setup/02_dotfiles.sh` のパス修正
-
 ### 移行時の注意事項
 
 - 既存のシンボリックリンクは自動的にスキップされます
 - 設定ファイルのパス参照が `home/` ディレクトリに変更されています
-- Claude Commands の同期は direnv により自動化されています
+- シンボリックリンクは初回セットアップ時のみ作成が必要です

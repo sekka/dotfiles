@@ -8,24 +8,33 @@
 dotfiles/
 ├── home/                           # 個人設定ファイル（ホームディレクトリにシンボリックリンク）
 │   ├── .zshrc, .gitconfig など     # シェル・Git設定
-│   ├── .claude/                    # Claude設定
-│   ├── .gemini/                    # Gemini設定
+│   ├── .claude/                    # Claude AI設定
+│   │   ├── CLAUDE.md               # 作業ルール・設定
+│   │   ├── settings.json           # Claude設定
+│   │   ├── commands/               # カスタムコマンド
+│   │   ├── agents/                 # エージェント定義
+│   │   ├── skills/                 # スキル定義
+│   │   └── rules/                  # ルール定義
+│   ├── .serena/                    # Serena設定
+│   ├── .tmux/                      # tmux追加設定
 │   └── config/                     # アプリケーション設定（.config/にリンク）
-│       ├── mise/                   # mise設定
-│       ├── zsh/                    # zsh設定ファイル群
-│       └── iterm/                  # iTerm2設定
+│       ├── ghostty/                # ターミナル設定
+│       ├── mise/                   # ツールバージョン管理
+│       ├── sheldon/                # zshプラグインマネージャー
+│       ├── terminal/               # ターミナル設定
+│       └── zsh/                    # zsh設定ファイル群
 ├── scripts/                        # 実行用スクリプト
 │   ├── development/                # 開発関連ツール
+│   ├── git/                        # Git関連ツール
 │   ├── media/                      # メディア変換ツール
 │   ├── setup/                      # セットアップ関連
-│   ├── system/                     # システム関連ツール
-│   └── tmux/                       # tmux関連スクリプト
+│   └── system/                     # システム関連ツール
 └── setup/                          # 初回セットアップ用スクリプト
     ├── 01_base.sh                  # システム基盤セットアップ
-    ├── 02_dotfiles.sh              # dotfilesシンボリックリンク作成
-    ├── 03_claude.sh                # Claude設定セットアップ
-    ├── Brewfile                    # Homebrew設定
-    └── ...                         # 言語別セットアップ
+    ├── 02_dotfiles.sh              # 全設定ファイルのシンボリックリンク作成
+    ├── 10_homebrew.sh              # Homebrewアプリインストール
+    ├── 11_web.sh                   # Web開発ツール
+    └── Brewfile                    # Homebrew設定
 ```
 
 ## 🚀 クイックスタート
@@ -36,23 +45,21 @@ dotfiles/
 # 1. システム基盤のセットアップ
 ./setup/01_base.sh
 
-# 2. dotfilesのシンボリックリンク作成
+# 2. 全設定ファイルのシンボリックリンク作成
+# (dotfiles, .config, Claude, Serena等すべて含む)
 ./setup/02_dotfiles.sh
 
-# 3. Claude設定のセットアップ
-./setup/03_claude.sh
-
-# 4. Homebrewアプリのインストール
-./setup/20_homebrew.sh
+# 3. Homebrewアプリのインストール
+./setup/10_homebrew.sh
 ```
 
 詳細なセットアップ手順は [SETUP.md](SETUP.md) を参照してください。
 
-## ⚡ 自動同期機能
+## ⚡ 自動機能
 
-このリポジトリは **direnv** を使用して自動同期機能を提供します：
+このリポジトリは **direnv** を使用した自動化機能を提供します：
 
-- `dotfiles/` ディレクトリに移動するたびに Claude Commands が自動同期
+- `dotfiles/` ディレクトリに移動するたびに Git hooks が自動セットアップ
 - `.envrc` によりプロジェクト固有のコマンドがグローバルに利用可能
 
 ## 🛠️ 主要機能
