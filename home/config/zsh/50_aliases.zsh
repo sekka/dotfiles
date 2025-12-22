@@ -94,7 +94,7 @@ alias ....="cd ../../.."
 
 alias -g L="| less -F -R"
 alias -g H="| head"
-alias -g T="| tail -F -R"
+alias -g T="| tspin -f"
 alias -g G="| grep"
 
 alias grep="grep --color -n -I --exclude='*.svn-*' --exclude='entries' --exclude='*/cache/*'"
