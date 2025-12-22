@@ -64,7 +64,7 @@ git:
   ignoreWhitespaceInDiffView: false
   diffContextSize: 3
   # Force push無効化（安全のため）
-  disableForcePushing: false
+  disableForcePushing: true
 # 更新チェック
 update:
   method: prompt

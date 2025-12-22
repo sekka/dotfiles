@@ -33,9 +33,9 @@ set diff-context = 6
 bind diff Z !sh -c "git show %(commit) | delta --paging always --dark"
 bind diff X !sh -c "git show %(commit) | delta --paging always --dark --side-by-side"
 
-# stageビューでdeltaを使用
-bind stage Z !sh -c "git diff %(file) | delta --paging always --dark"
-bind stage X !sh -c "git diff %(file) | delta --paging always --dark --side-by-side"
+# stageビューでdeltaを使用（ステージ済みの内容を表示）
+bind stage Z !sh -c "git diff --cached %(file) | delta --paging always --dark"
+bind stage X !sh -c "git diff --cached %(file) | delta --paging always --dark --side-by-side"
 
 # statusビューでdeltaを使用
 bind status Z !sh -c "git diff %(file) | delta --paging always --dark"
