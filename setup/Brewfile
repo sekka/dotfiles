@@ -12,6 +12,7 @@ brew "tpm"                # https://formulae.brew.sh/formula/tpm              # 
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher    # 超すごいgrep
 brew "fpp"                # https://formulae.brew.sh/formula/fpp              # パスピッカー
 brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
+brew "navi"               # https://formulae.brew.sh/formula/navi             # コマンドラインチュートリアルツール
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
 brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
 brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher  # 超すごいgrep
