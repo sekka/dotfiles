@@ -95,7 +95,7 @@ PR URLを指定してレビューしてください
 ```bash
 codex review --uncommitted
 gemini --yolo "$(git diff HEAD)をレビューしてください"
-copilot "$(git diff HEAD)をレビューしてください"
+copilot -p "$(git diff HEAD)をレビューしてください" --allow-all-tools
 coderabbit review --plain --type uncommitted
 ```
 
@@ -104,7 +104,7 @@ coderabbit review --plain --type uncommitted
 ```bash
 codex review --base <branch>
 gemini --yolo "$(git diff <branch>..HEAD)をレビューしてください"
-copilot "$(git diff <branch>..HEAD)をレビューしてください"
+copilot -p "$(git diff <branch>..HEAD)をレビューしてください" --allow-all-tools
 coderabbit review --plain --base <branch>
 ```
 
@@ -114,7 +114,7 @@ coderabbit review --plain --base <branch>
 # Codexは範囲を直接サポートしないため、baseオプションで代用
 codex review --base <range-start>
 gemini --yolo "$(git diff <range>)をレビューしてください"
-copilot "$(git diff <range>)をレビューしてください"
+copilot -p "$(git diff <range>)をレビューしてください" --allow-all-tools
 coderabbit review --plain --base <range-start>
 ```
 
@@ -134,9 +134,9 @@ codex review --uncommitted  # PRをチェックアウト後に実行
 gemini --yolo "以下のPR差分をレビューしてください：
 
 $PR_DIFF"
-copilot "以下のPR差分をレビューしてください：
+copilot -p "以下のPR差分をレビューしてください：
 
-$PR_DIFF"
+$PR_DIFF" --allow-all-tools
 coderabbit review --plain --type uncommitted  # PRをチェックアウト後に実行
 ```
 
@@ -152,7 +152,7 @@ CODEX_PID=$!
 gemini --yolo "$(git diff <target>)をレビュー" > /tmp/gemini_review.txt 2>&1 &
 GEMINI_PID=$!
 
-copilot "$(git diff <target>)をレビュー" > /tmp/copilot_review.txt 2>&1 &
+copilot -p "$(git diff <target>)をレビュー" --allow-all-tools > /tmp/copilot_review.txt 2>&1 &
 COPILOT_PID=$!
 
 coderabbit review <options> > /tmp/coderabbit_review.txt 2>&1 &

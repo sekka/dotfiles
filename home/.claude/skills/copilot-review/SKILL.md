@@ -65,13 +65,13 @@ Copilotに渡すレビュープロンプトを構築：
 ### 3. Copilot実行
 
 ```bash
-copilot [構築したプロンプト]
+copilot -p "[構築したプロンプト]" --allow-all-tools
 ```
 
 または
 
 ```bash
-echo "[プロンプト]" | copilot
+copilot -p "[プロンプト]" --allow-all-tools
 ```
 
 ### 4. 結果の整形と表示
@@ -132,7 +132,7 @@ Copilotの出力を以下の形式で整形：
 
 4. **Copilot実行**
    ```bash
-   copilot "$(cat <<EOF
+   copilot -p "$(cat <<EOF
    以下のコード変更をレビューしてください。
 
    【レビュー観点】
@@ -150,7 +150,7 @@ Copilotの出力を以下の形式で整形：
    2. 具体的な改善案（コード例付き）
    3. GitHubでの運用上の推奨事項
    EOF
-   )"
+   )" --allow-all-tools
    ```
 
 5. **結果の整形**
