@@ -290,6 +290,36 @@ echo "✅ Setup complete!"
 # --------------------------------------
 # システム管理
 # --------------------------------------
+# スリープ防止（手動終了するまで）
+[tasks.system-caffeinate]
+alias = "cafe"
+description = "スリープを防止（Ctrl+Cで終了）"
+run = "caffeinate"
+
+# スリープ防止（1時間）
+[tasks.system-caffeinate-1h]
+alias = "cafe1"
+description = "1時間スリープを防止"
+run = "caffeinate -t 3600"
+
+# スリープ防止（2時間）
+[tasks.system-caffeinate-2h]
+alias = "cafe2"
+description = "2時間スリープを防止"
+run = "caffeinate -t 7200"
+
+# スリープ防止（4時間）
+[tasks.system-caffeinate-4h]
+alias = "cafe4"
+description = "4時間スリープを防止"
+run = "caffeinate -t 14400"
+
+# ディスプレイスリープのみ防止
+[tasks.system-caffeinate-display]
+alias = "cafed"
+description = "ディスプレイスリープのみ防止（Ctrl+Cで終了）"
+run = "caffeinate -d"
+
 # PATH表示
 [tasks.system-envpath]
 description = "envpath"
