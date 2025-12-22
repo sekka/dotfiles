@@ -125,28 +125,40 @@ function fzf-select-history() {
     fi
 
     local selected
-    local fzf_cmd
-    if [[ -n "$TMUX" ]]; then
-        fzf_cmd="fzf-tmux -p 90%,90% --"
-    else
-        fzf_cmd="fzf"
-    fi
 
     # 履歴の取得と選択（新しい順）
     if command -v tac >/dev/null 2>&1; then
-        selected=$(history -n 1 | tac | $fzf_cmd \
-            --query "$LBUFFER" \
-            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-            --preview "echo {}" \
-            --preview-window=up:3:wrap
-        ) || return
+        if [[ -n "$TMUX" ]]; then
+            selected=$(history -n 1 | tac | fzf-tmux -p 90%,90% -- \
+                --query "$LBUFFER" \
+                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+                --preview "echo {}" \
+                --preview-window=up:3:wrap
+            ) || return
+        else
+            selected=$(history -n 1 | tac | fzf \
+                --query "$LBUFFER" \
+                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+                --preview "echo {}" \
+                --preview-window=up:3:wrap
+            ) || return
+        fi
     elif command -v tail >/dev/null 2>&1; then
-        selected=$(history -n 1 | tail -r | $fzf_cmd \
-            --query "$LBUFFER" \
-            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-            --preview "echo {}" \
-            --preview-window=up:3:wrap
-        ) || return
+        if [[ -n "$TMUX" ]]; then
+            selected=$(history -n 1 | tail -r | fzf-tmux -p 90%,90% -- \
+                --query "$LBUFFER" \
+                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+                --preview "echo {}" \
+                --preview-window=up:3:wrap
+            ) || return
+        else
+            selected=$(history -n 1 | tail -r | fzf \
+                --query "$LBUFFER" \
+                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+                --preview "echo {}" \
+                --preview-window=up:3:wrap
+            ) || return
+        fi
     else
         echo "Error: Neither 'tac' nor 'tail' command available"
         return 1
@@ -222,19 +234,21 @@ function fzf-src() {
         fi
     "
 
-    local fzf_cmd
     if [[ -n "$TMUX" ]]; then
-        fzf_cmd="fzf-tmux -p 90%,90% --"
+        selected_dir=$(ghq list -p 2>/dev/null | fzf-tmux -p 90%,90% -- \
+            --query "$LBUFFER" \
+            --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
+            --preview "$preview_cmd" \
+            --preview-window=right:60%:wrap
+        ) || return
     else
-        fzf_cmd="fzf"
+        selected_dir=$(ghq list -p 2>/dev/null | fzf \
+            --query "$LBUFFER" \
+            --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
+            --preview "$preview_cmd" \
+            --preview-window=right:60%:wrap
+        ) || return
     fi
-
-    selected_dir=$(ghq list -p 2>/dev/null | $fzf_cmd \
-        --query "$LBUFFER" \
-        --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
-        --preview "$preview_cmd" \
-        --preview-window=right:60%:wrap
-    ) || return
 
     if [[ -n "$selected_dir" ]] && [[ -d "$selected_dir" ]]; then
         BUFFER="cd -- ${(qq)selected_dir}"
@@ -293,36 +307,53 @@ function fcd() {
         fi
     fi
 
-    # fzfコマンドを決定
-    local fzf_cmd
-    if [[ -n "$TMUX" ]]; then
-        fzf_cmd="fzf-tmux -p 90%,90% --"
-    else
-        fzf_cmd="fzf"
-    fi
-
     # ディレクトリ検索（fdが利用可能ならfdを使用、なければfind）
-    if command -v fd >/dev/null 2>&1; then
-        dir=$(fd --type d \
-            --hidden \
-            --exclude .git \
-            --exclude node_modules \
-            --exclude target \
-            . "$base_dir" 2>/dev/null | $fzf_cmd \
-            --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-            --preview "$preview_cmd" \
-            --preview-window=right:50%:wrap
-        )
+    if [[ -n "$TMUX" ]]; then
+        if command -v fd >/dev/null 2>&1; then
+            dir=$(fd --type d \
+                --hidden \
+                --exclude .git \
+                --exclude node_modules \
+                --exclude target \
+                . "$base_dir" 2>/dev/null | fzf-tmux -p 90%,90% -- \
+                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+                --preview "$preview_cmd" \
+                --preview-window=right:50%:wrap
+            )
+        else
+            dir=$(find "$base_dir" -type d \
+                -not -path '*/\.*' \
+                -not -path '*/node_modules/*' \
+                -not -path '*/target/*' \
+                2>/dev/null | fzf-tmux -p 90%,90% -- \
+                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+                --preview "$preview_cmd" \
+                --preview-window=right:50%:wrap
+            )
+        fi
     else
-        dir=$(find "$base_dir" -type d \
-            -not -path '*/\.*' \
-            -not -path '*/node_modules/*' \
-            -not -path '*/target/*' \
-            2>/dev/null | $fzf_cmd \
-            --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-            --preview "$preview_cmd" \
-            --preview-window=right:50%:wrap
-        )
+        if command -v fd >/dev/null 2>&1; then
+            dir=$(fd --type d \
+                --hidden \
+                --exclude .git \
+                --exclude node_modules \
+                --exclude target \
+                . "$base_dir" 2>/dev/null | fzf \
+                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+                --preview "$preview_cmd" \
+                --preview-window=right:50%:wrap
+            )
+        else
+            dir=$(find "$base_dir" -type d \
+                -not -path '*/\.*' \
+                -not -path '*/node_modules/*' \
+                -not -path '*/target/*' \
+                2>/dev/null | fzf \
+                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+                --preview "$preview_cmd" \
+                --preview-window=right:50%:wrap
+            )
+        fi
     fi
 
     # ディレクトリが選択されたら移動
@@ -379,22 +410,24 @@ function fzf-git-branch() {
         return 1
     fi
 
-    # fzfコマンドを決定
-    local fzf_cmd
+    # fzfでブランチ選択（tmux内ならpopup表示）
     if [[ -n "$TMUX" ]]; then
-        fzf_cmd="fzf-tmux -p 90%,90% --"
+        branch=$(echo "$branches" | fzf-tmux -p 90%,90% -- \
+            --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
+            --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
+            --preview-window=right:60%:wrap \
+            --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
+            --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
+        )
     else
-        fzf_cmd="fzf"
+        branch=$(echo "$branches" | fzf \
+            --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
+            --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
+            --preview-window=right:60%:wrap \
+            --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
+            --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
+        )
     fi
-
-    # fzfでブランチ選択
-    branch=$(echo "$branches" | $fzf_cmd \
-        --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
-        --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
-        --preview-window=right:60%:wrap \
-        --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
-        --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
-    )
 
     # ブランチが選択されたらチェックアウト
     if [[ -n "$branch" ]]; then
