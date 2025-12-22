@@ -54,7 +54,7 @@ export async function selectHostWithFzf(
 	}
 
 	const input = hosts.join("\n");
-	const result = await $`echo ${input} | fzf \
+	const result = await $`echo ${input} | fzf-tmux -p 90%,90% -- \
     --preview "grep -A 10 '^Host {}' ${SSH_CONFIG_PATH}" \
     --preview-window=right:40%:wrap \
     --header "Select SSH host"`

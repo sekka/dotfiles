@@ -48,8 +48,8 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
 		return;
 	}
 
-	// fzfでコミットを選択し、詳細を表示
-	await $`echo ${logOutput} | fzf --ansi \
+	// fzfでコミットを選択し、詳細を表示（tmux popup対応）
+	await $`echo ${logOutput} | fzf-tmux -p 90%,90% -- --ansi \
     --no-sort \
     --reverse \
     --tiebreak=index \
