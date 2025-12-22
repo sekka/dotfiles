@@ -207,10 +207,11 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "xbar"
 
 # === デザイン ===
-#cask "adobe-creative-cloud"
-#cask "affinity"
-#cask "figma"
-#cask "iconjar"
+#cask "adobe-creative-cloud"  # https://formulae.brew.sh/cask/adobe-creative-cloud  # Adobe Creative Cloud
+#cask "affinity"              # https://formulae.brew.sh/cask/affinity         # Affinity製品群
+#cask "drawio"                # https://formulae.brew.sh/cask/drawio           # 図作成ツール
+#cask "figma"                 # https://formulae.brew.sh/cask/figma            # デザインツール
+#cask "iconjar"               # https://formulae.brew.sh/cask/iconjar          # アイコン管理ツール
 
 # === 画像処理 ===
 #cask "optimage"
