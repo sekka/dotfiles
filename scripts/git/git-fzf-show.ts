@@ -48,8 +48,11 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
 		return;
 	}
 
-	// fzfでコミットを選択し、詳細を表示（tmux popup対応）
-	await $`echo ${logOutput} | fzf-tmux -p 90%,90% -- --ansi \
+	// tmuxセッション内ならpopup表示、外なら通常のfzf
+	const fzfCmd = process.env.TMUX ? "fzf-tmux -p 90%,90% --" : "fzf";
+
+	// fzfでコミットを選択し、詳細を表示
+	await $`echo ${logOutput} | ${fzfCmd} --ansi \
     --no-sort \
     --reverse \
     --tiebreak=index \

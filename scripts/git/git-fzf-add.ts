@@ -51,14 +51,16 @@ export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
 	// NUL区切りで入力を渡す
 	const input = files.join("\0");
 
-	const result =
-		await $`echo -n ${input} | fzf-tmux -p 90%,90% -- --read0 --print0 --multi \
+	// tmuxセッション内ならpopup表示、外なら通常のfzf
+	const fzfCmd = process.env.TMUX ? "fzf-tmux -p 90%,90% --" : "fzf";
+
+	const result = await $`echo -n ${input} | ${fzfCmd} --read0 --print0 --multi \
     --preview "git diff --color=always {} 2>/dev/null || cat {}" \
     --preview-window=right:60%:wrap \
     --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
     --bind "ctrl-d:execute(git diff --color=always {} | less -R)"`
-			.quiet()
-			.nothrow();
+		.quiet()
+		.nothrow();
 
 	if (result.exitCode !== 0 || !result.stdout.length) {
 		return [];
