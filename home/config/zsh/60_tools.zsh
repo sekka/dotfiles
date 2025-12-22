@@ -437,6 +437,91 @@ function fzf-git-branch() {
     fi
 }
 
+# ------------------------------
+# gifit - difitとfzfの連携
+# ------------------------------
+#
+# 用途:
+#   コミット範囲を対話的に選択してdifitで差分を確認する
+#
+# 使い方:
+#   gifit
+#
+# 操作手順:
+#   1. 開始コミット（FROM）を選択
+#   2. 終了コミット（TO）を選択
+#   3. difitで差分を表示
+#
+# キー操作:
+#   Enter   - コミットを選択
+#   Esc     - キャンセル
+#
+# プレビュー内容:
+#   - 選択中のコミット情報
+#
+# 依存:
+#   - git
+#   - fzf
+#   - difit (bunx経由またはmiseでインストール)
+#
+# 参考:
+#   https://zenn.dev/whatasoda/articles/6e7b921bfbc968
+function gifit() {
+    if ! _is_git_repo; then
+        echo "Error: Not a git repository"
+        return 1
+    fi
+
+    local from_commit to_commit from_hash to_hash
+
+    # 開始コミット（FROM）を選択
+    if [[ -n "$TMUX" ]]; then
+        from_commit=$(git log --oneline --decorate -100 --color=always | \
+            fzf-tmux -p 90%,90% -- \
+                --ansi \
+                --header "> difit \$TO \$FROM~1" \
+                --prompt "Select \$FROM>" \
+                --preview 'git log --oneline --decorate --color=always -1 {1}' \
+                --preview-window=right:60%:wrap
+        ) || return
+    else
+        from_commit=$(git log --oneline --decorate -100 --color=always | \
+            fzf \
+                --ansi \
+                --header "> difit \$TO \$FROM~1" \
+                --prompt "Select \$FROM>" \
+                --preview 'git log --oneline --decorate --color=always -1 {1}' \
+                --preview-window=right:60%:wrap
+        ) || return
+    fi
+    from_hash="${from_commit%% *}"
+
+    # 終了コミット（TO）を選択
+    if [[ -n "$TMUX" ]]; then
+        to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
+            fzf-tmux -p 90%,90% -- \
+                --ansi \
+                --header "> difit \$TO $from_hash~1" \
+                --prompt "Select \$TO>" \
+                --preview 'git log --oneline --decorate --color=always -1 {1}' \
+                --preview-window=right:60%:wrap
+        ) || return
+    else
+        to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
+            fzf \
+                --ansi \
+                --header "> difit \$TO $from_hash~1" \
+                --prompt "Select \$TO>" \
+                --preview 'git log --oneline --decorate --color=always -1 {1}' \
+                --preview-window=right:60%:wrap
+        ) || return
+    fi
+    to_hash="${to_commit%% *}"
+
+    # difitを実行
+    difit "$to_hash" "$from_hash~1"
+}
+
 # ======================
 # Key Bindings
 # ======================
