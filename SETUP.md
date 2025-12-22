@@ -27,6 +27,7 @@
 
 **~/.config/ 配下:**
 - `ghostty/` - ターミナル設定
+- `lazygit/` - Git TUI設定
 - `mise/` - ツールバージョン管理
 - `sheldon/` - zshプラグイン管理
 
@@ -94,6 +95,7 @@ dotfiles/
 │   ├── .mcp.json                   # MCP設定（各種MCPサーバー統合）
 │   └── config/                     # .config/用設定
 │       ├── ghostty/                # ターミナル設定
+│       ├── lazygit/                # Git TUI設定
 │       ├── mise/                   # ツールバージョン管理
 │       ├── sheldon/                # zshプラグインマネージャー
 │       ├── terminal/               # ターミナル設定

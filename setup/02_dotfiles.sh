@@ -65,6 +65,7 @@ fi
 
 CONFIG_DIRS=(
   ghostty
+  lazygit
   mise
   sheldon
 )
