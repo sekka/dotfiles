@@ -68,6 +68,7 @@ process.stdin.on('end', async () => {
       // current_usage が利用可能な場合はそれを使用（推奨）
       const usage = data.context_window.current_usage;
       totalTokens = (usage.input_tokens || 0) +
+        (usage.output_tokens || 0) +
         (usage.cache_creation_input_tokens || 0) +
         (usage.cache_read_input_tokens || 0);
       usageSource = 'api';
