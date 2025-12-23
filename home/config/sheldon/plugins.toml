@@ -86,6 +86,13 @@ github = "b4b4r07/emoji-cli"
 [plugins.forgit]
 github = "wfxr/forgit"
 
+# ni.zsh - パッケージマネージャー統一インターフェース
+# npm/yarn/pnpm/bun を自動検出して統一コマンドで操作
+# ni, ni add, ni remove, ni run など
+# https://github.com/azu/ni.zsh
+[plugins.ni]
+github = "azu/ni.zsh"
+
 # zsh-you-should-use - エイリアス学習支援
 # 既存のエイリアスがあるコマンドを実行すると提案
 # エイリアス活用を促進し、効率化を支援
