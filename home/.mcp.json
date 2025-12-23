@@ -8,28 +8,9 @@
       "command": "npx",
       "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
     },
-    "figma-desktop": {
-      "type": "http",
-      "url": "http://127.0.0.1:3845/mcp"
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "serena": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "ide-assistant",
-        "--enable-web-dashboard",
-        "false",
-        "--enable-gui-log-window",
-        "false"
-      ]
     },
     "vibe_kanban": {
       "command": "npx",
