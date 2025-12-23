@@ -51,8 +51,10 @@ git:
   autoFetch: true
   autoRefresh: true
   fetchAll: true
-  # ブランチログのコマンド
-  branchLogCmd: git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --
+  # ブランチログのコマンド（100文字制限のため改行）
+  branchLogCmd: >-
+    git log --graph --color=always --abbrev-commit --decorate
+    --date=relative --pretty=medium {{branchName}} --
   # ログ設定
   log:
     order: topo-order
