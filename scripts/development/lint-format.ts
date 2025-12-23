@@ -217,9 +217,8 @@ async function runShellcheck(
 	verbose: boolean,
 ): Promise<LintResult> {
 	// .zsh ファイルを除外（shellcheck は zsh 構文を理解しない）
-	const shFiles = files.filter(
-		(f) => !f.endsWith(".zsh") && !f.endsWith(".bash"),
-	);
+	// .bash ファイルは shellcheck がサポートしているため含める
+	const shFiles = files.filter((f) => !f.endsWith(".zsh"));
 
 	if (shFiles.length === 0) {
 		if (verbose) {
