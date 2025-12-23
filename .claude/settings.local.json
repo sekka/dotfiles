@@ -67,10 +67,6 @@
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:ghostty.org)",
       "WebSearch",
-      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack status)",
-      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack pull)",
-      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack restore:*)",
-      "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack clean:*)",
       "Bash(bunx @biomejs/biome:*)"
     ],
     "deny": [
