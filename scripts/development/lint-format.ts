@@ -276,10 +276,12 @@ async function runMarkdownlint(
 		};
 	}
 
+	// home/.claude/agents/ は外部ファイルのため除外
+	const ignorePatterns = ["-i", "home/.claude/agents/"];
 	const args =
 		mode === "fix"
-			? ["markdownlint", "--fix", ...files]
-			: ["markdownlint", ...files];
+			? ["markdownlint", "--fix", ...ignorePatterns, ...files]
+			: ["markdownlint", ...ignorePatterns, ...files];
 
 	if (verbose) {
 		console.log(`🔧 Running: ${args.join(" ")}`);
