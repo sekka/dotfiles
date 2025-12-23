@@ -37,6 +37,13 @@ brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # 
 brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
 
+# === formatter/linter ===
+brew "markdownlint-cli"   # https://formulae.brew.sh/formula/markdownlint-cli # Markdownリンター
+brew "pre-commit"         # https://formulae.brew.sh/formula/pre-commit       # Gitフック管理ツール
+brew "shellcheck"         # https://formulae.brew.sh/formula/shellcheck       # シェルスクリプトリンター
+brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルスクリプトフォーマッター
+brew "yamllint"           # https://formulae.brew.sh/formula/yamllint         # YAMLリンター
+
 # === gitクライアント ===
 brew "gitui"              # https://formulae.brew.sh/formula/gitui            # gitクライアント
 brew "git-delta"          # https://formulae.brew.sh/formula/git-delta        # gitクライアント

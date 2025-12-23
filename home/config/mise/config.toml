@@ -224,15 +224,6 @@ bun ~/dotfiles/scripts/development/lint-format.ts --mode=fix --staged --verbose
 [tasks.lint-setup]
 description = "lintツールをセットアップ"
 run = """
-echo "📦 Installing lint tools..."
-# Homebrew tools
-brew install shellcheck shfmt yamllint
-# npm tools
-npm install -g markdownlint-cli
-# Rust tools
-cargo install taplo-cli
-# pre-commit
-brew install pre-commit
 pre-commit install
 echo "✅ Setup complete!"
 """
@@ -379,18 +370,18 @@ pnpm = "latest"
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@openai/codex" = "latest"
-"npm:@byterover/cipher" = "latest"      # https://github.com/campfirein/cipher
-"npm:@endorhq/rover" = "latest"         # https://github.com/endorhq/rover
-"npm:@sasazame/ccresume" = "latest"     # https://zenn.dev/sasazame/articles/3634040f7fb4da
-"npm:@letta-ai/letta-code" = "latest"   # https://github.com/letta-ai/letta-code
-"npm:ccexp" = "latest"                  # https://zenn.dev/nyatinte/articles/launch-ccexp
-"npm:ccmanager" = "latest"              # https://zenn.dev/kbwok/articles/33fad69555d005
-"npm:ccsearch" = "latest"               # https://zenn.dev/suthio/articles/126bc21f0741a6
-"npm:ccusage" = "latest"                # https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
-"npm:cc-sdd" = "latest"                 # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
-"npm:codemass" = "latest"               # https://x.com/kenn/status/1953281949566706030
-"npm:mmcp" = "latest"                   # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
-"npm:vibe-kanban" = "latest"            # https://www.vibekanban.com/
+"npm:@byterover/cipher" = "latest"    # https://github.com/campfirein/cipher
+"npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
+"npm:@sasazame/ccresume" = "latest"   # https://zenn.dev/sasazame/articles/3634040f7fb4da
+"npm:@letta-ai/letta-code" = "latest" # https://github.com/letta-ai/letta-code
+"npm:ccexp" = "latest"                # https://zenn.dev/nyatinte/articles/launch-ccexp
+"npm:ccmanager" = "latest"            # https://zenn.dev/kbwok/articles/33fad69555d005
+"npm:ccsearch" = "latest"             # https://zenn.dev/suthio/articles/126bc21f0741a6
+"npm:ccusage" = "latest"              # https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
+"npm:cc-sdd" = "latest"               # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
+"npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
+"npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
+"npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
 
 "npm:caniuse-cmd" = "latest"
 "npm:difit" = "latest"
@@ -418,6 +409,7 @@ rust = "stable"
 "cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
+"cargo:taplo-cli" = "latest"    # https://crates.io/crates/taplo-cli toml formatter/linter
 # "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
