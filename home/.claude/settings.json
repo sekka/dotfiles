@@ -2,6 +2,19 @@
   "env": {
     "DISABLE_AUTOUPDATER": "1"
   },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file_path=$(jq -r '.tool_input.file_path'); bun ~/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.js"

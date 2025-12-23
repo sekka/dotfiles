@@ -206,79 +206,49 @@ description = "システムモニタリング"
 run = "rtop"
 
 # --------------------------------------
-# Lint & Format (pre-commit hook用)
+# Lint & Format (統合スクリプト経由)
 # --------------------------------------
-# TypeScriptのLint
-[tasks.typescript-lint]
-description = "TypeScriptファイルのlintを実行"
-run = """
-echo "🔍 Biome lint running..."
-bunx @biomejs/biome check scripts/
-"""
-
-# TypeScriptのフォーマット
-[tasks.typescript-format]
-description = "TypeScriptファイルのformatを実行"
-run = """
-echo "🎨 Biome format running..."
-bunx @biomejs/biome format --write scripts/
-"""
-
-# 全ファイルのフォーマット
-[tasks.shell-script-format]
-description = "全ファイルのformatを実行"
-run = """
-echo "🎨 Formatting files..."
-# TypeScript
-bunx @biomejs/biome format --write scripts/
-# シェルスクリプト
-find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
-# Markdown, YAML, JSON
-prettier --write "**/*.{md,yaml,yml,json}"
-# TOML
-find . -name "*.toml" -type f -exec taplo format {} +
-echo "✨ Formatting complete!"
-"""
-
-# シェルスクリプトのフォーマット
-[tasks.shell-script-format-sh]
-description = "シェルスクリプトのformatを実行"
-run = """
-echo "🎨 Formatting shell scripts..."
-find . -name "*.sh" -type f -exec shfmt -w -s -i 2 {} +
-"""
-
-# 全ファイルのLint
-[tasks.shell-script-lint]
+# 全ファイルチェック
+[tasks.lint]
+alias = "l"
 description = "全ファイルのlintを実行"
 run = """
-echo "🔍 Running lint checks..."
-# Markdownlint
-echo "📝 Checking Markdown files..."
-markdownlint **/*.md --fix 2>/dev/null || echo "No markdown issues found"
-# yamllint
-echo "📄 Checking YAML files..."
-yamllint . || echo "YAML lint completed"
-echo "✅ Lint checks completed"
+bun ~/dotfiles/scripts/development/lint-format.ts --mode=check --verbose
 """
 
-# シェルスクリプトのLint
-[tasks.shell-script-lint-sh]
-description = "シェルスクリプトのlintを実行"
+# 全ファイルフォーマット
+[tasks.format]
+alias = "f"
+description = "全ファイルのformatを実行"
 run = """
-echo "🔍 ShellCheck running..."
-find . \\( -name "*.sh" -o -path "./.githooks/pre-commit" -o -name "imgcat" \\) -type f -not -path "./.git/*" -exec shellcheck {} +
+bun ~/dotfiles/scripts/development/lint-format.ts --mode=fix --verbose
+"""
+
+# ステージされたファイルをチェック
+[tasks.lint-staged]
+alias = "ls"
+description = "ステージされたファイルのlintを実行"
+run = """
+bun ~/dotfiles/scripts/development/lint-format.ts --mode=check --staged --verbose
+"""
+
+# ステージされたファイルをフォーマット
+[tasks.format-staged]
+alias = "fs"
+description = "ステージされたファイルのformatを実行"
+run = """
+bun ~/dotfiles/scripts/development/lint-format.ts --mode=fix --staged --verbose
 """
 
 # Lintツールのセットアップ
-[tasks.shell-script-setup-lint]
+[tasks.lint-setup]
 description = "lintツールをセットアップ"
 run = """
 echo "📦 Installing lint tools..."
 # Homebrew tools
 brew install shellcheck shfmt yamllint
 # npm tools
-npm install -g prettier markdownlint-cli
+npm install -g markdownlint-cli
 # Rust tools
 cargo install taplo-cli
 # pre-commit

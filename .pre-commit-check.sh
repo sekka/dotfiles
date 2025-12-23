@@ -11,8 +11,8 @@ NC='\033[0m' # No Color
 
 echo "🔍 commit前のチェックを実行しています..."
 
-# 各種チェックの実行
-tasks=("typescript-lint" "shell-script-lint" "shell-script-lint-sh" "shell-script-format-sh")
+# 各種チェックの実行（統合スクリプト使用）
+tasks=("lint")
 failed_tasks=()
 
 for task in "${tasks[@]}"; do
