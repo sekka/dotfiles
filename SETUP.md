@@ -21,17 +21,20 @@
 作成される設定：
 
 **ホームディレクトリ直下:**
+
 - `.zshrc`, `.zshenv`, `.zprofile` - zsh設定
 - `.gitconfig`, `.gitignore_global` - Git設定
 - `.tmux.conf`, `.vimrc` - その他の設定
 
 **~/.config/ 配下:**
+
 - `ghostty/` - ターミナル設定
 - `lazygit/` - Git TUI設定
 - `mise/` - ツールバージョン管理
 - `sheldon/` - zshプラグイン管理
 
 **AI開発支援ツール:**
+
 - `~/.claude/` - Claude設定（CLAUDE.md, settings.json, commands等）
 - `~/.serena/` - Serena設定（セマンティックコーディング）
 
