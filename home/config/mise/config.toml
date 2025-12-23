@@ -130,6 +130,28 @@ run = "ccsearch"
 description = "Claude Codeのセッション使用状況を表示"
 run = "ccusage"
 
+# Claude Code permissions.allowをアルファベット順にソート
+[tasks.llm-claude-sort-permissions]
+alias = "ccsp"
+description = "プロジェクトの.claude/settings.local.jsonのpermissionsをソート"
+run = """
+bun -e "
+const fs = require('fs');
+const path = '.claude/settings.local.json';
+if (!fs.existsSync(path)) { console.error('❌ File not found:', path); process.exit(1); }
+const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+let sorted = false;
+if (data.permissions?.allow) { data.permissions.allow.sort((a, b) => a.localeCompare(b)); sorted = true; }
+if (data.permissions?.deny) { data.permissions.deny.sort((a, b) => a.localeCompare(b)); sorted = true; }
+if (sorted) {
+  fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\\n');
+  console.log('✅ Sorted permissions in', path);
+} else {
+  console.log('⚠️  No permissions found in', path);
+}
+"
+"""
+
 # codemass
 [tasks.llm-codemass]
 description = "codemassを起動"
