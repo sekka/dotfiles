@@ -62,21 +62,6 @@ gh run list \
 # --------------------------------------
 # Git操作
 # --------------------------------------
-# GitUIクライアント
-[tasks.git-client-gitui]
-description = "gitクライアント"
-run = "gitui"
-
-# LazyGitクライアント
-[tasks.git-client-lazygit]
-description = "gitクライアント"
-run = "lazygit"
-
-# Tigクライアント
-[tasks.git-client-tig]
-description = "gitクライアント"
-run = "tig"
-
 # Git log表示（シンプル）
 [tasks.git-log-glog]
 description = "シンプルなワンライン表示"
@@ -149,11 +134,6 @@ run = "ccusage"
 [tasks.llm-codemass]
 description = "codemassを起動"
 run = "codemass"
-
-# Serena MCPサーバー
-[tasks.llm-serena]
-description = "serena-mcp-serverを起動"
-run = "uvx --from git+https://github.com/oraios/serena serena-mcp-server"
 
 # cc-sdd
 [tasks.ccsdd-install]
