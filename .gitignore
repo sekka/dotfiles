@@ -1,6 +1,10 @@
 .DS_Store
 completer.hist
 Brewfile.lock.json
+
+# Claude Code セッション固有データ
+.claude/memory/
+.claude/state/
 ### https://raw.github.com/github/gitignore//Swift.gitignore
 
 # Xcode
