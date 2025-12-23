@@ -37,15 +37,15 @@ alias vp="vim +PlugInstall +qall"
 # シェルインジェクションを防ぐため、関数として定義しクォート処理
 
 # aliasとの競合を防ぐため、関数定義前に既存のaliasを削除
-unalias nrun 2>/dev/null
-nrun() {
+unalias prun 2>/dev/null
+prun() {
   local script
   if [[ -n "$TMUX" ]]; then
     script=$(npm-scripts.ts | fzf-tmux -p 90%,90%) || return 1
   else
     script=$(npm-scripts.ts | fzf) || return 1
   fi
-  [ -n "$script" ] && npm run "$script"
+  [ -n "$script" ] && ni run "$script"
 }
 
 unalias mrun 2>/dev/null
