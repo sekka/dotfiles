@@ -47,7 +47,6 @@
       "Bash(sheldon lock:*)",
       "mcp__plugin_serena_serena__*",
       "mcp__plugin_playwright_playwright__*",
-      "mcp__serena__*",
       "Skill(github-pr-review-operation)",
       "Skill(claude-review)",
       "Skill(coderabbit-review)",
@@ -72,8 +71,7 @@
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack pull)",
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack restore:*)",
       "Bash(git -C ~/.claude/plugins/marketplaces/thedotmack clean:*)",
-      "Read(//tmp/**)",
-      "Read(//private/tmp/**)"
+      "Bash(bunx @biomejs/biome:*)"
     ],
     "deny": [
       "Read(./.env.*)"
