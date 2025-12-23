@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-// https://zenn.dev/little_hand_s/articles/dbd5fc27f5a2f0
+// Claude Code statusline hook
+// 参考: https://zenn.dev/little_hand_s/articles/dbd5fc27f5a2f0
 
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const { execSync } = require('child_process');
 
-// Constants
-const COMPACTION_THRESHOLD = 200000
+// デフォルトのコンテキストウィンドウサイズ（フォールバック用）
+const DEFAULT_CONTEXT_WINDOW_SIZE = 200000;
 
 // Read JSON from stdin
 let input = '';
@@ -23,6 +24,9 @@ process.stdin.on('end', async () => {
     const dirName = path.basename(currentDir);
     const sessionId = data.session_id;
     const sessionCost = data.cost?.total_cost_usd || 0;
+
+    // コンテキストウィンドウサイズを動的に取得
+    const contextWindowSize = data.context_window?.context_window_size || DEFAULT_CONTEXT_WINDOW_SIZE;
 
     // Get Git branch and status
     let gitInfo = '';
@@ -56,40 +60,49 @@ process.stdin.on('end', async () => {
     }
 
     // Calculate token usage for current session
+    // current_usage を優先的に使用し、より正確なコンテキスト使用率を取得
     let totalTokens = 0;
+    let usageSource = 'none';
 
-    if (sessionId) {
-      // Find all transcript files
+    if (data.context_window?.current_usage) {
+      // current_usage が利用可能な場合はそれを使用（推奨）
+      const usage = data.context_window.current_usage;
+      totalTokens = (usage.input_tokens || 0) +
+        (usage.cache_creation_input_tokens || 0) +
+        (usage.cache_read_input_tokens || 0);
+      usageSource = 'api';
+    } else if (sessionId) {
+      // current_usage が null の場合は、transcript ファイルから計算（フォールバック）
       const projectsDir = path.join(process.env.HOME, '.claude', 'projects');
 
       if (fs.existsSync(projectsDir)) {
-        // Get all project directories
         const projectDirs = fs.readdirSync(projectsDir)
           .map(dir => path.join(projectsDir, dir))
           .filter(dir => fs.statSync(dir).isDirectory());
 
-        // Search for the current session's transcript file
         for (const projectDir of projectDirs) {
           const transcriptFile = path.join(projectDir, `${sessionId}.jsonl`);
 
           if (fs.existsSync(transcriptFile)) {
             totalTokens = await calculateTokensFromTranscript(transcriptFile);
+            usageSource = 'transcript';
             break;
           }
         }
       }
     }
 
-    // Calculate percentage
-    const percentage = Math.min(100, Math.round((totalTokens / COMPACTION_THRESHOLD) * 100));
+    // Calculate percentage using dynamic context window size
+    const percentage = Math.min(100, Math.round((totalTokens / contextWindowSize) * 100));
 
     // Format token display
     const tokenDisplay = formatTokenCount(totalTokens);
 
-    // Color coding for percentage (same ratio as original article with 160K base)
+    // Color coding for percentage
+    // 緑: 0-55%, 黄: 56-71%, 赤: 72%以上
     let percentageColor = '\x1b[32m'; // Green
-    if (percentage >= 56) percentageColor = '\x1b[33m'; // Yellow (112K/200K)
-    if (percentage >= 72) percentageColor = '\x1b[91m'; // Bright Red (144K/200K)
+    if (percentage >= 56) percentageColor = '\x1b[33m'; // Yellow
+    if (percentage >= 72) percentageColor = '\x1b[91m'; // Bright Red
 
     // Get session clock (elapsed time)
     let sessionClock = '';
@@ -117,7 +130,14 @@ process.stdin.on('end', async () => {
     const gitInfoDisplay = gitInfo ? `${gitInfo}\x1b[0m` : '';
     const clockDisplay = sessionClock ? ` | ⏱️ ${sessionClock}` : '';
     const costDisplay = formatCost(sessionCost);
-    const statusLine = `[${model}] 📁 ${dirName}${gitInfoDisplay} | 🪙 ${tokenDisplay} | ${percentageColor}${percentage}%\x1b[0m | 💵 ${costDisplay}${clockDisplay} \x1b[90m| ${sessionId}\x1b[0m`;
+
+    // コンテキストウィンドウサイズの表示（K単位）
+    const contextSizeDisplay = formatTokenCount(contextWindowSize);
+
+    // usageSource インジケータ（デバッグ用、必要に応じてコメントアウト）
+    // const sourceIndicator = usageSource === 'api' ? '📡' : usageSource === 'transcript' ? '📄' : '❓';
+
+    const statusLine = `[${model}] 📁 ${dirName}${gitInfoDisplay} | 🪙 ${tokenDisplay}/${contextSizeDisplay} ${percentageColor}${percentage}%\x1b[0m | 💵 ${costDisplay}${clockDisplay} \x1b[90m| ${sessionId}\x1b[0m`;
 
     console.log(statusLine);
   } catch (error) {
