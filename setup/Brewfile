@@ -88,6 +88,7 @@ brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli   # 
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick      # 画像処理ツール
 brew "svgo"               # https://formulae.brew.sh/formula/svgo             # SVG最適化ツール
 brew "webp"               # https://formulae.brew.sh/formula/webp             # WebP画像処理ツール
+brew "libavif"            # https://formulae.brew.sh/formula/libavif          # AVIF画像処理ツール
 
 # === AI ===
 #tap "dagger/tap"
