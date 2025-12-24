@@ -20,6 +20,25 @@
 import { basename, dirname, join } from "node:path";
 import { $, Glob } from "bun";
 
+/** 同時実行数の上限（リソース枯渇防止） */
+const CONCURRENCY_LIMIT = 5;
+
+/**
+ * 同時実行数を制限して並列処理を行う
+ */
+async function processWithLimit<T>(
+	items: T[],
+	fn: (item: T) => Promise<boolean>,
+): Promise<boolean[]> {
+	const results: boolean[] = [];
+	for (let i = 0; i < items.length; i += CONCURRENCY_LIMIT) {
+		const chunk = items.slice(i, i + CONCURRENCY_LIMIT);
+		const chunkResults = await Promise.all(chunk.map(fn));
+		results.push(...chunkResults);
+	}
+	return results;
+}
+
 /**
  * 画像ファイルの拡張子を取得する
  */
@@ -97,10 +116,8 @@ export async function main(): Promise<number> {
 	console.log(`${imageFiles.length}個の画像ファイルを処理します。`);
 	console.log("");
 
-	// 並列処理で変換を実行
-	const results = await Promise.all(
-		imageFiles.map((file) => convertToWebp(file)),
-	);
+	// 並列処理で変換を実行（同時実行数制限付き）
+	const results = await processWithLimit(imageFiles, convertToWebp);
 	const successCount = results.filter(Boolean).length;
 
 	console.log("");
