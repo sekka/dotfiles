@@ -81,20 +81,11 @@ export async function convertToWebp(imageFile: string): Promise<boolean> {
  * メイン関数
  */
 export async function main(): Promise<number> {
-	// カレントディレクトリのPNG・JPGファイルを検索
-	const pngGlob = new Glob("**/*.png");
-	const jpgGlob = new Glob("**/*.jpg");
-	const jpegGlob = new Glob("**/*.jpeg");
-
+	// カレントディレクトリのPNG・JPGファイルを検索（大文字・小文字両対応）
+	const glob = new Glob("**/*.{png,PNG,jpg,JPG,jpeg,JPEG}");
 	const imageFiles: string[] = [];
 
-	for await (const file of pngGlob.scan(".")) {
-		imageFiles.push(file);
-	}
-	for await (const file of jpgGlob.scan(".")) {
-		imageFiles.push(file);
-	}
-	for await (const file of jpegGlob.scan(".")) {
+	for await (const file of glob.scan(".")) {
 		imageFiles.push(file);
 	}
 
@@ -106,13 +97,11 @@ export async function main(): Promise<number> {
 	console.log(`${imageFiles.length}個の画像ファイルを処理します。`);
 	console.log("");
 
-	let successCount = 0;
-	for (const file of imageFiles) {
-		const success = await convertToWebp(file);
-		if (success) {
-			successCount++;
-		}
-	}
+	// 並列処理で変換を実行
+	const results = await Promise.all(
+		imageFiles.map((file) => convertToWebp(file)),
+	);
+	const successCount = results.filter(Boolean).length;
 
 	console.log("");
 	console.log(`処理完了: ${successCount}/${imageFiles.length} ファイル成功`);
