@@ -4,14 +4,13 @@
  * 画像をAVIF形式に変換する
  *
  * カレントディレクトリ内のPNG・JPG画像をAVIF形式に変換する。
- * PNG画像はロスレス圧縮、JPG画像は品質80で圧縮される。
+ * ファイルサイズ削減を優先し、全ての画像を品質80で非可逆圧縮する。
  *
  * 使用方法:
  *   convert-img2avif
  *
  * 変換オプション:
- *   PNG: ロスレス圧縮
- *   JPG: 品質80（CRF 18相当）、速度6（バランス重視）
+ *   PNG/JPG共通: 品質80、速度6（バランス重視）
  *
  * 依存関係:
  *   - avifenc（brew install libavif）
@@ -61,14 +60,14 @@ export function getImageExtension(file: string): ".png" | ".jpg" | null {
  *   -q, --qcolor: 色の品質（0-100、100が最高品質）
  *   --min, --max: 品質範囲（0-63、0が最高品質）
  *   -l, --lossless: ロスレス圧縮
+ *
+ * 品質設定:
+ *   PNG/JPG共に品質80で非可逆圧縮。ファイルサイズ削減を優先。
+ *   ロスレスが必要な場合は "--lossless" オプションを手動で指定。
  */
 export function getAvifencOptions(ext: ".png" | ".jpg"): string[] {
-	if (ext === ".png") {
-		// PNGはロスレス圧縮
-		return ["--lossless"];
-	}
-	// JPGは品質80で圧縮（速度6でバランス重視）
-	// -q 80 は内部的にmin/maxに変換される
+	// PNG・JPG共に品質80で圧縮（速度6でバランス重視）
+	// ロスレスはファイルサイズが大きくなる場合があるため非可逆を採用
 	return ["-q", "80", "-s", "6"];
 }
 

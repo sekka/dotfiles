@@ -30,17 +30,16 @@ describe("convert-img2avif", () => {
 	});
 
 	describe("getAvifencOptions", () => {
-		test("PNGの場合はロスレス圧縮オプションを返す", () => {
-			const options = getAvifencOptions(".png");
-			expect(options).toContain("--lossless");
-		});
-
-		test("JPGの場合は品質80のオプションを返す", () => {
-			const options = getAvifencOptions(".jpg");
-			expect(options).toContain("-q");
-			expect(options).toContain("80");
-			expect(options).toContain("-s");
-			expect(options).toContain("6");
+		test("PNG/JPG共に品質80の非可逆圧縮オプションを返す", () => {
+			// ファイルサイズ削減を優先し、全て非可逆圧縮
+			for (const ext of [".png", ".jpg"] as const) {
+				const options = getAvifencOptions(ext);
+				expect(options).toContain("-q");
+				expect(options).toContain("80");
+				expect(options).toContain("-s");
+				expect(options).toContain("6");
+				expect(options).not.toContain("--lossless");
+			}
 		});
 	});
 
