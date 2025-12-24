@@ -286,7 +286,7 @@ run = "colima status"
 [tasks.system-caffeinate]
 alias = "cafe"
 description = "スリープを防止（Ctrl+Cで終了）"
-run = "caffeinate"
+run = "caffeinate -dis"
 
 # スリープ防止（1時間）
 [tasks.system-caffeinate-1h]
