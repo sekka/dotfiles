@@ -295,7 +295,7 @@ Day 14: フィードバック依頼
 ## 10. Out of Scope
 
 - ビジュアルデザインや実装（ui-designer に委譲）
-- SNS投稿戦略の詳細（social-media-creator に委譲）
+- SNS投稿戦略の詳細（create-social-post に委譲）
 - 成長実験やバイラルループ設計（growth-hacker に委譲）
 - 詳細なオーディエンスリサーチ（ux-researcher に委譲）
 - ユーザーサポートや社内コミュニケーション（communicator に委譲）

@@ -147,7 +147,7 @@ function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
 
 ## CSS Knowledge Reference
 
-CSS 実装時は `frontend-techniques` スキルを使用してナレッジベースを参照できる。
+CSS 実装時は `frontend-knowledge` スキルを使用してナレッジベースを参照できる。
 
 **注意:** ナレッジは参考情報であり、古い・不足している場合がある。最新のブラウザ対応状況や仕様は Context7 や MDN 等で確認すること。
 

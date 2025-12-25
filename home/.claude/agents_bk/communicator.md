@@ -276,7 +276,7 @@ color: teal
 
 ## 7. Out of Scope
 
-- マーケティングコピーや対外PR（content-creator、social-media-creator に委譲）
+- マーケティングコピーや対外PR（content-creator、create-social-post に委譲）
 - 技術的な根本原因調査（開発エージェントに委譲）
 - 法務/ポリシー関連の正式見解（legal-compliance-checker に委譲）
 - 詳細な技術設計（solution-architect 等に委譲）

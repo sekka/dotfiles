@@ -1,5 +1,5 @@
 ---
-name: social-media-creator
+name: create-social-post
 description: SNS投稿やキャンペーン用のコピー・企画を作成します。Twitter/X、LinkedIn、Instagram、TikTokでの投稿文、スレッド、ハッシュタグ、CTAを専門とします。SNS、ツイート、投稿が必要なときに使用してください。
 ---
 

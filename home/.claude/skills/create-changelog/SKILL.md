@@ -1,5 +1,5 @@
 ---
-name: changelog-manager
+name: create-changelog
 description: Gitコミット履歴を分析し、ユーザーフレンドリーかつ技術的に詳細なリリースノートとチェンジログを作成します。リリースノート、CHANGELOG、変更履歴が必要なときに使用してください。
 allowed-tools: Read, Bash, Grep, Glob, Write
 ---

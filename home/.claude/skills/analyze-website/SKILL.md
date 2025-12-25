@@ -1,5 +1,5 @@
 ---
-name: website-wireframe
+name: analyze-website
 description: 既存ウェブサイトを分析し、サイトマップとワイヤーフレームを作成します。URLを渡すとページ構造を解析し、指定形式で出力します。コンテンツ分析機能でページの目的やターゲットも要約できます。
 ---
 
@@ -58,6 +58,7 @@ mcp__plugin_playwright_playwright__browser_navigate
 4. 指定深度まで再帰的にクロール
 
 **除外対象**:
+
 - 外部ドメインへのリンク
 - アンカーリンク（#で始まるもの）
 - mailto:、tel:、javascript: 等
@@ -73,6 +74,7 @@ mcp__plugin_playwright_playwright__browser_snapshot
 ```
 
 スナップショットから抽出する情報：
+
 - ヘッダー構造（h1〜h6）
 - ナビゲーション要素
 - メインコンテンツエリア
@@ -171,6 +173,7 @@ URL: https://example.com/
 #### HTML/CSS形式
 
 シンプルなHTMLワイヤーフレームを生成：
+
 - グレースケール配色
 - ボックスで要素を表現
 - ラベルで要素種別を明示

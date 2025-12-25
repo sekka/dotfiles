@@ -1,5 +1,5 @@
 ---
-name: figma-reference
+name: fetch-figma
 description: コーディング時に参照するため、渡された Figma URL から Figma MCP で正確なデザイン情報を取得・共有します。Figmaからデザイン情報を取得したいときに使用してください。
 ---
 
@@ -93,4 +93,4 @@ mcp__figma-desktop__get_screenshot
 
 - 推測せず、必ず Figma MCP の結果を根拠にする
 - 取得できない場合は「どのノード/権限が不足しているか」を具体的に伝える
-- このスキルは情報収集のみ。実装は figma-implementation スキルで対応
+- このスキルは情報収集のみ。実装は implement-figma スキルで対応

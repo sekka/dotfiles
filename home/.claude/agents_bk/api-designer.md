@@ -305,7 +305,7 @@ query GetUserWithOrders($id: ID!) {
 ## 8. Out of Scope
 
 - API実装のコーディング（backend-reliability-engineer に委譲）
-- 一般的な技術ドキュメント（documentation-writer に委譲）
+- 一般的な技術ドキュメント（write-docs に委譲）
 - マーケティング向けコンテンツ（content-creator に委譲）
 
 ---

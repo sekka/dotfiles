@@ -1,5 +1,5 @@
 ---
-name: frontend-techniques
+name: frontend-knowledge
 description: フロントエンド技術のナレッジベースを参照します。CSS、JavaScript、パフォーマンス、アクセシビリティなどの質問に回答する際に使用してください。
 ---
 
@@ -13,7 +13,7 @@ description: フロントエンド技術のナレッジベースを参照しま�
 
 1. ユーザーの質問からキーワードを抽出
 2. 下記カテゴリ一覧から該当するファイルを特定
-3. `~/.claude/skills/frontend-techniques/` 内の該当ファイルを Read
+3. `~/.claude/skills/frontend-knowledge/` 内の該当ファイルを Read
 4. 蓄積された知識を基に回答
 
 ## カテゴリ一覧
@@ -55,7 +55,7 @@ description: フロントエンド技術のナレッジベースを参照しま�
 
 1. 一般的な知識で回答
 2. 「ナレッジベースに該当情報がありません」と伝える
-3. 必要に応じて `frontend-knowledge-collector` スキルでの追加を提案
+3. 必要に応じて `collect-frontend-knowledge` スキルでの追加を提案
 
 ## 複数カテゴリにまたがる場合
 

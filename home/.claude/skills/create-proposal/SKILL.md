@@ -1,5 +1,5 @@
 ---
-name: proposal-document
+name: create-proposal
 description: クライアント向け提案資料の作成を支援します。コンサル流のノウハウに基づき、意思決定を促す資料構成・原稿を作成します。提案書、企画書、営業資料が必要なときに使用してください。
 ---
 
