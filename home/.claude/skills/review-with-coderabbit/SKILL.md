@@ -1,5 +1,5 @@
 ---
-name: coderabbit-review
+name: review-with-coderabbit
 description: CodeRabbit AIを使用してコードレビューを実施します。`coderabbit --prompt-only`でAIプロンプトを取得し、包括的なコードレビューを提供します。
 allowed-tools: Bash, Read, Grep, Glob
 ---

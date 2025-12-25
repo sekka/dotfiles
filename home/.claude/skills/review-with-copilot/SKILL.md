@@ -1,5 +1,5 @@
 ---
-name: copilot-review
+name: review-with-copilot
 description: GitHub Copilotを使用してコードレビューを実施します。GitHubとの親和性を活かし、実践的なコード改善提案を提供します。
 allowed-tools: Bash, Read, Grep, Glob
 ---
@@ -114,6 +114,7 @@ Copilotの出力を以下の形式で整形：
    - 適切な`git diff`コマンドを実行
 
 2. **差分の取得**
+
    ```bash
    # 未コミット変更の場合
    diff=$(git diff)
@@ -131,6 +132,7 @@ Copilotの出力を以下の形式で整形：
    - 期待する出力形式を指定
 
 4. **Copilot実行**
+
    ```bash
    copilot -p "$(cat <<EOF
    以下のコード変更をレビューしてください。
@@ -163,7 +165,7 @@ Copilotの出力を以下の形式で整形：
 ### 基本的な使い方
 
 ```
-/copilot-review
+/review-with-copilot
 
 未コミット変更をレビューしてください
 ```
@@ -171,7 +173,7 @@ Copilotの出力を以下の形式で整形：
 ### ブランチ比較
 
 ```
-/copilot-review
+/review-with-copilot
 
 mainブランチとの差分をレビューしてください
 ```
@@ -179,7 +181,7 @@ mainブランチとの差分をレビューしてください
 ### 特定の観点に絞ったレビュー
 
 ```
-/copilot-review
+/review-with-copilot
 
 セキュリティとGitHubのベストプラクティスの観点からレビューしてください
 ```
@@ -187,7 +189,7 @@ mainブランチとの差分をレビューしてください
 ### 特定ファイルのレビュー
 
 ```
-/copilot-review
+/review-with-copilot
 
 src/auth/login.ts の変更をレビューしてください
 ```
@@ -197,21 +199,25 @@ src/auth/login.ts の変更をレビューしてください
 Copilotは以下のGitHub特有の観点も考慮します：
 
 ### CI/CD統合
+
 - GitHub Actionsワークフローの最適化
 - テスト自動化の推奨
 - デプロイメントの安全性
 
 ### セキュリティ
+
 - Dependabotアラートへの対応
 - GitHub Advanced Securityの活用
 - シークレット管理のベストプラクティス
 
 ### コラボレーション
+
 - プルリクエストのテンプレート活用
 - コードレビューのしやすさ
 - ドキュメンテーションの充実
 
 ### ブランチ戦略
+
 - Git Flowの遵守
 - コミットメッセージの規約
 - タグ付けとリリース管理
@@ -221,7 +227,7 @@ Copilotは以下のGitHub特有の観点も考慮します：
 ### カスタムレビュー基準
 
 ```
-/copilot-review
+/review-with-copilot
 
 以下の基準でレビューしてください：
 1. TypeScript strict modeに準拠しているか
@@ -233,7 +239,7 @@ Copilotは以下のGitHub特有の観点も考慮します：
 ### 複数ファイルの一括レビュー
 
 ```
-/copilot-review
+/review-with-copilot
 
 src/components/ 配下の全ての変更をレビューしてください
 ```
@@ -242,14 +248,15 @@ src/components/ 配下の全ての変更をレビューしてください
 
 ### 推奨ワークフロー
 
-1. **claude-review**: クイックチェック
-2. **copilot-review**: GitHub親和性の確認
-3. **codex-review**: 深い論理分析
-4. **gemini-review**: 別の視点での検証
+1. **review-with-claude**: クイックチェック
+2. **review-with-copilot**: GitHub親和性の確認
+3. **review-with-codex**: 深い論理分析
+4. **review-with-gemini**: 別の視点での検証
 
 ### 結果の比較
 
 複数のAIレビューを実施した場合：
+
 - 共通して指摘された問題は優先的に対応
 - AI特有の提案は内容を吟味して選択
 - 矛盾する提案がある場合は開発者が判断

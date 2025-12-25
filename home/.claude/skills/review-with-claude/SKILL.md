@@ -1,5 +1,5 @@
 ---
-name: claude-review
+name: review-with-claude
 description: 現在のClaudeセッション内でクイックレビューを実施します。コンテキストを保持したまま即座にコード品質、セキュリティ、パフォーマンスを評価します。
 allowed-tools: Read, Grep, Glob
 ---
@@ -17,18 +17,21 @@ allowed-tools: Read, Grep, Glob
 
 ## 他のレビュー手段との使い分け
 
-### claude-review（本skill）
+### review-with-claude（本skill）
+
 現在のセッション内でクイックレビュー。軽微な変更やリアルタイムチェック向け。
 
 ### 外部AIレビュー
-- **codex-review**: OpenAI Codexによる詳細レビュー
-- **copilot-review**: GitHub Copilotによるレビュー
-- **gemini-review**: Google Geminiによるレビュー
-- **coderabbit-review**: CodeRabbitによる構造化レビュー
+
+- **review-with-codex**: OpenAI Codexによる詳細レビュー
+- **review-with-copilot**: GitHub Copilotによるレビュー
+- **review-with-gemini**: Google Geminiによるレビュー
+- **review-with-coderabbit**: CodeRabbitによる構造化レビュー
 
 重要な変更の多角的検証や、特定のAIの強みを活かしたい場合に使用。
 
 ### code-reviewer agent
+
 Task toolで別セッション起動。大規模リファクタリングやアーキテクチャレベルの変更に使用。
 
 ## レビュー実行手順
@@ -44,6 +47,7 @@ Read、Grep、Globツールで対象コードを取得
 #### 🔴 クリティカル（即座の対応が必要）
 
 **セキュリティ**
+
 - [ ] SQLインジェクション: ユーザー入力が直接クエリに埋め込まれていないか
 - [ ] XSS脆弱性: 出力が適切にエスケープされているか
 - [ ] CSRF対策: 状態変更操作に適切な保護があるか
@@ -52,18 +56,21 @@ Read、Grep、Globツールで対象コードを取得
 - [ ] 安全でない依存関係: 既知の脆弱性を持つパッケージがないか
 
 **データ整合性**
+
 - [ ] トランザクション: 複数DB操作が適切にトランザクション管理されているか
 - [ ] 競合状態: 並行処理での競合が考慮されているか
 
 #### 🟡 重要（優先的に対応すべき）
 
 **パフォーマンス**
+
 - [ ] アルゴリズム効率: O(n²)以上の計算量がないか
 - [ ] N+1問題: ループ内でのDB/APIクエリがないか
 - [ ] メモリ使用: 大量データの一括読み込みがないか
 - [ ] 不要な再計算: キャッシュすべき処理がないか
 
 **エラーハンドリング**
+
 - [ ] 例外処理: 適切なエラーハンドリングがあるか
 - [ ] エラーログ: 問題のトラッキングに必要な情報がログに含まれているか
 - [ ] ユーザー通知: エラー時の適切なフィードバックがあるか
@@ -71,6 +78,7 @@ Read、Grep、Globツールで対象コードを取得
 #### 🟢 改善推奨（余裕があれば対応）
 
 **保守性**
+
 - [ ] 関数の長さ: 50行以下に収まっているか
 - [ ] 命名: 意図が明確な命名になっているか
 - [ ] 重複: DRY原則に反するコードがないか
@@ -78,6 +86,7 @@ Read、Grep、Globツールで対象コードを取得
 - [ ] コメント: 複雑なロジックに説明があるか
 
 **テスト**
+
 - [ ] カバレッジ: 主要パスがテストされているか
 - [ ] エッジケース: 境界値、null、空配列が考慮されているか
 
@@ -120,15 +129,16 @@ Read、Grep、Globツールで対象コードを取得
 ### 🔄 次のステップ
 
 重要な変更の場合、以下の外部AIレビューも検討：
-- /codex-review - OpenAI Codexの視点
-- /copilot-review - GitHub Copilotの視点
-- /gemini-review - Google Geminiの視点
+
+- /review-with-codex - OpenAI Codexの視点
+- /review-with-copilot - GitHub Copilotの視点
+- /review-with-gemini - Google Geminiの視点
 
 ## 使用例
 
 ### 特定ファイルのレビュー
 
-/claude-review で対象ファイルを指定してレビュー
+/review-with-claude で対象ファイルを指定してレビュー
 
 ### 未コミット変更のレビュー
 

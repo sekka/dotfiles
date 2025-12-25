@@ -1,5 +1,5 @@
 ---
-name: multi-ai-review
+name: review-with-multi-ai
 description: 複数のAIエンジン（Codex、Gemini、Copilot、CodeRabbit）で並行コードレビューを実施します。各AIの強みを活かした包括的な分析を提供します。
 allowed-tools: Bash, Read, Grep
 ---
@@ -27,7 +27,7 @@ allowed-tools: Bash, Read, Grep
 ### 未コミット変更のレビュー
 
 ```
-/multi-ai-review
+/review-with-multi-ai
 
 未コミット変更をレビューしてください
 ```
@@ -35,13 +35,13 @@ allowed-tools: Bash, Read, Grep
 または
 
 ```
-/multi-ai-review --uncommitted
+/review-with-multi-ai --uncommitted
 ```
 
 ### 特定ブランチとの差分をレビュー
 
 ```
-/multi-ai-review --base origin/master
+/review-with-multi-ai --base origin/master
 
 origin/masterとの差分をレビューしてください
 ```
@@ -49,13 +49,13 @@ origin/masterとの差分をレビューしてください
 ### コミット範囲のレビュー
 
 ```
-/multi-ai-review --range origin/master..HEAD
+/review-with-multi-ai --range origin/master..HEAD
 
 origin/masterからHEADまでの変更をレビューしてください
 ```
 
 ```
-/multi-ai-review --range HEAD~3..HEAD
+/review-with-multi-ai --range HEAD~3..HEAD
 
 最新3コミットをレビューしてください
 ```
@@ -63,13 +63,13 @@ origin/masterからHEADまでの変更をレビューしてください
 ### PR内容のレビュー
 
 ```
-/multi-ai-review --pr 123
+/review-with-multi-ai --pr 123
 
 PR #123の変更内容をレビューしてください
 ```
 
 ```
-/multi-ai-review --pr https://github.com/owner/repo/pull/456
+/review-with-multi-ai --pr https://github.com/owner/repo/pull/456
 
 PR URLを指定してレビューしてください
 ```

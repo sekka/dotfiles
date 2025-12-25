@@ -1,5 +1,5 @@
 ---
-name: codex-review
+name: review-with-codex
 description: OpenAI Codexを使用してコードレビューを実施します。codex review コマンドで直接レビューを実行し、AIによる包括的な分析を提供します。
 allowed-tools: Bash, Read, Grep, Glob
 ---
@@ -94,7 +94,7 @@ Codexは以下の観点でレビューを実施します：
 ### 基本的な使い方
 
 ```
-/codex-review
+/review-with-codex
 
 未コミット変更をレビューしてください
 ```
@@ -102,7 +102,7 @@ Codexは以下の観点でレビューを実施します：
 ### ブランチ比較
 
 ```
-/codex-review
+/review-with-codex
 
 mainブランチとの差分をレビューしてください
 ```
@@ -110,7 +110,7 @@ mainブランチとの差分をレビューしてください
 ### カスタム観点
 
 ```
-/codex-review
+/review-with-codex
 
 セキュリティとパフォーマンスの観点から未コミット変更をレビューしてください
 ```
@@ -118,7 +118,7 @@ mainブランチとの差分をレビューしてください
 ### 特定コミットのレビュー
 
 ```
-/codex-review
+/review-with-codex
 
 コミット abc123 をレビューしてください
 ```
@@ -155,10 +155,10 @@ Codexの出力をそのまま表示し、以下を追加：
 ### 🔄 次のステップ
 
 他のAIの視点も参考にする場合：
-- /claude-review - 現在のセッションでクイックレビュー
-- /copilot-review - GitHub Copilotの視点
-- /gemini-review - Google Geminiの視点
-- /coderabbit-review - CodeRabbitの構造化レビュー
+- /review-with-claude - 現在のセッションでクイックレビュー
+- /review-with-copilot - GitHub Copilotの視点
+- /review-with-gemini - Google Geminiの視点
+- /review-with-coderabbit - CodeRabbitの構造化レビュー
 ```
 
 ## 高度な使用法
@@ -174,7 +174,7 @@ codex review -c model="o3" --uncommitted
 ### 特定のレビュー観点
 
 ```
-/codex-review
+/review-with-codex
 
 以下の観点のみレビューしてください：
 1. SQL インジェクションの脆弱性
