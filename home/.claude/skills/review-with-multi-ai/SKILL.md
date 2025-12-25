@@ -1,7 +1,7 @@
 ---
 name: review-with-multi-ai
 description: 複数のAIエンジン（Codex、Gemini、Copilot、CodeRabbit）で並行コードレビューを実施します。各AIの強みを活かした包括的な分析を提供します。
-allowed-tools: Bash, Read, Grep
+allowed-tools: Bash, Read
 ---
 
 # マルチAIレビュー
@@ -74,155 +74,125 @@ PR #123の変更内容をレビューしてください
 PR URLを指定してレビューしてください
 ```
 
-## 実装ガイドライン
+## 実行手順
+
+このスキルを実行する際は、以下の手順に従ってください：
 
 ### 1. 引数の解析
 
-スキル実行時に以下のパターンを検出：
+ユーザーの引数から レビュー対象を特定：
 
-- `--uncommitted`: 未コミット変更をレビュー
-- `--base <branch>`: 指定ブランチとの差分をレビュー
-- `--range <range>`: 指定範囲（例: `origin/master..HEAD`）をレビュー
-- `--pr <number>` または `--pr <url>`: PR番号またはURLでレビュー
-- 引数なし: デフォルトで`--uncommitted`として扱う
+- コミット範囲（例: `HEAD~4`, `HEAD~3..HEAD`, `origin/master..HEAD`）
+- ブランチ名（例: `origin/master`）
+- 引数なしの場合は未コミット変更
 
-### 2. 各AIツールのコマンド構築
+### 2. レビュー対象の文字列化
 
-引数に応じて適切なコマンドを構築：
+以下のいずれかの方法でレビュー対象を取得：
 
-#### 未コミット変更の場合
+- コミット範囲: `git log --oneline -N` と `git diff <range>`
+- ブランチ比較: `git diff <branch>..HEAD`
+- 未コミット: `git diff HEAD`
 
-```bash
-codex review --uncommitted
-gemini --yolo "$(git diff HEAD)をレビューしてください"
-copilot -p "$(git diff HEAD)をレビューしてください" --allow-all-tools
-coderabbit review --prompt-only --type uncommitted
-```
+### 3. 4つのAIツールで並行レビュー実行
 
-#### ブランチ比較の場合
+**注意**: Copilotは事前にインタラクティブモードでモデルを有効化する必要があります（`copilot --model <model-name>`を一度実行）。有効化されていない場合、Copilotはスキップされます。
+
+Bashツールを使って、以下のコマンドを**1回の呼び出しで**並行実行してください：
 
 ```bash
-codex review --base <branch>
-gemini --yolo "$(git diff <branch>..HEAD)をレビューしてください"
-copilot -p "$(git diff <branch>..HEAD)をレビューしてください" --allow-all-tools
-coderabbit review --prompt-only --base <branch>
-```
+# 一時ファイルのクリーンアップ
+rm -f /tmp/codex_review_$$.txt /tmp/gemini_review_$$.txt /tmp/copilot_review_$$.txt /tmp/coderabbit_review_$$.txt
 
-#### 範囲指定の場合
-
-```bash
-# Codexは範囲を直接サポートしないため、baseオプションで代用
-codex review --base <range-start>
-gemini --yolo "$(git diff <range>)をレビューしてください"
-copilot -p "$(git diff <range>)をレビューしてください" --allow-all-tools
-coderabbit review --prompt-only --base <range-start>
-```
-
-#### PR指定の場合
-
-```bash
-# PR番号またはURLからdiffを取得
-# PR番号の場合
-PR_DIFF=$(gh pr diff <pr-number>)
-
-# PR URLの場合（URLから番号を抽出）
-PR_NUM=$(echo "<pr-url>" | grep -oE '[0-9]+$')
-PR_DIFF=$(gh pr diff $PR_NUM)
-
-# 各AIツールでレビュー
-codex review --uncommitted  # PRをチェックアウト後に実行
-gemini --yolo "以下のPR差分をレビューしてください：
-
-$PR_DIFF"
-copilot -p "以下のPR差分をレビューしてください：
-
-$PR_DIFF" --allow-all-tools
-coderabbit review --prompt-only --type uncommitted  # PRをチェックアウト後に実行
-```
-
-### 3. 並行実行の実装
-
-Bashのバックグラウンドジョブを使用して並行実行：
-
-```bash
-# 各コマンドを並行実行
-codex review <options> > /tmp/codex_review.txt 2>&1 &
+# 並行実行（$$ でプロセスIDを使い、ファイル名の衝突を回避）
+(codex review --base <range-start> > /tmp/codex_review_$$.txt 2>&1) &
 CODEX_PID=$!
 
-gemini --yolo "$(git diff <target>)をレビュー" > /tmp/gemini_review.txt 2>&1 &
+(gemini --yolo "以下の変更をレビューしてください：
+
+$(git log --oneline <commits>)
+
+差分:
+$(git diff <range>)" > /tmp/gemini_review_$$.txt 2>&1) &
 GEMINI_PID=$!
 
-copilot -p "$(git diff <target>)をレビュー" --allow-all-tools > /tmp/copilot_review.txt 2>&1 &
+(copilot -p "以下の変更をレビューしてください：
+
+$(git log --oneline <commits>)
+
+差分:
+$(git diff <range>)" --allow-all-tools > /tmp/copilot_review_$$.txt 2>&1) &
 COPILOT_PID=$!
 
-coderabbit review --prompt-only <options> > /tmp/coderabbit_review.txt 2>&1 &
+(coderabbit review --prompt-only --base <range-start> > /tmp/coderabbit_review_$$.txt 2>&1) &
 CODERABBIT_PID=$!
 
 # すべての完了を待機
 wait $CODEX_PID $GEMINI_PID $COPILOT_PID $CODERABBIT_PID
+
+echo "✅ 並行レビュー完了"
+echo "REVIEW_FILES=/tmp/codex_review_$$.txt:/tmp/gemini_review_$$.txt:/tmp/copilot_review_$$.txt:/tmp/coderabbit_review_$$.txt"
 ```
 
-### 4. 結果の統合と表示
+### 4. 各AIツールの結果を読み込み
 
-各AIの出力を読み込んで統合表示：
+Readツールを使って、各一時ファイルの内容を読み込んでください：
+
+- `/tmp/codex_review_$$.txt`
+- `/tmp/gemini_review_$$.txt`
+- `/tmp/copilot_review_$$.txt`
+- `/tmp/coderabbit_review_$$.txt`
+
+### 5. 統合レビュー結果の表示
+
+以下の形式で統合結果を表示してください：
 
 ```markdown
 ## 🔍 マルチAIレビュー結果
 
-**レビュー対象**: [未コミット変更 / origin/masterとの差分 / コミット範囲 / PR #123 / etc.]
+**レビュー対象**: <コミット範囲またはブランチ>
 
 ---
 
-### 🤖 Codex (OpenAI o1/o3)
+### 🤖 Codex (OpenAI)
 
-[Codexの出力]
+<Codexの出力内容>
 
 ---
 
 ### 🤖 Gemini (Google)
 
-[Geminiの出力]
+<Geminiの出力内容>
 
 ---
 
 ### 🤖 Copilot (GitHub)
 
-[Copilotの出力]
+<Copilotの出力内容>
 
 ---
 
 ### 🤖 CodeRabbit
 
-[CodeRabbitの出力]
+<CodeRabbitの出力内容>
 
 ---
 
 ## 📊 共通の指摘事項
 
-[複数のAIが指摘した重要な問題をピックアップ]
+<複数のAIが指摘した重要な問題>
 
 ## ✅ 推奨アクション
 
-[優先順位付けされた改善提案]
-
-1. [高優先度の問題]
-2. [中優先度の問題]
-3. [低優先度の改善提案]
+<優先順位付けされた改善提案>
 ```
 
-### 5. エラーハンドリング
+### 6. クリーンアップ
 
-- 各AIツールが利用できない場合はスキップ
-- エラーメッセージを適切に表示
-- 少なくとも1つのAIが成功すればレビュー結果を表示
+レビュー完了後、一時ファイルを削除：
 
 ```bash
-# コマンド存在確認の例
-if ! command -v codex >/dev/null 2>&1; then
-    echo "⚠️ Codex not available, skipping..."
-else
-    # Codex実行
-fi
+rm -f /tmp/codex_review_$$.txt /tmp/gemini_review_$$.txt /tmp/copilot_review_$$.txt /tmp/coderabbit_review_$$.txt
 ```
 
 ## 使用タイミング
@@ -242,9 +212,9 @@ fi
 - すべてのAIツールが認証済みである必要があります
   - `codex login`
   - `gemini` の認証設定
-  - `copilot` の認証設定
+  - `copilot` の認証設定（事前に`copilot --model <model-name>`をインタラクティブモードで一度実行してモデルを有効化）
   - `coderabbit` の認証設定
 - 並行実行のため、初回は時間がかかる場合があります
 - 各AIツールの利用制限に注意してください
-- Copilotは`--interactive`モードが必要な場合があります（エラー時は削除）
+- Copilotが有効化されていない場合、エラーが記録されますが他のAIレビューは継続されます
 - 大量の変更がある場合、一部のAIがタイムアウトする可能性があります
