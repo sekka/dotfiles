@@ -37,7 +37,9 @@
     "claude-mem@thedotmack": true,
     "elevator-music@sevii-agent-marketplace": false,
     "claude-mem-japanese@claude-mem-jp": true,
-    "claude-code-harness@claude-code-harness-marketplace": true
+    "claude-code-harness@claude-code-harness-marketplace": true,
+    "Notion@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
