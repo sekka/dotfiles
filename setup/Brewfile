@@ -34,6 +34,7 @@ brew "docker"             # https://formulae.brew.sh/formula/docker           # 
 brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
 brew "mise"               # https://formulae.brew.sh/formula/mise             # タスクランナー
 brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
+brew "snitch"             # https://formulae.brew.sh/formula/snitch           # ネットワーク監視ツール
 brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
 
