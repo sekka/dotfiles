@@ -1,5 +1,5 @@
 ---
-name: frontend-knowledge
+name: referencing-frontend-knowledge
 description: フロントエンド技術のナレッジベースを参照します。CSS、JavaScript、パフォーマンス、アクセシビリティなどの質問に回答する際に使用してください。
 ---
 

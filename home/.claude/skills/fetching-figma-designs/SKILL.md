@@ -1,5 +1,5 @@
 ---
-name: fetch-figma
+name: fetching-figma-designs
 description: コーディング時に参照するため、渡された Figma URL から Figma MCP で正確なデザイン情報を取得・共有します。Figmaからデザイン情報を取得したいときに使用してください。
 ---
 

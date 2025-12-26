@@ -1,5 +1,5 @@
 ---
-name: implement-figma
+name: implementing-figma-designs
 description: Figma スタイルリサーチで得た情報を基に、既存コードベースへ正確に落とし込みます。Figmaデザインの実装が必要なときに使用してください。
 ---
 

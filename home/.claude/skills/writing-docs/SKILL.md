@@ -1,5 +1,5 @@
 ---
-name: write-docs
+name: writing-docs
 description: プロダクトドキュメント、技術手順書、セットアップガイド、ユーザーマニュアルを作成します。ドキュメント、手順書、ガイドが必要なときに使用してください。
 allowed-tools: Write, Read, Grep, Glob
 ---

@@ -1,5 +1,5 @@
 ---
-name: review-with-claude
+name: reviewing-with-claude
 description: 現在のClaudeセッション内でクイックレビューを実施します。コンテキストを保持したまま即座にコード品質、セキュリティ、パフォーマンスを評価します。
 allowed-tools: Read, Grep, Glob
 ---

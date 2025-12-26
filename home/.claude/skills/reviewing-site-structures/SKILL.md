@@ -1,5 +1,5 @@
 ---
-name: review-site-structure
+name: reviewing-site-structures
 description: analyze-websiteスキルで作成したワイヤーフレームとサイトマップを入力として、サイト全体の構造分析・問題点の特定・改善提案を行います。情報アーキテクチャ、ユーザーフロー、コンテンツギャップの観点から包括的にレビューします。
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: review-pr
+name: reviewing-prs
 description: GitHub Pull Requestのレビュー操作を行うスキル。PR情報取得、差分確認、コメント取得・投稿、インラインコメント、コメント返信をghコマンドで実行する。PRレビュー、コードレビュー、PR操作が必要な時に使用。
 ---
 

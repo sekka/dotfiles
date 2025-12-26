@@ -1,5 +1,5 @@
 ---
-name: collect-frontend-knowledge
+name: collecting-frontend-knowledge
 description: URLや記事内容からフロントエンド技術のナレッジを要約・蓄積・整理します。参考URLを渡されたとき、またはナレッジの整理を依頼されたときに使用してください。
 ---
 
