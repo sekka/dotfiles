@@ -4,6 +4,17 @@
   },
   "model": "sonnet",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun ~/dotfiles/scripts/development/safe-command.ts"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
@@ -41,7 +52,8 @@
     "claude-code-harness@claude-code-harness-marketplace": false,
     "Notion@claude-plugins-official": false,
     "typescript-lsp@claude-plugins-official": false,
-    "feature-dev@claude-plugins-official": true
+    "feature-dev@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": false
   },
   "alwaysThinkingEnabled": true
 }
