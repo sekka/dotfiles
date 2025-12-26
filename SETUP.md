@@ -22,21 +22,21 @@
 
 **ホームディレクトリ直下:**
 
-- `.zshrc`, `.zshenv`, `.zprofile` - zsh設定
-- `.gitconfig`, `.gitignore_global` - Git設定
+- `.zshrc`, `.zshenv`, `.zprofile` - zsh 設定
+- `.gitconfig`, `.gitignore_global` - Git 設定
 - `.tmux.conf`, `.vimrc` - その他の設定
 
 **~/.config/ 配下:**
 
 - `ghostty/` - ターミナル設定
-- `lazygit/` - Git TUI設定
+- `lazygit/` - Git TUI 設定
 - `mise/` - ツールバージョン管理
-- `sheldon/` - zshプラグイン管理
+- `sheldon/` - zsh プラグイン管理
 
-**AI開発支援ツール:**
+**AI 開発支援ツール:**
 
-- `~/.claude/` - Claude設定（CLAUDE.md, settings.json, commands等）
-- `~/.serena/` - Serena設定（セマンティックコーディング）
+- `~/.claude/` - Claude 設定（CLAUDE.md, settings.json, commands 等）
+- `~/.serena/` - Serena 設定（セマンティックコーディング）
 
 ### 3. アプリケーションのインストール
 
@@ -53,7 +53,7 @@
 
 `dotfiles/` ディレクトリに移動するたびに以下が自動実行されます：
 
-- Git hooks のセットアップ（commit前のlint/formatチェック）
+- Git hooks のセットアップ（commit 前の lint/format チェック）
 
 ```bash
 # direnv が正常に動作しているか確認
@@ -142,7 +142,7 @@ vim ~/dotfiles/home/.gitconfig
 ./setup/02_dotfiles.sh  # 再実行でシンボリックリンク作成
 ```
 
-### Claude設定の管理
+### Claude 設定の管理
 
 ```bash
 # Claudeコマンドやスキルを追加
@@ -158,6 +158,10 @@ echo "# 新しいコマンド" > ~/dotfiles/home/.claude/commands/new-command.md
 各環境でマーケットプレイスの追加とプラグインのインストールが必要です：
 
 ```bash
+# skill-creator（スキル作成スキル）
+claude /plugin marketplace add anthropics/skills
+claude /plugin install example-skills@anthropic-agent-skills
+
 # claude-mem（セッション間メモリ）
 claude /plugin marketplace add thedotmack/claude-mem
 claude /plugin install claude-mem@thedotmack
@@ -171,7 +175,7 @@ claude /plugin marketplace add Chachamaru127/claude-code-harness
 claude /plugin install claude-code-harness@claude-code-harness-marketplace
 ```
 
-プラグインのインストール後はClaude Codeの再起動が必要です。
+プラグインのインストール後は Claude Code の再起動が必要です。
 
 ### コード品質チェック
 
@@ -216,7 +220,7 @@ direnv allow
 cd .. && cd ~/dotfiles  # ディレクトリ再入で実行確認
 ```
 
-### Claude設定の確認
+### Claude 設定の確認
 
 ```bash
 # Claude設定のシンボリックリンク状態確認
@@ -232,31 +236,34 @@ ls -la ~/.claude/
 
 ### 最近の主な変更
 
-#### 2025年12月
+#### 2025 年 12 月
 
 1. **セットアップスクリプトの統合**
    - `03_dev_configs.sh` を `02_dotfiles.sh` に統合
    - 全ての設定ファイルのシンボリックリンク作成を一元化
-   - 初回セットアップが2ステップで完了（01→02のみ）
-   - direnvによる自動同期は不要に（Git hooksのみ自動実行）
+   - 初回セットアップが 2 ステップで完了（01→02 のみ）
+   - direnv による自動同期は不要に（Git hooks のみ自動実行）
 
-#### 2025年1月
+#### 2025 年 1 月
 
-1. **Python環境管理の変更**
-   - pyenvからuvへ移行
+1. **Python 環境管理の変更**
+
+   - pyenv から uv へ移行
    - より高速でモダンな環境管理
 
 2. **シェル環境の改善**
-   - PATHに個別スクリプトディレクトリを追加
-   - .local環境変数の読み込み追加
+
+   - PATH に個別スクリプトディレクトリを追加
+   - .local 環境変数の読み込み追加
 
 3. **開発ツールの強化**
-   - compare_dirs.shスクリプトの大幅改善
-   - mise設定にLLMタスク（serena-mcp-server）追加
 
-4. **Claude設定の最適化**
-   - CLAUDE.mdのAI署名ルール明確化
-   - settings.jsonのシンプル化
+   - compare_dirs.sh スクリプトの大幅改善
+   - mise 設定に LLM タスク（serena-mcp-server）追加
+
+4. **Claude 設定の最適化**
+   - CLAUDE.md の AI 署名ルール明確化
+   - settings.json のシンプル化
 
 ### 移行時の注意事項
 
