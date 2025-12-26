@@ -134,9 +134,9 @@ function checkHomeDirectoryDeletion(command: string): boolean {
 	// ホームディレクトリの各種表記パターンをチェック
 	const escaped = home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	const homePatterns = [
-		new RegExp(`${escaped}/[^/\\s]+(?:\\s|$)`), // /Users/username/file
-		/~\/[^/\s]+(?:\s|$)/, // ~/file
-		/\$HOME\/[^/\s]+(?:\s|$)/, // $HOME/file
+		new RegExp(`${escaped}/[^/]+(?:\\s|$)`), // /Users/username/file (直下のみ)
+		/~\/[^/]+(?:\s|$)/, // ~/file (直下のみ)
+		/\$HOME\/[^/]+(?:\s|$)/, // $HOME/file (直下のみ)
 	];
 
 	return homePatterns.some((pattern) => pattern.test(command));
@@ -170,7 +170,6 @@ export function validateCommand(command: string): string[] {
 	for (const { pattern, message } of FORBIDDEN_COMMANDS) {
 		if (pattern.test(command.toLowerCase())) {
 			issues.push(`禁止されたコマンド: ${message}`);
-			break;
 		}
 	}
 
