@@ -1,4 +1,5 @@
 ---
+name: developing-frontend
 description: フロントエンド UI/UX 実装と最適化を支援します。React/Vue/Next.jsでの実装、パフォーマンス最適化、アクセシビリティを提供します。ユーザーインターフェース開発、Web アプリケーション構築が必要な場合に使用してください。
 ---
 
