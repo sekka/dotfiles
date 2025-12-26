@@ -116,5 +116,6 @@ Ultra-specific（超具体的）: "3ステップで"
 
 ## 関連ファイル
 
+- [SOCIAL-MEDIA.md](./SOCIAL-MEDIA.md) - ソーシャルメディア投稿ガイド
 - [TEMPLATES.md](./TEMPLATES.md) - コンテンツテンプレート集
 - [FRAMEWORKS.md](./FRAMEWORKS.md) - フレームワークリファレンス

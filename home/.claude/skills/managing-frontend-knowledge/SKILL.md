@@ -1,15 +1,36 @@
 ---
-name: collecting-frontend-knowledge
-description: URLや記事内容からフロントエンド技術のナレッジを要約・蓄積・整理します。参考URLを渡されたとき、またはナレッジの整理を依頼されたときに使用してください。
+name: managing-frontend-knowledge
+description: フロントエンド技術のナレッジベース管理。URLや記事から技術情報を要約・蓄積し、CSS、JavaScript、パフォーマンス、アクセシビリティなどの質問に対してナレッジベースを参照して回答します。ナレッジ追加時、技術的な質問への回答時に使用してください。
 ---
 
-# フロントエンドナレッジ収集・整理
+# フロントエンドナレッジ管理
 
 ## 概要
 
-ユーザーから提供されたURL・記事内容を要約し、`frontend-knowledge` スキルのナレッジベースに追加・整理する。
+フロントエンド技術のナレッジベースを管理するスキル。2つの主要機能を提供:
 
-## モード
+1. **収集・蓄積**: URLや記事からフロントエンド技術を要約してナレッジベースに追加
+2. **参照・回答**: 蓄積されたナレッジベースから質問に関連する情報を検索して回答
+
+## 使用場面
+
+### 収集モード
+
+- URLが渡された場合: 「この記事を保存して」
+- 記事内容の追加: 「ナレッジに追加して」
+- ナレッジ整理: 「ナレッジを整理して」
+
+### 参照モード
+
+- フロントエンド技術の質問
+- CSS、JavaScript、パフォーマンス、アクセシビリティに関する質問
+- 蓄積されたナレッジに基づく回答が必要な場合
+
+---
+
+# パート1: ナレッジ収集・蓄積
+
+## 実行モード
 
 ### 1. 追加モード（デフォルト）
 
@@ -21,7 +42,7 @@ description: URLや記事内容からフロントエンド技術のナレッジ�
 - 「ナレッジを整理して」「重複を確認して」等の依頼
 - 特定カテゴリの整理: 「css-layout.md を整理して」
 
-## 実行フロー
+## 収集フロー
 
 ### Step 1: コンテンツ取得
 
@@ -68,22 +89,25 @@ URLが渡された場合は `WebFetch` で内容を取得。
 
 以下のカテゴリから最適なものを選択：
 
-| カテゴリ | ファイル | 対象 |
-|---------|---------|------|
-| レイアウト | `css-layout.md` | Grid, Flexbox, 配置, Container Queries |
-| アニメーション | `css-animation.md` | Transitions, Keyframes, View Transitions |
-| セレクタ | `css-selectors.md` | :has(), :is(), 擬似クラス |
-| タイポグラフィ | `css-typography.md` | フォント, テキスト処理 |
-| カラー | `css-colors.md` | 色, テーマ, カスタムプロパティ |
-| モダンCSS | `css-modern.md` | @layer, @scope, 新機能 |
-| JavaScript | `javascript-patterns.md` | DOM, イベント, 非同期 |
-| パフォーマンス | `performance.md` | 最適化, Core Web Vitals |
-| アクセシビリティ | `accessibility.md` | a11y, ARIA, フォーカス |
-| Tailwind | `tailwind.md` | Tailwind CSS 関連 |
+| カテゴリ | ファイル | 対象 | キーワード |
+|---------|---------|------|-----------|
+| レイアウト | `css-layout.md` | Grid, Flexbox, 配置, Container Queries | レイアウト, 幅, 高さ, 中央寄せ |
+| アニメーション | `css-animation.md` | Transitions, Keyframes, View Transitions | 動き, アニメーション, 遷移 |
+| フルブリードレイアウト | `css-full-bleed-layout.md` | フルブリード, エッジツーエッジ | 全幅, エッジ |
+| スコープ | `css-scope.md`, `css-scope-basics.md` | @scope, スコープ | スコープ, カプセル化 |
+| ビューポート | `css-viewport-size.md` | ビューポート単位, dvh, svh | ビューポート, 単位 |
+| モダンCSS | `css-modern.md` | @layer, ネスティング, 新機能 | モダン, 新機能, 2024 |
+| HTML | `html-modern.md` | モダンHTML, セマンティック | HTML, マークアップ |
+| JavaScript | `javascript-patterns.md` | DOM, イベント, 非同期 | JS, DOM, イベント |
+| JSアニメーション | `js-animation.md` | JavaScript アニメーション | JS アニメーション |
+| パフォーマンス | `performance.md` | 最適化, Core Web Vitals | 速度, 最適化, LCP |
+| アクセシビリティ | `accessibility-link-underline.md` | リンク下線, a11y | a11y, アクセシビリティ |
+| TypeScript | `typescript.md` | TypeScript パターン | TS, 型 |
+| ブラウザ回避策 | `browser-workarounds.md` | ブラウザバグ, 回避策 | バグ, 回避 |
 
 ### Step 4: ファイル更新
 
-1. `~/.claude/skills/frontend-knowledge/[カテゴリ].md` を Read
+1. `~/.claude/skills/managing-frontend-knowledge/[カテゴリ].md` を Read
 2. 既存コンテンツの末尾に新しいテクニックを追加
 3. ファイルが存在しない場合は新規作成
 
@@ -126,13 +150,13 @@ URLが渡された場合は `WebFetch` で内容を取得。
 例: 「アクセシビリティを考慮したアニメーション実装」という記事
 
 ```
-accessibility.md:
+accessibility-link-underline.md:
   - prefers-reduced-motion の必要性と判定方法
   - 関連: css-animation.md の「モーション軽減対応」
 
 css-animation.md:
   - モーション軽減対応のCSS実装パターン
-  - 関連: accessibility.md の「prefers-reduced-motion」
+  - 関連: accessibility-link-underline.md の「prefers-reduced-motion」
 ```
 
 ### 報告フォーマット
@@ -140,7 +164,7 @@ css-animation.md:
 ```
 ✅ ナレッジを追加しました（2カテゴリに分割）
 
-📁 accessibility.md
+📁 accessibility-link-underline.md
    📝 prefers-reduced-motion の考慮
 
 📁 css-animation.md
@@ -297,3 +321,51 @@ css-animation.md:
 - カテゴリが20エントリを超えたとき
 - 3ヶ月に1回の定期メンテナンス
 - 大きな仕様変更があったとき（新ブラウザ機能など）
+
+---
+
+# パート2: ナレッジ参照・回答
+
+## 使い方
+
+1. ユーザーの質問からキーワードを抽出
+2. 上記カテゴリ一覧から該当するファイルを特定
+3. `~/.claude/skills/managing-frontend-knowledge/` 内の該当ファイルを Read
+4. 蓄積された知識を基に回答
+
+## 回答フォーマット
+
+```markdown
+## [質問に対する回答]
+
+[説明]
+
+### コード例
+
+\```css
+/* または js/html */
+\```
+
+### ユースケース
+- [具体的な使用場面]
+
+### 参考
+- [出典URL（あれば）]
+```
+
+## 該当カテゴリがない場合
+
+1. 一般的な知識で回答
+2. 「ナレッジベースに該当情報がありません」と伝える
+3. 必要に応じてナレッジ収集機能での追加を提案
+
+## 複数カテゴリにまたがる場合
+
+関連する複数のファイルを Read して総合的に回答する。
+例: 「スクロールアニメーション」→ `css-animation.md` + `performance.md`
+
+## 注意事項
+
+- カテゴリファイルが存在しない場合はエラーにせず、ある情報で回答
+- 出典URLがある場合は必ず記載
+- コード例は実用的なものを優先

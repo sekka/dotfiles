@@ -1,16 +1,4 @@
----
-name: fetching-figma-designs
-description: コーディング時に参照するため、渡された Figma URL から Figma MCP で正確なデザイン情報を取得・共有します。Figmaからデザイン情報を取得したいときに使用してください。
----
-
-# Figma デザイン参照
-
-## Quick Start
-
-1. Figma URL を受け取る
-2. `mcp__figma-desktop__get_design_context` でデザイン情報を取得
-3. `mcp__figma-desktop__get_screenshot` でビジュアル確認
-4. 実測値を整理して共有
+# Figma デザイン情報取得ガイド
 
 ## ワークフロー
 
@@ -93,4 +81,3 @@ mcp__figma-desktop__get_screenshot
 
 - 推測せず、必ず Figma MCP の結果を根拠にする
 - 取得できない場合は「どのノード/権限が不足しているか」を具体的に伝える
-- このスキルは情報収集のみ。実装は implement-figma スキルで対応

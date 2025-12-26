@@ -1,19 +1,8 @@
----
-name: implementing-figma-designs
-description: Figma スタイルリサーチで得た情報を基に、既存コードベースへ正確に落とし込みます。Figmaデザインの実装が必要なときに使用してください。
----
-
-# Figma 実装
-
-## Quick Start
-
-1. fetch-figma で取得したデザイン情報を確認
-2. 既存コードベースの設計体系を把握
-3. コンポーネント設計 → 実装 → 検証
+# Figma 実装詳細ガイド
 
 ## 前提条件
 
-- fetch-figma スキルで実測データを取得済み
+- デザイン情報を取得済み（FETCHING.md参照）
 - 不足がある場合は Figma MCP を追加で呼び出す
 
 ## ワークフロー
