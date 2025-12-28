@@ -80,7 +80,8 @@
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:zenn.dev)",
       "WebSearch",
-      "Bash(codemass --help:*)"
+      "Bash(codemass --help:*)",
+      "Skill(commit)"
     ],
     "deny": [
       "Read(./.env.*)"
