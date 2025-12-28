@@ -113,6 +113,76 @@ mise run format    # ファイル整形
 - シンボリックリンクにより自動反映
 - 新規ファイル追加時は `./setup/02_dotfiles.sh` を再実行
 
+## 🎯 Claude Code 設定
+
+このdotfilesはClaude Codeの開発環境統合をサポートしています。
+
+### 依存ツール
+
+- **GNU Awk** (gawk): tmux-sessionx プレビュー表示に必要
+  - macOS のデフォルト BSD Awk の代わりに GNU Awk を使用
+  - 自動インストール: `./setup/10_homebrew.sh` で自動導入
+
+### 自動ホック機能
+
+Claude Code は以下のファイル編集時に自動でツールを実行します：
+
+#### Lint & Format
+
+- TypeScript/JavaScript/JSONファイル編集時に Biome によるlint/format
+- シェルスクリプト編集時に shfmt / shellcheck
+
+#### Permissions 自動ソート
+
+- `.claude/settings.local.json` 編集時に permissions 配列を自動的にアルファベット順にソート
+- スクリプト: `scripts/development/sort-permissions.ts`
+- 実行タイミング: ファイル保存時（PostToolUse フック）
+
+### セットアップ手順
+
+1. **Homebrewで必要ツールをインストール**
+
+   ```bash
+   ./setup/10_homebrew.sh
+   ```
+
+   これにより以下がインストールされます：
+   - gawk (GNU Awk)
+   - tmux と関連プラグイン
+   - その他の開発ツール
+
+2. **Claude Code が自動実行する機能**
+   - ファイル編集後に自動チェックが実行されます
+   - エラーが発生した場合、ターミナルに警告メッセージが表示されます
+
+3. **テスト実行（オプション）**
+
+   ```bash
+   bun test scripts/development/sort-permissions.test.ts
+   ```
+
+### トラブルシューティング
+
+#### tmux-sessionx プレビューが空白
+
+```bash
+# GNU Awk がインストールされているか確認
+which gawk
+
+# PATH に gnubin が含まれているか確認
+echo $PATH | tr ':' '\n' | grep gnubin
+```
+
+#### Permissions ソートが実行されない
+
+```bash
+# Hook が正しく登録されているか確認
+cat ~/.claude/settings.json | jq '.hooks.PostToolUse'
+
+# 手動実行でテスト
+bun scripts/development/sort-permissions.ts --file=.claude/settings.local.json
+```
+
 ## 📖 詳細情報
 
 - [セットアップガイド](SETUP.md) - 詳細な環境構築手順

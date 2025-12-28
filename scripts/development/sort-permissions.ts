@@ -15,7 +15,8 @@
  */
 
 import { existsSync, statSync } from "node:fs";
-import { resolve } from "node:path";
+import { homedir } from "node:os";
+import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import Bun from "bun";
 
@@ -35,6 +36,57 @@ interface SettingsFile {
 		[key: string]: unknown;
 	};
 	[key: string]: unknown;
+}
+
+// ============================================
+// ヘルパー関数
+// ============================================
+
+/**
+ * 2つの配列が同じ内容かチェック（効率的）
+ */
+function arraysEqual<T>(a: T[], b: T[]): boolean {
+	if (a.length !== b.length) return false;
+	return a.every((val, idx) => val === b[idx]);
+}
+
+/**
+ * ファイルパスの安全性をチェック（パストラバーサル対策）
+ */
+function validateSettingsLocalJsonPath(filePath: string): {
+	valid: boolean;
+	message?: string;
+} {
+	const resolvedPath = resolve(filePath);
+	const fileName = basename(resolvedPath);
+	const parentDirName = basename(dirname(resolvedPath));
+
+	// ファイル名の確認
+	if (fileName !== "settings.local.json") {
+		return {
+			valid: false,
+			message: `File name must be "settings.local.json", got "${fileName}"`,
+		};
+	}
+
+	// 親ディレクトリ名の確認
+	if (parentDirName !== ".claude") {
+		return {
+			valid: false,
+			message: `Parent directory must be ".claude", got "${parentDirName}"`,
+		};
+	}
+
+	// ホームディレクトリ配下かチェック（セキュリティ）
+	const homeDir = homedir();
+	if (!resolvedPath.startsWith(homeDir)) {
+		return {
+			valid: false,
+			message: `Path must be under home directory, got "${resolvedPath}"`,
+		};
+	}
+
+	return { valid: true };
 }
 
 // ============================================
@@ -79,7 +131,7 @@ function sortPermissions(content: SettingsFile): boolean {
 	// permissions.allow をソート
 	if (content.permissions.allow && Array.isArray(content.permissions.allow)) {
 		const sorted = [...content.permissions.allow].sort();
-		if (JSON.stringify(sorted) !== JSON.stringify(content.permissions.allow)) {
+		if (!arraysEqual(sorted, content.permissions.allow)) {
 			content.permissions.allow = sorted;
 			modified = true;
 		}
@@ -88,7 +140,7 @@ function sortPermissions(content: SettingsFile): boolean {
 	// permissions.deny をソート
 	if (content.permissions.deny && Array.isArray(content.permissions.deny)) {
 		const sorted = [...content.permissions.deny].sort();
-		if (JSON.stringify(sorted) !== JSON.stringify(content.permissions.deny)) {
+		if (!arraysEqual(sorted, content.permissions.deny)) {
 			content.permissions.deny = sorted;
 			modified = true;
 		}
@@ -102,9 +154,11 @@ function sortPermissions(content: SettingsFile): boolean {
  */
 async function sortPermissionsFile(filePath: string): Promise<boolean> {
 	try {
-		// ファイルが .claude/settings.local.json で終わるかチェック
-		if (!filePath.endsWith(".claude/settings.local.json")) {
-			return true; // 対象ファイルではないため成功として扱う
+		// ファイルパスの安全性をチェック
+		const validation = validateSettingsLocalJsonPath(filePath);
+		if (!validation.valid) {
+			// 対象ファイルではないため、エラーを出力せず成功として扱う
+			return true;
 		}
 
 		const absolutePath = resolve(filePath);
@@ -153,11 +207,7 @@ async function sortPermissionsFile(filePath: string): Promise<boolean> {
  * stdin から hook 入力を読み込む
  */
 async function readStdinInput(): Promise<string> {
-	const chunks: Buffer[] = [];
-	for await (const chunk of Bun.stdin.stream()) {
-		chunks.push(Buffer.from(chunk));
-	}
-	return Buffer.concat(chunks).toString("utf-8");
+	return await Bun.stdin.text();
 }
 
 /**
