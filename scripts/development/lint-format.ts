@@ -64,11 +64,15 @@ const FILE_TYPE_MAP: Record<string, string> = {
 	".zsh": "shell",
 	".bash": "shell",
 
-	// Markdown/YAML/TOML → dprint (統合フォーマッター)
+	// Markdown → dprint (統合フォーマッター)
 	".md": "markdown",
 	".mdx": "markdown",
-	".yaml": "markdown",
-	".yml": "markdown",
+
+	// YAML → dprint (統合フォーマッター)
+	".yaml": "yaml",
+	".yml": "yaml",
+
+	// TOML → dprint (統合フォーマッター)
 	".toml": "toml",
 };
 
@@ -474,7 +478,11 @@ async function processFiles(files: string[], options: Options): Promise<boolean>
 	}
 
 	// Markdown/YAML/TOML → dprint (統合フォーマッター)
-	const dprintFiles = [...(groups.get("markdown") || []), ...(groups.get("toml") || [])];
+	const dprintFiles = [
+		...(groups.get("markdown") || []),
+		...(groups.get("yaml") || []),
+		...(groups.get("toml") || []),
+	];
 	if (dprintFiles.length > 0) {
 		results.push(await runDprint(dprintFiles, options.mode, options.verbose));
 	}
