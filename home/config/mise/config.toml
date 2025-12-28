@@ -157,6 +157,18 @@ if (sorted) {
 description = "codemassを起動"
 run = "codemass"
 
+# Claude Code統計同期（iCloud）
+[tasks.llm-claude-sync-stats]
+alias = "ccss"
+description = "Claude Code統計をiCloud Driveに同期"
+run = "bun ~/dotfiles/scripts/development/sync-claude-stats-to-icloud.ts"
+
+# Claude Code統計マージ（iCloud自動検出）
+[tasks.llm-claude-merge-stats-cache]
+alias = "ccmsc"
+description = "複数マシンのClaude Code統計をstats-cache.json形式でマージ（ccusage/cc-wrapped用）"
+run = "bun ~/dotfiles/scripts/development/merge-claude-stats.ts --auto-discover-icloud --format stats-cache"
+
 # cc-sdd
 [tasks.ccsdd-install]
 description = "cc-sddを導入"
@@ -401,6 +413,7 @@ pnpm = "latest"
 "npm:ccsearch" = "latest"             # https://zenn.dev/suthio/articles/126bc21f0741a6
 "npm:ccusage" = "latest"              # https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
 "npm:cc-sdd" = "latest"               # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
+"npm:cc-wrapped" = "latest"           # https://github.com/numman-ali/cc-wrapped
 "npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
 "npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
