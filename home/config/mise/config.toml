@@ -164,15 +164,10 @@ description = "Claude Code統計をiCloud Driveに同期"
 run = "bun ~/dotfiles/scripts/development/sync-claude-stats-to-icloud.ts"
 
 # Claude Code統計マージ（iCloud自動検出）
-[tasks.llm-claude-merge-stats-icloud]
-alias = "ccmi"
-description = "iCloud Drive内の全マシン統計を自動マージ"
-run = """
-bun ~/dotfiles/scripts/development/merge-claude-stats.ts \
-  --auto-discover-icloud \
-  --format markdown \
-  --output ~/Library/Mobile\\ Documents/com~apple~CloudDocs/ClaudeCodeStats/merged-report.md
-"""
+[tasks.llm-claude-merge-stats-cache]
+alias = "ccmsc"
+description = "複数マシンのClaude Code統計をstats-cache.json形式でマージ（ccusage/cc-wrapped用）"
+run = "bun ~/dotfiles/scripts/development/merge-claude-stats.ts --auto-discover-icloud --format stats-cache"
 
 # cc-sdd
 [tasks.ccsdd-install]
