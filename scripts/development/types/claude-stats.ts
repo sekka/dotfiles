@@ -112,9 +112,10 @@ export interface MergedStats {
 export interface CliArgs {
 	inputFiles?: string[];
 	machineNames?: string[];
-	format: "json" | "markdown" | "html";
+	format: "json" | "markdown" | "html" | "stats-cache";
 	outputPath?: string;
 	autoDiscoverICloud?: boolean;
+	verbose?: boolean;
 }
 
 // ============================================================================
@@ -195,9 +196,10 @@ export const MergedStatsSchema = z.object({
 export const CliArgsSchema = z.object({
 	inputFiles: z.array(z.string()).optional(),
 	machineNames: z.array(z.string()).optional(),
-	format: z.enum(["json", "markdown", "html"]).default("markdown"),
+	format: z.enum(["json", "markdown", "html", "stats-cache"]).default("markdown"),
 	outputPath: z.string().optional(),
 	autoDiscoverICloud: z.boolean().optional().default(false),
+	verbose: z.boolean().optional().default(false),
 });
 
 // ============================================================================
