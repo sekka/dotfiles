@@ -13,7 +13,7 @@
  *   bun scripts/development/lint-format.ts --staged            # ステージされたファイルを処理
  *
  * 対応ファイル:
- *   - TypeScript/JavaScript/JSON: Biome
+ *   - TypeScript/JavaScript/JSON: oxlint + oxfmt (oxc ecosystem)
  *   - Shell scripts (sh, zsh, bash): shfmt + shellcheck
  *   - Markdown: markdownlint
  *   - YAML: yamllint
@@ -51,7 +51,7 @@ interface LintResult {
 
 // 拡張子からファイルタイプを判定するマッピング
 const FILE_TYPE_MAP: Record<string, string> = {
-	// TypeScript/JavaScript → Biome
+	// TypeScript/JavaScript → oxlint + oxfmt (oxc ecosystem)
 	".ts": "typescript",
 	".tsx": "typescript",
 	".js": "javascript",
@@ -135,11 +135,7 @@ async function runCommand(
 /**
  * Biome でTypeScript/JavaScript/JSONをチェック/修正
  */
-async function runBiome(
-	files: string[],
-	mode: Mode,
-	verbose: boolean,
-): Promise<LintResult> {
+async function runBiome(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "biome", success: true, output: "No files to process" };
 	}
@@ -165,14 +161,58 @@ async function runBiome(
 }
 
 /**
+ * oxlint でTypeScript/JavaScript/JSONをLint
+ */
+async function runOxlint(files: string[], verbose: boolean): Promise<LintResult> {
+	if (files.length === 0) {
+		return { tool: "oxlint", success: true, output: "No files to process" };
+	}
+
+	const args = ["oxlint", ...files];
+
+	if (verbose) {
+		console.log(`🔧 Running: ${args.join(" ")}`);
+	}
+
+	const result = await runCommand(args);
+
+	return {
+		tool: "oxlint",
+		success: result.success,
+		output: result.stdout,
+		error: result.stderr,
+	};
+}
+
+/**
+ * oxfmt でTypeScript/JavaScript/JSONをフォーマット
+ */
+async function runOxfmt(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
+	if (files.length === 0) {
+		return { tool: "oxfmt", success: true, output: "No files to process" };
+	}
+
+	const args = mode === "fix" ? ["oxfmt", "--write", ...files] : ["oxfmt", ...files];
+
+	if (verbose) {
+		console.log(`🔧 Running: ${args.join(" ")}`);
+	}
+
+	const result = await runCommand(args);
+
+	return {
+		tool: "oxfmt",
+		success: result.success,
+		output: result.stdout,
+		error: result.stderr,
+	};
+}
+
+/**
  * shfmt でシェルスクリプトをフォーマット
  * 注: .zsh ファイルは shfmt が zsh 構文を完全に理解しないため除外
  */
-async function runShfmt(
-	files: string[],
-	mode: Mode,
-	verbose: boolean,
-): Promise<LintResult> {
+async function runShfmt(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	// .zsh ファイルを除外（shfmt は zsh 構文を完全に理解しない）
 	const shFiles = files.filter((f) => !f.endsWith(".zsh"));
 
@@ -212,10 +252,7 @@ async function runShfmt(
  * shellcheck でシェルスクリプトをチェック
  * 注: .zsh ファイルは shellcheck が zsh 構文を理解しないため除外
  */
-async function runShellcheck(
-	files: string[],
-	verbose: boolean,
-): Promise<LintResult> {
+async function runShellcheck(files: string[], verbose: boolean): Promise<LintResult> {
 	// .zsh ファイルを除外（shellcheck は zsh 構文を理解しない）
 	// .bash ファイルは shellcheck がサポートしているため含める
 	const shFiles = files.filter((f) => !f.endsWith(".zsh"));
@@ -250,11 +287,7 @@ async function runShellcheck(
 /**
  * markdownlint でMarkdownをチェック/修正
  */
-async function runMarkdownlint(
-	files: string[],
-	mode: Mode,
-	verbose: boolean,
-): Promise<LintResult> {
+async function runMarkdownlint(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return {
 			tool: "markdownlint",
@@ -299,10 +332,7 @@ async function runMarkdownlint(
 /**
  * yamllint でYAMLをチェック
  */
-async function runYamllint(
-	files: string[],
-	verbose: boolean,
-): Promise<LintResult> {
+async function runYamllint(files: string[], verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "yamllint", success: true, output: "No files to process" };
 	}
@@ -338,11 +368,7 @@ async function runYamllint(
 /**
  * taplo でTOMLをフォーマット
  */
-async function runTaplo(
-	files: string[],
-	mode: Mode,
-	verbose: boolean,
-): Promise<LintResult> {
+async function runTaplo(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "taplo", success: true, output: "No files to process" };
 	}
@@ -360,9 +386,7 @@ async function runTaplo(
 	}
 
 	const args =
-		mode === "fix"
-			? ["taplo", "format", ...files]
-			: ["taplo", "format", "--check", ...files];
+		mode === "fix" ? ["taplo", "format", ...files] : ["taplo", "format", "--check", ...files];
 
 	if (verbose) {
 		console.log(`🔧 Running: ${args.join(" ")}`);
@@ -386,13 +410,7 @@ async function runTaplo(
  * Git でステージされたファイルを取得
  */
 async function getStagedFiles(): Promise<string[]> {
-	const result = await runCommand([
-		"git",
-		"diff",
-		"--cached",
-		"--name-only",
-		"--diff-filter=ACMR",
-	]);
+	const result = await runCommand(["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"]);
 
 	if (!result.success) {
 		return [];
@@ -518,21 +536,22 @@ function parseOptions(): Options {
 /**
  * ファイルリストに対してlint/formatを実行
  */
-async function processFiles(
-	files: string[],
-	options: Options,
-): Promise<boolean> {
+async function processFiles(files: string[], options: Options): Promise<boolean> {
 	const groups = groupFilesByType(files);
 	const results: LintResult[] = [];
 
-	// TypeScript/JavaScript/JSON → Biome
+	// TypeScript/JavaScript/JSON → oxlint + oxfmt (並列実行)
 	const tsJsJsonFiles = [
 		...(groups.get("typescript") || []),
 		...(groups.get("javascript") || []),
 		...(groups.get("json") || []),
 	];
 	if (tsJsJsonFiles.length > 0) {
-		results.push(await runBiome(tsJsJsonFiles, options.mode, options.verbose));
+		const [lintResult, formatResult] = await Promise.all([
+			runOxlint(tsJsJsonFiles, options.verbose),
+			runOxfmt(tsJsJsonFiles, options.mode, options.verbose),
+		]);
+		results.push(lintResult, formatResult);
 	}
 
 	// Shell scripts → shfmt + shellcheck (並列実行)
@@ -632,9 +651,7 @@ async function main(): Promise<void> {
 	}
 
 	if (options.verbose || !options.file) {
-		console.log(
-			`✨ ${options.mode === "fix" ? "Format" : "Check"} completed successfully`,
-		);
+		console.log(`✨ ${options.mode === "fix" ? "Format" : "Check"} completed successfully`);
 	}
 }
 
