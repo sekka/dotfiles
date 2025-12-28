@@ -1,0 +1,16 @@
+{
+	// Prettier互換設定
+	"printWidth": 100,
+	"tabWidth": 2,
+	"useTabs": true,
+	"semi": true,
+	"singleQuote": false,
+	"trailingComma": "all",
+	"bracketSpacing": true,
+
+	// oxfmt独自
+	"insertFinalNewline": true,
+
+	// 除外パターン
+	"ignorePatterns": ["node_modules/**", ".git/**", "home/.claude/agents/**"],
+}
