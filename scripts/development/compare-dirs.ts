@@ -55,10 +55,7 @@ export function parseArgs(
 /**
  * ディレクトリ内のすべてのファイルを再帰的に取得する
  */
-export async function getAllFiles(
-	dir: string,
-	base: string = "",
-): Promise<string[]> {
+export async function getAllFiles(dir: string, base: string = ""): Promise<string[]> {
 	const files: string[] = [];
 	const entries = await readdir(dir, { withFileTypes: true });
 
@@ -80,10 +77,7 @@ export async function getAllFiles(
 /**
  * ファイルのハッシュ値を計算する
  */
-export async function hashFile(
-	filePath: string,
-	algo: HashAlgorithm,
-): Promise<string> {
+export async function hashFile(filePath: string, algo: HashAlgorithm): Promise<string> {
 	const file = Bun.file(filePath);
 	const content = await file.arrayBuffer();
 

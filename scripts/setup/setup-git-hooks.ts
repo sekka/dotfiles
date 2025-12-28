@@ -110,12 +110,8 @@ export async function main(): Promise<number> {
 	}
 
 	console.log("");
-	console.log(
-		`${GREEN}📊 Git hooks セットアップ完了: ${copied}個のhookがコピーされました${NC}`,
-	);
-	console.log(
-		`${YELLOW}💡 これで commit前に自動的にlint/formatチェックが実行されます${NC}`,
-	);
+	console.log(`${GREEN}📊 Git hooks セットアップ完了: ${copied}個のhookがコピーされました${NC}`);
+	console.log(`${YELLOW}💡 これで commit前に自動的にlint/formatチェックが実行されます${NC}`);
 
 	return 0;
 }

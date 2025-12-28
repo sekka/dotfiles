@@ -69,18 +69,14 @@ export function parseArgs(args: string[]): {
  */
 export function showUsage(): void {
 	const scriptName = "rewrite-commit-date";
-	console.error(
-		`使用方法: ${scriptName} [--committer-date-now] <コミットハッシュ> "新しい日時"`,
-	);
+	console.error(`使用方法: ${scriptName} [--committer-date-now] <コミットハッシュ> "新しい日時"`);
 	console.error("");
 	console.error("例:");
 	console.error("  # 著者日時とコミッター日時を同じにする");
 	console.error(`  ${scriptName} 1a2b3c4d "2024-01-01 10:30:00"`);
 	console.error("");
 	console.error("  # 著者日時のみ設定し、コミッター日時は現在時刻にする");
-	console.error(
-		`  ${scriptName} --committer-date-now 1a2b3c4d "2024-01-01 10:30:00"`,
-	);
+	console.error(`  ${scriptName} --committer-date-now 1a2b3c4d "2024-01-01 10:30:00"`);
 }
 
 /**
@@ -97,9 +93,7 @@ export async function isWorkingDirectoryClean(): Promise<boolean> {
  * @param shortHash - 短いハッシュ
  * @returns 完全なハッシュ、失敗した場合はnull
  */
-export async function resolveCommitHash(
-	shortHash: string,
-): Promise<string | null> {
+export async function resolveCommitHash(shortHash: string): Promise<string | null> {
 	const result = await $`git rev-parse ${shortHash}`.quiet().nothrow();
 	if (result.exitCode === 0) {
 		return result.text().trim();
@@ -202,9 +196,7 @@ export async function main(): Promise<number> {
 	// 警告を表示
 	console.log("⚠️  警告: 'git filter-branch' による履歴書き換え");
 	console.log("すべてのブランチとタグの履歴が書き換えられます。");
-	console.log(
-		"この操作は破壊的です。事前にリポジトリのバックアップを強く推奨します。",
-	);
+	console.log("この操作は破壊的です。事前にリポジトリのバックアップを強く推奨します。");
 
 	// 確認を求める
 	const confirmed = await confirmAction("続行しますか？");
@@ -214,11 +206,7 @@ export async function main(): Promise<number> {
 	}
 
 	// 実行
-	const success = await rewriteCommitDate(
-		fullHash,
-		parsed.newDate,
-		parsed.committerDateNow,
-	);
+	const success = await rewriteCommitDate(fullHash, parsed.newDate, parsed.committerDateNow);
 
 	if (!success) {
 		return 1;
@@ -229,9 +217,7 @@ export async function main(): Promise<number> {
 	console.log("コミット履歴が書き換えられました。");
 	console.log("'git log' で変更を確認してください。");
 	console.log("");
-	console.log(
-		"問題なければ、Gitが作成したバックアップを以下のコマンドで削除できます:",
-	);
+	console.log("問題なければ、Gitが作成したバックアップを以下のコマンドで削除できます:");
 	console.log(
 		"git for-each-ref --format='%(refname)' refs/original/ | xargs -n 1 git update-ref -d",
 	);

@@ -122,9 +122,7 @@ async function showNotification(title: string, message: string): Promise<void> {
 		if (exitCode !== 0) {
 			// terminal-notifier 失敗時はログに記録するが、hook 自体は成功扱い
 			const stderr = await new Response(proc.stderr).text();
-			console.error(
-				`terminal-notifier failed (exit code ${exitCode}): ${stderr}`,
-			);
+			console.error(`terminal-notifier failed (exit code ${exitCode}): ${stderr}`);
 		}
 	} catch (error) {
 		// terminal-notifier の実行エラーも無視（通知失敗で Claude を止めない）
@@ -155,9 +153,7 @@ async function handleStopHook(input: StopHookInput): Promise<void> {
  *
  * @param input - PermissionRequest hook の入力データ
  */
-async function handlePermissionRequestHook(
-	input: PermissionRequestHookInput,
-): Promise<void> {
+async function handlePermissionRequestHook(input: PermissionRequestHookInput): Promise<void> {
 	const toolName = input.tool_name;
 	const command = input.tool_input?.command as string | undefined;
 
@@ -165,8 +161,7 @@ async function handlePermissionRequestHook(
 
 	// Bash コマンドの場合は、コマンド内容を含める（長すぎる場合は切り詰め）
 	if (toolName === "Bash" && command) {
-		const shortCommand =
-			command.length > 50 ? `${command.substring(0, 47)}...` : command;
+		const shortCommand = command.length > 50 ? `${command.substring(0, 47)}...` : command;
 		message = `Bash: ${shortCommand}`;
 	}
 
@@ -178,9 +173,7 @@ async function handlePermissionRequestHook(
  *
  * @param input - SubagentStop hook の入力データ
  */
-async function handleSubagentStopHook(
-	input: SubagentStopHookInput,
-): Promise<void> {
+async function handleSubagentStopHook(input: SubagentStopHookInput): Promise<void> {
 	// stop_hook_active が true の場合はスキップ（無限ループ防止）
 	if (input.stop_hook_active) {
 		return;
@@ -194,9 +187,7 @@ async function handleSubagentStopHook(
  *
  * @param input - Notification hook の入力データ
  */
-async function handleNotificationHook(
-	input: NotificationHookInput,
-): Promise<void> {
+async function handleNotificationHook(input: NotificationHookInput): Promise<void> {
 	const { notification_type, message } = input;
 
 	// notification_type に応じてタイトルをカスタマイズ

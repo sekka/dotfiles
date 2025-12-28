@@ -25,9 +25,7 @@ import { $ } from "bun";
 /**
  * 引数をパースする
  */
-export function parseArgs(
-	args: string[],
-): { ref1: string; ref2: string } | null {
+export function parseArgs(args: string[]): { ref1: string; ref2: string } | null {
 	if (args.length === 0 || args.length > 2) {
 		return null;
 	}
@@ -42,13 +40,8 @@ export function parseArgs(
 /**
  * 差分ファイルを取得する
  */
-export async function getDiffFiles(
-	ref1: string,
-	ref2: string,
-): Promise<string[]> {
-	const result = await $`git diff --name-only ${ref1} ${ref2}`
-		.quiet()
-		.nothrow();
+export async function getDiffFiles(ref1: string, ref2: string): Promise<string[]> {
+	const result = await $`git diff --name-only ${ref1} ${ref2}`.quiet().nothrow();
 
 	if (result.exitCode !== 0) {
 		return [];
@@ -64,10 +57,7 @@ export async function getDiffFiles(
 /**
  * 差分ファイルをZIPアーカイブとして出力する
  */
-export async function exportDiffZip(
-	ref1: string,
-	ref2: string,
-): Promise<boolean> {
+export async function exportDiffZip(ref1: string, ref2: string): Promise<boolean> {
 	// 差分ファイルを取得
 	const files = await getDiffFiles(ref1, ref2);
 

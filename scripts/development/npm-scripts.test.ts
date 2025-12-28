@@ -2,14 +2,7 @@
  * npm-scripts.ts のテスト
  */
 
-import {
-	afterAll,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	it,
-} from "bun:test";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -68,10 +61,7 @@ describe("npm-scripts", () => {
 					dev: "bun dev",
 				},
 			};
-			await writeFile(
-				join(tempDir, "package.json"),
-				JSON.stringify(packageJson),
-			);
+			await writeFile(join(tempDir, "package.json"), JSON.stringify(packageJson));
 
 			const scripts = await getScripts();
 			expect(scripts).toContain("test");
@@ -87,10 +77,7 @@ describe("npm-scripts", () => {
 					beta: "echo beta",
 				},
 			};
-			await writeFile(
-				join(tempDir, "package.json"),
-				JSON.stringify(packageJson),
-			);
+			await writeFile(join(tempDir, "package.json"), JSON.stringify(packageJson));
 
 			const scripts = await getScripts();
 			expect(scripts).toEqual(["alpha", "beta", "zebra"]);

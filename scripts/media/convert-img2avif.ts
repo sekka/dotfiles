@@ -89,9 +89,7 @@ export async function convertToAvif(imageFile: string): Promise<boolean> {
 	const outputPath = join(dir, `${base}.avif`);
 	const options = getAvifencOptions(ext);
 
-	const result = await $`avifenc ${options} ${imageFile} ${outputPath}`
-		.quiet()
-		.nothrow();
+	const result = await $`avifenc ${options} ${imageFile} ${outputPath}`.quiet().nothrow();
 
 	if (result.exitCode === 0) {
 		console.log(`完了: ${outputPath}`);

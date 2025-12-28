@@ -2,24 +2,13 @@
  * custom-commit.ts のテスト
  */
 
-import {
-	afterAll,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	it,
-} from "bun:test";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { $ } from "bun";
 
-import {
-	appendTokyoTimezone,
-	commitWithCustomDate,
-	parseArgs,
-} from "./custom-commit";
+import { appendTokyoTimezone, commitWithCustomDate, parseArgs } from "./custom-commit";
 
 describe("custom-commit", () => {
 	let tempDir: string;
@@ -86,11 +75,7 @@ describe("custom-commit", () => {
 		});
 
 		it("3引数の場合は別々の日付を使う", () => {
-			const result = parseArgs([
-				"2024-01-01 10:00:00",
-				"2024-01-01 10:05:00",
-				"feat: Add feature",
-			]);
+			const result = parseArgs(["2024-01-01 10:00:00", "2024-01-01 10:05:00", "feat: Add feature"]);
 			expect(result).toEqual({
 				authorDate: "2024-01-01 10:00:00 +0900",
 				committerDate: "2024-01-01 10:05:00 +0900",

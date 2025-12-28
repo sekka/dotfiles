@@ -71,15 +71,11 @@ export function parseArgs(
 export function showUsage(): void {
 	const scriptName = "custom-commit";
 	console.error(`使用方法: ${scriptName} "日時" "コミットメッセージ"`);
-	console.error(
-		`    または: ${scriptName} "著者日時" "コミッター日時" "コミットメッセージ"`,
-	);
+	console.error(`    または: ${scriptName} "著者日時" "コミッター日時" "コミットメッセージ"`);
 	console.error("");
 	console.error("例:");
 	console.error(`  ${scriptName} "2024-01-01 10:00:00" "feat: 新機能を追加"`);
-	console.error(
-		`  ${scriptName} "2024-01-01 10:00:00" "2024-01-01 10:05:00" "feat: 新機能を追加"`,
-	);
+	console.error(`  ${scriptName} "2024-01-01 10:00:00" "2024-01-01 10:05:00" "feat: 新機能を追加"`);
 	console.error("");
 	console.error("注意:");
 	console.error("  - タイムゾーン省略時は +0900（東京）が自動付与されます");

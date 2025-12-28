@@ -26,9 +26,7 @@ export async function isGitRepository(): Promise<boolean> {
  * 変更されたファイルの一覧を取得
  */
 export async function getChangedFiles(): Promise<string[]> {
-	const result = await $`git diff -z --name-only --diff-filter=ACMRU`
-		.quiet()
-		.nothrow();
+	const result = await $`git diff -z --name-only --diff-filter=ACMRU`.quiet().nothrow();
 
 	if (result.exitCode !== 0 || !result.stdout.length) {
 		return [];
@@ -54,14 +52,13 @@ export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
 	// tmuxセッション内ならpopup表示、外なら通常のfzf
 	let result: Awaited<ReturnType<typeof $>>;
 	if (process.env.TMUX) {
-		result =
-			await $`echo -n ${input} | fzf-tmux -p 90%,90% -- --read0 --print0 --multi \
+		result = await $`echo -n ${input} | fzf-tmux -p 90%,90% -- --read0 --print0 --multi \
     --preview "git diff --color=always {} 2>/dev/null || cat {}" \
     --preview-window=right:60%:wrap \
     --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
     --bind "ctrl-d:execute(git diff --color=always {} | less -R)"`
-				.quiet()
-				.nothrow();
+			.quiet()
+			.nothrow();
 	} else {
 		result = await $`echo -n ${input} | fzf --read0 --print0 --multi \
     --preview "git diff --color=always {} 2>/dev/null || cat {}" \

@@ -25,12 +25,7 @@ describe("compare-dirs", () => {
 		});
 
 		test("-aオプションでsha256を指定した場合", () => {
-			const result = parseArgs([
-				"-a",
-				"sha256",
-				"/path/to/dir1",
-				"/path/to/dir2",
-			]);
+			const result = parseArgs(["-a", "sha256", "/path/to/dir1", "/path/to/dir2"]);
 			expect(result).toEqual({
 				algo: "sha256",
 				dir1: "/path/to/dir1",
@@ -44,11 +39,7 @@ describe("compare-dirs", () => {
 		});
 
 		test("引数が3つで-aがない場合はnullを返す", () => {
-			const result = parseArgs([
-				"/path/to/dir1",
-				"/path/to/dir2",
-				"/path/to/dir3",
-			]);
+			const result = parseArgs(["/path/to/dir1", "/path/to/dir2", "/path/to/dir3"]);
 			expect(result).toBeNull();
 		});
 
@@ -58,12 +49,7 @@ describe("compare-dirs", () => {
 		});
 
 		test("サポートされていないアルゴリズムの場合はnullを返す", () => {
-			const result = parseArgs([
-				"-a",
-				"sha512",
-				"/path/to/dir1",
-				"/path/to/dir2",
-			]);
+			const result = parseArgs(["-a", "sha512", "/path/to/dir1", "/path/to/dir2"]);
 			expect(result).toBeNull();
 		});
 	});
@@ -124,9 +110,7 @@ describe("compare-dirs", () => {
 
 				const hash = await hashFile(testFile, "sha256");
 				// "hello world"のSHA256ハッシュ
-				expect(hash).toBe(
-					"b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9",
-				);
+				expect(hash).toBe("b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9");
 			});
 
 			test("同じ内容のファイルは同じハッシュを返す", async () => {

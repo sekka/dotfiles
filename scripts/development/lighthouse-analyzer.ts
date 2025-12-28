@@ -49,12 +49,7 @@ export function parseArgs(args: string[]): {
 	const interval = parseInt(args[2], 10);
 
 	// count と interval のバリデーション
-	if (
-		Number.isNaN(count) ||
-		Number.isNaN(interval) ||
-		count <= 0 ||
-		interval < 0
-	) {
+	if (Number.isNaN(count) || Number.isNaN(interval) || count <= 0 || interval < 0) {
 		return null;
 	}
 
@@ -88,10 +83,7 @@ export function parseArgs(args: string[]): {
  * 利用可能なChromeプロファイルを取得する
  */
 export function getAvailableProfiles(): string[] {
-	const chromeDir = join(
-		homedir(),
-		"Library/Application Support/Google/Chrome",
-	);
+	const chromeDir = join(homedir(), "Library/Application Support/Google/Chrome");
 	if (!existsSync(chromeDir)) {
 		return [];
 	}
@@ -143,10 +135,7 @@ export async function runLighthouse(
 	useAuth: boolean,
 	chromeProfile: string,
 ): Promise<boolean> {
-	const chromeDir = join(
-		homedir(),
-		"Library/Application Support/Google/Chrome",
-	);
+	const chromeDir = join(homedir(), "Library/Application Support/Google/Chrome");
 	let chromeFlags: string;
 
 	if (useAuth) {
@@ -177,9 +166,7 @@ export async function runLighthouse(
 /**
  * JSONファイルからスコアを抽出する
  */
-export async function extractScores(
-	jsonFile: string,
-): Promise<Record<string, number> | null> {
+export async function extractScores(jsonFile: string): Promise<Record<string, number> | null> {
 	try {
 		const content = await readFile(jsonFile, "utf-8");
 		const data = JSON.parse(content);
@@ -194,9 +181,7 @@ export async function extractScores(
 			scores.accessibility = Math.floor(categories.accessibility.score * 100);
 		}
 		if (categories["best-practices"]?.score !== undefined) {
-			scores["best-practices"] = Math.floor(
-				categories["best-practices"].score * 100,
-			);
+			scores["best-practices"] = Math.floor(categories["best-practices"].score * 100);
 		}
 		if (categories.seo?.score !== undefined) {
 			scores.seo = Math.floor(categories.seo.score * 100);
@@ -220,18 +205,12 @@ export function showUsage(): void {
 	);
 	console.error("");
 	console.error("オプション:");
-	console.error(
-		"  --auth                  認証付きモード（Chromeプロファイル使用）",
-	);
-	console.error(
-		"  --profile=ProfileName   使用するChromeプロファイル名（デフォルト: Default）",
-	);
+	console.error("  --auth                  認証付きモード（Chromeプロファイル使用）");
+	console.error("  --profile=ProfileName   使用するChromeプロファイル名（デフォルト: Default）");
 	console.error("");
 	console.error("例:");
 	console.error("  lighthouse-analyzer https://example.com 5 60 ./results");
-	console.error(
-		"  lighthouse-analyzer https://example.com 5 60 ./results --auth",
-	);
+	console.error("  lighthouse-analyzer https://example.com 5 60 ./results --auth");
 	console.error(
 		'  lighthouse-analyzer https://example.com 5 60 ./results --auth --profile="Profile 1"',
 	);
@@ -267,10 +246,7 @@ export async function main(): Promise<number> {
 
 	// プロファイルの存在チェック（認証モードの場合）
 	if (useAuth) {
-		const chromeDir = join(
-			homedir(),
-			"Library/Application Support/Google/Chrome",
-		);
+		const chromeDir = join(homedir(), "Library/Application Support/Google/Chrome");
 		const profilePath = join(chromeDir, chromeProfile);
 
 		if (!existsSync(profilePath)) {
@@ -312,10 +288,7 @@ export async function main(): Promise<number> {
 		console.log(`[${i}/${count}] 分析実行中...`);
 
 		const timestamp = getTimestamp();
-		const outputFile = join(
-			outputDir,
-			`lighthouse_${urlSanitized}_${timestamp}.json`,
-		);
+		const outputFile = join(outputDir, `lighthouse_${urlSanitized}_${timestamp}.json`);
 
 		if (useAuth) {
 			console.log(`  🔐 認証付きモード（${chromeProfile}）で分析中...`);
@@ -323,19 +296,12 @@ export async function main(): Promise<number> {
 			console.log("  🔍 通常モードで分析中...");
 		}
 
-		const success = await runLighthouse(
-			url,
-			outputFile,
-			useAuth,
-			chromeProfile,
-		);
+		const success = await runLighthouse(url, outputFile, useAuth, chromeProfile);
 
 		if (success) {
 			console.log("  ✅ 分析完了");
 		} else {
-			console.log(
-				"  ⚠️  警告: 分析中にエラーが発生しましたが、結果は保存されています",
-			);
+			console.log("  ⚠️  警告: 分析中にエラーが発生しましたが、結果は保存されています");
 		}
 
 		console.log(`  結果保存: ${outputFile}`);
@@ -356,10 +322,7 @@ export async function main(): Promise<number> {
 	console.log(`結果は ${outputDir} に保存されています`);
 
 	// サマリー生成
-	const summaryFile = join(
-		outputDir,
-		`summary_${urlSanitized}_${getTimestamp()}.txt`,
-	);
+	const summaryFile = join(outputDir, `summary_${urlSanitized}_${getTimestamp()}.txt`);
 	let summary = "=== Lighthouse分析サマリー ===\n";
 	summary += `URL: ${url}\n`;
 	summary += `実行回数: ${count}\n`;

@@ -67,18 +67,14 @@ export function parseArgs(args: string[]): {
  */
 export function showUsage(): void {
 	const scriptName = "custom-commit-date";
-	console.error(
-		`使用方法: ${scriptName} [--committer-date-now] "日時" "メッセージ"`,
-	);
+	console.error(`使用方法: ${scriptName} [--committer-date-now] "日時" "メッセージ"`);
 	console.error("");
 	console.error("例:");
 	console.error("  # 著者日時とコミッター日時を同じにする:");
 	console.error(`  ${scriptName} "2023-01-01 12:30:00" "feat: 新機能を追加"`);
 	console.error("");
 	console.error("  # コミッター日時を現在時刻にする:");
-	console.error(
-		`  ${scriptName} --committer-date-now "2023-01-01 12:30:00" "feat: 新機能を追加"`,
-	);
+	console.error(`  ${scriptName} --committer-date-now "2023-01-01 12:30:00" "feat: 新機能を追加"`);
 }
 
 /**
@@ -107,9 +103,7 @@ export async function commitWithDate(
 
 		// 情報を表示
 		if (committerDateNow) {
-			console.log(
-				`著者日時を '${date}' に、コミッター日時を現在時刻に設定します。`,
-			);
+			console.log(`著者日時を '${date}' に、コミッター日時を現在時刻に設定します。`);
 		} else {
 			console.log(`著者日時とコミッター日時を '${date}' に設定します。`);
 		}
@@ -141,11 +135,7 @@ export async function main(): Promise<number> {
 		return 1;
 	}
 
-	const success = await commitWithDate(
-		parsed.date,
-		parsed.message,
-		parsed.committerDateNow,
-	);
+	const success = await commitWithDate(parsed.date, parsed.message, parsed.committerDateNow);
 	return success ? 0 : 1;
 }
 

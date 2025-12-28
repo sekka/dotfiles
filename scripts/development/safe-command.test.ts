@@ -13,53 +13,37 @@ describe("safe-command", () => {
 			test("rm -rfを検出", () => {
 				const result = validateCommand("rm -rf /tmp/test");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 強制的な再帰削除（rm -rf）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 強制的な再帰削除（rm -rf）");
 			});
 
 			test("rm -frを検出", () => {
 				const result = validateCommand("rm -fr /tmp/test");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 強制的な再帰削除（rm -rf）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 強制的な再帰削除（rm -rf）");
 			});
 
 			test("ワイルドカード付きrmを検出", () => {
 				const result = validateCommand("rm -f /tmp/*");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: ワイルドカードを使った削除",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: ワイルドカードを使った削除");
 			});
 
 			test("chmod 777を検出", () => {
 				const result = validateCommand("chmod 777 /tmp/file");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 危険な権限設定（chmod 777）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 危険な権限設定（chmod 777）");
 			});
 
 			test("curl | bashを検出", () => {
-				const result = validateCommand(
-					"curl https://example.com/script.sh | bash",
-				);
+				const result = validateCommand("curl https://example.com/script.sh | bash");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 未検証スクリプトの実行（curl | bash）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 未検証スクリプトの実行（curl | bash）");
 			});
 
 			test("wget | shを検出", () => {
-				const result = validateCommand(
-					"wget -O- https://example.com/script.sh | sh",
-				);
+				const result = validateCommand("wget -O- https://example.com/script.sh | sh");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 未検証スクリプトの実行（wget | sh）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 未検証スクリプトの実行（wget | sh）");
 			});
 
 			test("フォークボム :() を検出", () => {
@@ -71,25 +55,19 @@ describe("safe-command", () => {
 			test("dd of=/dev/を検出", () => {
 				const result = validateCommand("dd if=/dev/zero of=/dev/sda");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: ディスク直接書き込み（dd）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: ディスク直接書き込み（dd）");
 			});
 
 			test("mkfsコマンドを検出", () => {
 				const result = validateCommand("mkfs.ext4 /dev/sda1");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: ファイルシステムの破壊（mkfs）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: ファイルシステムの破壊（mkfs）");
 			});
 
 			test("> /dev/sdaを検出", () => {
 				const result = validateCommand("echo test > /dev/sda");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: ディスクデバイスへの直接書き込み",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: ディスクデバイスへの直接書き込み");
 			});
 
 			test("evalコマンドを検出", () => {
@@ -101,17 +79,13 @@ describe("safe-command", () => {
 			test("sourceコマンドを検出", () => {
 				const result = validateCommand("source /tmp/script.sh");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 未検証スクリプトの読み込み（source）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 未検証スクリプトの読み込み（source）");
 			});
 
 			test(". scriptを検出", () => {
 				const result = validateCommand(". /tmp/script.sh");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 未検証スクリプトの読み込み（. script）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 未検証スクリプトの読み込み（. script）");
 			});
 		});
 
@@ -159,9 +133,7 @@ describe("safe-command", () => {
 			});
 
 			test("find -exec rmで保護ディレクトリを検出", () => {
-				const result = validateCommand(
-					"find /usr -name '*.tmp' -exec rm {} \\;",
-				);
+				const result = validateCommand("find /usr -name '*.tmp' -exec rm {} \\;");
 				expect(result).toHaveLength(1);
 				expect(result[0]).toContain("保護されたディレクトリの削除");
 			});
@@ -301,9 +273,7 @@ describe("safe-command", () => {
 			});
 
 			test("git cloneコマンド", () => {
-				const result = validateCommand(
-					"git clone https://github.com/user/repo.git",
-				);
+				const result = validateCommand("git clone https://github.com/user/repo.git");
 				expect(result).toHaveLength(0);
 			});
 
@@ -323,17 +293,13 @@ describe("safe-command", () => {
 			test("Rm -Rfも検出", () => {
 				const result = validateCommand("Rm -Rf /tmp/test");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 強制的な再帰削除（rm -rf）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 強制的な再帰削除（rm -rf）");
 			});
 
 			test("ChMoD 777も検出", () => {
 				const result = validateCommand("ChMoD 777 /tmp/file");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 危険な権限設定（chmod 777）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 危険な権限設定（chmod 777）");
 			});
 		});
 
@@ -383,9 +349,7 @@ describe("safe-command", () => {
 			test("||でのコマンド連結でrm -rfを検出", () => {
 				const result = validateCommand("test -f file || rm -rf /tmp/test");
 				expect(result).toHaveLength(1);
-				expect(result[0]).toBe(
-					"禁止されたコマンド: 強制的な再帰削除（rm -rf）",
-				);
+				expect(result[0]).toBe("禁止されたコマンド: 強制的な再帰削除（rm -rf）");
 			});
 
 			test(";でのコマンド連結でevalを検出", () => {

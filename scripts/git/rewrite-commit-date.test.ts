@@ -8,11 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { $ } from "bun";
 
-import {
-	isWorkingDirectoryClean,
-	parseArgs,
-	resolveCommitHash,
-} from "./rewrite-commit-date";
+import { isWorkingDirectoryClean, parseArgs, resolveCommitHash } from "./rewrite-commit-date";
 
 describe("rewrite-commit-date", () => {
 	let tempDir: string;
@@ -50,11 +46,7 @@ describe("rewrite-commit-date", () => {
 		});
 
 		it("--committer-date-now オプション付き3引数", () => {
-			const result = parseArgs([
-				"--committer-date-now",
-				"abc123",
-				"2024-01-01 10:30:00",
-			]);
+			const result = parseArgs(["--committer-date-now", "abc123", "2024-01-01 10:30:00"]);
 			expect(result).toEqual({
 				committerDateNow: true,
 				commitHash: "abc123",

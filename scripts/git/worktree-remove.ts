@@ -114,9 +114,7 @@ export async function removeWorktree(path: string): Promise<boolean> {
 		.text()
 		.catch(() => "");
 	if (!gitFileContent.startsWith("gitdir:")) {
-		console.error(
-			`  警告: worktreeではありません（通常のリポジトリ）: ${path}`,
-		);
+		console.error(`  警告: worktreeではありません（通常のリポジトリ）: ${path}`);
 		return false;
 	}
 
@@ -130,8 +128,7 @@ export async function removeWorktree(path: string): Promise<boolean> {
 	console.log("  -> worktreeを削除中...");
 
 	// git worktree remove を実行
-	const result =
-		await $`git -C ${mainRepo} worktree remove --force ${path}`.nothrow();
+	const result = await $`git -C ${mainRepo} worktree remove --force ${path}`.nothrow();
 
 	if (result.exitCode !== 0) {
 		console.error(`  エラー: worktreeの削除に失敗しました`);
@@ -170,9 +167,7 @@ export async function main(): Promise<number> {
 	// gitコマンドの存在確認
 	const gitCheck = await $`command -v git`.quiet().nothrow();
 	if (gitCheck.exitCode !== 0) {
-		console.error(
-			"エラー: gitコマンドが見つかりません。インストールしてください。",
-		);
+		console.error("エラー: gitコマンドが見つかりません。インストールしてください。");
 		return 1;
 	}
 

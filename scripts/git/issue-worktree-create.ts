@@ -37,9 +37,7 @@ export async function checkDependencies(commands: string[]): Promise<boolean> {
 	for (const cmd of commands) {
 		const result = await $`command -v ${cmd}`.quiet().nothrow();
 		if (result.exitCode !== 0) {
-			console.error(
-				`エラー: ${cmd} コマンドが見つかりません。インストールしてください。`,
-			);
+			console.error(`エラー: ${cmd} コマンドが見つかりません。インストールしてください。`);
 			return false;
 		}
 	}
@@ -64,10 +62,9 @@ export async function fetchIssueJson(
 	issueNumber: string,
 ): Promise<{ title: string; body: string; comments: string[] } | null> {
 	try {
-		const result =
-			await $`gh issue view ${issueNumber} --json title,body,comments`
-				.quiet()
-				.nothrow();
+		const result = await $`gh issue view ${issueNumber} --json title,body,comments`
+			.quiet()
+			.nothrow();
 
 		if (result.exitCode !== 0) {
 			return null;
@@ -77,9 +74,7 @@ export async function fetchIssueJson(
 		return {
 			title: json.title || "",
 			body: json.body || "",
-			comments: (json.comments || []).map(
-				(c: { body: string }) => c.body || "",
-			),
+			comments: (json.comments || []).map((c: { body: string }) => c.body || ""),
 		};
 	} catch {
 		return null;
@@ -138,9 +133,7 @@ ${comments.slice(0, 2000)}
  * @param issueNumber - Issue番号
  * @returns 成功した場合はtrue
  */
-export async function createIssueWorktree(
-	issueNumber: string,
-): Promise<boolean> {
+export async function createIssueWorktree(issueNumber: string): Promise<boolean> {
 	console.log(`=== Issue #${issueNumber} を処理中 ===`);
 
 	// Issue情報を取得
@@ -194,8 +187,7 @@ export async function createIssueWorktree(
 
 	if (remoteBranchCheck.exitCode === 0) {
 		// リモートブランチが存在する場合
-		const result =
-			await $`git worktree add ${worktreePath} ${branchName}`.nothrow();
+		const result = await $`git worktree add ${worktreePath} ${branchName}`.nothrow();
 		if (result.exitCode !== 0) {
 			console.error("エラー: worktreeの作成に失敗しました");
 			console.error(result.stderr.toString());
@@ -204,8 +196,7 @@ export async function createIssueWorktree(
 		console.log(`* Worktreeを作成しました: ${worktreePath}`);
 	} else {
 		// 新しいブランチを作成
-		const result =
-			await $`git worktree add -b ${branchName} ${worktreePath}`.nothrow();
+		const result = await $`git worktree add -b ${branchName} ${worktreePath}`.nothrow();
 		if (result.exitCode !== 0) {
 			console.error("エラー: worktreeの作成に失敗しました");
 			console.error(result.stderr.toString());
@@ -261,9 +252,7 @@ export async function main(): Promise<number> {
 	// 各Issue番号を処理
 	for (const issueNumber of args) {
 		if (!isValidIssueNumber(issueNumber)) {
-			console.error(
-				`警告: '${issueNumber}' は有効なIssue番号ではありません。スキップします。`,
-			);
+			console.error(`警告: '${issueNumber}' は有効なIssue番号ではありません。スキップします。`);
 			console.log("");
 			continue;
 		}

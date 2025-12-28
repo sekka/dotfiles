@@ -34,12 +34,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 			stdout: "pipe",
 		});
@@ -64,12 +59,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 		});
 
@@ -77,15 +67,8 @@ describe("sort-permissions.ts", () => {
 		const parsed = JSON.parse(finalContent);
 
 		// ソートされているはず
-		expect(parsed.permissions.allow).toEqual([
-			"Bash(cat:*)",
-			"Bash(ls:*)",
-			"Bash(mkdir:*)",
-		]);
-		expect(parsed.permissions.deny).toEqual([
-			"Read(./.env.*)",
-			"Read(./.env.local)",
-		]);
+		expect(parsed.permissions.allow).toEqual(["Bash(cat:*)", "Bash(ls:*)", "Bash(mkdir:*)"]);
+		expect(parsed.permissions.deny).toEqual(["Read(./.env.*)", "Read(./.env.local)"]);
 		expect(result.exitCode).toBe(0);
 	});
 
@@ -95,12 +78,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 			stderr: "pipe",
 		});
@@ -114,12 +92,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 		});
 
@@ -132,12 +105,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 		});
 
@@ -158,12 +126,7 @@ describe("sort-permissions.ts", () => {
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				testFile,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
 			cwd: resolve(__dirname, "../.."),
 		});
 
@@ -175,19 +138,11 @@ describe("sort-permissions.ts", () => {
 	});
 
 	it("パストラバーサル攻撃は検出される", async () => {
-		const maliciousPath = resolve(
-			testDir,
-			"../../../.claude/settings.local.json",
-		);
+		const maliciousPath = resolve(testDir, "../../../.claude/settings.local.json");
 
 		// スクリプトを実行
 		const result = await Bun.run({
-			cmd: [
-				"bun",
-				"scripts/development/sort-permissions.ts",
-				"--file",
-				maliciousPath,
-			],
+			cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", maliciousPath],
 			cwd: resolve(__dirname, "../.."),
 		});
 

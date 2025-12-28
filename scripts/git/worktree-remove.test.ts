@@ -9,12 +9,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { $ } from "bun";
 
-import {
-	getGhqRoot,
-	getMainRepoPath,
-	removeWorktree,
-	resolvePath,
-} from "./worktree-remove";
+import { getGhqRoot, getMainRepoPath, removeWorktree, resolvePath } from "./worktree-remove";
 
 describe("worktree-remove", () => {
 	let tempDir: string;

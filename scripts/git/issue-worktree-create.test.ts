@@ -50,10 +50,7 @@ describe("issue-worktree-create", () => {
 		});
 
 		it("1つでも存在しないコマンドがあればfalseを返す", async () => {
-			const result = await checkDependencies([
-				"git",
-				"nonexistent-command-12345",
-			]);
+			const result = await checkDependencies(["git", "nonexistent-command-12345"]);
 			expect(result).toBe(false);
 		});
 	});

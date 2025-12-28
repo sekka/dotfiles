@@ -27,10 +27,9 @@ export function sshConfigExists(): boolean {
  * SSH設定からホスト一覧を取得
  */
 export async function getHosts(): Promise<string[]> {
-	const result =
-		await $`awk '/^Host / {print $2}' ${SSH_CONFIG_PATH} | grep -v '*'`
-			.quiet()
-			.nothrow();
+	const result = await $`awk '/^Host / {print $2}' ${SSH_CONFIG_PATH} | grep -v '*'`
+		.quiet()
+		.nothrow();
 
 	if (result.exitCode !== 0 || !result.stdout.length) {
 		return [];
@@ -46,9 +45,7 @@ export async function getHosts(): Promise<string[]> {
 /**
  * fzfでホストを選択
  */
-export async function selectHostWithFzf(
-	hosts: string[],
-): Promise<string | null> {
+export async function selectHostWithFzf(hosts: string[]): Promise<string | null> {
 	if (hosts.length === 0) {
 		return null;
 	}

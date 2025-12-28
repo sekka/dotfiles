@@ -34,9 +34,7 @@ export async function checkDependencies(commands: string[]): Promise<boolean> {
 	for (const cmd of commands) {
 		const result = await $`command -v ${cmd}`.quiet().nothrow();
 		if (result.exitCode !== 0) {
-			console.error(
-				`エラー: ${cmd} コマンドが見つかりません。インストールしてください。`,
-			);
+			console.error(`エラー: ${cmd} コマンドが見つかりません。インストールしてください。`);
 			return false;
 		}
 	}
@@ -57,14 +55,11 @@ export function isValidPrNumber(prNumber: string): boolean {
  * @param prNumber - PR番号
  * @returns ブランチ名、失敗した場合はnull
  */
-export async function getPrBranchName(
-	prNumber: string,
-): Promise<string | null> {
+export async function getPrBranchName(prNumber: string): Promise<string | null> {
 	try {
-		const result =
-			await $`gh pr view ${prNumber} --json headRefName --jq .headRefName`
-				.quiet()
-				.nothrow();
+		const result = await $`gh pr view ${prNumber} --json headRefName --jq .headRefName`
+			.quiet()
+			.nothrow();
 
 		if (result.exitCode === 0) {
 			const branch = result.text().trim();
@@ -89,9 +84,7 @@ export async function createPrWorktree(prNumber: string): Promise<boolean> {
 	const prBranch = await getPrBranchName(prNumber);
 
 	if (!prBranch) {
-		console.error(
-			`エラー: PR #${prNumber} のブランチ名を取得できませんでした。`,
-		);
+		console.error(`エラー: PR #${prNumber} のブランチ名を取得できませんでした。`);
 		console.error("PRが存在するか、アクセス権があるか確認してください。");
 		return false;
 	}
@@ -107,8 +100,7 @@ export async function createPrWorktree(prNumber: string): Promise<boolean> {
 	// 既存のworktreeを確認
 	if (existsSync(worktreePath)) {
 		console.log(`* Worktreeは既に存在します: ${worktreePath}`);
-		const currentBranch =
-			await $`git -C ${worktreePath} branch --show-current`.text();
+		const currentBranch = await $`git -C ${worktreePath} branch --show-current`.text();
 		console.log(`* ブランチ: ${currentBranch.trim()}`);
 		return true;
 	}
@@ -118,16 +110,13 @@ export async function createPrWorktree(prNumber: string): Promise<boolean> {
 		await $`git show-ref --verify --quiet refs/remotes/origin/${prBranch}`.nothrow();
 
 	if (remoteBranchCheck.exitCode !== 0) {
-		console.error(
-			`エラー: リモートブランチ 'origin/${prBranch}' が見つかりません。`,
-		);
+		console.error(`エラー: リモートブランチ 'origin/${prBranch}' が見つかりません。`);
 		return false;
 	}
 
 	// worktreeを作成
 	console.log("-> Worktreeを作成中...");
-	let result =
-		await $`git worktree add ${worktreePath} origin/${prBranch}`.nothrow();
+	let result = await $`git worktree add ${worktreePath} origin/${prBranch}`.nothrow();
 
 	if (result.exitCode !== 0) {
 		console.error("エラー: worktreeの作成に失敗しました");
@@ -136,8 +125,7 @@ export async function createPrWorktree(prNumber: string): Promise<boolean> {
 	}
 
 	// ローカルブランチを作成してチェックアウト
-	result =
-		await $`git -C ${worktreePath} checkout -b ${prBranch} origin/${prBranch}`.nothrow();
+	result = await $`git -C ${worktreePath} checkout -b ${prBranch} origin/${prBranch}`.nothrow();
 
 	if (result.exitCode !== 0) {
 		// すでにブランチが存在する場合はチェックアウトのみ
@@ -192,9 +180,7 @@ export async function main(): Promise<number> {
 	// 各PR番号を処理
 	for (const prNumber of args) {
 		if (!isValidPrNumber(prNumber)) {
-			console.error(
-				`警告: '${prNumber}' は有効なPR番号ではありません。スキップします。`,
-			);
+			console.error(`警告: '${prNumber}' は有効なPR番号ではありません。スキップします。`);
 			console.log("");
 			continue;
 		}

@@ -2,14 +2,7 @@
  * custom-commit-date.ts のテスト
  */
 
-import {
-	afterAll,
-	beforeAll,
-	beforeEach,
-	describe,
-	expect,
-	it,
-} from "bun:test";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -112,11 +105,7 @@ describe("custom-commit-date", () => {
 		});
 
 		it("--committer-date-now モードでコミットできる", async () => {
-			const success = await commitWithDate(
-				"2020-01-01 09:00:00",
-				"test: Committer date now",
-				true,
-			);
+			const success = await commitWithDate("2020-01-01 09:00:00", "test: Committer date now", true);
 			expect(success).toBe(true);
 
 			// 著者日時を確認（過去の日付）
@@ -132,11 +121,7 @@ describe("custom-commit-date", () => {
 			// ステージをリセット
 			await $`git reset HEAD`.quiet().nothrow();
 
-			const success = await commitWithDate(
-				"2023-01-01 12:00:00",
-				"test: No staged files",
-				false,
-			);
+			const success = await commitWithDate("2023-01-01 12:00:00", "test: No staged files", false);
 			expect(success).toBe(false);
 		});
 	});

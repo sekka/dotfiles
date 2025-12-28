@@ -28,9 +28,7 @@ export async function extractGpx(mp4File: string): Promise<boolean> {
 	const outputPath = join(dir, base);
 
 	// gopro2gpxは出力パスに自動的に.gpx拡張子を追加する
-	const result = await $`gopro2gpx -s -vvv ${mp4File} ${outputPath}`
-		.quiet()
-		.nothrow();
+	const result = await $`gopro2gpx -s -vvv ${mp4File} ${outputPath}`.quiet().nothrow();
 
 	if (result.exitCode === 0) {
 		console.log("完了");

@@ -83,9 +83,7 @@ export async function convertToWebp(imageFile: string): Promise<boolean> {
 	const outputPath = join(dir, `${base}.webp`);
 	const options = getCwebpOptions(ext);
 
-	const result = await $`cwebp ${imageFile} ${options} -o ${outputPath}`
-		.quiet()
-		.nothrow();
+	const result = await $`cwebp ${imageFile} ${options} -o ${outputPath}`.quiet().nothrow();
 
 	if (result.exitCode === 0) {
 		console.log(`完了: ${outputPath}`);

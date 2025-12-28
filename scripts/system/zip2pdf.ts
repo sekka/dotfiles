@@ -49,9 +49,7 @@ export async function convertZipToPdf(zipFile: string): Promise<boolean> {
 
 	// ZIPを解凍
 	console.log(`解凍中: ${zipFile}`);
-	const unzipResult = await $`unzip -d ${folderPath} ${zipFile}`
-		.quiet()
-		.nothrow();
+	const unzipResult = await $`unzip -d ${folderPath} ${zipFile}`.quiet().nothrow();
 
 	if (unzipResult.exitCode !== 0) {
 		console.error("エラー: 解凍に失敗しました");
@@ -60,9 +58,7 @@ export async function convertZipToPdf(zipFile: string): Promise<boolean> {
 
 	// PDFに変換
 	console.log(`PDF変換中: ${folderPath}`);
-	const convertResult = await $`convert ${folderPath}/* ${outputPdf}`
-		.quiet()
-		.nothrow();
+	const convertResult = await $`convert ${folderPath}/* ${outputPdf}`.quiet().nothrow();
 
 	if (convertResult.exitCode !== 0) {
 		console.error("エラー: PDF変換に失敗しました");

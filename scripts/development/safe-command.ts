@@ -89,9 +89,7 @@ const DELETE_COMMANDS = [
  */
 function checkProtectedDirectoryDeletion(command: string): boolean {
 	// 削除系コマンドが含まれているかチェック
-	const hasDelete = DELETE_COMMANDS.some((pattern) =>
-		pattern.test(command.toLowerCase()),
-	);
+	const hasDelete = DELETE_COMMANDS.some((pattern) => pattern.test(command.toLowerCase()));
 	if (!hasDelete) {
 		return false;
 	}
@@ -124,9 +122,7 @@ function checkHomeDirectoryDeletion(command: string): boolean {
 	const home = homedir();
 
 	// 削除系コマンドが含まれているかチェック
-	const hasDelete = DELETE_COMMANDS.some((pattern) =>
-		pattern.test(command.toLowerCase()),
-	);
+	const hasDelete = DELETE_COMMANDS.some((pattern) => pattern.test(command.toLowerCase()));
 	if (!hasDelete) {
 		return false;
 	}

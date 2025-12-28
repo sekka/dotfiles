@@ -1,20 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import {
-	existsSync,
-	mkdirSync,
-	readFileSync,
-	rmSync,
-	statSync,
-	writeFileSync,
-} from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-	copyHook,
-	getHookFiles,
-	hasGithooksDir,
-	isGitRepository,
-} from "./setup-git-hooks";
+import { copyHook, getHookFiles, hasGithooksDir, isGitRepository } from "./setup-git-hooks";
 
 describe("setup-git-hooks", () => {
 	let testDir: string;

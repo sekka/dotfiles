@@ -27,13 +27,7 @@ describe("lighthouse-analyzer", () => {
 		});
 
 		test("--profileオプションを指定した場合", () => {
-			const result = parseArgs([
-				"https://example.com",
-				"3",
-				"30",
-				"--auth",
-				"--profile=Profile 1",
-			]);
+			const result = parseArgs(["https://example.com", "3", "30", "--auth", "--profile=Profile 1"]);
 			expect(result).not.toBeNull();
 			expect(result!.chromeProfile).toBe("Profile 1");
 		});
@@ -75,39 +69,18 @@ describe("lighthouse-analyzer", () => {
 
 		test("プロファイル名に無効な文字が含まれる場合はnullを返す", () => {
 			// シェルインジェクションを防ぐため、特殊文字を含むプロファイル名は拒否
-			expect(
-				parseArgs(["https://example.com", "5", "60", "--profile=; rm -rf /"]),
-			).toBeNull();
-			expect(
-				parseArgs([
-					"https://example.com",
-					"5",
-					"60",
-					"--profile=test$(whoami)",
-				]),
-			).toBeNull();
-			expect(
-				parseArgs(["https://example.com", "5", "60", "--profile=test`id`"]),
-			).toBeNull();
+			expect(parseArgs(["https://example.com", "5", "60", "--profile=; rm -rf /"])).toBeNull();
+			expect(parseArgs(["https://example.com", "5", "60", "--profile=test$(whoami)"])).toBeNull();
+			expect(parseArgs(["https://example.com", "5", "60", "--profile=test`id`"])).toBeNull();
 		});
 
 		test("有効なプロファイル名は許可される", () => {
 			// 英数字、スペース、ハイフン、アンダースコアは許可
-			const result1 = parseArgs([
-				"https://example.com",
-				"5",
-				"60",
-				"--profile=Profile 1",
-			]);
+			const result1 = parseArgs(["https://example.com", "5", "60", "--profile=Profile 1"]);
 			expect(result1).not.toBeNull();
 			expect(result1!.chromeProfile).toBe("Profile 1");
 
-			const result2 = parseArgs([
-				"https://example.com",
-				"5",
-				"60",
-				"--profile=Test_Profile-1",
-			]);
+			const result2 = parseArgs(["https://example.com", "5", "60", "--profile=Test_Profile-1"]);
 			expect(result2).not.toBeNull();
 			expect(result2!.chromeProfile).toBe("Test_Profile-1");
 		});
@@ -117,9 +90,7 @@ describe("lighthouse-analyzer", () => {
 		test("URLからファイル名用の文字列を生成する", () => {
 			expect(sanitizeUrl("https://example.com")).toBe("example.com");
 			expect(sanitizeUrl("http://example.com/path")).toBe("example.com_path");
-			expect(sanitizeUrl("https://example.com/path?query=1")).toBe(
-				"example.com_path_query_1",
-			);
+			expect(sanitizeUrl("https://example.com/path?query=1")).toBe("example.com_path_query_1");
 		});
 
 		test("特殊文字をアンダースコアに置換する", () => {
