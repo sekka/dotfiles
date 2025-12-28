@@ -82,6 +82,11 @@ if [[ -n "$HOMEBREW_PREFIX" ]]; then
     add_to_path "$HOMEBREW_PREFIX/sbin"
 fi
 
+# === GNU awk ===
+# macOS互換性のため、GNU awkのgnubinをPATHに追加
+# tmux-sessionxなどが期待する構文に対応
+add_to_path "$HOMEBREW_PREFIX/opt/gawk/libexec/gnubin"
+
 # === プログラミング言語関連 ===
 
 # Go

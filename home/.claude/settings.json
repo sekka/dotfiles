@@ -2,7 +2,7 @@
 	"env": {
 		"DISABLE_AUTOUPDATER": "1"
 	},
-	"model": "sonnet",
+	"model": "haiku",
 	"hooks": {
 		"PreToolUse": [
 			{
@@ -21,7 +21,53 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "file_path=$(jq -r '.tool_input.file_path'); bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" 2>/dev/null; true"
+						"command": "file_path=$(jq -r '.tool_input.file_path'); bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" || echo \"⚠️ Lint-format hook failed for $file_path\" >&2; true"
+					},
+					{
+						"type": "command",
+						"command": "file_path=$(jq -r '.tool_input.file_path'); if [[ \"$file_path\" == */.claude/settings.local.json ]]; then bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=\"$file_path\" || echo \"⚠️ Sort-permissions hook failed for $file_path\" >&2; fi; true"
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+					}
+				]
+			}
+		],
+		"PermissionRequest": [
+			{
+				"matcher": "Bash|Task|Read|Write|Edit|WebFetch|WebSearch",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+					}
+				]
+			}
+		],
+		"SubagentStop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+					}
+				]
+			}
+		],
+		"Notification": [
+			{
+				"matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
 					}
 				]
 			}
@@ -55,5 +101,8 @@
 		"feature-dev@claude-plugins-official": true,
 		"example-skills@anthropic-agent-skills": false
 	},
-	"alwaysThinkingEnabled": true
+	"alwaysThinkingEnabled": true,
+	"permissions": {
+		"defaultMode": "plan"
+	}
 }
