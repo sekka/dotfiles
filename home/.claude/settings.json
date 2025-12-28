@@ -2,7 +2,7 @@
 	"env": {
 		"DISABLE_AUTOUPDATER": "1"
 	},
-	"model": "sonnet",
+	"model": "haiku",
 	"hooks": {
 		"PreToolUse": [
 			{
@@ -55,5 +55,8 @@
 		"feature-dev@claude-plugins-official": true,
 		"example-skills@anthropic-agent-skills": false
 	},
-	"alwaysThinkingEnabled": true
+	"alwaysThinkingEnabled": true,
+	"permissions": {
+		"defaultMode": "plan"
+	}
 }

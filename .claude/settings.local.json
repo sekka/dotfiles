@@ -56,7 +56,25 @@
       "WebFetch(domain:zenn.dev)",
       "WebSearch",
       "Bash(ls:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(tmux display-message:*)",
+      "Bash(fzf:*)",
+      "Bash(tmux show-option:*)",
+      "Bash(tmux list-keys:*)",
+      "Bash(tmux show-options:*)",
+      "Bash(tmux -V:*)",
+      "Bash(tmux show-environment:*)",
+      "Bash(tmux list-sessions:*)",
+      "Bash(env)",
+      "Bash(tmux list-windows:*)",
+      "Bash(claude help:*)",
+      "Bash(echo:*)",
+      "Bash(tmux kill-session:*)",
+      "WebFetch(domain:docs.claude.com)",
+      "Bash(perl:*)",
+      "Bash(python3:*)",
+      "Bash(tmux list-panes:*)",
+      "Bash(tmux capture-pane:*)"
     ],
     "deny": [
       "Read(./.env.*)"
