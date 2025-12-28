@@ -22,6 +22,10 @@
 					{
 						"type": "command",
 						"command": "file_path=$(jq -r '.tool_input.file_path'); bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" 2>/dev/null; true"
+					},
+					{
+						"type": "command",
+						"command": "file_path=$(jq -r '.tool_input.file_path'); if [[ \"$file_path\" == *.claude/settings.local.json ]]; then bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=\"$file_path\" 2>/dev/null; fi; true"
 					}
 				]
 			}
