@@ -13,11 +13,9 @@
  *   bun scripts/development/lint-format.ts --staged            # ステージされたファイルを処理
  *
  * 対応ファイル:
- *   - TypeScript/JavaScript/JSON: oxlint + oxfmt (oxc ecosystem)
- *   - Shell scripts (sh, zsh, bash): shfmt + shellcheck
- *   - Markdown: markdownlint
- *   - YAML: yamllint
- *   - TOML: taplo
+ *   - TypeScript/JavaScript/JSON: oxlint (linting) + oxfmt (formatting) via oxc ecosystem
+ *   - Shell scripts (sh, zsh, bash): shfmt (formatting) + shellcheck (linting)
+ *   - Markdown/YAML/TOML: dprint (unified formatter)
  */
 
 import { existsSync, statSync } from "node:fs";
@@ -51,7 +49,7 @@ interface LintResult {
 
 // 拡張子からファイルタイプを判定するマッピング
 const FILE_TYPE_MAP: Record<string, string> = {
-	// TypeScript/JavaScript → oxlint + oxfmt (oxc ecosystem)
+	// TypeScript/JavaScript/JSON → oxlint + oxfmt (oxc ecosystem)
 	".ts": "typescript",
 	".tsx": "typescript",
 	".js": "javascript",
@@ -66,15 +64,9 @@ const FILE_TYPE_MAP: Record<string, string> = {
 	".zsh": "shell",
 	".bash": "shell",
 
-	// Markdown → markdownlint
+	// Markdown/TOML → dprint (統合フォーマッター)
 	".md": "markdown",
 	".mdx": "markdown",
-
-	// YAML → yamllint
-	".yaml": "yaml",
-	".yml": "yaml",
-
-	// TOML → taplo
 	".toml": "toml",
 };
 
@@ -133,18 +125,27 @@ async function runCommand(
 }
 
 /**
- * Biome でTypeScript/JavaScript/JSONをチェック/修正
+ * dprint で複数のファイル形式（Markdown/YAML/TOML）をフォーマット
  */
-async function runBiome(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
+async function runDprint(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
-		return { tool: "biome", success: true, output: "No files to process" };
+		return { tool: "dprint", success: true, output: "No files to process" };
 	}
 
-	// Biomeは check --write で修正、check のみでチェック
-	const args =
-		mode === "fix"
-			? ["bunx", "@biomejs/biome", "check", "--write", ...files]
-			: ["bunx", "@biomejs/biome", "check", ...files];
+	// ツールが利用可能かチェック
+	if (!(await isCommandAvailable("dprint"))) {
+		if (verbose) {
+			console.log("⏭️ dprint: skipped (not installed)");
+		}
+		return {
+			tool: "dprint",
+			success: true,
+			output: "Skipped (not installed)",
+		};
+	}
+
+	// dprint fmt で修正、dprint check でチェック
+	const args = mode === "fix" ? ["dprint", "fmt", ...files] : ["dprint", "check", ...files];
 
 	if (verbose) {
 		console.log(`🔧 Running: ${args.join(" ")}`);
@@ -153,7 +154,7 @@ async function runBiome(files: string[], mode: Mode, verbose: boolean): Promise<
 	const result = await runCommand(args);
 
 	return {
-		tool: "biome",
+		tool: "dprint",
 		success: result.success,
 		output: result.stdout,
 		error: result.stderr,
@@ -166,6 +167,18 @@ async function runBiome(files: string[], mode: Mode, verbose: boolean): Promise<
 async function runOxlint(files: string[], verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "oxlint", success: true, output: "No files to process" };
+	}
+
+	// ツールが利用可能かチェック
+	if (!(await isCommandAvailable("oxlint"))) {
+		if (verbose) {
+			console.log("⏭️ oxlint: skipped (not installed)");
+		}
+		return {
+			tool: "oxlint",
+			success: true,
+			output: "Skipped (not installed)",
+		};
 	}
 
 	const args = ["oxlint", ...files];
@@ -190,6 +203,18 @@ async function runOxlint(files: string[], verbose: boolean): Promise<LintResult>
 async function runOxfmt(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "oxfmt", success: true, output: "No files to process" };
+	}
+
+	// ツールが利用可能かチェック
+	if (!(await isCommandAvailable("oxfmt"))) {
+		if (verbose) {
+			console.log("⏭️ oxfmt: skipped (not installed)");
+		}
+		return {
+			tool: "oxfmt",
+			success: true,
+			output: "Skipped (not installed)",
+		};
 	}
 
 	const args = mode === "fix" ? ["oxfmt", "--write", ...files] : ["oxfmt", ...files];
@@ -278,124 +303,6 @@ async function runShellcheck(files: string[], verbose: boolean): Promise<LintRes
 
 	return {
 		tool: "shellcheck",
-		success: result.success,
-		output: result.stdout,
-		error: result.stderr,
-	};
-}
-
-/**
- * markdownlint でMarkdownをチェック/修正
- */
-async function runMarkdownlint(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
-	if (files.length === 0) {
-		return {
-			tool: "markdownlint",
-			success: true,
-			output: "No files to process",
-		};
-	}
-
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("markdownlint"))) {
-		if (verbose) {
-			console.log("⏭️ markdownlint: skipped (not installed)");
-		}
-		return {
-			tool: "markdownlint",
-			success: true,
-			output: "Skipped (not installed)",
-		};
-	}
-
-	// home/.claude/agents/ は外部ファイルのため除外
-	const ignorePatterns = ["-i", "home/.claude/agents/"];
-	const args =
-		mode === "fix"
-			? ["markdownlint", "--fix", ...ignorePatterns, ...files]
-			: ["markdownlint", ...ignorePatterns, ...files];
-
-	if (verbose) {
-		console.log(`🔧 Running: ${args.join(" ")}`);
-	}
-
-	const result = await runCommand(args);
-
-	return {
-		tool: "markdownlint",
-		success: result.success,
-		output: result.stdout,
-		error: result.stderr,
-	};
-}
-
-/**
- * yamllint でYAMLをチェック
- */
-async function runYamllint(files: string[], verbose: boolean): Promise<LintResult> {
-	if (files.length === 0) {
-		return { tool: "yamllint", success: true, output: "No files to process" };
-	}
-
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("yamllint"))) {
-		if (verbose) {
-			console.log("⏭️ yamllint: skipped (not installed)");
-		}
-		return {
-			tool: "yamllint",
-			success: true,
-			output: "Skipped (not installed)",
-		};
-	}
-
-	const args = ["yamllint", ...files];
-
-	if (verbose) {
-		console.log(`🔧 Running: ${args.join(" ")}`);
-	}
-
-	const result = await runCommand(args);
-
-	return {
-		tool: "yamllint",
-		success: result.success,
-		output: result.stdout,
-		error: result.stderr,
-	};
-}
-
-/**
- * taplo でTOMLをフォーマット
- */
-async function runTaplo(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
-	if (files.length === 0) {
-		return { tool: "taplo", success: true, output: "No files to process" };
-	}
-
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("taplo"))) {
-		if (verbose) {
-			console.log("⏭️ taplo: skipped (not installed)");
-		}
-		return {
-			tool: "taplo",
-			success: true,
-			output: "Skipped (not installed)",
-		};
-	}
-
-	const args =
-		mode === "fix" ? ["taplo", "format", ...files] : ["taplo", "format", "--check", ...files];
-
-	if (verbose) {
-		console.log(`🔧 Running: ${args.join(" ")}`);
-	}
-
-	const result = await runCommand(args);
-
-	return {
-		tool: "taplo",
 		success: result.success,
 		output: result.stdout,
 		error: result.stderr,
@@ -564,22 +471,10 @@ async function processFiles(files: string[], options: Options): Promise<boolean>
 		results.push(shfmtResult, shellcheckResult);
 	}
 
-	// Markdown → markdownlint
-	const mdFiles = groups.get("markdown") || [];
-	if (mdFiles.length > 0) {
-		results.push(await runMarkdownlint(mdFiles, options.mode, options.verbose));
-	}
-
-	// YAML → yamllint
-	const yamlFiles = groups.get("yaml") || [];
-	if (yamlFiles.length > 0) {
-		results.push(await runYamllint(yamlFiles, options.verbose));
-	}
-
-	// TOML → taplo
-	const tomlFiles = groups.get("toml") || [];
-	if (tomlFiles.length > 0) {
-		results.push(await runTaplo(tomlFiles, options.mode, options.verbose));
+	// Markdown/TOML → dprint (統合フォーマッター)
+	const dprintFiles = [...(groups.get("markdown") || []), ...(groups.get("toml") || [])];
+	if (dprintFiles.length > 0) {
+		results.push(await runDprint(dprintFiles, options.mode, options.verbose));
 	}
 
 	// 結果を出力

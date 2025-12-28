@@ -12,5 +12,5 @@
 	"insertFinalNewline": true,
 
 	// 除外パターン
-	"ignorePatterns": ["node_modules/**", ".git/**", "home/.claude/agents/**"],
+	"ignorePatterns": ["node_modules/**", ".git/**", "home/.claude/agents/**", ".claude/**"],
 }

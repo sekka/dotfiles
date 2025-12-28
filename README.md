@@ -102,10 +102,19 @@ dotfiles/
 ./scripts/setup/setup-git-hooks.ts
 
 # 手動チェック実行
-mise run lint      # Markdown, YAML, TOMLのlint
-mise run lint-sh   # シェルスクリプトのlint
-mise run format    # ファイル整形
+mise run lint      # 全ファイル形式のチェック（oxlint, dprint, shellcheck）
+mise run format    # 全ファイル形式の整形（oxfmt, dprint, shfmt）
 ```
+
+### Lint & Format ツールチェーン
+
+統合 lint/format スクリプト `scripts/development/lint-format.ts` が以下を実行します：
+
+- **oxlint + oxfmt**: TypeScript/JavaScript/JSON (oxc ecosystem)
+- **dprint**: Markdown/YAML/TOML
+- **shfmt + shellcheck**: シェルスクリプト
+
+詳細は `scripts/development/lint-format.ts` を参照してください。
 
 ### 設定の追加・変更
 
@@ -127,10 +136,13 @@ mise run format    # ファイル整形
 
 Claude Code は以下のファイル編集時に自動でツールを実行します：
 
-#### Lint & Format
+#### Lint & Format (oxc Ecosystem)
 
-- TypeScript/JavaScript/JSONファイル編集時に Biome によるlint/format
-- シェルスクリプト編集時に shfmt / shellcheck
+- **TypeScript/JavaScript/JSON**: oxlint (linting) + oxfmt (formatting)
+  - Biome から oxc ecosystem への移行により、Rust ベースの高速ツールを使用
+  - 並列実行により処理時間を短縮
+- **Markdown/YAML/TOML**: dprint で統合フォーマット
+- **シェルスクリプト**: shfmt (formatting) + shellcheck (linting)
 
 #### Permissions 自動ソート
 
