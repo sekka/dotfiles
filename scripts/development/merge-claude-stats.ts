@@ -49,6 +49,55 @@ const ICLOUD_STATS_DIR = join(
 );
 
 // ============================================================================
+// Logging Utilities
+// ============================================================================
+
+type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR";
+
+/**
+ * デバッグロギング用のユーティリティ
+ * 環境変数 DEBUG=1 または --verbose フラグで有効化
+ */
+class Logger {
+	private static verbose = false;
+
+	static setVerbose(enabled: boolean): void {
+		Logger.verbose = enabled;
+	}
+
+	static isVerbose(): boolean {
+		return Logger.verbose || process.env.DEBUG === "1";
+	}
+
+	private static getTimestamp(): string {
+		return new Date().toISOString();
+	}
+
+	private static formatMessage(level: LogLevel, message: string): string {
+		const timestamp = Logger.getTimestamp();
+		return `[${timestamp}] [${level}] ${message}`;
+	}
+
+	static debug(message: string, ...args: unknown[]): void {
+		if (Logger.isVerbose()) {
+			console.debug(Logger.formatMessage("DEBUG", message), ...args);
+		}
+	}
+
+	static info(message: string, ...args: unknown[]): void {
+		console.log(Logger.formatMessage("INFO", message), ...args);
+	}
+
+	static warn(message: string, ...args: unknown[]): void {
+		console.warn(Logger.formatMessage("WARN", message), ...args);
+	}
+
+	static error(message: string, ...args: unknown[]): void {
+		console.error(Logger.formatMessage("ERROR", message), ...args);
+	}
+}
+
+// ============================================================================
 // File Loading Functions
 // ============================================================================
 
@@ -56,25 +105,32 @@ const ICLOUD_STATS_DIR = join(
  * stats-cache.jsonファイルを読み込み、バリデーション
  */
 async function loadStatsCache(filePath: string): Promise<StatsCache | null> {
+	Logger.debug(`Loading stats file: ${filePath}`);
 	try {
 		const file = Bun.file(filePath);
 
 		// ファイル存在確認
 		if (!(await file.exists())) {
-			console.warn(`⚠️  File not found: ${filePath}`);
+			Logger.warn(`File not found: ${filePath}`);
 			return null;
 		}
 
+		Logger.debug(`Reading JSON content from: ${filePath}`);
 		// JSON読み込み
 		const content = await file.json();
 
+		Logger.debug(`Validating stats data with Zod schema: ${filePath}`);
 		// Zodスキーマでバリデーション
 		const validated = StatsCacheSchema.parse(content);
+
+		Logger.debug(
+			`Successfully loaded stats: ${filePath} (${validated.totalSessions} sessions, ${validated.totalMessages} messages)`,
+		);
 		return validated;
 	} catch (error) {
-		console.error(`❌ Failed to parse ${filePath}`);
+		Logger.error(`Failed to parse ${filePath}: ${error}`);
 		if (error instanceof Error) {
-			console.error(`   ${error.message}`);
+			Logger.error(`Error details: ${error.message}`);
 		}
 		return null;
 	}
@@ -110,16 +166,11 @@ async function discoverICloudStats(): Promise<Array<{ path: string; machineName:
 // ============================================================================
 
 /**
- * 複数の統計データをマージ
+ * 日次アクティビティをマージ
  */
-function mergeStats(
+function mergeDailyActivity(
 	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
-): MergedStats {
-	if (statsArray.length === 0) {
-		throw new Error("No valid stats files to merge");
-	}
-
-	// 1. 日次アクティビティを日付でマージ
+): Map<string, DailyActivity> {
 	const dailyActivityMap = new Map<string, DailyActivity>();
 
 	for (const { stats } of statsArray) {
@@ -135,7 +186,15 @@ function mergeStats(
 		}
 	}
 
-	// 2. 日次モデル別トークンをマージ
+	return dailyActivityMap;
+}
+
+/**
+ * 日次モデル別トークンをマージ
+ */
+function mergeDailyModelTokens(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): Map<string, DailyModelToken> {
 	const dailyModelTokenMap = new Map<string, DailyModelToken>();
 
 	for (const { stats } of statsArray) {
@@ -155,7 +214,15 @@ function mergeStats(
 		}
 	}
 
-	// 3. モデル別使用量をマージ
+	return dailyModelTokenMap;
+}
+
+/**
+ * モデル別使用量をマージ
+ */
+function mergeModelUsage(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): Map<string, ModelUsage> {
 	const modelUsageMap = new Map<string, ModelUsage>();
 
 	for (const { stats } of statsArray) {
@@ -176,7 +243,15 @@ function mergeStats(
 		}
 	}
 
-	// 4. 時間別カウントをマージ
+	return modelUsageMap;
+}
+
+/**
+ * 時間別カウントをマージ
+ */
+function mergeHourCounts(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): Map<string, number> {
 	const hourCountsMap = new Map<string, number>();
 
 	for (const { stats } of statsArray) {
@@ -185,21 +260,50 @@ function mergeStats(
 		}
 	}
 
-	// 5. 最長セッション（メッセージ数で比較）
+	return hourCountsMap;
+}
+
+/**
+ * 最長セッションを特定（メッセージ数で比較）
+ */
+function findLongestSession(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): LongestSession {
 	let longestSession: LongestSession = statsArray[0].stats.longestSession;
 	for (const { stats } of statsArray) {
 		if (stats.longestSession.messageCount > longestSession.messageCount) {
 			longestSession = stats.longestSession;
 		}
 	}
+	return longestSession;
+}
 
-	// 6. 日付範囲を特定
+/**
+ * 日付範囲を特定
+ */
+function determineDateRange(dailyActivityMap: Map<string, DailyActivity>): {
+	earliestSessionDate: string;
+	latestSessionDate: string;
+} {
 	const allDates = Array.from(dailyActivityMap.keys());
 	const earliestSessionDate = allDates.length > 0 ? allDates[0] : new Date().toISOString();
 	const latestSessionDate =
 		allDates.length > 0 ? allDates[allDates.length - 1] : new Date().toISOString();
 
-	// 7. 集計統計
+	return { earliestSessionDate, latestSessionDate };
+}
+
+/**
+ * 集計統計を計算
+ */
+function calculateAggregatedTotals(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+	dailyActivityMap: Map<string, DailyActivity>,
+): {
+	totalSessions: number;
+	totalMessages: number;
+	totalToolCalls: number;
+} {
 	const totalSessions = statsArray.reduce((sum, { stats }) => sum + stats.totalSessions, 0);
 	const totalMessages = statsArray.reduce((sum, { stats }) => sum + stats.totalMessages, 0);
 	const totalToolCalls = Array.from(dailyActivityMap.values()).reduce(
@@ -207,8 +311,16 @@ function mergeStats(
 		0,
 	);
 
-	// 8. マシン別統計
-	const machineStats: MachineStats[] = statsArray.map(({ stats, machineName, filePath }) => ({
+	return { totalSessions, totalMessages, totalToolCalls };
+}
+
+/**
+ * マシン別統計を構築
+ */
+function buildMachineStats(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): MachineStats[] {
+	return statsArray.map(({ stats, machineName, filePath }) => ({
 		machineName,
 		filePath,
 		lastComputedDate: stats.lastComputedDate,
@@ -216,8 +328,32 @@ function mergeStats(
 		totalMessages: stats.totalMessages,
 		firstSessionDate: stats.firstSessionDate,
 	}));
+}
 
-	// 9. 結果を組み立て
+/**
+ * 統計データをマージ（オーケストレーション関数）
+ */
+function mergeStats(
+	statsArray: Array<{ stats: StatsCache; machineName: string; filePath: string }>,
+): MergedStats {
+	if (statsArray.length === 0) {
+		throw new Error("No valid stats files to merge");
+	}
+
+	// 各種データをマージ
+	const dailyActivityMap = mergeDailyActivity(statsArray);
+	const dailyModelTokenMap = mergeDailyModelTokens(statsArray);
+	const modelUsageMap = mergeModelUsage(statsArray);
+	const hourCountsMap = mergeHourCounts(statsArray);
+	const longestSession = findLongestSession(statsArray);
+	const { earliestSessionDate, latestSessionDate } = determineDateRange(dailyActivityMap);
+	const { totalSessions, totalMessages, totalToolCalls } = calculateAggregatedTotals(
+		statsArray,
+		dailyActivityMap,
+	);
+	const machineStats = buildMachineStats(statsArray);
+
+	// 結果を組み立て
 	const merged: MergedStats = {
 		generatedAt: new Date().toISOString(),
 		totalMachines: statsArray.length,
@@ -248,12 +384,85 @@ function mergeStats(
 // ============================================================================
 
 /**
+ * HTMLエスケープヘルパー関数
+ */
+function escapeHtml(unsafe: string): string {
+	return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
+}
+
+/**
  * JSON形式で出力
  */
 async function outputJSON(stats: MergedStats, outputPath: string): Promise<void> {
 	const output = JSON.stringify(stats, null, 2);
 	await Bun.write(outputPath, output);
 	console.log(`✅ JSON output: ${outputPath}`);
+}
+
+/**
+ * StatsCache形式に変換（ccusage/cc-wrapped互換）
+ */
+const STATS_CACHE_VERSION = 1;
+
+function convertToStatsCache(merged: MergedStats): StatsCache {
+	// 日付フォーマット変換ヘルパー
+	const toDateOnly = (dateStr: string): string => {
+		return dateStr.includes("T") ? dateStr.split("T")[0] : dateStr;
+	};
+
+	// ISO日時への変換ヘルパー
+	const ensureISODateTime = (dateStr: string): string => {
+		return dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00.000Z`;
+	};
+
+	// longestSessionのフォールバック
+	const longestSession = merged.aggregated.longestSession || {
+		sessionId: undefined,
+		messageCount: 0,
+		duration: 0,
+		timestamp: new Date().toISOString(),
+	};
+
+	return {
+		version: STATS_CACHE_VERSION,
+		lastComputedDate: toDateOnly(merged.aggregated.latestSessionDate),
+		dailyActivity: merged.aggregated.dailyActivity,
+		dailyModelTokens: merged.aggregated.dailyModelTokens,
+		modelUsage: merged.aggregated.modelUsage,
+		totalSessions: merged.aggregated.totalSessions,
+		totalMessages: merged.aggregated.totalMessages,
+		longestSession,
+		firstSessionDate: ensureISODateTime(merged.aggregated.earliestSessionDate),
+		hourCounts: merged.aggregated.hourCounts,
+	};
+}
+
+/**
+ * StatsCache形式で出力（ccusage/cc-wrapped互換）
+ */
+async function outputStatsCache(stats: MergedStats, outputPath: string): Promise<void> {
+	const statsCache = convertToStatsCache(stats);
+
+	// Zodバリデーション
+	StatsCacheSchema.parse(statsCache);
+
+	// JSON出力
+	const output = JSON.stringify(statsCache, null, 2);
+
+	// アトミックファイル書き込み（一時ファイル→リネーム）
+	const tmpPath = `${outputPath}.tmp`;
+	await Bun.write(tmpPath, output);
+
+	// 一時ファイルを本来の名前に変更
+	const { rename } = await import("node:fs/promises");
+	await rename(tmpPath, outputPath);
+
+	console.log(`✅ StatsCache output: ${outputPath}`);
 }
 
 /**
@@ -433,10 +642,10 @@ async function outputHTML(stats: MergedStats, outputPath: string): Promise<void>
 				.map(
 					(m) => `
       <tr>
-        <td>${m.machineName}</td>
+        <td>${escapeHtml(m.machineName)}</td>
         <td>${m.totalSessions.toLocaleString()}</td>
         <td>${m.totalMessages.toLocaleString()}</td>
-        <td>${m.lastComputedDate}</td>
+        <td>${escapeHtml(m.lastComputedDate)}</td>
       </tr>
       `,
 				)
@@ -479,8 +688,8 @@ function parseCliArgs(args: string[]): CliArgs {
 			case "--format":
 				if (i + 1 < args.length) {
 					const fmt = args[++i];
-					if (fmt === "json" || fmt === "markdown" || fmt === "html") {
-						parsed.format = fmt;
+					if (fmt === "json" || fmt === "markdown" || fmt === "html" || fmt === "stats-cache") {
+						parsed.format = fmt as "json" | "markdown" | "html" | "stats-cache";
 					}
 				}
 				break;
@@ -491,6 +700,10 @@ function parseCliArgs(args: string[]): CliArgs {
 				break;
 			case "--auto-discover-icloud":
 				parsed.autoDiscoverICloud = true;
+				break;
+			case "--verbose":
+			case "-v":
+				parsed.verbose = true;
 				break;
 		}
 	}
@@ -538,15 +751,21 @@ Claude Code Statistics Merger
 オプション:
   --input <path>              入力ファイル（複数指定可能）
   --machine-name <name>       マシン名（--inputと同順序）
-  --format <format>           出力形式: json, markdown, html (デフォルト: markdown)
+  --format <format>           出力形式: json, markdown, html, stats-cache (デフォルト: markdown)
   --output <path>             出力ファイルパス
   --auto-discover-icloud      iCloud Drive内のファイルを自動検出
+  --verbose, -v               詳細なデバッグログを出力
   --help                      このヘルプを表示
   -h                          このヘルプを表示
 
 例:
   # iCloud内の全統計を自動マージ
   bun ~/dotfiles/scripts/development/merge-claude-stats.ts --auto-discover-icloud
+
+  # stats-cache形式で出力（ccusage/cc-wrapped用）
+  bun ~/dotfiles/scripts/development/merge-claude-stats.ts \\
+    --auto-discover-icloud \\
+    --format stats-cache
 
   # 複数ファイルを手動指定
   bun ~/dotfiles/scripts/development/merge-claude-stats.ts \\
@@ -579,11 +798,19 @@ async function main(): Promise<void> {
 	// 引数をパース
 	const cliArgs = parseCliArgs(args);
 
+	// デバッグモード設定
+	if (cliArgs.verbose) {
+		Logger.setVerbose(true);
+		Logger.debug("Verbose mode enabled");
+		Logger.debug(`CLI Args: ${JSON.stringify(cliArgs, null, 2)}`);
+	}
+
 	// ファイルを収集
 	let filesToProcess: Array<{ path: string; machineName: string }> = [];
 
 	if (cliArgs.autoDiscoverICloud) {
 		console.log("🔍 Discovering stats files in iCloud Drive...");
+		Logger.debug(`iCloud Stats Directory: ${ICLOUD_STATS_DIR}`);
 		const discovered = await discoverICloudStats();
 
 		if (discovered.length === 0) {
@@ -609,25 +836,45 @@ async function main(): Promise<void> {
 		process.exit(1);
 	}
 
-	// ファイルを読み込み
+	// ファイルを並列読み込み
 	console.log("\n📂 Loading files...");
+	const statsPromises = filesToProcess.map((file) => loadStatsCache(file.path));
+	const statsSettledResults = await Promise.allSettled(statsPromises);
+
 	const statsArray: Array<{
 		stats: StatsCache;
 		machineName: string;
 		filePath: string;
 	}> = [];
 
-	for (const file of filesToProcess) {
-		const stats = await loadStatsCache(file.path);
-		if (stats) {
-			statsArray.push({ stats, machineName: file.machineName, filePath: file.path });
+	for (let index = 0; index < statsSettledResults.length; index++) {
+		const result = statsSettledResults[index];
+		const file = filesToProcess[index];
+
+		if (result.status === "fulfilled" && result.value !== null) {
+			statsArray.push({
+				stats: result.value,
+				machineName: file.machineName,
+				filePath: file.path,
+			});
 			console.log(`   ✅ ${file.machineName}`);
+		} else if (result.status === "rejected") {
+			console.warn(`   ⚠️  ${file.machineName}: Failed to load - ${result.reason}`);
+		} else {
+			console.warn(`   ⚠️  ${file.machineName}: Invalid stats file`);
 		}
 	}
 
 	if (statsArray.length === 0) {
 		console.error("❌ No valid stats files loaded");
 		process.exit(1);
+	}
+
+	if (statsArray.length < filesToProcess.length) {
+		const failedCount = filesToProcess.length - statsArray.length;
+		console.warn(
+			`\n⚠️  Loaded ${statsArray.length}/${filesToProcess.length} files (${failedCount} failed)`,
+		);
 	}
 
 	// マージ
@@ -657,7 +904,20 @@ async function main(): Promise<void> {
 
 	// 出力
 	console.log("\n💾 Generating output...");
-	const outputPath = cliArgs.outputPath || `./claude-stats-merged.${cliArgs.format}`;
+	const outputPath =
+		cliArgs.outputPath ||
+		(() => {
+			switch (cliArgs.format) {
+				case "stats-cache":
+					return join(homedir(), ".claude", "stats-cache-merged.json");
+				case "json":
+					return "./claude-stats-merged.json";
+				case "html":
+					return "./claude-stats-merged.html";
+				default:
+					return "./claude-stats-merged.md";
+			}
+		})();
 
 	try {
 		switch (cliArgs.format) {
@@ -670,6 +930,9 @@ async function main(): Promise<void> {
 			case "html":
 				await outputHTML(merged, outputPath);
 				break;
+			case "stats-cache":
+				await outputStatsCache(merged, outputPath);
+				break;
 		}
 		console.log(`\n✨ Successfully completed!`);
 	} catch (error) {
@@ -681,7 +944,356 @@ async function main(): Promise<void> {
 	}
 }
 
+// ============================================================================
+// Edge Case Tests
+// ============================================================================
+
+/**
+ * エッジケーステストスイート
+ * stats-cache出力機能の堅牢性を検証
+ */
+function runEdgeCaseTests(): void {
+	console.log("\n🧪 Running edge case tests...\n");
+	let passed = 0;
+	let failed = 0;
+
+	// Generate a valid UUID for testing
+	const generateUUID = () =>
+		`${Math.random().toString(16).slice(2, 10)}-${Math.random().toString(16).slice(2, 6)}-${Math.random().toString(16).slice(2, 6)}-${Math.random().toString(16).slice(2, 6)}-${Math.random().toString(16).slice(2, 14)}`;
+
+	// Test 1: Empty dailyActivity
+	try {
+		const merged: MergedStats = {
+			generatedAt: new Date().toISOString(),
+			totalMachines: 1,
+			machineStats: [
+				{
+					machineName: "test-machine",
+					filePath: "/tmp/test.json",
+					lastComputedDate: "2025-12-28",
+					totalSessions: 0,
+					totalMessages: 0,
+					firstSessionDate: "2025-12-28T00:00:00.000Z",
+				},
+			],
+			aggregated: {
+				totalSessions: 0,
+				totalMessages: 0,
+				totalToolCalls: 0,
+				modelUsage: {},
+				dailyActivity: [],
+				dailyModelTokens: [],
+				longestSession: {
+					sessionId: undefined,
+					messageCount: 0,
+					duration: 0,
+					timestamp: new Date().toISOString(),
+				},
+				earliestSessionDate: "2025-12-28",
+				latestSessionDate: "2025-12-28",
+				hourCounts: {},
+			},
+		};
+
+		const statsCache = convertToStatsCache(merged);
+		StatsCacheSchema.parse(statsCache);
+		console.log("✅ Test 1: Empty dailyActivity - PASSED");
+		passed++;
+	} catch (error) {
+		console.error(
+			`❌ Test 1: Empty dailyActivity - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Test 2: Mixed date formats
+	try {
+		const merged: MergedStats = {
+			generatedAt: new Date().toISOString(),
+			totalMachines: 1,
+			machineStats: [
+				{
+					machineName: "test-machine",
+					filePath: "/tmp/test.json",
+					lastComputedDate: "2025-12-28",
+					totalSessions: 10,
+					totalMessages: 100,
+					firstSessionDate: "2025-12-01T00:00:00.000Z",
+				},
+			],
+			aggregated: {
+				totalSessions: 10,
+				totalMessages: 100,
+				totalToolCalls: 50,
+				modelUsage: {
+					"claude-sonnet-4-5-20250929": {
+						inputTokens: 1000,
+						outputTokens: 2000,
+						cacheReadInputTokens: 3000,
+						cacheCreationInputTokens: 500,
+						webSearchRequests: 0,
+						costUSD: 0,
+						contextWindow: 0,
+					},
+				},
+				dailyActivity: [
+					{
+						date: "2025-12-28",
+						messageCount: 100,
+						sessionCount: 10,
+						toolCallCount: 50,
+					},
+				],
+				dailyModelTokens: [
+					{
+						date: "2025-12-28",
+						tokensByModel: {
+							"claude-sonnet-4-5-20250929": 3500,
+						},
+					},
+				],
+				longestSession: {
+					sessionId: generateUUID(),
+					messageCount: 25,
+					duration: 3600000,
+					timestamp: "2025-12-28T12:00:00.000Z",
+				},
+				earliestSessionDate: "2025-12-01", // Date format only
+				latestSessionDate: "2025-12-28T15:30:00.000Z", // ISO datetime
+				hourCounts: {
+					"12": 5,
+					"13": 3,
+					"14": 2,
+				},
+			},
+		};
+
+		const statsCache = convertToStatsCache(merged);
+		StatsCacheSchema.parse(statsCache);
+
+		// Verify date transformations
+		if (!statsCache.lastComputedDate.includes("T")) {
+			console.log("✅ Test 2: Mixed date formats - PASSED");
+			passed++;
+		} else {
+			throw new Error("lastComputedDate should not contain ISO format");
+		}
+	} catch (error) {
+		console.error(
+			`❌ Test 2: Mixed date formats - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Test 3: Missing longestSession (null)
+	try {
+		const merged: MergedStats = {
+			generatedAt: new Date().toISOString(),
+			totalMachines: 1,
+			machineStats: [
+				{
+					machineName: "test-machine",
+					filePath: "/tmp/test.json",
+					lastComputedDate: "2025-12-28",
+					totalSessions: 0,
+					totalMessages: 0,
+					firstSessionDate: "2025-12-28T00:00:00.000Z",
+				},
+			],
+			aggregated: {
+				totalSessions: 0,
+				totalMessages: 0,
+				totalToolCalls: 0,
+				modelUsage: {},
+				dailyActivity: [],
+				dailyModelTokens: [],
+				longestSession: null as any, // Simulating missing data
+				earliestSessionDate: "2025-12-28",
+				latestSessionDate: "2025-12-28",
+				hourCounts: {},
+			},
+		};
+
+		const statsCache = convertToStatsCache(merged);
+		StatsCacheSchema.parse(statsCache);
+
+		// Verify fallback values
+		if (
+			statsCache.longestSession.messageCount === 0 &&
+			statsCache.longestSession.sessionId === undefined
+		) {
+			console.log("✅ Test 3: Missing longestSession fallback - PASSED");
+			passed++;
+		} else {
+			throw new Error("Fallback values not applied correctly");
+		}
+	} catch (error) {
+		console.error(
+			`❌ Test 3: Missing longestSession fallback - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Test 4: No model usage data
+	try {
+		const merged: MergedStats = {
+			generatedAt: new Date().toISOString(),
+			totalMachines: 1,
+			machineStats: [
+				{
+					machineName: "test-machine",
+					filePath: "/tmp/test.json",
+					lastComputedDate: "2025-12-28",
+					totalSessions: 5,
+					totalMessages: 50,
+					firstSessionDate: "2025-12-28T00:00:00.000Z",
+				},
+			],
+			aggregated: {
+				totalSessions: 5,
+				totalMessages: 50,
+				totalToolCalls: 25,
+				modelUsage: {}, // Empty!
+				dailyActivity: [
+					{
+						date: "2025-12-28",
+						messageCount: 50,
+						sessionCount: 5,
+						toolCallCount: 25,
+					},
+				],
+				dailyModelTokens: [],
+				longestSession: {
+					sessionId: generateUUID(),
+					messageCount: 15,
+					duration: 1800000,
+					timestamp: new Date().toISOString(),
+				},
+				earliestSessionDate: "2025-12-28",
+				latestSessionDate: "2025-12-28",
+				hourCounts: {},
+			},
+		};
+
+		const statsCache = convertToStatsCache(merged);
+		StatsCacheSchema.parse(statsCache);
+		console.log("✅ Test 4: No model usage data - PASSED");
+		passed++;
+	} catch (error) {
+		console.error(
+			`❌ Test 4: No model usage data - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Test 5: Special characters in machine name (for HTML escaping validation)
+	try {
+		const specialChars = '<script>alert("xss")</script>&"\'';
+		const escaped = escapeHtml(specialChars);
+
+		if (escaped.includes("&lt;") && escaped.includes("&gt;") && escaped.includes("&quot;")) {
+			console.log("✅ Test 5: HTML escaping - PASSED");
+			passed++;
+		} else {
+			throw new Error("HTML entities not properly escaped");
+		}
+	} catch (error) {
+		console.error(
+			`❌ Test 5: HTML escaping - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Test 6: Large session count values
+	try {
+		const merged: MergedStats = {
+			generatedAt: new Date().toISOString(),
+			totalMachines: 1,
+			machineStats: [
+				{
+					machineName: "test-machine",
+					filePath: "/tmp/test.json",
+					lastComputedDate: "2025-12-28",
+					totalSessions: 10000,
+					totalMessages: 500000,
+					firstSessionDate: "2025-01-01T00:00:00.000Z",
+				},
+			],
+			aggregated: {
+				totalSessions: 10000,
+				totalMessages: 500000,
+				totalToolCalls: 250000,
+				modelUsage: {
+					"claude-opus-4-5-20251101": {
+						inputTokens: 100000000,
+						outputTokens: 200000000,
+						cacheReadInputTokens: 1000000000,
+						cacheCreationInputTokens: 50000000,
+						webSearchRequests: 1000,
+						costUSD: 100.5,
+						contextWindow: 0,
+					},
+				},
+				dailyActivity: [
+					{
+						date: "2025-12-28",
+						messageCount: 500000,
+						sessionCount: 10000,
+						toolCallCount: 250000,
+					},
+				],
+				dailyModelTokens: [
+					{
+						date: "2025-12-28",
+						tokensByModel: {
+							"claude-opus-4-5-20251101": 1300000000,
+						},
+					},
+				],
+				longestSession: {
+					sessionId: generateUUID(),
+					messageCount: 100000,
+					duration: 86400000,
+					timestamp: new Date().toISOString(),
+				},
+				earliestSessionDate: "2025-01-01",
+				latestSessionDate: "2025-12-28",
+				hourCounts: {
+					"0": 100,
+					"12": 500,
+					"23": 100,
+				},
+			},
+		};
+
+		const statsCache = convertToStatsCache(merged);
+		StatsCacheSchema.parse(statsCache);
+		console.log("✅ Test 6: Large numeric values - PASSED");
+		passed++;
+	} catch (error) {
+		console.error(
+			`❌ Test 6: Large numeric values - FAILED: ${error instanceof Error ? error.message : String(error)}`,
+		);
+		failed++;
+	}
+
+	// Summary
+	console.log("\n" + "=".repeat(60));
+	console.log(`Test Results: ${passed} passed, ${failed} failed (Total: ${passed + failed})`);
+	console.log("=".repeat(60));
+
+	if (failed > 0) {
+		process.exit(1);
+	}
+}
+
 // Entry point
 if (import.meta.main) {
-	main().catch(console.error);
+	// Check if running in test mode
+	const args = Bun.argv;
+	if (args.includes("--test-edge-cases")) {
+		runEdgeCaseTests();
+	} else {
+		main().catch(console.error);
+	}
 }
