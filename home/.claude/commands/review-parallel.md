@@ -5,9 +5,41 @@ argument-hint: [対象: --uncommitted, --base <branch>, など]
 
 # 並列AIコードレビュー
 
-対象: $ARGUMENTS
+## 🆕 推奨: Subagent経由での実行
 
-## 概要
+複数のAIレビュアーを統合し、自動的に結果をマージするには、Subagentを使用してください。
+
+```
+Use @agent-parallel-reviewer to review uncommitted changes
+Use @agent-parallel-reviewer to review main branch
+Use @agent-parallel-reviewer to review $ARGUMENTS
+```
+
+**利点**:
+- ✅ 自動的に重複排除・優先度付け・カテゴリ分類を実行
+- ✅ 統合レポートが1つのレポートとして提示される
+- ✅ 複数レビュアーの結果を1つの優先度付きレポートに統合
+
+**認証とセキュリティ**:
+- `@agent-parallel-reviewer` は、各レビュアーエージェント（Codex, CodeRabbit, Copilot, Gemini）の認証情報を引き継ぐ
+- 個別の認証設定が必要（従来と同じ）
+- 詳細: [認証セットアップガイド](#認証セットアップ)
+
+**例**:
+```
+/review-parallel
+uncommitted changesをレビューしてください
+```
+
+---
+
+## ⚠️ 従来の方法（レガシー・廃止予定）
+
+> **推奨**: 上記の新しい Subagent 方式を使用してください。
+> 従来の方法は互換性のため現在も利用可能ですが、将来的には廃止予定です。
+> 移行方法は[移行ガイド](#移行ガイド)を参照してください。
+
+### 概要
 
 4つの専門AIエージェントを並列実行し、多角的な視点でコードレビューを実施します。
 
@@ -203,6 +235,85 @@ Use @agent-codex-reviewer @agent-copilot-reviewer background
 | `/review-parallel` | 包括的レビュー | 中速（並列） |
 | `/review` | 単一の詳細レビュー | 中速 |
 | `/review-pr` | PRレビュー | 中速 |
+
+---
+
+## 認証セットアップ
+
+### Subagent方式での認証
+
+`@agent-parallel-reviewer` を使用するには、4つのレビュアーエージェントの認証設定が必要です：
+
+```bash
+# 1. Codex認証
+codex login
+
+# 2. CodeRabbit認証
+coderabbit auth
+
+# 3. Copilot認証（GitHub）
+# GitHub CLIで自動認証
+gh auth login
+
+# 4. Gemini認証
+gemini auth setup
+```
+
+### 認証フロー
+
+```
+ユーザー入力
+    ↓
+@agent-parallel-reviewer
+    ├─ Codexレビュアーへ通信（codex CLIで認証）
+    ├─ CodeRabbitレビュアーへ通信（coderabbit認証情報使用）
+    ├─ Copilotレビュアーへ通信（GitHub認証情報使用）
+    └─ Geminiレビュアーへ通信（gemini認証情報使用）
+    ↓
+統合結果をユーザーに返す
+```
+
+各レビュアーエージェントは独立して認証を処理するため、**Subagent方式で追加の認証設定は不要**です。
+
+---
+
+## 移行ガイド
+
+### 従来の方法から新方式への移行
+
+#### Step 1: 新Subagentが利用可能か確認
+
+```bash
+# parallel-reviewer agent が存在するか確認
+ls ~/.claude/agents/parallel-reviewer.md
+```
+
+#### Step 2: コマンドを更新
+
+**従来の方式**（廃止予定）:
+```bash
+/review-parallel
+uncommitted changesをレビューしてください
+```
+
+**新しい方式**（推奨）:
+```bash
+/review-parallel
+uncommitted changesをレビューしてください
+```
+
+> 注：コマンド自体は同じ `/review-parallel` ですが、内部で Subagent を通じて実行されます
+
+#### Step 3: 統合結果の形式の変更を確認
+
+新方式では以下の改善が期待できます：
+
+| 項目 | 従来の方式 | 新方式 |
+|------|-----------|--------|
+| **出力形式** | 4つのエージェント出力が分散 | 1つの統合レポート |
+| **重複排除** | 手動で見分ける必要 | 自動的に重複排除 |
+| **優先度** | 各エージェントが独立 | 複数指摘の一致で優先度昇格 |
+| **セキュリティ** | セキュリティ指摘は散在 | OWASP対応で自動昇格 |
 
 ---
 
