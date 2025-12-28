@@ -2,9 +2,10 @@
 	"projectType": "openSource",
 	"incremental": true,
 	"plugins": [
-		"https://plugins.dprint.dev/markdown-0.17.2.wasm",
-		"https://plugins.dprint.dev/json-0.19.2.wasm",
-		"https://plugins.dprint.dev/toml-0.6.1.wasm"
+		"https://plugins.dprint.dev/markdown-0.20.0.wasm",
+		"https://plugins.dprint.dev/json-0.21.0.wasm",
+		"https://plugins.dprint.dev/toml-0.7.0.wasm",
+		"https://plugins.dprint.dev/g-plane/pretty_yaml-v0.5.1.wasm"
 	],
 	"markdown": {
 		"lineWidth": 100
@@ -15,7 +16,8 @@
 	"toml": {
 		"lineWidth": 100
 	},
-	"includes": ["**/*.{md,mdx,json,toml}"],
+	"yaml": {},
+	"includes": ["**/*.{md,mdx,json,toml,yaml,yml}"],
 	"excludes": [
 		"node_modules",
 		".git",
