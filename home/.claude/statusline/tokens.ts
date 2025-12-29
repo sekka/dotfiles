@@ -40,8 +40,12 @@ async function calculateTokensFromTranscript(transcriptPath: string): Promise<nu
 				if (entry.type === "assistant" && entry.message?.usage) {
 					lastUsage = entry.message.usage;
 				}
-			} catch {
-				// Skip invalid JSON lines
+			} catch (error) {
+				// Skip invalid JSON lines - log at debug level for troubleshooting
+				debug(
+					`Failed to parse transcript line: ${error instanceof Error ? error.message : String(error)}`,
+					"debug",
+				);
 			}
 		}
 

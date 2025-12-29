@@ -133,8 +133,19 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 		const fiveHour = data.usageLimits.five_hour;
 		const bar = formatBrailleProgressBar(fiveHour.utilization);
 
-		// Get period cost
-		const periodCost = fiveHour.resets_at ? await getPeriodCost(fiveHour.resets_at) : 0;
+		// Get period cost with error handling
+		let periodCost = 0;
+		if (fiveHour.resets_at) {
+			try {
+				periodCost = await getPeriodCost(fiveHour.resets_at);
+			} catch (error) {
+				debug(
+					`Failed to fetch period cost: ${error instanceof Error ? error.message : String(error)}`,
+					"error",
+				);
+				periodCost = 0; // Default to 0 on error
+			}
+		}
 
 		// Add cost display if >= $0.01 (respects showPeriodCost config)
 		const costDisplayFiveHour =
@@ -268,9 +279,17 @@ export class MetricsLineBuilder {
 		// 各戦略でメトリクスを構築
 		for (const builder of this.builders) {
 			if (builder.shouldBuild(config)) {
-				const part = await builder.build(config, data);
-				if (part) {
-					parts.push(part);
+				try {
+					const part = await builder.build(config, data);
+					if (part) {
+						parts.push(part);
+					}
+				} catch (error) {
+					debug(
+						`Metrics builder error for ${builder.constructor.name}: ${error instanceof Error ? error.message : String(error)}`,
+						"error",
+					);
+					// Continue with next builder instead of failing entirely
 				}
 			}
 		}
