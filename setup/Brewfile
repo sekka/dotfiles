@@ -41,6 +41,7 @@ brew "vim"                # https://formulae.brew.sh/formula/vim              # 
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
 
 # === formatter/linter ===
+brew "dprint"             # https://formulae.brew.sh/formula/dprint           # 汎用コードフォーマッタ
 brew "markdownlint-cli"   # https://formulae.brew.sh/formula/markdownlint-cli # Markdownリンター
 brew "pre-commit"         # https://formulae.brew.sh/formula/pre-commit       # Gitフック管理ツール
 brew "shellcheck"         # https://formulae.brew.sh/formula/shellcheck       # シェルスクリプトリンター

@@ -434,7 +434,6 @@ rust = "stable"
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
 "cargo:bat" = "latest"          # https://crates.io/crates/bat すごいcat
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
-"cargo:dprint" = "latest"       # https://crates.io/crates/dprint 汎用コードフォーマッタ
 "cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
 "cargo:fd-find" = "latest"      # https://crates.io/crates/fd-find すごいfind
 "cargo:hexyl" = "latest"        # https://crates.io/crates/hexyl すごいod
