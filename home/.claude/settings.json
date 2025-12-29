@@ -75,7 +75,7 @@
 	},
 	"statusLine": {
 		"type": "command",
-		"command": "$HOME/.claude/statusline.js"
+		"command": "$HOME/.claude/statusline.ts"
 	},
 	"enabledPlugins": {
 		"code-review@claude-plugins-official": true,

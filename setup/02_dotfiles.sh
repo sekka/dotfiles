@@ -133,7 +133,7 @@ HOME_CLAUDE_DIR="$HOME/.claude"
 CLAUDE_FILES=(
   CLAUDE.md
   settings.json
-  statusline.js
+  statusline.ts
 )
 
 for file in "${CLAUDE_FILES[@]}"; do

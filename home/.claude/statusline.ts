@@ -1,0 +1,851 @@
+#!/usr/bin/env bun
+
+// Claude Code statusline hook - TypeScript + Bun version
+// 既存のNode.js版statusline.jsの機能を完全に移行
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+interface HookInput {
+	model: { display_name: string };
+	workspace: { current_dir: string };
+	cwd?: string;
+	session_id: string;
+	cost: {
+		total_cost_usd: number;
+		total_duration_ms: number;
+	};
+	context_window?: {
+		context_window_size: number;
+		current_usage: {
+			input_tokens: number;
+			output_tokens: number;
+			cache_creation_input_tokens: number;
+			cache_read_input_tokens: number;
+		} | null;
+	};
+	transcript_path?: string;
+}
+
+interface GitStatus {
+	branch: string;
+	hasChanges: boolean;
+	aheadBehind: string | null;
+	diffStats: string | null;
+}
+
+interface TranscriptEntry {
+	type?: string;
+	message?: {
+		usage?: {
+			input_tokens?: number;
+			output_tokens?: number;
+			cache_creation_input_tokens?: number;
+			cache_read_input_tokens?: number;
+		};
+	};
+	timestamp?: string;
+}
+
+// ============================================================================
+// ANSI Color Helpers (no external dependencies)
+// ============================================================================
+
+const colors = {
+	reset: (s: string) => `${s}\x1b[0m`,
+	gray: (s: string) => `\x1b[90m${s}\x1b[0m`,
+	red: (s: string) => `\x1b[91m${s}\x1b[0m`,
+	green: (s: string) => `\x1b[32m${s}\x1b[0m`,
+	yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
+	dimWhite: (s: string) => `\x1b[37m${s}\x1b[39m`,
+	lightGray: (s: string) => `\x1b[97m${s}\x1b[0m`,
+};
+
+// ============================================================================
+// Git Operations
+// ============================================================================
+
+async function getGitStatus(currentDir: string): Promise<GitStatus> {
+	const gitDir = `${currentDir}/.git`;
+	const gitExists = await Bun.file(gitDir)
+		.exists()
+		.catch(() => false);
+
+	if (!gitExists) {
+		return {
+			branch: "",
+			hasChanges: false,
+			aheadBehind: null,
+			diffStats: null,
+		};
+	}
+
+	try {
+		// Get branch name
+		const branchProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "branch", "--show-current"],
+			cwd: currentDir,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const branchStdout = await new Response(branchProc.stdout).text();
+		const branch = branchStdout.trim();
+
+		if (!branch) {
+			return {
+				branch: "",
+				hasChanges: false,
+				aheadBehind: null,
+				diffStats: null,
+			};
+		}
+
+		// Get ahead/behind (only for non-main branches)
+		let aheadBehind: string | null = null;
+		if (branch !== "main" && branch !== "master") {
+			aheadBehind = await getAheadBehind(currentDir);
+		}
+
+		// Get diff stats
+		const diffStats = await getDiffStats(currentDir);
+
+		const hasChanges = aheadBehind !== null || diffStats !== null;
+
+		return {
+			branch,
+			hasChanges,
+			aheadBehind,
+			diffStats,
+		};
+	} catch {
+		return {
+			branch: "",
+			hasChanges: false,
+			aheadBehind: null,
+			diffStats: null,
+		};
+	}
+}
+
+async function getAheadBehind(cwd: string): Promise<string | null> {
+	try {
+		// Determine parent branch (origin/main or origin/master)
+		let parentBranch = "";
+
+		try {
+			const mainProc = Bun.spawn({
+				cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"],
+				cwd,
+				stdout: "pipe",
+				stderr: "pipe",
+			});
+			const mainResult = await new Response(mainProc.stdout).text();
+			if (mainResult.trim()) {
+				parentBranch = "origin/main";
+			}
+		} catch {
+			// Try master
+		}
+
+		if (!parentBranch) {
+			try {
+				const masterProc = Bun.spawn({
+					cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/master"],
+					cwd,
+					stdout: "pipe",
+					stderr: "pipe",
+				});
+				const masterResult = await new Response(masterProc.stdout).text();
+				if (masterResult.trim()) {
+					parentBranch = "origin/master";
+				}
+			} catch {
+				return null;
+			}
+		}
+
+		if (!parentBranch) return null;
+
+		// Get ahead count
+		const aheadProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
+			cwd,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const aheadStr = (await new Response(aheadProc.stdout).text()).trim();
+		const ahead = parseInt(aheadStr || "0", 10);
+
+		// Get behind count
+		const behindProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "rev-list", "--count", `HEAD..${parentBranch}`],
+			cwd,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const behindStr = (await new Response(behindProc.stdout).text()).trim();
+		const behind = parseInt(behindStr || "0", 10);
+
+		// Format result (yellow)
+		if (ahead > 0 && behind > 0) {
+			return `\x1b[33m↑${ahead}↓${behind}\x1b[0m`;
+		}
+		if (ahead > 0) {
+			return `\x1b[33m↑${ahead}\x1b[0m`;
+		}
+		if (behind > 0) {
+			return `\x1b[33m↓${behind}\x1b[0m`;
+		}
+
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+async function getDiffStats(cwd: string): Promise<string | null> {
+	try {
+		// Get unstaged diff
+		const unstagedProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "diff", "--numstat"],
+			cwd,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const unstagedDiff = await new Response(unstagedProc.stdout).text();
+
+		// Get staged diff
+		const stagedProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "diff", "--cached", "--numstat"],
+			cwd,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const stagedDiff = await new Response(stagedProc.stdout).text();
+
+		// Parse diff stats
+		let added = 0;
+		let deleted = 0;
+
+		const parseDiff = (diffOutput: string) => {
+			for (const line of diffOutput.split("\n")) {
+				if (!line.trim()) continue;
+				const parts = line.split("\t");
+				if (parts.length >= 2) {
+					const addCount = parseInt(parts[0], 10);
+					const delCount = parseInt(parts[1], 10);
+					if (!isNaN(addCount)) added += addCount;
+					if (!isNaN(delCount)) deleted += delCount;
+				}
+			}
+		};
+
+		parseDiff(unstagedDiff);
+		parseDiff(stagedDiff);
+
+		// Get untracked files
+		const untrackedProc = Bun.spawn({
+			cmd: ["git", "--no-optional-locks", "ls-files", "--others", "--exclude-standard"],
+			cwd,
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const untrackedOutput = await new Response(untrackedProc.stdout).text();
+		const untrackedFiles = untrackedOutput.trim().split("\n");
+
+		for (const file of untrackedFiles) {
+			if (!file.trim()) continue;
+			try {
+				const filePath = `${cwd}/${file}`;
+				const fileContent = await Bun.file(filePath).text();
+				added += fileContent.split("\n").length;
+			} catch {
+				// Skip if file can't be read
+			}
+		}
+
+		// Format result
+		if (added > 0 || deleted > 0) {
+			return `\x1b[32m+${added}\x1b[0m \x1b[31m-${deleted}\x1b[0m`;
+		}
+
+		return null;
+	} catch {
+		return null;
+	}
+}
+
+// ============================================================================
+// Token Calculation
+// ============================================================================
+
+async function calculateTokensFromTranscript(transcriptPath: string): Promise<number> {
+	try {
+		const file = Bun.file(transcriptPath);
+		const content = await file.text();
+		const lines = content.trim().split("\n");
+
+		let lastUsage: TranscriptEntry["message"]["usage"] | null = null;
+
+		for (const line of lines) {
+			try {
+				const entry: TranscriptEntry = JSON.parse(line);
+
+				if (entry.type === "assistant" && entry.message?.usage) {
+					lastUsage = entry.message.usage;
+				}
+			} catch {
+				// Skip invalid JSON lines
+			}
+		}
+
+		if (!lastUsage) {
+			return 0;
+		}
+
+		const totalTokens =
+			(lastUsage.input_tokens || 0) +
+			(lastUsage.output_tokens || 0) +
+			(lastUsage.cache_creation_input_tokens || 0) +
+			(lastUsage.cache_read_input_tokens || 0);
+
+		return totalTokens;
+	} catch {
+		return 0;
+	}
+}
+
+async function getContextTokens(data: HookInput): Promise<{ tokens: number; percentage: number }> {
+	const contextWindowSize = data.context_window?.context_window_size || 200000;
+
+	// Try current_usage first (more accurate)
+	if (data.context_window?.current_usage) {
+		const usage = data.context_window.current_usage;
+		const totalTokens =
+			(usage.input_tokens || 0) +
+			(usage.output_tokens || 0) +
+			(usage.cache_creation_input_tokens || 0) +
+			(usage.cache_read_input_tokens || 0);
+
+		const percentage = Math.min(100, Math.round((totalTokens / contextWindowSize) * 100));
+
+		return { tokens: totalTokens, percentage };
+	}
+
+	// Fallback: calculate from transcript
+	if (data.session_id && data.transcript_path) {
+		const tokens = await calculateTokensFromTranscript(data.transcript_path);
+		const percentage = Math.min(100, Math.round((tokens / contextWindowSize) * 100));
+
+		return { tokens, percentage };
+	}
+
+	return { tokens: 0, percentage: 0 };
+}
+
+// ============================================================================
+// Format Helpers
+// ============================================================================
+
+function formatTokenCount(tokens: number): string {
+	if (tokens >= 1000000) {
+		return `${(tokens / 1000000).toFixed(1)}M`;
+	}
+	if (tokens >= 1000) {
+		return `${(tokens / 1000).toFixed(1)}K`;
+	}
+	return tokens.toString();
+}
+
+function formatCost(cost: number): string {
+	if (cost >= 1) {
+		return `$${cost.toFixed(2)}`;
+	}
+	if (cost >= 0.01) {
+		return `$${cost.toFixed(2)}`;
+	}
+	if (cost > 0) {
+		return `$${cost.toFixed(3)}`;
+	}
+	return "$0.00";
+}
+
+function formatElapsedTime(ms: number): string {
+	const totalSeconds = Math.floor(ms / 1000);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = totalSeconds % 60;
+
+	if (hours > 0) {
+		return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+	}
+	return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function getSessionElapsedTime(transcriptPath: string): string {
+	try {
+		const file = Bun.file(transcriptPath);
+		const stats = file.statSync();
+		const elapsed = Date.now() - stats.birthtimeMs;
+		return formatElapsedTime(elapsed);
+	} catch {
+		return "";
+	}
+}
+
+// ============================================================================
+// Main Statusline Builder
+// ============================================================================
+
+async function buildStatusline(data: HookInput): Promise<string> {
+	const model = data.model?.display_name || "Unknown";
+	const currentDir = data.workspace?.current_dir || data.cwd || ".";
+	const dirName = currentDir.split("/").pop() || currentDir;
+
+	// Get Git info
+	const gitStatus = await getGitStatus(currentDir);
+
+	// Build git part
+	let gitPart = "";
+	if (gitStatus.branch) {
+		gitPart = gitStatus.branch;
+
+		if (gitStatus.hasChanges) {
+			const changes: string[] = [];
+
+			if (gitStatus.aheadBehind) {
+				changes.push(gitStatus.aheadBehind);
+			}
+
+			if (gitStatus.diffStats) {
+				changes.push(gitStatus.diffStats);
+			}
+
+			if (changes.length > 0) {
+				gitPart += " " + changes.join(" ");
+			}
+		}
+	}
+
+	// Get context tokens
+	const { tokens: contextTokens, percentage } = await getContextTokens(data);
+	const contextWindowSize = data.context_window?.context_window_size || 200000;
+	const contextDisplay = `${formatTokenCount(contextTokens)}/${formatTokenCount(contextWindowSize)} ${colors.lightGray(percentage.toString())}${colors.gray("%")}`;
+
+	// Get cost and duration
+	const costDisplay = formatCost(data.cost.total_cost_usd);
+	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
+
+	// Get session time if available
+	let sessionTimeDisplay = "";
+	if (data.session_id && data.transcript_path) {
+		sessionTimeDisplay = getSessionElapsedTime(data.transcript_path);
+	}
+
+	// Get rate limit info
+	const usageLimits = await getCachedUsageLimits();
+	console.error(`[DEBUG] usageLimits: ${JSON.stringify(usageLimits)}`);
+
+	// Get daily cost
+	const todayCost = await getTodayCost();
+
+	// Build status line
+	const parts: string[] = [];
+
+	// Model info
+	const isSonnet = model.toLowerCase().includes("sonnet");
+	if (isSonnet) {
+		parts.push(`${colors.lightGray(`[${model}]`)} 📁 ${dirName}${gitPart ? ` 🌿 ${gitPart}` : ""}`);
+	} else {
+		parts.push(
+			`${colors.lightGray(`[${model}]`)} 📁 ${dirName}${gitPart ? ` 🌿 ${gitPart}` : ""} 📡 ${colors.peach(model)}`,
+		);
+	}
+
+	// Token and percentage info
+	parts.push(`🪙 ${contextDisplay}`);
+
+	// Cost and duration
+	const costPart = `💵 ${costDisplay}`;
+	if (sessionTimeDisplay) {
+		parts.push(`${costPart} | ⏱️  ${sessionTimeDisplay}`);
+	} else {
+		parts.push(costPart);
+	}
+
+	// 5-hour rate limit (always show if available)
+	if (usageLimits?.five_hour) {
+		const fiveHour = usageLimits.five_hour;
+		const bar = formatBrailleProgressBar(fiveHour.utilization);
+
+		// Get period cost
+		const periodCost = fiveHour.resets_at ? await getPeriodCost(fiveHour.resets_at) : 0;
+
+		// Add cost display if >= $0.01
+		const costDisplay =
+			periodCost >= 0.01 ? `${colors.gray("$")}${colors.dimWhite(periodCost.toFixed(2))} ` : "";
+
+		let limitsPart = `${colors.gray("L:")} ${costDisplay}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
+
+		if (fiveHour.resets_at) {
+			const resetDate = formatResetDateOnly(fiveHour.resets_at);
+			const timeLeft = formatResetTime(fiveHour.resets_at);
+			limitsPart += ` ${colors.gray(`(${resetDate}/${timeLeft})`)}`;
+		}
+
+		parts.push(limitsPart);
+	}
+
+	// Weekly rate limit (always show if available)
+	if (usageLimits?.seven_day) {
+		const sevenDay = usageLimits.seven_day;
+		const bar = formatBrailleProgressBar(sevenDay.utilization);
+		let weeklyPart = `${colors.gray("W:")} ${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
+
+		if (sevenDay.resets_at) {
+			const resetDate = formatResetDateOnly(sevenDay.resets_at);
+			const timeLeft = formatResetTime(sevenDay.resets_at);
+			weeklyPart += ` ${colors.gray(`(${resetDate}/${timeLeft})`)}`;
+		}
+
+		parts.push(weeklyPart);
+	}
+
+	// Daily cost (show if >= $0.01)
+	if (todayCost >= 0.01) {
+		const dailyCostDisplay = `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(todayCost.toFixed(1))}`;
+		parts.push(dailyCostDisplay);
+	}
+
+	// Session ID (dimmed)
+	parts.push(colors.gray(`| ${data.session_id}`));
+
+	return parts.join(" ");
+}
+
+// ============================================================================
+// Rate Limit Features (Phase 2)
+// ============================================================================
+
+interface UsageLimits {
+	five_hour: { utilization: number; resets_at: string | null } | null;
+	seven_day: { utilization: number; resets_at: string | null } | null;
+}
+
+interface CachedUsageLimits {
+	data: UsageLimits;
+	timestamp: number;
+}
+
+interface Credentials {
+	claudeAiOauth: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: number;
+		scopes: string[];
+		subscriptionType: string;
+	};
+}
+
+async function getClaudeApiToken(): Promise<string | null> {
+	try {
+		const proc = Bun.spawn({
+			cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+
+		const stdout = await new Response(proc.stdout).text();
+		const credentials: Credentials = JSON.parse(stdout.trim());
+		return credentials.claudeAiOauth.accessToken;
+	} catch {
+		return null;
+	}
+}
+
+async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
+	try {
+		console.error(`[DEBUG] Fetching from API...`);
+		const response = await fetch("https://api.anthropic.com/api/oauth/usage", {
+			method: "GET",
+			headers: {
+				Accept: "application/json, text/plain, */*",
+				"Content-Type": "application/json",
+				"User-Agent": "claude-code/2.0.31",
+				Authorization: `Bearer ${token}`,
+				"anthropic-beta": "oauth-2025-04-20",
+				"Accept-Encoding": "gzip, compress, deflate, br",
+			},
+			signal: AbortSignal.timeout(5000),
+		});
+
+		console.error(`[DEBUG] API response status: ${response.status}`);
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(`[DEBUG] API response not ok: ${response.status} - ${errorText}`);
+			return null;
+		}
+
+		const data = await response.json();
+		console.error(`[DEBUG] API data: ${JSON.stringify(data)}`);
+
+		return {
+			five_hour: data.five_hour || null,
+			seven_day: data.seven_day || null,
+		};
+	} catch (e) {
+		console.error(`[DEBUG] fetchUsageLimits error: ${e instanceof Error ? e.message : String(e)}`);
+		return null;
+	}
+}
+
+function formatBrailleProgressBar(percentage: number, length = 10): string {
+	const brailleChars = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣷", "⣿"];
+	const totalSteps = length * (brailleChars.length - 1);
+	const currentStep = Math.round((percentage / 100) * totalSteps);
+
+	const fullBlocks = Math.floor(currentStep / (brailleChars.length - 1));
+	const partialIndex = currentStep % (brailleChars.length - 1);
+	const emptyBlocks = length - fullBlocks - (partialIndex > 0 ? 1 : 0);
+
+	const fullPart = "⣿".repeat(fullBlocks);
+	const partialPart = partialIndex > 0 ? brailleChars[partialIndex] : "";
+	const emptyPart = "⣀".repeat(emptyBlocks);
+
+	// Progressive color: 0-50% gray, 51-70% yellow, 71-90% orange, 91-100% red
+	let colorFn = colors.gray;
+	if (percentage > 50 && percentage <= 70) {
+		colorFn = colors.yellow;
+	} else if (percentage > 70 && percentage <= 90) {
+		colorFn = (s: string) => `\x1b[38;5;208m${s}\x1b[0m`; // orange
+	} else if (percentage > 90) {
+		colorFn = colors.red;
+	}
+
+	return colorFn(`${fullPart}${partialPart}${emptyPart}`);
+}
+
+function formatResetTime(resetsAt: string): string {
+	const resetDate = new Date(resetsAt);
+	const diffMs = resetDate.getTime() - Date.now();
+
+	if (diffMs <= 0) return "now";
+
+	const hours = Math.floor(diffMs / 3600000);
+	const minutes = Math.floor((diffMs % 3600000) / 60000);
+	const days = Math.floor(hours / 24);
+	const remainingHours = hours % 24;
+
+	if (days > 0) return `${days}d${remainingHours}h`;
+	if (hours > 0) return `${hours}h${minutes}m`;
+	return `${minutes}m`;
+}
+
+function formatResetDateOnly(resetsAt: string): string {
+	const resetDate = new Date(resetsAt);
+	const now = new Date();
+
+	// Format time as HH:MM JST
+	const jstTimeStr = resetDate.toLocaleString("ja-JP", {
+		hour: "2-digit",
+		minute: "2-digit",
+		timeZone: "Asia/Tokyo",
+		hour12: false,
+	});
+
+	// Check if same day (JST)
+	const jstDateStr = resetDate.toLocaleDateString("en-US", { timeZone: "Asia/Tokyo" });
+	const nowJstDateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Tokyo" });
+
+	if (jstDateStr === nowJstDateStr) {
+		return jstTimeStr;
+	}
+
+	// Different day: show "Jan 4 13:00" format (JST)
+	const month = resetDate.toLocaleDateString("en-US", { month: "short", timeZone: "Asia/Tokyo" });
+	const day = resetDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "Asia/Tokyo" });
+	return `${month} ${day} ${jstTimeStr}`;
+}
+
+const HOME = process.env.HOME || "";
+const CACHE_TTL_MS = 60 * 1000;
+
+async function getCachedUsageLimits(): Promise<UsageLimits | null> {
+	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
+	console.error(`[DEBUG] Checking cache file: ${cacheFile}`);
+
+	// Try to load from cache
+	try {
+		const cache: CachedUsageLimits = await Bun.file(cacheFile).json();
+		const age = Date.now() - cache.timestamp;
+		console.error(`[DEBUG] Cache found, age: ${age}ms, TTL: ${CACHE_TTL_MS}ms`);
+		if (age < CACHE_TTL_MS) {
+			console.error(`[DEBUG] Cache valid, returning data`);
+			return cache.data;
+		}
+		console.error(`[DEBUG] Cache expired`);
+	} catch (e) {
+		// Cache doesn't exist or is invalid
+		console.error(`[DEBUG] Cache error: ${e instanceof Error ? e.message : String(e)}`);
+	}
+
+	// Fetch from API
+	console.error(`[DEBUG] Fetching from API...`);
+	const token = await getClaudeApiToken();
+	if (!token) {
+		console.error(`[DEBUG] No API token found`);
+		return null;
+	}
+
+	console.error(`[DEBUG] API token found, fetching limits...`);
+	const limits = await fetchUsageLimits(token);
+	console.error(`[DEBUG] API response: ${JSON.stringify(limits)}`);
+	if (limits) {
+		try {
+			await Bun.write(
+				cacheFile,
+				JSON.stringify(
+					{
+						data: limits,
+						timestamp: Date.now(),
+					},
+					null,
+					2,
+				),
+			);
+		} catch {
+			// Fail silently if cache write fails
+		}
+	}
+
+	return limits;
+}
+
+// ============================================================================
+// Daily Cost Tracking (Phase 3)
+// ============================================================================
+
+interface SessionCostStore {
+	[sessionId: string]: {
+		date: string;
+		cost: number;
+		updated: number;
+	};
+}
+
+async function saveSessionCost(sessionId: string, cost: number): Promise<void> {
+	const storeFile = `${HOME}/.claude/data/session-costs.json`;
+	const today = new Date().toISOString().split("T")[0];
+
+	let store: SessionCostStore = {};
+
+	try {
+		store = await Bun.file(storeFile).json();
+	} catch {
+		// File doesn't exist or is invalid, create new
+	}
+
+	// Update session cost
+	store[sessionId] = {
+		date: today,
+		cost,
+		updated: Date.now(),
+	};
+
+	// Clean up entries older than 30 days
+	const cutoffDate = new Date();
+	cutoffDate.setDate(cutoffDate.getDate() - 30);
+	const cutoffStr = cutoffDate.toISOString().split("T")[0];
+
+	for (const [sid, data] of Object.entries(store)) {
+		if (data.date < cutoffStr) {
+			delete store[sid];
+		}
+	}
+
+	try {
+		await Bun.write(storeFile, JSON.stringify(store, null, 2));
+	} catch {
+		// Fail silently if write fails
+	}
+}
+
+async function getPeriodCost(resetTime: string): Promise<number> {
+	try {
+		const storeFile = `${HOME}/.claude/data/session-costs.json`;
+
+		// Calculate period range (5 hours)
+		const periodEndMs = new Date(resetTime).getTime();
+		if (isNaN(periodEndMs)) {
+			console.error(`[DEBUG] Invalid resetTime: ${resetTime}`);
+			return 0;
+		}
+
+		const periodStartMs = periodEndMs - 5 * 60 * 60 * 1000; // 5 hours ago
+		console.error(`[DEBUG] Period: ${new Date(periodStartMs).toISOString()} - ${resetTime}`);
+
+		// Read session costs
+		const store: SessionCostStore = await Bun.file(storeFile).json();
+
+		// Filter sessions in period and sum costs
+		let total = 0;
+		let count = 0;
+
+		for (const session of Object.values(store)) {
+			if (session.updated >= periodStartMs && session.updated < periodEndMs) {
+				total += session.cost;
+				count++;
+			}
+		}
+
+		console.error(`[DEBUG] Period cost: $${total.toFixed(2)} (${count} sessions)`);
+		return total;
+	} catch (error) {
+		console.error(`[DEBUG] getPeriodCost error: ${error}`);
+		return 0;
+	}
+}
+
+async function getTodayCost(): Promise<number> {
+	const storeFile = `${HOME}/.claude/data/session-costs.json`;
+	const today = new Date().toISOString().split("T")[0];
+
+	try {
+		const store: SessionCostStore = await Bun.file(storeFile).json();
+		return Object.values(store)
+			.filter((s) => s.date === today)
+			.reduce((sum, s) => sum + s.cost, 0);
+	} catch {
+		return 0;
+	}
+}
+
+// ============================================================================
+// Main Entry Point
+// ============================================================================
+
+async function main() {
+	try {
+		const data: HookInput = await Bun.stdin.json();
+
+		// Save session cost if available (Phase 3)
+		if (data.session_id && data.cost.total_cost_usd > 0) {
+			await saveSessionCost(data.session_id, data.cost.total_cost_usd);
+		}
+
+		const statusLine = await buildStatusline(data);
+		console.log(statusLine);
+	} catch (error) {
+		// Fallback on error
+		console.log("[Claude Code]");
+	}
+}
+
+main();
