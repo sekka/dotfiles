@@ -28,6 +28,13 @@ if git diff-index --cached HEAD 2>/dev/null | grep -q "^:"; then
     commit_msg=$(git diff-index --cached --format=%B HEAD 2>/dev/null || echo "")
   fi
 
+  # CWE-78 コマンドインジェクション対策
+  # 改行直後に一般的なシェルコマンドが続く場合を検出
+  if [[ -n $commit_msg ]] && echo "$commit_msg" | grep -qE $'\\n\\s*(echo|eval|exec|bash|sh|python|ruby|perl)\\s'; then
+    echo -e "${RED}❌ エラー: コミットメッセージに疑わしいコマンドパターンが含まれています${NC}"
+    exit 1
+  fi
+
   # AI署名パターンをチェック（セキュアな実装）
   # パターンをシングルクォートで囲んでコマンドインジェクション対策
   if [[ -n $commit_msg ]] && echo "$commit_msg" | grep -qE '🤖 Generated with Claude Code|Co-Authored-By: Claude' 2>/dev/null; then

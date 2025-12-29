@@ -5,6 +5,7 @@ set -euo pipefail
 # Git hook: commit-msg
 
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
 # 入力バリデーション
@@ -18,6 +19,16 @@ readonly commit_msg_file="$1"
 # ファイル存在確認
 if [[ ! -f "$commit_msg_file" ]]; then
   echo -e "${RED}❌ エラー: コミットメッセージファイルが見つかりません: $commit_msg_file${NC}" >&2
+  exit 1
+fi
+
+# コミットメッセージを読み込む
+commit_msg=$(cat "$commit_msg_file")
+
+# 入力検証：コマンドインジェクション的なパターンを検出 (CWE-78対策)
+# 改行直後に一般的なシェルコマンドが続く場合を検出
+if echo "$commit_msg" | grep -qE $'\\n\\s*(echo|eval|exec|bash|sh|python|ruby|perl)\\s'; then
+  echo -e "${RED}❌ エラー: コミットメッセージに疑わしいコマンドパターンが含まれています${NC}" >&2
   exit 1
 fi
 
