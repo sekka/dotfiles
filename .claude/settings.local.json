@@ -8,6 +8,7 @@
       "Bash(cat:*)",
       "Bash(chmod:*)",
       "Bash(claude help:*)",
+      "Bash(codemass --help:*)",
       "Bash(coderabbit review:*)",
       "Bash(codex review:*)",
       "Bash(command -v putclip:*)",
@@ -60,6 +61,8 @@
       "mcp__plugin_playwright_playwright__*",
       "mcp__plugin_serena_serena__*",
       "mcp__sequential-thinking__sequentialthinking",
+      "Skill(commit)",
+      "Skill(review-parallel)",
       "Skill(review-pr)",
       "Skill(review-with-claude)",
       "Skill(review-with-coderabbit)",
@@ -79,9 +82,7 @@
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:zenn.dev)",
-      "WebSearch",
-      "Bash(codemass --help:*)",
-      "Skill(commit)"
+      "WebSearch"
     ],
     "deny": [
       "Read(./.env.*)"

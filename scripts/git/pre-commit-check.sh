@@ -12,42 +12,18 @@ NC='\033[0m' # No Color
 
 echo "🔍 commit前のチェックを実行しています..."
 
-# AI署名チェック
-echo -e "${YELLOW}▶ AI署名チェック${NC}"
-if git diff-index --cached HEAD 2>/dev/null | grep -q "^:"; then
-  # ステージされたファイルがある場合
-  commit_msg=""
+# コミットメッセージ検証（TypeScript）
+echo -e "${YELLOW}▶ コミットメッセージ検証${NC}"
+COMMIT_MSG_FILE="${GIT_DIR:-.git}/COMMIT_EDITMSG"
 
-  # COMMIT_EDITMSGファイルがあればそれを確認
-  if [[ -n ${GIT_DIR:-} ]] && [[ -f "$GIT_DIR/COMMIT_EDITMSG" ]]; then
-    commit_msg=$(cat "$GIT_DIR/COMMIT_EDITMSG")
-  fi
-
-  # commit_msgが空の場合、git diff-indexから取得を試みる
-  if [[ -z $commit_msg ]]; then
-    commit_msg=$(git diff-index --cached --format=%B HEAD 2>/dev/null || echo "")
-  fi
-
-  # CWE-78 コマンドインジェクション対策
-  # 改行直後に一般的なシェルコマンドが続く場合を検出
-  if [[ -n $commit_msg ]] && echo "$commit_msg" | grep -qE $'\\n\\s*(echo|eval|exec|bash|sh|python|ruby|perl)\\s'; then
-    echo -e "${RED}❌ エラー: コミットメッセージに疑わしいコマンドパターンが含まれています${NC}"
-    exit 1
-  fi
-
-  # AI署名パターンをチェック（セキュアな実装）
-  # パターンをシングルクォートで囲んでコマンドインジェクション対策
-  if [[ -n $commit_msg ]] && echo "$commit_msg" | grep -qE '🤖 Generated with Claude Code|Co-Authored-By: Claude' 2>/dev/null; then
-    echo -e "${RED}❌ AI署名チェック 失敗${NC}"
-    echo -e "${RED}コミットメッセージにAI署名が含まれています。${NC}"
-    echo -e "${RED}以下のパターンは削除してください：${NC}"
-    echo -e "${RED}  - 🤖 Generated with Claude Code${NC}"
-    echo -e "${RED}  - Co-Authored-By: Claude${NC}"
-    echo ""
+if [[ -f $COMMIT_MSG_FILE ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  if bun "$SCRIPT_DIR/hooks/validate-commit.ts" "$COMMIT_MSG_FILE"; then
+    echo -e "${GREEN}✅ コミットメッセージ検証 成功${NC}"
+  else
     exit 1
   fi
 fi
-echo -e "${GREEN}✅ AI署名チェック 成功${NC}"
 echo ""
 
 # 各種チェックの実行（統合スクリプト使用）
