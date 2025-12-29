@@ -845,15 +845,26 @@ async function getSessionElapsedTime(transcriptPath: string): Promise<string> {
 // Main Statusline Builder
 // ============================================================================
 
-// Phase 2.2: buildFirstLine - builds first line with model/dir/git info
-function buildFirstLine(model: string, dirName: string, gitPart: string): string {
-	return `${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`;
+// Phase 2.2: buildFirstLine - builds first line with model/dir/git info and session ID
+function buildFirstLine(
+	model: string,
+	dirName: string,
+	gitPart: string,
+	sessionId: string,
+	config: StatuslineConfig,
+): string {
+	let result = `${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`;
+	if (config.session.showSessionId) {
+		result += ` ${colors.gray(sessionId)}`;
+	}
+	return result;
 }
 
 // Phase 2.2: buildMetricsLine - builds second line with all metrics
 async function buildMetricsLine(
 	config: StatuslineConfig,
-	contextDisplay: string,
+	contextTokens: number,
+	contextPercentage: number,
 	usageLimits: UsageLimits | null,
 	todayCost: number,
 	sessionTimeDisplay: string,
@@ -862,18 +873,23 @@ async function buildMetricsLine(
 ): Promise<string> {
 	const parts: string[] = [];
 
-	// Token and percentage info (with config)
-	if (config.tokens.showContextUsage) {
-		parts.push(`${colors.gray("T:")} ${contextDisplay}`);
-	}
-
-	// Session elapsed time and cost (with config)
+	// Session elapsed time and cost (with config) - S first
 	if (config.session.showElapsedTime && sessionTimeDisplay) {
 		const sessionPart = `${colors.gray("S:")} ${sessionTimeDisplay} ${costDisplay}`;
 		parts.push(sessionPart);
 	}
 
-	// 5-hour rate limit (with config)
+	// Token and percentage info (with config) - T second
+	if (config.tokens.showContextUsage) {
+		const contextWindowSize = data.context_window?.context_window_size || 200000;
+		const bar = formatBrailleProgressBar(contextPercentage, 6);
+		const contextTokenStr = (contextTokens / 1000).toFixed(1);
+		const contextSizeStr = (contextWindowSize / 1000).toFixed(1);
+		const tokensPart = `${colors.gray("T:")} ${bar} ${colors.white(contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
+		parts.push(tokensPart);
+	}
+
+	// 5-hour rate limit (with config) - L third
 	if (config.rateLimits.showFiveHour && usageLimits?.five_hour) {
 		const fiveHour = usageLimits.five_hour;
 		const bar = formatBrailleProgressBar(fiveHour.utilization);
@@ -898,13 +914,13 @@ async function buildMetricsLine(
 		parts.push(limitsPart);
 	}
 
-	// Daily cost (with config, show if >= $0.01)
+	// Daily cost (with config, show if >= $0.01) - D fourth
 	if (config.costs.showDailyCost && todayCost >= 0.01) {
 		const dailyCostDisplay = `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(todayCost.toFixed(1))}`;
 		parts.push(dailyCostDisplay);
 	}
 
-	// Weekly rate limit (with config)
+	// Weekly rate limit (with config) - W fifth
 	if (config.rateLimits.showWeekly && usageLimits?.seven_day) {
 		const sevenDay = usageLimits.seven_day;
 		const bar = formatBrailleProgressBar(sevenDay.utilization);
@@ -917,11 +933,6 @@ async function buildMetricsLine(
 		}
 
 		parts.push(weeklyPart);
-	}
-
-	// Session ID (with config)
-	if (config.session.showSessionId) {
-		parts.push(colors.gray(data.session_id));
 	}
 
 	// Build metrics line with optional separator (・) between sections
@@ -978,12 +989,6 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		}
 	}
 
-	// Format context display: white numbers, gray units/symbols
-	const contextWindowSize = data.context_window?.context_window_size || 200000;
-	const contextTokenStr = (contextTokens / 1000).toFixed(1);
-	const contextSizeStr = (contextWindowSize / 1000).toFixed(1);
-	const contextDisplay = `${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")} ${colors.white(percentage.toString())}${colors.gray("%")}`;
-
 	// Get cost and duration
 	const costNum =
 		data.cost.total_cost_usd >= 1
@@ -1003,10 +1008,11 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
 
 	// Build status lines
-	const firstLine = buildFirstLine(model, dirName, gitPart);
+	const firstLine = buildFirstLine(model, dirName, gitPart, data.session_id, config);
 	const metricsLine = await buildMetricsLine(
 		config,
-		contextDisplay,
+		contextTokens,
+		percentage,
 		usageLimits,
 		todayCost,
 		sessionTimeDisplay,
