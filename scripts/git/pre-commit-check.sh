@@ -11,6 +11,31 @@ NC='\033[0m' # No Color
 
 echo "🔍 commit前のチェックを実行しています..."
 
+# AI署名チェック
+echo -e "${YELLOW}▶ AI署名チェック${NC}"
+if git diff-index --cached HEAD 2>/dev/null | grep -q "^:"; then
+  # ステージされたファイルがある場合
+  commit_msg=$(git diff-index --cached --format=%B 2>/dev/null || echo "")
+
+  # COMMIT_EDITMSGファイルがあればそれを確認
+  if [ -f "$GIT_DIR/COMMIT_EDITMSG" ]; then
+    commit_msg=$(cat "$GIT_DIR/COMMIT_EDITMSG")
+  fi
+
+  # AI署名パターンをチェック
+  if echo "$commit_msg" | grep -qE "🤖 Generated with Claude Code|Co-Authored-By: Claude"; then
+    echo -e "${RED}❌ AI署名チェック 失敗${NC}"
+    echo -e "${RED}コミットメッセージにAI署名が含まれています。${NC}"
+    echo -e "${RED}以下のパターンは削除してください：${NC}"
+    echo -e "${RED}  - 🤖 Generated with Claude Code${NC}"
+    echo -e "${RED}  - Co-Authored-By: Claude${NC}"
+    echo ""
+    exit 1
+  fi
+fi
+echo -e "${GREEN}✅ AI署名チェック 成功${NC}"
+echo ""
+
 # 各種チェックの実行（統合スクリプト使用）
 tasks=("lint")
 failed_tasks=()

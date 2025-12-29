@@ -29,7 +29,7 @@ allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git c
 - 現在形を使用（"added" ではなく "add"）
 - 最初の行を72文字以下に保つ
 - 日本語で何をなぜ変更したのか明確に記載
-- 署名は含めない
+- **AI署名は含めない**（🤖 Generated with Claude Code、Co-Authored-By など）
 
 ## コミットメッセージのプレフィックス
 
@@ -130,5 +130,6 @@ perf: リーダーボードのクエリパフォーマンスを最適化
 - `.gitignore`対象のファイルが含まれていないか確認
 - 機密情報（APIキー、パスワード等）が含まれていないか確認
 - 一時的なコード、デバッグログ、コメントアウトされたコードをコミットしない
+- **AI署名（🤖 Generated with Claude Code、Co-Authored-By など）を含めない** ← pre-commit hookで自動チェック
 - プロジェクトの既存のコミットメッセージ規約に従う
 - 量より質を重視：複数の急いだコミットより、1つの丁寧に作成されたコミットを優先
