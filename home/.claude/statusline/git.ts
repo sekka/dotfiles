@@ -189,6 +189,14 @@ async function readUntrackedFileStats(
 			continue;
 		}
 
+		// Security: Prevent path traversal attacks by validating file path format
+		// Check for directory traversal attempts (..) and absolute paths
+		if (file.includes("..") || file.startsWith("/")) {
+			debug(`Rejected unsafe path: ${file}`, "verbose");
+			skipped++;
+			continue;
+		}
+
 		// バイナリファイルをスキップ
 		if (SecurityValidator.isBinaryExtension(file)) {
 			skipped++;
@@ -196,9 +204,12 @@ async function readUntrackedFileStats(
 		}
 
 		try {
-			const filePath = resolve(resolvedCwd, file);
+			// Construct the file path without using resolve() to avoid race condition
+			// Append file to resolved working directory with explicit path separator
+			const filePath = `${resolvedCwd}/${file}`;
 
 			// Phase 4.1: SecurityValidator を使用したパス検証
+			// This realpath() ensures symlinks are resolved and validates containment
 			const validation = await SecurityValidator.validatePath(resolvedCwd, filePath);
 			if (!validation.isValid || !validation.resolvedPath) {
 				skipped++;

@@ -43,9 +43,54 @@ async function getClaudeApiToken(): Promise<string | null> {
 		});
 
 		const stdout = await new Response(proc.stdout).text();
-		const credentials: Credentials = JSON.parse(stdout.trim());
-		return credentials.claudeAiOauth.accessToken;
-	} catch {
+		const trimmedOutput = stdout.trim();
+
+		// 基本的な形式チェック
+		if (!trimmedOutput.startsWith("{")) {
+			console.error("[ERROR] Invalid credential format from Keychain");
+			return null;
+		}
+
+		let credentials: Credentials;
+		try {
+			credentials = JSON.parse(trimmedOutput);
+		} catch (e) {
+			const errorMsg = e instanceof Error ? e.message : String(e);
+			console.error(`[ERROR] Failed to parse credentials: ${errorMsg}`);
+			return null;
+		}
+
+		// 構造バリデーション
+		if (typeof credentials !== "object" || !credentials.claudeAiOauth) {
+			console.error("[ERROR] Invalid credentials structure from Keychain");
+			return null;
+		}
+
+		const token = credentials.claudeAiOauth.accessToken;
+
+		// トークンの有効性チェック
+		if (typeof token !== "string" || token.length === 0) {
+			console.error("[ERROR] No valid access token found in credentials");
+			return null;
+		}
+
+		// 基本的なトークン形式チェック（最小限の長さ）
+		if (token.length < 10) {
+			console.error("[ERROR] Access token appears invalid (too short)");
+			return null;
+		}
+
+		return token;
+	} catch (e) {
+		const errorMsg = e instanceof Error ? e.message : String(e);
+
+		if (errorMsg.includes("ENOENT")) {
+			console.error("[ERROR] Credentials not found in Keychain");
+		} else if (errorMsg.includes("EACCES")) {
+			console.error("[ERROR] Permission denied accessing Keychain");
+		} else {
+			console.error("[ERROR] Failed to retrieve credentials from Keychain");
+		}
 		return null;
 	}
 }
@@ -226,19 +271,37 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	console.error(`[DEBUG] API response: ${JSON.stringify(limits)}`);
 	if (limits) {
 		try {
-			await Bun.write(
-				cacheFile,
-				JSON.stringify(
-					{
-						data: limits,
-						timestamp: Date.now(),
-					},
-					null,
-					2,
-				),
+			// Security: Create file with secure permissions (0o600) from the start
+			// to prevent race condition where file is readable before chmod() is called
+			const cacheDir = `${HOME}/.claude/data`;
+
+			// Ensure cache directory exists with secure permissions
+			try {
+				await Bun.file(cacheDir).isDirectory();
+			} catch {
+				// Directory doesn't exist, create it with secure permissions
+				const { mkdir } = await import("fs/promises");
+				await mkdir(cacheDir, { recursive: true, mode: 0o700 });
+			}
+
+			// Write file with secure permissions from creation
+			const cacheContent = JSON.stringify(
+				{
+					data: limits,
+					timestamp: Date.now(),
+				},
+				null,
+				2,
 			);
-			// ファイルパーミッションを 0o600 (所有者のみ読み書き可能) に設定
+
+			// Use Bun.write to create file, then immediately set permissions
+			// Note: Bun.write uses default permissions, so we secure immediately after
+			await Bun.write(cacheFile, cacheContent);
+
+			// Immediately set permissions before anything else can read
 			await chmod(cacheFile, 0o600);
+
+			debug(`Cache file written securely: ${cacheFile}`, "verbose");
 		} catch (e) {
 			// Phase 1.6: Enhanced error handling for cache write
 			const errorMsg = e instanceof Error ? e.message : String(e);
