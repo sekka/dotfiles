@@ -1,13 +1,40 @@
 import { existsSync } from "fs";
-import { resolve } from "path";
 import { realpath } from "fs/promises";
 
-import { GitStatus, StatuslineConfig, debug, SecurityValidator } from "./utils.ts";
+import { type GitStatus, type StatuslineConfig } from "./utils.ts";
+import { debug } from "./logging.ts";
+import { SecurityValidator } from "./security.ts";
 
 // ============================================================================
 // Git Operations
 // ============================================================================
 
+/**
+ * 現在のディレクトリの Git ステータスを取得
+ * Git リポジトリが存在しない場合は、空のステータスオブジェクトを返します。
+ *
+ * @async
+ * @param {string} currentDir - 確認するディレクトリのパス
+ * @param {StatuslineConfig} config - Git セクションの表示設定（alwaysShowMain など）
+ * @returns {Promise<GitStatus>} Git ステータス情報を含むオブジェクト
+ *
+ * @property {string} branch - 現在のブランチ名（Git リポジトリでない場合は空文字列）
+ * @property {boolean} hasChanges - 変更があるかどうか（ahead/behind または diff stats が存在）
+ * @property {string|null} aheadBehind - 上流ブランチとの前後関係（ANSI 黄色でフォーマット済み）
+ * @property {string|null} diffStats - 変更統計：+行数と-行数（ANSI カラー付き）
+ *
+ * @example
+ * const status = await getGitStatus("/home/user/project", config);
+ * console.log(`Branch: ${status.branch}`);
+ * if (status.hasChanges) {
+ *   console.log(`Changes: ${status.diffStats}`);
+ * }
+ *
+ * @remarks
+ * - Git コマンドの実行時に --no-optional-locks オプションを使用
+ * - main/master ブランチでは config.alwaysShowMain が false の場合 ahead/behind を表示しない
+ * - エラーが発生した場合は空のステータスオブジェクトを返す（fail-safe 設計）
+ */
 export async function getGitStatus(
 	currentDir: string,
 	config: StatuslineConfig,
@@ -76,65 +103,126 @@ export async function getGitStatus(
 	}
 }
 
-async function getAheadBehind(cwd: string): Promise<string | null> {
+/**
+ * リモートの親ブランチ（origin/main または origin/master）を決定
+ * 両方のブランチを並列で確認して、存在する方を返します。
+ * パフォーマンス最適化のため、2つの git rev-parse コマンドを並列実行します。
+ *
+ * @async
+ * @param {string} cwd - 作業ディレクトリのパス
+ * @returns {Promise<string|null>} 存在するリモートブランチ（"origin/main" または "origin/master"）、
+ *                                  存在しない場合は null
+ *
+ * @remarks
+ * - Promise.all() でリモートブランチ確認を並列化し、パフォーマンスを向上
+ * - origin/main が存在すればそれを優先返却
+ * - Git コマンド実行エラーの場合は null を返す
+ *
+ * @example
+ * const parentBranch = await determineParentBranch("/home/user/project");
+ * // parentBranch === "origin/main" または "origin/master" または null
+ */
+async function determineParentBranch(cwd: string): Promise<string | null> {
 	try {
-		// Determine parent branch (origin/main or origin/master)
-		let parentBranch = "";
-
-		try {
-			const mainProc = Bun.spawn({
-				cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"],
-				cwd,
-				stdout: "pipe",
-				stderr: "pipe",
-			});
-			const mainResult = await new Response(mainProc.stdout).text();
-			if (mainResult.trim()) {
-				parentBranch = "origin/main";
-			}
-		} catch {
-			// Try master
-		}
-
-		if (!parentBranch) {
-			try {
-				const masterProc = Bun.spawn({
+		// Performance optimization: Check both branches in parallel
+		const [mainProc, masterProc] = await Promise.all([
+			Promise.resolve(
+				Bun.spawn({
+					cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"],
+					cwd,
+					stdout: "pipe",
+					stderr: "pipe",
+				}),
+			),
+			Promise.resolve(
+				Bun.spawn({
 					cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/master"],
 					cwd,
 					stdout: "pipe",
 					stderr: "pipe",
-				});
-				const masterResult = await new Response(masterProc.stdout).text();
-				if (masterResult.trim()) {
-					parentBranch = "origin/master";
-				}
-			} catch {
-				return null;
-			}
+				}),
+			),
+		]);
+
+		// Get results from both in parallel
+		const [mainResult, masterResult] = await Promise.all([
+			new Response(mainProc.stdout).text(),
+			new Response(masterProc.stdout).text(),
+		]);
+
+		// Return first valid branch
+		if (mainResult.trim()) {
+			return "origin/main";
+		}
+		if (masterResult.trim()) {
+			return "origin/master";
 		}
 
+		return null;
+	} catch (e) {
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Failed to determine parent branch: ${errorMsg}`, "verbose");
+		return null;
+	}
+}
+
+/**
+ * 現在のブランチの親ブランチに対する ahead/behind 数を計算
+ * コミット数を ANSI 黄色の矢印付きで返します。形式は以下の通り：
+ * - "↑3": 3コミット先行
+ * - "↓2": 2コミット遅延
+ * - "↑3↓1": 3コミット先行、1コミット遅延
+ *
+ * @async
+ * @param {string} cwd - 作業ディレクトリのパス
+ * @returns {Promise<string|null>} ANSI カラー付きの ahead/behind 表記、または null（親ブランチが見つからない場合）
+ *
+ * @remarks
+ * - 2つの git rev-list コマンドを並列実行してパフォーマンス最適化
+ * - 矢印記号は ANSI 黄色（#33）でフォーマット済み
+ * - ahead/behind 両方が 0 の場合は null を返す
+ *
+ * @example
+ * const aheadBehind = await getAheadBehind("/home/user/project");
+ * // returns "\x1b[33m↑5\x1b[0m" or "\x1b[33m↓3↑2\x1b[0m"
+ */
+async function getAheadBehind(cwd: string): Promise<string | null> {
+	try {
+		// Determine parent branch (origin/main or origin/master)
+		const parentBranch = await determineParentBranch(cwd);
 		if (!parentBranch) return null;
 
-		// Get ahead count
-		const aheadProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
-			cwd,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
+		// Performance optimization: Calculate ahead/behind counts in parallel
+		// Both operations are independent and can run simultaneously
+		const [aheadProc, behindProc] = await Promise.all([
+			Promise.resolve(
+				Bun.spawn({
+					cmd: ["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
+					cwd,
+					stdout: "pipe",
+					stderr: "pipe",
+				}),
+			),
+			Promise.resolve(
+				Bun.spawn({
+					cmd: ["git", "--no-optional-locks", "rev-list", "--count", `HEAD..${parentBranch}`],
+					cwd,
+					stdout: "pipe",
+					stderr: "pipe",
+				}),
+			),
+		]);
 
-		const aheadStr = (await new Response(aheadProc.stdout).text()).trim();
+		// Get results from both spawn operations in parallel
+		const [aheadOutput, behindOutput] = await Promise.all([
+			new Response(aheadProc.stdout).text(),
+			new Response(behindProc.stdout).text(),
+		]);
+
+		const aheadStr = aheadOutput.trim();
+		const behindStr = behindOutput.trim();
+
 		const ahead = parseInt(aheadStr || "0", 10);
-
-		// Get behind count
-		const behindProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "rev-list", "--count", `HEAD..${parentBranch}`],
-			cwd,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
-
-		const behindStr = (await new Response(behindProc.stdout).text()).trim();
 		const behind = parseInt(behindStr || "0", 10);
 
 		// Format result (yellow)
@@ -162,16 +250,33 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 // ============================================================================
 
 /**
- * Phase 4.2: untracked ファイルの統計を読み取る
- * getDiffStats() から分離された専用関数
+ * Untracked ファイルの統計情報を読み取る
+ * getDiffStats() から責任分離された専用関数。複数の untracked ファイルを並列で処理し、
+ * 合計行数をカウントします。ファイルサイズ制限、パス検証、バイナリファイル検出を含みます。
+ *
+ * @async
+ * @param {string} cwd - 作業ディレクトリのパス
+ * @param {string[]} files - untracked ファイルのパスリスト
+ * @returns {Promise<{added: number, skipped: number}>} 追加された行数とスキップされたファイル数
+ *
+ * @property {number} added - untracked ファイルの合計行数
+ * @property {number} skipped - スキップされたファイル数（無効なパス、大きすぎるファイル、バイナリなど）
+ *
+ * @remarks
+ * - ファイル読み取りは Promise.all() で並列化してパフォーマンスを向上
+ * - 最大ファイルサイズ：10MB。超過分はスキップ
+ * - パス検証：パストラバーサルやセキュリティ脅威をチェック
+ * - バイナリファイル：SecurityValidator.isBinaryExtension() で検出してスキップ
+ * - realpath() でシンボリックリンクを解決
+ *
+ * @example
+ * const { added, skipped } = await readUntrackedFileStats(cwd, ["new-file.ts", "docs.md"]);
+ * console.log(`Lines: ${added}, Skipped: ${skipped}`);
  */
 async function readUntrackedFileStats(
 	cwd: string,
 	files: string[],
 ): Promise<{ added: number; skipped: number }> {
-	let added = 0;
-	let skipped = 0;
-
 	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 	let resolvedCwd: string;
@@ -183,37 +288,37 @@ async function readUntrackedFileStats(
 		return { added: 0, skipped: files.length }; // 全てをスキップ扱い
 	}
 
-	for (const file of files) {
-		if (!file.trim()) {
-			skipped++;
-			continue;
-		}
+	// Pre-filter files: security checks and binary detection
+	const validFiles = files.filter((file) => {
+		if (!file.trim()) return false;
 
-		// Security: Prevent path traversal attacks by validating file path format
-		// Check for directory traversal attempts (..) and absolute paths
+		// Security: Prevent path traversal attacks
 		if (file.includes("..") || file.startsWith("/")) {
 			debug(`Rejected unsafe path: ${file}`, "verbose");
-			skipped++;
-			continue;
+			return false;
 		}
 
-		// バイナリファイルをスキップ
+		// Skip binary files
 		if (SecurityValidator.isBinaryExtension(file)) {
-			skipped++;
-			continue;
+			return false;
 		}
 
+		return true;
+	});
+
+	const skippedByFilter = files.length - validFiles.length;
+
+	// Performance optimization: Read files in parallel instead of sequentially
+	// This dramatically improves performance for large numbers of untracked files
+	const fileStatPromises = validFiles.map(async (file): Promise<number> => {
 		try {
-			// Construct the file path without using resolve() to avoid race condition
-			// Append file to resolved working directory with explicit path separator
+			// Construct the file path
 			const filePath = `${resolvedCwd}/${file}`;
 
 			// Phase 4.1: SecurityValidator を使用したパス検証
-			// This realpath() ensures symlinks are resolved and validates containment
 			const validation = await SecurityValidator.validatePath(resolvedCwd, filePath);
 			if (!validation.isValid || !validation.resolvedPath) {
-				skipped++;
-				continue;
+				return 0;
 			}
 
 			// Phase 4.1: ファイルサイズ検証
@@ -221,22 +326,50 @@ async function readUntrackedFileStats(
 			const stat = await fileObj.stat();
 
 			if (!SecurityValidator.validateFileSize(stat.size, MAX_FILE_SIZE)) {
-				skipped++;
-				continue;
+				return 0;
 			}
 
 			const fileContent = await fileObj.text();
-			added += fileContent.split("\n").length;
+			return fileContent.split("\n").length;
 		} catch (e) {
 			const errorMsg = e instanceof Error ? e.message : String(e);
 			debug(`Failed to read untracked file ${file}: ${errorMsg}`, "verbose");
-			skipped++;
+			return 0;
 		}
-	}
+	});
+
+	// Execute all file reads in parallel and sum results
+	const fileLinesCounts = await Promise.all(fileStatPromises);
+	const added = fileLinesCounts.reduce((sum, count) => sum + count, 0);
+
+	// Count skipped files (pre-filtered + those that failed validation/read)
+	const successCount = fileLinesCounts.filter((count) => count > 0).length;
+	const skipped = skippedByFilter + (validFiles.length - successCount);
 
 	return { added, skipped };
 }
 
+/**
+ * Git の変更統計（追加行と削除行）を取得
+ * ステージング済みと未ステージングの両方の変更、および untracked ファイルを合算します。
+ * 結果は ANSI カラー付き（緑=追加、赤=削除）でフォーマットされます。
+ *
+ * @async
+ * @param {string} cwd - 作業ディレクトリのパス
+ * @returns {Promise<string|null>} 変更統計の ANSI カラー付き文字列（例："+10 -5"）、変更がない場合は null
+ *
+ * @remarks
+ * - ステージング済みと未ステージングの diff を並列で取得
+ * - "+" は ANSI 緑色（#32）でフォーマット
+ * - "-" は ANSI 赤色（#31）でフォーマット
+ * - untracked ファイルは readUntrackedFileStats() で処理
+ * - git ls-files --others --exclude-standard で untracked ファイル一覧を取得
+ * - エラーが発生した場合は null を返す（fail-safe 設計）
+ *
+ * @example
+ * const stats = await getDiffStats("/home/user/project");
+ * // returns "\x1b[32m+10\x1b[0m \x1b[31m-5\x1b[0m"
+ */
 export async function getDiffStats(cwd: string): Promise<string | null> {
 	try {
 		// Get unstaged diff

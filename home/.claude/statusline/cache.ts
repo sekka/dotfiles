@@ -1,28 +1,16 @@
 import { chmod } from "fs/promises";
 import { homedir } from "os";
 
-import {
-	StatuslineConfig,
-	DEFAULT_CONFIG,
-	isValidStatuslineConfig,
-	isValidUsageLimits,
-	sanitizeForLogging,
-	debug,
-} from "./utils.ts";
+import { type StatuslineConfig, DEFAULT_CONFIG } from "./config.ts";
+import { type UsageLimits, type CachedUsageLimits } from "./utils.ts";
+import { isValidStatuslineConfig, isValidUsageLimits, sanitizeForLogging } from "./validation.ts";
+import { debug } from "./logging.ts";
+import { type StatuslineServices } from "./interfaces.ts";
+import { createDefaultServices } from "./providers.ts";
 
 // ============================================================================
 // Rate Limit Features (Phase 2)
 // ============================================================================
-
-export interface UsageLimits {
-	five_hour: { utilization: number; resets_at: string | null } | null;
-	seven_day: { utilization: number; resets_at: string | null } | null;
-}
-
-interface CachedUsageLimits {
-	data: UsageLimits;
-	timestamp: number;
-}
 
 interface Credentials {
 	claudeAiOauth: {
@@ -95,9 +83,28 @@ async function getClaudeApiToken(): Promise<string | null> {
 	}
 }
 
+// Rate limiting state to prevent overwhelming the API
+let lastApiCallTime = 0;
+const MIN_API_CALL_INTERVAL_MS = 30 * 1000; // 30 seconds minimum between calls
+
 async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 	try {
-		console.error(`[DEBUG] Fetching from API...`);
+		// Rate limiting: Enforce minimum interval between API calls
+		const now = Date.now();
+		const timeSinceLastCall = now - lastApiCallTime;
+
+		if (timeSinceLastCall < MIN_API_CALL_INTERVAL_MS) {
+			const waitTime = MIN_API_CALL_INTERVAL_MS - timeSinceLastCall;
+			debug(
+				`Rate limiting: Skipping API call, wait ${Math.ceil(waitTime / 1000)}s before retry`,
+				"verbose",
+			);
+			return null; // Return null to rely on cache instead
+		}
+
+		debug(`Fetching from API...`, "verbose");
+		lastApiCallTime = now;
+
 		const response = await fetch("https://api.anthropic.com/api/oauth/usage", {
 			method: "GET",
 			headers: {
@@ -111,39 +118,43 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 			signal: AbortSignal.timeout(5000),
 		});
 
-		console.error(`[DEBUG] API response status: ${response.status}`);
+		debug(`API response status: ${response.status}`, "verbose");
+
+		// Handle rate limiting response (429 Too Many Requests)
+		if (response.status === 429) {
+			const retryAfter = response.headers.get("Retry-After");
+			const waitSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
+			console.error(`[ERROR] API rate limited, retry after ${waitSeconds}s`);
+			return null; // Return null to use cache instead
+		}
+
 		if (!response.ok) {
-			const errorText = await response.text();
-			console.error(`[DEBUG] API response not ok: ${response.status} - ${errorText}`);
+			console.error(`[ERROR] API request failed: ${response.status}`);
 			return null;
 		}
 
 		const data = await response.json();
-		console.error(`[DEBUG] API data: ${JSON.stringify(sanitizeForLogging(data))}`);
+		debug(`API data retrieved successfully`, "verbose");
 
-		// カスタム検証関数でAPI レスポンスを検証
+		// Validate API response
 		if (!isValidUsageLimits(data)) {
-			console.error(`[DEBUG] API response validation failed`);
+			console.error(`[ERROR] API response validation failed`);
 			return null;
 		}
 
 		return data;
 	} catch (e) {
-		// Phase 1.6: Enhanced error handling
+		// Enhanced error handling
 		const errorMsg = e instanceof Error ? e.message : String(e);
 
-		if (errorMsg.includes("EACCES")) {
-			console.error(`[ERROR] Permission denied accessing API: ${errorMsg}`);
-		} else if (errorMsg.includes("ENOENT")) {
-			console.error(`[ERROR] File not found: ${errorMsg}`);
-		} else if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
-			console.error(`[ERROR] API request timeout: ${errorMsg}`);
-		} else if (errorMsg.includes("JSON")) {
-			console.error(`[ERROR] Invalid JSON response: ${errorMsg}`);
+		if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
+			console.error(`[ERROR] API request timeout`);
 		} else if (errorMsg.includes("fetch") || errorMsg.includes("Network")) {
-			console.error(`[ERROR] Network error: ${errorMsg}`);
+			console.error(`[ERROR] Network error accessing API`);
+		} else if (errorMsg.includes("JSON")) {
+			console.error(`[ERROR] Invalid JSON response from API`);
 		} else {
-			console.error(`[ERROR] Unexpected error in fetchUsageLimits: ${errorMsg}`);
+			console.error(`[ERROR] API request failed`);
 		}
 		return null;
 	}
@@ -417,4 +428,92 @@ export async function getTodayCost(): Promise<number> {
 	} catch {
 		return 0;
 	}
+}
+
+// ============================================================================
+// Phase 3-2: Dependency Injection Service
+// ============================================================================
+
+/**
+ * Phase 3-2: キャッシュサービスの DI対応クラス
+ * インターフェースを通じて依存関係を注入可能
+ */
+export class CacheService {
+	constructor(private services: StatuslineServices) {}
+
+	/**
+	 * キャッシュされた使用制限を取得
+	 */
+	async getCachedUsageLimits(): Promise<UsageLimits | null> {
+		// キャッシュから取得を試みる
+		const cacheKey = "usage-limits";
+		const cachedValue = await this.services.cacheProvider.get<UsageLimits>(cacheKey);
+		if (cachedValue) {
+			debug("Using cached usage limits", "verbose");
+			return cachedValue;
+		}
+
+		// APIから取得
+		const token = await this.services.tokenProvider.getToken();
+		if (!token) {
+			console.error(`[DEBUG] No API token found`);
+			return null;
+		}
+
+		const limits = await this.services.usageLimitsProvider.fetchLimits(token);
+		if (limits) {
+			const CACHE_TTL_MS = 5 * 60 * 1000; // 5分
+			await this.services.cacheProvider.set(cacheKey, limits, CACHE_TTL_MS);
+		}
+
+		return limits;
+	}
+
+	/**
+	 * キャッシュされた設定を取得
+	 */
+	async getConfig(): Promise<StatuslineConfig> {
+		const cacheKey = "config";
+		const cachedValue = await this.services.cacheProvider.get<StatuslineConfig>(cacheKey);
+		if (cachedValue) {
+			debug("Using cached config", "verbose");
+			return cachedValue;
+		}
+
+		const config = await this.services.configProvider.loadConfig();
+		const CONFIG_CACHE_TTL = 60 * 1000; // 1分
+		await this.services.cacheProvider.set(cacheKey, config, CONFIG_CACHE_TTL);
+
+		return config;
+	}
+}
+
+// ============================================================================
+// Singleton Instance for Backward Compatibility
+// ============================================================================
+
+/**
+ * Phase 3-2: デフォルトサービスインスタンス
+ * 既存コードの互換性を保つ
+ */
+const defaultCacheService = new CacheService(createDefaultServices());
+
+/**
+ * 現在のシングルトンキャッシュサービスを取得
+ * テスト時に置き換え可能
+ */
+let currentCacheService = defaultCacheService;
+
+/**
+ * キャッシュサービスを設定（主にテスト用）
+ */
+export function setCacheService(service: CacheService): void {
+	currentCacheService = service;
+}
+
+/**
+ * 現在のキャッシュサービスを取得
+ */
+export function getCacheService(): CacheService {
+	return currentCacheService;
 }
