@@ -32,20 +32,22 @@ brew "tree"               # https://formulae.brew.sh/formula/tree             # 
 
 # === システムモニタ ===
 brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ
+brew "gtop"               # https://formulae.brew.sh/formula/gtop             # プロセスビューワ
 brew "htop"               # https://formulae.brew.sh/formula/htop             # プロセスビューワ
 brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
 brew "zenith"             # https://formulae.brew.sh/formula/zenith           # ターミナルシステムモニタ
 
 # === 開発一般 ===
-brew "colima"             # https://formulae.brew.sh/formula/colima           # 軽量Dockerランタイム（Docker Desktop代替）
 brew "direnv"             # https://formulae.brew.sh/formula/direnv           # ディレクトリ毎環境変数管理ツール
-brew "docker"             # https://formulae.brew.sh/formula/docker           # コンテナ管理CLI
-brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
 brew "mise"               # https://formulae.brew.sh/formula/mise             # タスクランナー
-brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
-brew "snitch"             # https://formulae.brew.sh/formula/snitch           # ネットワーク監視ツール
 brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
+
+# === Docker ===
+brew "colima"             # https://formulae.brew.sh/formula/colima           # 軽量Dockerランタイム（Docker Desktop代替）
+brew "docker"             # https://formulae.brew.sh/formula/docker           # コンテナ管理CLI
+brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
+brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
 
 # === formatter/linter ===
 brew "dprint"             # https://formulae.brew.sh/formula/dprint           # 汎用コードフォーマッタ
@@ -73,14 +75,18 @@ brew "hub"                # https://formulae.brew.sh/formula/hub              # 
 brew "satococoa/tap/wtp"  # https://github.com/satococoa/wtp                  # GitHub Worktree Plus
 
 # === ウェブ開発 ===
-brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat         # cURLの統計情報表示
 brew "http-server"        # https://formulae.brew.sh/formula/http-server      # ローカルサーバ
 brew "jq"                 # https://formulae.brew.sh/formula/jq               # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli            # MySQL便利ツール
-brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
 brew "xh"                 # https://formulae.brew.sh/formula/xh               # HTTPクライアント
 # brew "productdevbook/tap/pk"  #https://github.com/productdevbook/port-killer/issues/48  # ポート解放ツール
+
+# === ネットワーク管理 ===
+brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich        # ネットワークトラフィック監視
+brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
+brew "snitch"             # https://formulae.brew.sh/formula/snitch           # ネットワーク監視ツール
+brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
