@@ -4,6 +4,22 @@
 // 既存のNode.js版statusline.jsの機能を完全に移行
 
 import { existsSync } from "fs";
+import { resolve } from "path";
+import { realpath, chmod } from "fs/promises";
+import { homedir } from "os";
+
+// ============================================================================
+// Phase 2.1: Debug Level Control
+// ============================================================================
+
+type DebugLevel = "off" | "basic" | "verbose";
+const DEBUG_LEVEL: DebugLevel = (process.env.STATUSLINE_DEBUG || "off") as DebugLevel;
+
+function debug(message: string, level: "basic" | "verbose" = "basic"): void {
+	if (DEBUG_LEVEL === "off") return;
+	if (DEBUG_LEVEL === "basic" && level === "verbose") return;
+	console.error(`[DEBUG] ${message}`);
+}
 
 // ============================================================================
 // Type Definitions
@@ -129,6 +145,129 @@ const DEFAULT_CONFIG: StatuslineConfig = {
 };
 
 // ============================================================================
+// Validation Helpers
+// ============================================================================
+
+// デバッグログ用のセンシティブ情報をマスキングする関数
+function sanitizeForLogging(obj: unknown): unknown {
+	const sensitiveKeys = [
+		"token",
+		"accessToken",
+		"password",
+		"secret",
+		"refreshToken",
+		"credentials",
+	];
+
+	if (typeof obj === "object" && obj !== null) {
+		const sanitized: Record<string, unknown> = Array.isArray(obj) ? [] : {};
+
+		for (const key of Object.keys(obj)) {
+			if (sensitiveKeys.some((k) => key.toLowerCase().includes(k.toLowerCase()))) {
+				sanitized[key] = "***REDACTED***";
+			} else if (typeof (obj as Record<string, unknown>)[key] === "object") {
+				sanitized[key] = sanitizeForLogging((obj as Record<string, unknown>)[key]);
+			} else {
+				sanitized[key] = (obj as Record<string, unknown>)[key];
+			}
+		}
+		return sanitized;
+	}
+	return obj;
+}
+
+// API レスポンス検証関数
+function isValidUsageLimits(data: unknown): data is {
+	five_hour: { utilization: number; resets_at: string | null } | null;
+	seven_day: { utilization: number; resets_at: string | null } | null;
+} {
+	if (typeof data !== "object" || data === null) return false;
+	const obj = data as Record<string, unknown>;
+
+	// five_hour のチェック
+	if (obj.five_hour !== null && obj.five_hour !== undefined) {
+		if (typeof obj.five_hour !== "object" || obj.five_hour === null) return false;
+		const fh = obj.five_hour as Record<string, unknown>;
+		if (typeof fh.utilization !== "number" || fh.utilization < 0 || fh.utilization > 100)
+			return false;
+		if (fh.resets_at !== null && typeof fh.resets_at !== "string") return false;
+	}
+
+	// seven_day のチェック
+	if (obj.seven_day !== null && obj.seven_day !== undefined) {
+		if (typeof obj.seven_day !== "object" || obj.seven_day === null) return false;
+		const sd = obj.seven_day as Record<string, unknown>;
+		if (typeof sd.utilization !== "number" || sd.utilization < 0 || sd.utilization > 100)
+			return false;
+		if (sd.resets_at !== null && typeof sd.resets_at !== "string") return false;
+	}
+
+	return true;
+}
+
+// StatuslineConfig 検証関数
+function isValidStatuslineConfig(data: unknown): data is Partial<StatuslineConfig> {
+	if (typeof data !== "object" || data === null) return false;
+	const obj = data as Record<string, unknown>;
+
+	// git セクション
+	if (obj.git !== undefined) {
+		if (typeof obj.git !== "object" || obj.git === null) return false;
+		const git = obj.git as Record<string, unknown>;
+		if (git.showBranch !== undefined && typeof git.showBranch !== "boolean") return false;
+		if (git.showAheadBehind !== undefined && typeof git.showAheadBehind !== "boolean") return false;
+		if (git.showDiffStats !== undefined && typeof git.showDiffStats !== "boolean") return false;
+		if (git.alwaysShowMain !== undefined && typeof git.alwaysShowMain !== "boolean") return false;
+	}
+
+	// rateLimits セクション
+	if (obj.rateLimits !== undefined) {
+		if (typeof obj.rateLimits !== "object" || obj.rateLimits === null) return false;
+		const rl = obj.rateLimits as Record<string, unknown>;
+		if (rl.showFiveHour !== undefined && typeof rl.showFiveHour !== "boolean") return false;
+		if (rl.showWeekly !== undefined && typeof rl.showWeekly !== "boolean") return false;
+		if (rl.showPeriodCost !== undefined && typeof rl.showPeriodCost !== "boolean") return false;
+	}
+
+	// costs セクション
+	if (obj.costs !== undefined) {
+		if (typeof obj.costs !== "object" || obj.costs === null) return false;
+		const costs = obj.costs as Record<string, unknown>;
+		if (costs.showDailyCost !== undefined && typeof costs.showDailyCost !== "boolean") return false;
+		if (costs.showSessionCost !== undefined && typeof costs.showSessionCost !== "boolean")
+			return false;
+	}
+
+	// tokens セクション
+	if (obj.tokens !== undefined) {
+		if (typeof obj.tokens !== "object" || obj.tokens === null) return false;
+		const tokens = obj.tokens as Record<string, unknown>;
+		if (tokens.showContextUsage !== undefined && typeof tokens.showContextUsage !== "boolean")
+			return false;
+	}
+
+	// session セクション
+	if (obj.session !== undefined) {
+		if (typeof obj.session !== "object" || obj.session === null) return false;
+		const session = obj.session as Record<string, unknown>;
+		if (session.showSessionId !== undefined && typeof session.showSessionId !== "boolean")
+			return false;
+		if (session.showElapsedTime !== undefined && typeof session.showElapsedTime !== "boolean")
+			return false;
+	}
+
+	// display セクション
+	if (obj.display !== undefined) {
+		if (typeof obj.display !== "object" || obj.display === null) return false;
+		const display = obj.display as Record<string, unknown>;
+		if (display.showSeparators !== undefined && typeof display.showSeparators !== "boolean")
+			return false;
+	}
+
+	return true;
+}
+
+// ============================================================================
 // Git Operations
 // ============================================================================
 
@@ -183,7 +322,11 @@ async function getGitStatus(currentDir: string, config: StatuslineConfig): Promi
 			aheadBehind,
 			diffStats,
 		};
-	} catch {
+	} catch (e) {
+		// Phase 2.5: Enhanced error messages
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Git status error: ${errorMsg}`, "verbose");
+
 		return {
 			branch: "",
 			hasChanges: false,
@@ -266,7 +409,10 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 		}
 
 		return null;
-	} catch {
+	} catch (e) {
+		// Phase 2.5: Enhanced error messages
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Failed to get ahead/behind count: ${errorMsg}`, "verbose");
 		return null;
 	}
 }
@@ -324,11 +470,78 @@ async function getDiffStats(cwd: string): Promise<string | null> {
 		const untrackedOutput = await new Response(untrackedProc.stdout).text();
 		const untrackedFiles = untrackedOutput.trim().split("\n");
 
+		// バイナリファイル拡張子リストと最大ファイルサイズ
+		const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+		const BINARY_EXTENSIONS = new Set([
+			".png",
+			".jpg",
+			".jpeg",
+			".gif",
+			".bmp",
+			".ico",
+			".mp4",
+			".mov",
+			".avi",
+			".mkv",
+			".zip",
+			".tar",
+			".gz",
+			".7z",
+			".rar",
+			".bin",
+			".so",
+			".dylib",
+			".dll",
+			".pdf",
+			".doc",
+			".docx",
+			".xls",
+			".xlsx",
+		]);
+
+		// cwd を正規化
+		let resolvedCwd: string;
+		try {
+			resolvedCwd = await realpath(cwd);
+		} catch {
+			// cwd が存在しない場合は resolve のみ使用
+			resolvedCwd = resolve(cwd);
+		}
+
 		for (const file of untrackedFiles) {
 			if (!file.trim()) continue;
+
+			// バイナリファイルをスキップ
+			const ext = file.toLowerCase().substring(file.lastIndexOf("."));
+			if (BINARY_EXTENSIONS.has(ext)) {
+				continue;
+			}
+
 			try {
-				const filePath = `${cwd}/${file}`;
-				const fileContent = await Bun.file(filePath).text();
+				// パストを正規化（パストトラバーサル防止）
+				const filePath = resolve(resolvedCwd, file);
+				let resolvedPath: string;
+				try {
+					resolvedPath = await realpath(filePath);
+				} catch {
+					// ファイルが存在しない場合
+					continue;
+				}
+
+				// ディレクトリトラバーサル防止チェック
+				if (!resolvedPath.startsWith(resolvedCwd)) {
+					console.error(`[SECURITY] Path traversal attempt: ${file}`);
+					continue;
+				}
+
+				// ファイルサイズチェック
+				const fileObj = Bun.file(resolvedPath);
+				const stat = await fileObj.stat();
+				if (stat.size > MAX_FILE_SIZE) {
+					continue;
+				}
+
+				const fileContent = await fileObj.text();
 				added += fileContent.split("\n").length;
 			} catch {
 				// Skip if file can't be read
@@ -341,7 +554,10 @@ async function getDiffStats(cwd: string): Promise<string | null> {
 		}
 
 		return null;
-	} catch {
+	} catch (e) {
+		// Phase 2.5: Enhanced error messages
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Failed to get diff stats: ${errorMsg}`, "verbose");
 		return null;
 	}
 }
@@ -453,10 +669,11 @@ function formatElapsedTime(ms: number): string {
 	return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-function getSessionElapsedTime(transcriptPath: string): string {
+// Phase 1.3: Async file operations
+async function getSessionElapsedTime(transcriptPath: string): Promise<string> {
 	try {
 		const file = Bun.file(transcriptPath);
-		const stats = file.statSync();
+		const stats = await file.stat();
 		const elapsed = Date.now() - stats.birthtimeMs;
 		return formatElapsedTime(elapsed);
 	} catch {
@@ -468,75 +685,22 @@ function getSessionElapsedTime(transcriptPath: string): string {
 // Main Statusline Builder
 // ============================================================================
 
-async function buildStatusline(data: HookInput): Promise<string> {
-	// Load configuration
-	const config = await loadConfig();
+// Phase 2.2: buildFirstLine - builds first line with model/dir/git info
+function buildFirstLine(model: string, dirName: string, gitPart: string): string {
+	return `${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`;
+}
 
-	const model = data.model?.display_name || "Unknown";
-	const currentDir = data.workspace?.current_dir || data.cwd || ".";
-	const dirName = currentDir.split("/").pop() || currentDir;
-
-	// Get Git info
-	const gitStatus = await getGitStatus(currentDir, config);
-
-	// Build git part with config
-	let gitPart = "";
-	if (config.git.showBranch && gitStatus.branch) {
-		gitPart = colors.gray(gitStatus.branch);
-
-		if (gitStatus.hasChanges) {
-			const changes: string[] = [];
-
-			if (config.git.showAheadBehind && gitStatus.aheadBehind) {
-				changes.push(gitStatus.aheadBehind);
-			}
-
-			if (config.git.showDiffStats && gitStatus.diffStats) {
-				changes.push(gitStatus.diffStats);
-			}
-
-			if (changes.length > 0) {
-				gitPart += " " + changes.join(" ");
-			}
-		}
-	}
-
-	// Get context tokens
-	const { tokens: contextTokens, percentage } = await getContextTokens(data);
-	const contextWindowSize = data.context_window?.context_window_size || 200000;
-	// Format context display: white numbers, gray units/symbols
-	const contextTokenStr = (contextTokens / 1000).toFixed(1);
-	const contextSizeStr = (contextWindowSize / 1000).toFixed(1);
-	const contextDisplay = `${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")} ${colors.white(percentage.toString())}${colors.gray("%")}`;
-
-	// Get cost and duration
-	const costNum =
-		data.cost.total_cost_usd >= 1
-			? data.cost.total_cost_usd.toFixed(2)
-			: data.cost.total_cost_usd >= 0.01
-				? data.cost.total_cost_usd.toFixed(2)
-				: data.cost.total_cost_usd.toFixed(3);
-	const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
-	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
-
-	// Get session time if available
-	let sessionTimeDisplay = "";
-	if (data.session_id && data.transcript_path) {
-		sessionTimeDisplay = getSessionElapsedTime(data.transcript_path);
-	}
-
-	// Get rate limit info
-	const usageLimits = await getCachedUsageLimits();
-	console.error(`[DEBUG] usageLimits: ${JSON.stringify(usageLimits)}`);
-
-	// Get daily cost
-	const todayCost = await getTodayCost();
-
-	// Build status line
+// Phase 2.2: buildMetricsLine - builds second line with all metrics
+async function buildMetricsLine(
+	config: StatuslineConfig,
+	contextDisplay: string,
+	usageLimits: UsageLimits | null,
+	todayCost: number,
+	sessionTimeDisplay: string,
+	costDisplay: string,
+	data: HookInput,
+): Promise<string> {
 	const parts: string[] = [];
-
-	// Model info (always show model name on left only)
-	parts.push(`${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`);
 
 	// Token and percentage info (with config)
 	if (config.tokens.showContextUsage) {
@@ -604,20 +768,97 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		parts.push(colors.gray(data.session_id));
 	}
 
-	// Split into two lines: first line is model/dir/git, second line is metrics
-	const firstLine = parts[0]; // Model, directory, and git info
-
 	// Build metrics line with optional separator (・) between sections
-	let metricsLine = "";
+	if (parts.length === 0) {
+		return "";
+	}
+
+	let metricsLine = parts[0]; // First section
 	if (parts.length > 1) {
-		metricsLine = parts[1]; // T section
-		if (parts.length > 2) {
-			const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
-			metricsLine += separator + parts.slice(2).join(separator);
+		const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
+		metricsLine += separator + parts.slice(1).join(separator);
+	}
+
+	return metricsLine;
+}
+
+async function buildStatusline(data: HookInput): Promise<string> {
+	// Load configuration
+	const config = await loadConfig();
+
+	const model = data.model?.display_name || "Unknown";
+	const currentDir = data.workspace?.current_dir || data.cwd || ".";
+	const dirName = currentDir.split("/").pop() || currentDir;
+
+	// Phase 1.1: Parallel execution of independent async operations
+	const [gitStatus, contextInfo, usageLimits, todayCost] = await Promise.all([
+		getGitStatus(currentDir, config),
+		getContextTokens(data),
+		getCachedUsageLimits(),
+		getTodayCost(),
+	]);
+
+	const { tokens: contextTokens, percentage } = contextInfo;
+
+	// Build git part with config
+	let gitPart = "";
+	if (config.git.showBranch && gitStatus.branch) {
+		gitPart = colors.gray(gitStatus.branch);
+
+		if (gitStatus.hasChanges) {
+			const changes: string[] = [];
+
+			if (config.git.showAheadBehind && gitStatus.aheadBehind) {
+				changes.push(gitStatus.aheadBehind);
+			}
+
+			if (config.git.showDiffStats && gitStatus.diffStats) {
+				changes.push(gitStatus.diffStats);
+			}
+
+			if (changes.length > 0) {
+				gitPart += " " + changes.join(" ");
+			}
 		}
 	}
 
-	return `${firstLine}\n${metricsLine}`;
+	// Format context display: white numbers, gray units/symbols
+	const contextWindowSize = data.context_window?.context_window_size || 200000;
+	const contextTokenStr = (contextTokens / 1000).toFixed(1);
+	const contextSizeStr = (contextWindowSize / 1000).toFixed(1);
+	const contextDisplay = `${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")} ${colors.white(percentage.toString())}${colors.gray("%")}`;
+
+	// Get cost and duration
+	const costNum =
+		data.cost.total_cost_usd >= 1
+			? data.cost.total_cost_usd.toFixed(2)
+			: data.cost.total_cost_usd >= 0.01
+				? data.cost.total_cost_usd.toFixed(2)
+				: data.cost.total_cost_usd.toFixed(3);
+	const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
+	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
+
+	// Get session time if available
+	let sessionTimeDisplay = "";
+	if (data.session_id && data.transcript_path) {
+		sessionTimeDisplay = await getSessionElapsedTime(data.transcript_path);
+	}
+
+	debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
+
+	// Build status lines
+	const firstLine = buildFirstLine(model, dirName, gitPart);
+	const metricsLine = await buildMetricsLine(
+		config,
+		contextDisplay,
+		usageLimits,
+		todayCost,
+		sessionTimeDisplay,
+		costDisplay,
+		data,
+	);
+
+	return metricsLine ? `${firstLine}\n${metricsLine}` : firstLine;
 }
 
 // ============================================================================
@@ -684,14 +925,32 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 		}
 
 		const data = await response.json();
-		console.error(`[DEBUG] API data: ${JSON.stringify(data)}`);
+		console.error(`[DEBUG] API data: ${JSON.stringify(sanitizeForLogging(data))}`);
 
-		return {
-			five_hour: data.five_hour || null,
-			seven_day: data.seven_day || null,
-		};
+		// カスタム検証関数でAPI レスポンスを検証
+		if (!isValidUsageLimits(data)) {
+			console.error(`[DEBUG] API response validation failed`);
+			return null;
+		}
+
+		return data;
 	} catch (e) {
-		console.error(`[DEBUG] fetchUsageLimits error: ${e instanceof Error ? e.message : String(e)}`);
+		// Phase 1.6: Enhanced error handling
+		const errorMsg = e instanceof Error ? e.message : String(e);
+
+		if (errorMsg.includes("EACCES")) {
+			console.error(`[ERROR] Permission denied accessing API: ${errorMsg}`);
+		} else if (errorMsg.includes("ENOENT")) {
+			console.error(`[ERROR] File not found: ${errorMsg}`);
+		} else if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
+			console.error(`[ERROR] API request timeout: ${errorMsg}`);
+		} else if (errorMsg.includes("JSON")) {
+			console.error(`[ERROR] Invalid JSON response: ${errorMsg}`);
+		} else if (errorMsg.includes("fetch") || errorMsg.includes("Network")) {
+			console.error(`[ERROR] Network error: ${errorMsg}`);
+		} else {
+			console.error(`[ERROR] Unexpected error in fetchUsageLimits: ${errorMsg}`);
+		}
 		return null;
 	}
 }
@@ -738,6 +997,7 @@ function formatResetTime(resetsAt: string): string {
 	return `${minutes}m`;
 }
 
+// Phase 1.4: Locale unification to ja-JP
 function formatResetDateOnly(resetsAt: string): string {
 	const resetDate = new Date(resetsAt);
 	const now = new Date();
@@ -751,56 +1011,72 @@ function formatResetDateOnly(resetsAt: string): string {
 	});
 
 	// Check if same day (JST)
-	const jstDateStr = resetDate.toLocaleDateString("en-US", { timeZone: "Asia/Tokyo" });
-	const nowJstDateStr = now.toLocaleDateString("en-US", { timeZone: "Asia/Tokyo" });
+	const jstDateStr = resetDate.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
+	const nowJstDateStr = now.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
 
 	if (jstDateStr === nowJstDateStr) {
 		return jstTimeStr;
 	}
 
 	// Different day: show "1/4 13:00" format (JST)
-	const monthNum = resetDate.toLocaleDateString("en-US", {
+	const monthNum = resetDate.toLocaleDateString("ja-JP", {
 		month: "numeric",
 		timeZone: "Asia/Tokyo",
 	});
-	const day = resetDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "Asia/Tokyo" });
+	const day = resetDate.toLocaleDateString("ja-JP", { day: "numeric", timeZone: "Asia/Tokyo" });
 	return `${monthNum}/${day} ${jstTimeStr}`;
 }
 
 async function loadConfig(): Promise<StatuslineConfig> {
-	const HOME = process.env.HOME || "";
+	const HOME = homedir();
 
 	// Try to load user override config
 	const localConfigFile = `${HOME}/.claude/statusline-config.json`;
-	let userConfig = null;
+	let validatedConfig: Partial<StatuslineConfig> | null = null;
 
 	try {
-		userConfig = await Bun.file(localConfigFile).json();
+		const rawConfig = await Bun.file(localConfigFile).json();
 		console.error(`[DEBUG] Loaded user config from ${localConfigFile}`);
+
+		// カスタム検証関数で検証
+		if (isValidStatuslineConfig(rawConfig)) {
+			validatedConfig = rawConfig;
+			console.error(`[DEBUG] Config validated successfully from ${localConfigFile}`);
+		} else {
+			console.error(`[DEBUG] Config validation failed from ${localConfigFile}`);
+		}
 	} catch {
 		console.error(`[DEBUG] User config not found at ${localConfigFile}`);
 	}
 
 	// Try to load dotfiles config (fallback if no user override)
-	if (!userConfig) {
+	if (!validatedConfig) {
 		const dotfilesConfigFile = `${HOME}/dotfiles/home/.claude/statusline-config.json`;
 		try {
-			userConfig = await Bun.file(dotfilesConfigFile).json();
+			const rawConfig = await Bun.file(dotfilesConfigFile).json();
 			console.error(`[DEBUG] Loaded dotfiles config from ${dotfilesConfigFile}`);
+
+			// カスタム検証関数で検証
+			if (isValidStatuslineConfig(rawConfig)) {
+				validatedConfig = rawConfig;
+				console.error(`[DEBUG] Config validated successfully from ${dotfilesConfigFile}`);
+			} else {
+				console.error(`[DEBUG] Config validation failed from ${dotfilesConfigFile}`);
+			}
 		} catch {
 			console.error(`[DEBUG] Dotfiles config not found at ${dotfilesConfigFile}`);
 		}
 	}
 
 	// Return merged config
-	if (userConfig) {
+	if (validatedConfig) {
 		return {
-			git: { ...DEFAULT_CONFIG.git, ...(userConfig.git || {}) },
-			rateLimits: { ...DEFAULT_CONFIG.rateLimits, ...(userConfig.rateLimits || {}) },
-			costs: { ...DEFAULT_CONFIG.costs, ...(userConfig.costs || {}) },
-			tokens: { ...DEFAULT_CONFIG.tokens, ...(userConfig.tokens || {}) },
-			session: { ...DEFAULT_CONFIG.session, ...(userConfig.session || {}) },
-			display: { ...DEFAULT_CONFIG.display, ...(userConfig.display || {}) },
+			git: { ...DEFAULT_CONFIG.git, ...(validatedConfig.git || {}) },
+			rateLimits: { ...DEFAULT_CONFIG.rateLimits, ...(validatedConfig.rateLimits || {}) },
+			costs: { ...DEFAULT_CONFIG.costs, ...(validatedConfig.costs || {}) },
+			tokens: { ...DEFAULT_CONFIG.tokens, ...(validatedConfig.tokens || {}) },
+			session: { ...DEFAULT_CONFIG.session, ...(validatedConfig.session || {}) },
+			display: { ...DEFAULT_CONFIG.display, ...(validatedConfig.display || {}) },
 		};
 	}
 
@@ -809,8 +1085,9 @@ async function loadConfig(): Promise<StatuslineConfig> {
 	return DEFAULT_CONFIG;
 }
 
-const HOME = process.env.HOME || "";
-const CACHE_TTL_MS = 60 * 1000;
+const HOME = homedir();
+// Phase 1.5: Cache TTL extension (60s → 5 minutes)
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
@@ -855,8 +1132,18 @@ async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 					2,
 				),
 			);
-		} catch {
-			// Fail silently if cache write fails
+			// ファイルパーミッションを 0o600 (所有者のみ読み書き可能) に設定
+			await chmod(cacheFile, 0o600);
+		} catch (e) {
+			// Phase 1.6: Enhanced error handling for cache write
+			const errorMsg = e instanceof Error ? e.message : String(e);
+			if (errorMsg.includes("EACCES")) {
+				console.error(`[ERROR] Permission denied writing cache: ${errorMsg}`);
+			} else if (errorMsg.includes("ENOENT")) {
+				console.error(`[ERROR] Cache directory does not exist: ${errorMsg}`);
+			} else {
+				console.error(`[ERROR] Failed to write cache file: ${errorMsg}`);
+			}
 		}
 	}
 
@@ -907,6 +1194,8 @@ async function saveSessionCost(sessionId: string, cost: number): Promise<void> {
 
 	try {
 		await Bun.write(storeFile, JSON.stringify(store, null, 2));
+		// ファイルパーミッションを 0o600 (所有者のみ読み書き可能) に設定
+		await chmod(storeFile, 0o600);
 	} catch {
 		// Fail silently if write fails
 	}
