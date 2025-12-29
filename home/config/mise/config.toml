@@ -417,13 +417,12 @@ pnpm = "latest"
 "npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
 "npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
+"npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
 
 "npm:caniuse-cmd" = "latest"
-"npm:difit" = "latest"
 "npm:fixpack" = "latest"
 "npm:git-cz" = "latest"
 "npm:git-diff-archive" = "latest"
-"npm:gtop" = "latest"
 "npm:lighthouse" = "latest"
 "npm:npm-check" = "latest"
 "npm:npm-check-updates" = "latest"
@@ -431,13 +430,11 @@ pnpm = "latest"
 "npm:oxlint" = "latest"
 
 rust = "stable"
-"cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
 "cargo:hx" = "latest"           # https://crates.io/crates/hx Hex Viewer
 "cargo:needle-cli" = "latest"   # https://crates.io/crates/needle-cli GitHub PRs レビュー支援
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
-"cargo:taplo-cli" = "latest"    # https://crates.io/crates/taplo-cli toml formatter/linter
 # "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
