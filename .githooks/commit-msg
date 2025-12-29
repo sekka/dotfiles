@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Commit message に AI署名が含まれていないかチェック
 # Git hook: commit-msg
@@ -6,20 +7,32 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-commit_msg_file=$1
-commit_msg=$(cat "$commit_msg_file")
+# 入力バリデーション
+if [[ $# -lt 1 ]]; then
+  echo -e "${RED}❌ エラー: コミットメッセージファイルが指定されていません${NC}" >&2
+  exit 1
+fi
 
-# AI署名パターンをチェック
-if echo "$commit_msg" | grep -qE "🤖 Generated with Claude Code|Co-Authored-By: Claude"; then
-  echo -e "${RED}❌ エラー: コミットメッセージにAI署名が含まれています${NC}"
-  echo -e "${RED}以下のパターンは削除してください：${NC}"
-  echo -e "${RED}  - 🤖 Generated with Claude Code${NC}"
-  echo -e "${RED}  - Co-Authored-By: Claude${NC}"
-  echo ""
-  echo "現在のメッセージ："
-  echo "---"
-  cat "$commit_msg_file"
-  echo "---"
+readonly commit_msg_file="$1"
+
+# ファイル存在確認
+if [[ ! -f "$commit_msg_file" ]]; then
+  echo -e "${RED}❌ エラー: コミットメッセージファイルが見つかりません: $commit_msg_file${NC}" >&2
+  exit 1
+fi
+
+# AI署名パターンをチェック（セキュアな実装）
+# パターンをシングルクォートで囲んでコマンドインジェクション対策
+if grep -qE '🤖 Generated with Claude Code|Co-Authored-By: Claude' "$commit_msg_file" 2>/dev/null; then
+  echo -e "${RED}❌ エラー: コミットメッセージにAI署名が含まれています${NC}" >&2
+  echo -e "${RED}以下のパターンは削除してください：${NC}" >&2
+  echo -e "${RED}  - 🤖 Generated with Claude Code${NC}" >&2
+  echo -e "${RED}  - Co-Authored-By: Claude${NC}" >&2
+  echo "" >&2
+  echo "現在のメッセージ：" >&2
+  echo "---" >&2
+  cat "$commit_msg_file" >&2
+  echo "---" >&2
   exit 1
 fi
 

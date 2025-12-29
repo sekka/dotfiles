@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # commit前のlint/formatチェックスクリプト
 # 全てのタスクが成功した場合のみcommitを許可
@@ -15,15 +16,21 @@ echo "🔍 commit前のチェックを実行しています..."
 echo -e "${YELLOW}▶ AI署名チェック${NC}"
 if git diff-index --cached HEAD 2>/dev/null | grep -q "^:"; then
   # ステージされたファイルがある場合
-  commit_msg=$(git diff-index --cached --format=%B 2>/dev/null || echo "")
+  commit_msg=""
 
   # COMMIT_EDITMSGファイルがあればそれを確認
-  if [ -f "$GIT_DIR/COMMIT_EDITMSG" ]; then
+  if [[ -n ${GIT_DIR:-} ]] && [[ -f "$GIT_DIR/COMMIT_EDITMSG" ]]; then
     commit_msg=$(cat "$GIT_DIR/COMMIT_EDITMSG")
   fi
 
-  # AI署名パターンをチェック
-  if echo "$commit_msg" | grep -qE "🤖 Generated with Claude Code|Co-Authored-By: Claude"; then
+  # commit_msgが空の場合、git diff-indexから取得を試みる
+  if [[ -z $commit_msg ]]; then
+    commit_msg=$(git diff-index --cached --format=%B HEAD 2>/dev/null || echo "")
+  fi
+
+  # AI署名パターンをチェック（セキュアな実装）
+  # パターンをシングルクォートで囲んでコマンドインジェクション対策
+  if [[ -n $commit_msg ]] && echo "$commit_msg" | grep -qE '🤖 Generated with Claude Code|Co-Authored-By: Claude' 2>/dev/null; then
     echo -e "${RED}❌ AI署名チェック 失敗${NC}"
     echo -e "${RED}コミットメッセージにAI署名が含まれています。${NC}"
     echo -e "${RED}以下のパターンは削除してください：${NC}"
