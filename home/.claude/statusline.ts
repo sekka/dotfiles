@@ -9,11 +9,19 @@ import { realpath, chmod } from "fs/promises";
 import { homedir } from "os";
 
 // ============================================================================
-// Phase 2.1: Debug Level Control
+// Phase 2.1 & 3.1: Debug Level Control
 // ============================================================================
 
 type DebugLevel = "off" | "basic" | "verbose";
-const DEBUG_LEVEL: DebugLevel = (process.env.STATUSLINE_DEBUG || "off") as DebugLevel;
+
+// Phase 3.1: DEBUG_LEVEL enum 検証の実装
+function validateDebugLevel(value: string | undefined): DebugLevel {
+	const validLevels: DebugLevel[] = ["off", "basic", "verbose"];
+	const level = (value || "off").toLowerCase();
+	return validLevels.includes(level as DebugLevel) ? (level as DebugLevel) : "off";
+}
+
+const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
 
 function debug(message: string, level: "basic" | "verbose" = "basic"): void {
 	if (DEBUG_LEVEL === "off") return;
@@ -148,32 +156,179 @@ const DEFAULT_CONFIG: StatuslineConfig = {
 // Validation Helpers
 // ============================================================================
 
+// Phase 3.4: sanitizeForLogging() の型混合解決
 // デバッグログ用のセンシティブ情報をマスキングする関数
 function sanitizeForLogging(obj: unknown): unknown {
-	const sensitiveKeys = [
+	const sensitiveKeys = new Set([
 		"token",
-		"accessToken",
+		"accesstoken",
 		"password",
 		"secret",
-		"refreshToken",
+		"refreshtoken",
 		"credentials",
-	];
+	]);
 
+	// Phase 3.4: 配列を明示的に処理
+	if (Array.isArray(obj)) {
+		return obj.map((item) => sanitizeForLogging(item));
+	}
+
+	// Phase 3.4: オブジェクトを処理
 	if (typeof obj === "object" && obj !== null) {
-		const sanitized: Record<string, unknown> = Array.isArray(obj) ? [] : {};
-
-		for (const key of Object.keys(obj)) {
-			if (sensitiveKeys.some((k) => key.toLowerCase().includes(k.toLowerCase()))) {
+		const sanitized: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			if (sensitiveKeys.has(key.toLowerCase())) {
 				sanitized[key] = "***REDACTED***";
-			} else if (typeof (obj as Record<string, unknown>)[key] === "object") {
-				sanitized[key] = sanitizeForLogging((obj as Record<string, unknown>)[key]);
+			} else if (value !== null && typeof value === "object") {
+				sanitized[key] = sanitizeForLogging(value);
 			} else {
-				sanitized[key] = (obj as Record<string, unknown>)[key];
+				sanitized[key] = value;
 			}
 		}
 		return sanitized;
 	}
+
 	return obj;
+}
+
+// ============================================================================
+// Phase 4.1: Security Module
+// ============================================================================
+
+class SecurityValidator {
+	/**
+	 * パストラバーサル攻撃を防ぐためにファイルパスを検証
+	 */
+	static async validatePath(
+		baseDir: string,
+		filePath: string,
+	): Promise<{ isValid: boolean; resolvedPath?: string }> {
+		try {
+			const resolvedBase = await realpath(baseDir);
+			const resolvedPath = await realpath(filePath);
+
+			if (!resolvedPath.startsWith(resolvedBase)) {
+				console.error(`[SECURITY] Path traversal attempt: ${filePath}`);
+				return { isValid: false };
+			}
+
+			return { isValid: true, resolvedPath };
+		} catch (e) {
+			const errorMsg = e instanceof Error ? e.message : String(e);
+			debug(`Path validation failed: ${errorMsg}`, "verbose");
+			return { isValid: false };
+		}
+	}
+
+	/**
+	 * ファイルサイズ制限チェック
+	 */
+	static validateFileSize(size: number, maxSize: number = 10 * 1024 * 1024): boolean {
+		return size <= maxSize;
+	}
+
+	/**
+	 * バイナリファイル拡張子チェック
+	 */
+	static isBinaryExtension(filePath: string): boolean {
+		const BINARY_EXTENSIONS = new Set([
+			".png",
+			".jpg",
+			".jpeg",
+			".gif",
+			".bmp",
+			".ico",
+			".mp4",
+			".mov",
+			".avi",
+			".mkv",
+			".zip",
+			".tar",
+			".gz",
+			".7z",
+			".bin",
+			".so",
+			".dylib",
+			".dll",
+			".pdf",
+			".doc",
+			".docx",
+		]);
+
+		const ext = filePath.toLowerCase();
+		const dotIndex = ext.lastIndexOf(".");
+		if (dotIndex === -1) return false;
+
+		return BINARY_EXTENSIONS.has(ext.substring(dotIndex));
+	}
+}
+
+// ============================================================================
+// Phase 4.4: Unified Error Handling
+// ============================================================================
+
+enum ErrorCategory {
+	PERMISSION_DENIED = "PERMISSION_DENIED",
+	NOT_FOUND = "NOT_FOUND",
+	TIMEOUT = "TIMEOUT",
+	JSON_PARSE = "JSON_PARSE",
+	NETWORK = "NETWORK",
+	UNKNOWN = "UNKNOWN",
+}
+
+/**
+ * Phase 4.4: エラーを分類する
+ * Node.js のエラーコードを優先して判定し、メッセージベースのフォールバックを使用
+ */
+function categorizeError(e: unknown): ErrorCategory {
+	const errorMsg = e instanceof Error ? e.message : String(e);
+	const code = (e as NodeJS.ErrnoException).code;
+
+	// コードベースの判定を優先
+	if (code === "EACCES") return ErrorCategory.PERMISSION_DENIED;
+	if (code === "ENOENT") return ErrorCategory.NOT_FOUND;
+
+	// メッセージベースのフォールバック
+	if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
+		return ErrorCategory.TIMEOUT;
+	}
+	if (errorMsg.includes("JSON") || errorMsg.includes("parse")) {
+		return ErrorCategory.JSON_PARSE;
+	}
+	if (errorMsg.includes("fetch") || errorMsg.includes("Network")) {
+		return ErrorCategory.NETWORK;
+	}
+
+	return ErrorCategory.UNKNOWN;
+}
+
+/**
+ * Phase 4.4: エラーを分類してログ出力する
+ * エラー種別に応じて適切なログレベルで出力
+ */
+function logCategorizedError(e: unknown, context: string): void {
+	const category = categorizeError(e);
+	const errorMsg = e instanceof Error ? e.message : String(e);
+
+	switch (category) {
+		case ErrorCategory.PERMISSION_DENIED:
+			console.error(`[ERROR] ${context}: Permission denied - ${errorMsg}`);
+			break;
+		case ErrorCategory.NOT_FOUND:
+			debug(`${context}: File not found - ${errorMsg}`, "verbose");
+			break;
+		case ErrorCategory.TIMEOUT:
+			console.error(`[ERROR] ${context}: Operation timed out - ${errorMsg}`);
+			break;
+		case ErrorCategory.JSON_PARSE:
+			console.error(`[ERROR] ${context}: JSON parsing failed - ${errorMsg}`);
+			break;
+		case ErrorCategory.NETWORK:
+			console.error(`[ERROR] ${context}: Network error - ${errorMsg}`);
+			break;
+		default:
+			console.error(`[ERROR] ${context}: ${errorMsg}`);
+	}
 }
 
 // API レスポンス検証関数
@@ -417,6 +572,75 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 	}
 }
 
+// ============================================================================
+// Phase 4.2: Untracked File Statistics - Responsibility Separation
+// ============================================================================
+
+/**
+ * Phase 4.2: untracked ファイルの統計を読み取る
+ * getDiffStats() から分離された専用関数
+ */
+async function readUntrackedFileStats(
+	cwd: string,
+	files: string[],
+): Promise<{ added: number; skipped: number }> {
+	let added = 0;
+	let skipped = 0;
+
+	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+	let resolvedCwd: string;
+	try {
+		resolvedCwd = await realpath(cwd);
+	} catch (e) {
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Cannot resolve working directory ${cwd}: ${errorMsg}`, "verbose");
+		return { added: 0, skipped: files.length }; // 全てをスキップ扱い
+	}
+
+	for (const file of files) {
+		if (!file.trim()) {
+			skipped++;
+			continue;
+		}
+
+		// バイナリファイルをスキップ
+		if (SecurityValidator.isBinaryExtension(file)) {
+			skipped++;
+			continue;
+		}
+
+		try {
+			const filePath = resolve(resolvedCwd, file);
+
+			// Phase 4.1: SecurityValidator を使用したパス検証
+			const validation = await SecurityValidator.validatePath(resolvedCwd, filePath);
+			if (!validation.isValid || !validation.resolvedPath) {
+				skipped++;
+				continue;
+			}
+
+			// Phase 4.1: ファイルサイズ検証
+			const fileObj = Bun.file(validation.resolvedPath);
+			const stat = await fileObj.stat();
+
+			if (!SecurityValidator.validateFileSize(stat.size, MAX_FILE_SIZE)) {
+				skipped++;
+				continue;
+			}
+
+			const fileContent = await fileObj.text();
+			added += fileContent.split("\n").length;
+		} catch (e) {
+			const errorMsg = e instanceof Error ? e.message : String(e);
+			debug(`Failed to read untracked file ${file}: ${errorMsg}`, "verbose");
+			skipped++;
+		}
+	}
+
+	return { added, skipped };
+}
+
 async function getDiffStats(cwd: string): Promise<string | null> {
 	try {
 		// Get unstaged diff
@@ -470,83 +694,9 @@ async function getDiffStats(cwd: string): Promise<string | null> {
 		const untrackedOutput = await new Response(untrackedProc.stdout).text();
 		const untrackedFiles = untrackedOutput.trim().split("\n");
 
-		// バイナリファイル拡張子リストと最大ファイルサイズ
-		const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-		const BINARY_EXTENSIONS = new Set([
-			".png",
-			".jpg",
-			".jpeg",
-			".gif",
-			".bmp",
-			".ico",
-			".mp4",
-			".mov",
-			".avi",
-			".mkv",
-			".zip",
-			".tar",
-			".gz",
-			".7z",
-			".rar",
-			".bin",
-			".so",
-			".dylib",
-			".dll",
-			".pdf",
-			".doc",
-			".docx",
-			".xls",
-			".xlsx",
-		]);
-
-		// cwd を正規化
-		let resolvedCwd: string;
-		try {
-			resolvedCwd = await realpath(cwd);
-		} catch {
-			// cwd が存在しない場合は resolve のみ使用
-			resolvedCwd = resolve(cwd);
-		}
-
-		for (const file of untrackedFiles) {
-			if (!file.trim()) continue;
-
-			// バイナリファイルをスキップ
-			const ext = file.toLowerCase().substring(file.lastIndexOf("."));
-			if (BINARY_EXTENSIONS.has(ext)) {
-				continue;
-			}
-
-			try {
-				// パストを正規化（パストトラバーサル防止）
-				const filePath = resolve(resolvedCwd, file);
-				let resolvedPath: string;
-				try {
-					resolvedPath = await realpath(filePath);
-				} catch {
-					// ファイルが存在しない場合
-					continue;
-				}
-
-				// ディレクトリトラバーサル防止チェック
-				if (!resolvedPath.startsWith(resolvedCwd)) {
-					console.error(`[SECURITY] Path traversal attempt: ${file}`);
-					continue;
-				}
-
-				// ファイルサイズチェック
-				const fileObj = Bun.file(resolvedPath);
-				const stat = await fileObj.stat();
-				if (stat.size > MAX_FILE_SIZE) {
-					continue;
-				}
-
-				const fileContent = await fileObj.text();
-				added += fileContent.split("\n").length;
-			} catch {
-				// Skip if file can't be read
-			}
-		}
+		// Phase 4.2: 分離された関数を呼び出し
+		const { added: untrackedAdded } = await readUntrackedFileStats(cwd, untrackedFiles);
+		added += untrackedAdded;
 
 		// Format result
 		if (added > 0 || deleted > 0) {
@@ -670,13 +820,23 @@ function formatElapsedTime(ms: number): string {
 }
 
 // Phase 1.3: Async file operations
+// Phase 3.2: getSessionElapsedTime() の stat() エラー処理改善
 async function getSessionElapsedTime(transcriptPath: string): Promise<string> {
 	try {
 		const file = Bun.file(transcriptPath);
 		const stats = await file.stat();
+
+		// Phase 3.2: birthtimeMs が無効な値をチェック
+		if (!stats.birthtimeMs || stats.birthtimeMs === 0) {
+			debug("Invalid birthtimeMs in transcript file", "verbose");
+			return "";
+		}
+
 		const elapsed = Date.now() - stats.birthtimeMs;
 		return formatElapsedTime(elapsed);
-	} catch {
+	} catch (e) {
+		const errorMsg = e instanceof Error ? e.message : String(e);
+		debug(`Failed to get session elapsed time: ${errorMsg}`, "verbose");
 		return "";
 	}
 }
@@ -783,8 +943,8 @@ async function buildMetricsLine(
 }
 
 async function buildStatusline(data: HookInput): Promise<string> {
-	// Load configuration
-	const config = await loadConfig();
+	// Phase 4.3: Load configuration (with caching)
+	const config = await loadConfigCached();
 
 	const model = data.model?.display_name || "Unknown";
 	const currentDir = data.workspace?.current_dir || data.cwd || ".";
@@ -1088,6 +1248,34 @@ async function loadConfig(): Promise<StatuslineConfig> {
 const HOME = homedir();
 // Phase 1.5: Cache TTL extension (60s → 5 minutes)
 const CACHE_TTL_MS = 5 * 60 * 1000;
+
+// ============================================================================
+// Phase 4.3: Configuration Caching
+// ============================================================================
+
+let cachedConfig: StatuslineConfig | null = null;
+let configCacheTime = 0;
+const CONFIG_CACHE_TTL = 60 * 1000; // 1分
+
+/**
+ * Phase 4.3: Config をキャッシュする
+ * loadConfig() の実行結果をメモリにキャッシュして、複数回の読み込みを避ける
+ */
+async function loadConfigCached(): Promise<StatuslineConfig> {
+	const now = Date.now();
+
+	// キャッシュが有効な場合は返す
+	if (cachedConfig && now - configCacheTime < CONFIG_CACHE_TTL) {
+		debug("Using cached config", "verbose");
+		return cachedConfig;
+	}
+
+	// キャッシュが無効な場合は再読み込み
+	debug("Loading fresh config", "basic");
+	cachedConfig = await loadConfig();
+	configCacheTime = now;
+	return cachedConfig;
+}
 
 async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
