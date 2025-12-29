@@ -432,16 +432,9 @@ pnpm = "latest"
 
 rust = "stable"
 "cargo:bandwhich" = "latest"    # https://crates.io/crates/bandwhich ネットワークトラフィック監視
-"cargo:bat" = "latest"          # https://crates.io/crates/bat すごいcat
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
-"cargo:eza" = "latest"          # https://crates.io/crates/eza すごいls
-"cargo:fd-find" = "latest"      # https://crates.io/crates/fd-find すごいfind
-"cargo:hexyl" = "latest"        # https://crates.io/crates/hexyl すごいod
-"cargo:hgrep" = "latest"        # https://crates.io/crates/hgrep すごいgrep
 "cargo:hx" = "latest"           # https://crates.io/crates/hx Hex Viewer
 "cargo:needle-cli" = "latest"   # https://crates.io/crates/needle-cli GitHub PRs レビュー支援
-"cargo:procs" = "latest"        # https://crates.io/crates/procs すごいps
-"cargo:ripgrep" = "latest"      # https://crates.io/crates/ripgrep すごいgrep
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
 "cargo:taplo-cli" = "latest"    # https://crates.io/crates/taplo-cli toml formatter/linter
