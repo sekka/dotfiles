@@ -3,6 +3,8 @@
 // Claude Code statusline hook - TypeScript + Bun version
 // 既存のNode.js版statusline.jsの機能を完全に移行
 
+import { existsSync } from "fs";
+
 // ============================================================================
 // Type Definitions
 // ============================================================================
@@ -48,6 +50,34 @@ interface TranscriptEntry {
 	timestamp?: string;
 }
 
+interface StatuslineConfig {
+	git: {
+		showBranch: boolean; // ブランチ名表示
+		showAheadBehind: boolean; // ahead/behind表示
+		showDiffStats: boolean; // 差分統計（+/-）表示
+		alwaysShowMain: boolean; // main/masterでもahead/behind表示
+	};
+	rateLimits: {
+		showFiveHour: boolean; // 5時間レート制限表示
+		showWeekly: boolean; // 週間レート制限表示
+		showPeriodCost: boolean; // 期間コスト（$119）表示
+	};
+	costs: {
+		showDailyCost: boolean; // 日次コスト表示
+		showSessionCost: boolean; // セッションコスト表示
+	};
+	tokens: {
+		showContextUsage: boolean; // コンテキスト使用率表示
+	};
+	session: {
+		showSessionId: boolean; // セッションID表示
+		showElapsedTime: boolean; // 経過時間表示
+	};
+	display: {
+		showSeparators: boolean; // メトリクス間の区切り表示
+	};
+}
+
 // ============================================================================
 // ANSI Color Helpers (no external dependencies)
 // ============================================================================
@@ -58,19 +88,53 @@ const colors = {
 	red: (s: string) => `\x1b[91m${s}\x1b[0m`,
 	green: (s: string) => `\x1b[32m${s}\x1b[0m`,
 	yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
+	cyan: (s: string) => `\x1b[36m${s}\x1b[0m`,
+	white: (s: string) => `\x1b[37m${s}\x1b[0m`,
 	dimWhite: (s: string) => `\x1b[37m${s}\x1b[39m`,
 	lightGray: (s: string) => `\x1b[97m${s}\x1b[0m`,
+	peach: (s: string) => `\x1b[38;5;216m${s}\x1b[0m`,
+	darkOrange: (s: string) => `\x1b[38;5;202m${s}\x1b[0m`,
+};
+
+// ============================================================================
+// Configuration
+// ============================================================================
+
+const DEFAULT_CONFIG: StatuslineConfig = {
+	git: {
+		showBranch: true,
+		showAheadBehind: true,
+		showDiffStats: true,
+		alwaysShowMain: false,
+	},
+	rateLimits: {
+		showFiveHour: true,
+		showWeekly: true,
+		showPeriodCost: true,
+	},
+	costs: {
+		showDailyCost: true,
+		showSessionCost: true,
+	},
+	tokens: {
+		showContextUsage: true,
+	},
+	session: {
+		showSessionId: true,
+		showElapsedTime: false,
+	},
+	display: {
+		showSeparators: false,
+	},
 };
 
 // ============================================================================
 // Git Operations
 // ============================================================================
 
-async function getGitStatus(currentDir: string): Promise<GitStatus> {
+async function getGitStatus(currentDir: string, config: StatuslineConfig): Promise<GitStatus> {
 	const gitDir = `${currentDir}/.git`;
-	const gitExists = await Bun.file(gitDir)
-		.exists()
-		.catch(() => false);
+	const gitExists = existsSync(gitDir);
 
 	if (!gitExists) {
 		return {
@@ -102,9 +166,9 @@ async function getGitStatus(currentDir: string): Promise<GitStatus> {
 			};
 		}
 
-		// Get ahead/behind (only for non-main branches)
+		// Get ahead/behind (respects alwaysShowMain config)
 		let aheadBehind: string | null = null;
-		if (branch !== "main" && branch !== "master") {
+		if (config.git.alwaysShowMain || (branch !== "main" && branch !== "master")) {
 			aheadBehind = await getAheadBehind(currentDir);
 		}
 
@@ -405,26 +469,29 @@ function getSessionElapsedTime(transcriptPath: string): string {
 // ============================================================================
 
 async function buildStatusline(data: HookInput): Promise<string> {
+	// Load configuration
+	const config = await loadConfig();
+
 	const model = data.model?.display_name || "Unknown";
 	const currentDir = data.workspace?.current_dir || data.cwd || ".";
 	const dirName = currentDir.split("/").pop() || currentDir;
 
 	// Get Git info
-	const gitStatus = await getGitStatus(currentDir);
+	const gitStatus = await getGitStatus(currentDir, config);
 
-	// Build git part
+	// Build git part with config
 	let gitPart = "";
-	if (gitStatus.branch) {
-		gitPart = gitStatus.branch;
+	if (config.git.showBranch && gitStatus.branch) {
+		gitPart = colors.gray(gitStatus.branch);
 
 		if (gitStatus.hasChanges) {
 			const changes: string[] = [];
 
-			if (gitStatus.aheadBehind) {
+			if (config.git.showAheadBehind && gitStatus.aheadBehind) {
 				changes.push(gitStatus.aheadBehind);
 			}
 
-			if (gitStatus.diffStats) {
+			if (config.git.showDiffStats && gitStatus.diffStats) {
 				changes.push(gitStatus.diffStats);
 			}
 
@@ -437,10 +504,19 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	// Get context tokens
 	const { tokens: contextTokens, percentage } = await getContextTokens(data);
 	const contextWindowSize = data.context_window?.context_window_size || 200000;
-	const contextDisplay = `${formatTokenCount(contextTokens)}/${formatTokenCount(contextWindowSize)} ${colors.lightGray(percentage.toString())}${colors.gray("%")}`;
+	// Format context display: white numbers, gray units/symbols
+	const contextTokenStr = (contextTokens / 1000).toFixed(1);
+	const contextSizeStr = (contextWindowSize / 1000).toFixed(1);
+	const contextDisplay = `${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")} ${colors.white(percentage.toString())}${colors.gray("%")}`;
 
 	// Get cost and duration
-	const costDisplay = formatCost(data.cost.total_cost_usd);
+	const costNum =
+		data.cost.total_cost_usd >= 1
+			? data.cost.total_cost_usd.toFixed(2)
+			: data.cost.total_cost_usd >= 0.01
+				? data.cost.total_cost_usd.toFixed(2)
+				: data.cost.total_cost_usd.toFixed(3);
+	const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
 	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
 
 	// Get session time if available
@@ -459,52 +535,41 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	// Build status line
 	const parts: string[] = [];
 
-	// Model info
-	const isSonnet = model.toLowerCase().includes("sonnet");
-	if (isSonnet) {
-		parts.push(`${colors.lightGray(`[${model}]`)} 📁 ${dirName}${gitPart ? ` 🌿 ${gitPart}` : ""}`);
-	} else {
-		parts.push(
-			`${colors.lightGray(`[${model}]`)} 📁 ${dirName}${gitPart ? ` 🌿 ${gitPart}` : ""} 📡 ${colors.peach(model)}`,
-		);
+	// Model info (always show model name on left only)
+	parts.push(`${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`);
+
+	// Token and percentage info (with config)
+	if (config.tokens.showContextUsage) {
+		parts.push(`${colors.gray("T:")} ${contextDisplay}`);
 	}
 
-	// Token and percentage info
-	parts.push(`🪙 ${contextDisplay}`);
-
-	// Cost and duration
-	const costPart = `💵 ${costDisplay}`;
-	if (sessionTimeDisplay) {
-		parts.push(`${costPart} | ⏱️  ${sessionTimeDisplay}`);
-	} else {
-		parts.push(costPart);
-	}
-
-	// 5-hour rate limit (always show if available)
-	if (usageLimits?.five_hour) {
+	// 5-hour rate limit (with config)
+	if (config.rateLimits.showFiveHour && usageLimits?.five_hour) {
 		const fiveHour = usageLimits.five_hour;
 		const bar = formatBrailleProgressBar(fiveHour.utilization);
 
 		// Get period cost
 		const periodCost = fiveHour.resets_at ? await getPeriodCost(fiveHour.resets_at) : 0;
 
-		// Add cost display if >= $0.01
-		const costDisplay =
-			periodCost >= 0.01 ? `${colors.gray("$")}${colors.dimWhite(periodCost.toFixed(2))} ` : "";
+		// Add cost display if >= $0.01 (respects showPeriodCost config)
+		const costDisplayFiveHour =
+			config.rateLimits.showPeriodCost && periodCost >= 0.01
+				? `${colors.gray("$")}${colors.dimWhite(periodCost.toFixed(2))} `
+				: "";
 
-		let limitsPart = `${colors.gray("L:")} ${costDisplay}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
+		let limitsPart = `${colors.gray("L:")} ${costDisplayFiveHour}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
 
 		if (fiveHour.resets_at) {
 			const resetDate = formatResetDateOnly(fiveHour.resets_at);
 			const timeLeft = formatResetTime(fiveHour.resets_at);
-			limitsPart += ` ${colors.gray(`(${resetDate}/${timeLeft})`)}`;
+			limitsPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
 		}
 
 		parts.push(limitsPart);
 	}
 
-	// Weekly rate limit (always show if available)
-	if (usageLimits?.seven_day) {
+	// Weekly rate limit (with config)
+	if (config.rateLimits.showWeekly && usageLimits?.seven_day) {
 		const sevenDay = usageLimits.seven_day;
 		const bar = formatBrailleProgressBar(sevenDay.utilization);
 		let weeklyPart = `${colors.gray("W:")} ${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
@@ -512,22 +577,47 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		if (sevenDay.resets_at) {
 			const resetDate = formatResetDateOnly(sevenDay.resets_at);
 			const timeLeft = formatResetTime(sevenDay.resets_at);
-			weeklyPart += ` ${colors.gray(`(${resetDate}/${timeLeft})`)}`;
+			weeklyPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
 		}
 
 		parts.push(weeklyPart);
 	}
 
-	// Daily cost (show if >= $0.01)
-	if (todayCost >= 0.01) {
+	// Cost and duration (with config)
+	if (config.costs.showSessionCost) {
+		const costPart = `${colors.gray("S:")} ${costDisplay}`;
+		if (config.session.showElapsedTime && sessionTimeDisplay) {
+			parts.push(`${costPart} | ⏱️  ${sessionTimeDisplay}`);
+		} else {
+			parts.push(costPart);
+		}
+	}
+
+	// Daily cost (with config, show if >= $0.01)
+	if (config.costs.showDailyCost && todayCost >= 0.01) {
 		const dailyCostDisplay = `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(todayCost.toFixed(1))}`;
 		parts.push(dailyCostDisplay);
 	}
 
-	// Session ID (dimmed)
-	parts.push(colors.gray(`| ${data.session_id}`));
+	// Session ID (with config)
+	if (config.session.showSessionId) {
+		parts.push(colors.gray(data.session_id));
+	}
 
-	return parts.join(" ");
+	// Split into two lines: first line is model/dir/git, second line is metrics
+	const firstLine = parts[0]; // Model, directory, and git info
+
+	// Build metrics line with optional separator (・) between sections
+	let metricsLine = "";
+	if (parts.length > 1) {
+		metricsLine = parts[1]; // T section
+		if (parts.length > 2) {
+			const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
+			metricsLine += separator + parts.slice(2).join(separator);
+		}
+	}
+
+	return `${firstLine}\n${metricsLine}`;
 }
 
 // ============================================================================
@@ -668,10 +758,55 @@ function formatResetDateOnly(resetsAt: string): string {
 		return jstTimeStr;
 	}
 
-	// Different day: show "Jan 4 13:00" format (JST)
-	const month = resetDate.toLocaleDateString("en-US", { month: "short", timeZone: "Asia/Tokyo" });
+	// Different day: show "1/4 13:00" format (JST)
+	const monthNum = resetDate.toLocaleDateString("en-US", {
+		month: "numeric",
+		timeZone: "Asia/Tokyo",
+	});
 	const day = resetDate.toLocaleDateString("en-US", { day: "numeric", timeZone: "Asia/Tokyo" });
-	return `${month} ${day} ${jstTimeStr}`;
+	return `${monthNum}/${day} ${jstTimeStr}`;
+}
+
+async function loadConfig(): Promise<StatuslineConfig> {
+	const HOME = process.env.HOME || "";
+
+	// Try to load user override config
+	const localConfigFile = `${HOME}/.claude/statusline-config.json`;
+	let userConfig = null;
+
+	try {
+		userConfig = await Bun.file(localConfigFile).json();
+		console.error(`[DEBUG] Loaded user config from ${localConfigFile}`);
+	} catch {
+		console.error(`[DEBUG] User config not found at ${localConfigFile}`);
+	}
+
+	// Try to load dotfiles config (fallback if no user override)
+	if (!userConfig) {
+		const dotfilesConfigFile = `${HOME}/dotfiles/home/.claude/statusline-config.json`;
+		try {
+			userConfig = await Bun.file(dotfilesConfigFile).json();
+			console.error(`[DEBUG] Loaded dotfiles config from ${dotfilesConfigFile}`);
+		} catch {
+			console.error(`[DEBUG] Dotfiles config not found at ${dotfilesConfigFile}`);
+		}
+	}
+
+	// Return merged config
+	if (userConfig) {
+		return {
+			git: { ...DEFAULT_CONFIG.git, ...(userConfig.git || {}) },
+			rateLimits: { ...DEFAULT_CONFIG.rateLimits, ...(userConfig.rateLimits || {}) },
+			costs: { ...DEFAULT_CONFIG.costs, ...(userConfig.costs || {}) },
+			tokens: { ...DEFAULT_CONFIG.tokens, ...(userConfig.tokens || {}) },
+			session: { ...DEFAULT_CONFIG.session, ...(userConfig.session || {}) },
+			display: { ...DEFAULT_CONFIG.display, ...(userConfig.display || {}) },
+		};
+	}
+
+	// Return default if no config found
+	console.error(`[DEBUG] No config found, using DEFAULT_CONFIG`);
+	return DEFAULT_CONFIG;
 }
 
 const HOME = process.env.HOME || "";

@@ -1,0 +1,27 @@
+{
+	"git": {
+		"showBranch": true,
+		"showAheadBehind": true,
+		"showDiffStats": true,
+		"alwaysShowMain": true
+	},
+	"rateLimits": {
+		"showFiveHour": true,
+		"showWeekly": true,
+		"showPeriodCost": true
+	},
+	"costs": {
+		"showDailyCost": true,
+		"showSessionCost": true
+	},
+	"tokens": {
+		"showContextUsage": true
+	},
+	"session": {
+		"showSessionId": true,
+		"showElapsedTime": true
+	},
+	"display": {
+		"showSeparators": false
+	}
+}
