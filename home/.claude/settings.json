@@ -21,11 +21,11 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "file_path=$(jq -r '.tool_input.file_path'); bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" || echo \"⚠️ Lint-format hook failed for $file_path\" >&2; true"
+						"command": "file_path=$(jq -r '.tool_input.file_path'); if [[ -z \"$file_path\" ]]; then echo \"ERROR [Claude Hook:Lint] 無効なファイルパス\" >&2; false; else bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=\"$file_path\" || (sanitized=$(basename \"$file_path\" | tr -cd '[:alnum:]._-'); echo \"ERROR [Claude Hook:Lint] Lint/format failed for: $sanitized\" >&2; false); fi"
 					},
 					{
 						"type": "command",
-						"command": "file_path=$(jq -r '.tool_input.file_path'); if [[ \"$file_path\" == */.claude/settings.local.json ]]; then bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=\"$file_path\" || echo \"⚠️ Sort-permissions hook failed for $file_path\" >&2; fi; true"
+						"command": "file_path=$(jq -r '.tool_input.file_path'); if [[ -z \"$file_path\" ]]; then echo \"ERROR [Claude Hook:Sort] 無効なファイルパス\" >&2; false; elif [[ \"$file_path\" == */.claude/settings.local.json ]]; then bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=\"$file_path\" || (sanitized=$(basename \"$file_path\" | tr -cd '[:alnum:]._-'); echo \"ERROR [Claude Hook:Sort] Permission sorting failed for: $sanitized\" >&2; false); else true; fi"
 					}
 				]
 			}

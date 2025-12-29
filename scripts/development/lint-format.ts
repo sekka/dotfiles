@@ -492,7 +492,7 @@ async function processFiles(files: string[], options: Options): Promise<boolean>
 	for (const result of results) {
 		if (!result.success) {
 			allSuccess = false;
-			console.error(`❌ ${result.tool} failed`);
+			console.error(`ERROR [Lint:${result.tool}] Failed to check/fix`);
 			if (result.output) console.log(result.output);
 			if (result.error) console.error(result.error);
 		} else if (options.verbose) {
