@@ -867,6 +867,12 @@ async function buildMetricsLine(
 		parts.push(`${colors.gray("T:")} ${contextDisplay}`);
 	}
 
+	// Session elapsed time and cost (with config)
+	if (config.session.showElapsedTime && sessionTimeDisplay) {
+		const sessionPart = `${colors.gray("S:")} ${sessionTimeDisplay} ${costDisplay}`;
+		parts.push(sessionPart);
+	}
+
 	// 5-hour rate limit (with config)
 	if (config.rateLimits.showFiveHour && usageLimits?.five_hour) {
 		const fiveHour = usageLimits.five_hour;
@@ -892,6 +898,12 @@ async function buildMetricsLine(
 		parts.push(limitsPart);
 	}
 
+	// Daily cost (with config, show if >= $0.01)
+	if (config.costs.showDailyCost && todayCost >= 0.01) {
+		const dailyCostDisplay = `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(todayCost.toFixed(1))}`;
+		parts.push(dailyCostDisplay);
+	}
+
 	// Weekly rate limit (with config)
 	if (config.rateLimits.showWeekly && usageLimits?.seven_day) {
 		const sevenDay = usageLimits.seven_day;
@@ -905,22 +917,6 @@ async function buildMetricsLine(
 		}
 
 		parts.push(weeklyPart);
-	}
-
-	// Cost and duration (with config)
-	if (config.costs.showSessionCost) {
-		const costPart = `${colors.gray("S:")} ${costDisplay}`;
-		if (config.session.showElapsedTime && sessionTimeDisplay) {
-			parts.push(`${costPart} | ⏱️  ${sessionTimeDisplay}`);
-		} else {
-			parts.push(costPart);
-		}
-	}
-
-	// Daily cost (with config, show if >= $0.01)
-	if (config.costs.showDailyCost && todayCost >= 0.01) {
-		const dailyCostDisplay = `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(todayCost.toFixed(1))}`;
-		parts.push(dailyCostDisplay);
 	}
 
 	// Session ID (with config)
@@ -1178,12 +1174,16 @@ function formatResetDateOnly(resetsAt: string): string {
 		return jstTimeStr;
 	}
 
-	// Different day: show "1/4 13:00" format (JST)
-	const monthNum = resetDate.toLocaleDateString("ja-JP", {
-		month: "numeric",
-		timeZone: "Asia/Tokyo",
-	});
-	const day = resetDate.toLocaleDateString("ja-JP", { day: "numeric", timeZone: "Asia/Tokyo" });
+	// Different day: show "12/30 13:00" format (JST)
+	const monthNum = resetDate
+		.toLocaleDateString("ja-JP", {
+			month: "numeric",
+			timeZone: "Asia/Tokyo",
+		})
+		.replace(/月/g, "");
+	const day = resetDate
+		.toLocaleDateString("ja-JP", { day: "numeric", timeZone: "Asia/Tokyo" })
+		.replace(/日/g, "");
 	return `${monthNum}/${day} ${jstTimeStr}`;
 }
 
