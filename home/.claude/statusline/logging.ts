@@ -2,7 +2,7 @@
 // Pino構造化ロギング（手動実装から置き換え）
 // ============================================================================
 
-import pino from 'pino';
+import pino from "pino";
 
 /**
  * STATUSLINE_DEBUG 環境変数からPinoログレベルをマップ
@@ -13,15 +13,15 @@ import pino from 'pino';
  * - "verbose" → "debug"
  */
 function getLogLevel(): string {
-	const debugLevel = (process.env.STATUSLINE_DEBUG ?? 'off').toLowerCase();
+	const debugLevel = (process.env.STATUSLINE_DEBUG ?? "off").toLowerCase();
 	const levelMap: Record<string, string> = {
-		off: 'silent',
-		error: 'error',
-		warning: 'warn',
-		basic: 'info',
-		verbose: 'debug',
+		off: "silent",
+		error: "error",
+		warning: "warn",
+		basic: "info",
+		verbose: "debug",
 	};
-	return levelMap[debugLevel] ?? 'silent';
+	return levelMap[debugLevel] ?? "silent";
 }
 
 /**
@@ -34,12 +34,12 @@ export const logger = pino(
 		level: getLogLevel(),
 		timestamp: pino.stdTimeFunctions.isoTime,
 	},
-	process.env.NODE_ENV === 'development'
+	process.env.NODE_ENV === "development"
 		? pino.transport({
-				target: 'pino-pretty',
+				target: "pino-pretty",
 				options: {
 					colorize: true,
-					ignore: 'pid,hostname',
+					ignore: "pid,hostname",
 					singleLine: false,
 				},
 			})
@@ -50,28 +50,44 @@ export const logger = pino(
  * Zod互換のバリデーション型（後方互換性）
  * @deprecated logger.info(), logger.error() 等を直接使用してください
  */
-export type DebugLevel = 'off' | 'basic' | 'verbose' | 'error' | 'warning';
+export type DebugLevel = "off" | "basic" | "verbose" | "error" | "warning";
 
 /**
  * 後方互換性: 既存コードで使用されていたdebug()関数の互換実装
  * @deprecated logger.info(), logger.error(), logger.debug() 等を直接使用してください
  */
-export function debug(message: string, level: DebugLevel = 'basic'): void {
+export function debug(message: string, level: DebugLevel = "basic"): void {
 	switch (level) {
-		case 'error':
+		case "error":
 			logger.error(message);
 			break;
-		case 'warning':
+		case "warning":
 			logger.warn(message);
 			break;
-		case 'verbose':
+		case "verbose":
 			logger.debug(message);
 			break;
-		case 'basic':
+		case "basic":
 		default:
 			logger.info(message);
 			break;
-		case 'off':
+		case "off":
 			break;
 	}
 }
+
+/**
+ * デバッグレベルのバリデーション（後方互換性）
+ * @deprecated logger.info(), logger.error() 等を直接使用してください
+ */
+export function validateDebugLevel(value: string | undefined): DebugLevel {
+	const normalized = (value ?? "off").toLowerCase().trim();
+	const validLevels: DebugLevel[] = ["off", "basic", "verbose", "error", "warning"];
+	return validLevels.includes(normalized as DebugLevel) ? (normalized as DebugLevel) : "off";
+}
+
+/**
+ * グローバルデバッグレベル定数（後方互換性）
+ * @deprecated logger.level を直接参照してください
+ */
+export const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
