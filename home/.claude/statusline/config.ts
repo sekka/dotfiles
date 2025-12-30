@@ -2,8 +2,8 @@
 // Cosmiconfig ベースの設定管理（手動実装から置き換え）
 // ============================================================================
 
-import { cosmiconfig } from 'cosmiconfig';
-import type { CosmiconfigResult } from 'cosmiconfig';
+import { cosmiconfig } from "cosmiconfig";
+import type { CosmiconfigResult } from "cosmiconfig";
 
 // ============================================================================
 // 型定義
@@ -23,6 +23,7 @@ export interface StatuslineConfig {
 	rateLimits: {
 		showFiveHour: boolean;
 		showWeekly: boolean;
+		showSonnetWeekly: boolean;
 		showPeriodCost: boolean;
 	};
 	costs: {
@@ -35,6 +36,7 @@ export interface StatuslineConfig {
 	session: {
 		showSessionId: boolean;
 		showElapsedTime: boolean;
+		showInFirstLine: boolean;
 	};
 	display: {
 		showSeparators: boolean;
@@ -59,6 +61,7 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 	rateLimits: {
 		showFiveHour: true,
 		showWeekly: true,
+		showSonnetWeekly: true,
 		showPeriodCost: true,
 	},
 	costs: {
@@ -71,6 +74,7 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 	session: {
 		showSessionId: true,
 		showElapsedTime: false,
+		showInFirstLine: true,
 	},
 	display: {
 		showSeparators: false,
@@ -85,7 +89,7 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
  * Cosmiconfigエクスプローラー
  * .statuslinerc.json, .statuslinerc.yaml, statuslinerc.js等を自動探索
  */
-const explorer = cosmiconfig('statusline');
+const explorer = cosmiconfig("statusline");
 
 /**
  * ファイルベースの設定をDEFAULT_CONFIGとマージして返す
@@ -111,10 +115,7 @@ async function loadConfig(): Promise<StatuslineConfig> {
  * DEFAULTを基本に、userの値で上書き
  * ネストされたオブジェクトも正しくコピーされることを保証
  */
-function deepMerge<T extends Record<string, any>>(
-	defaultObj: T,
-	userObj: Partial<T>
-): T {
+function deepMerge<T extends Record<string, any>>(defaultObj: T, userObj: Partial<T>): T {
 	const result = { ...defaultObj } as T;
 
 	for (const key in userObj) {
@@ -125,10 +126,10 @@ function deepMerge<T extends Record<string, any>>(
 			// ネストされたオブジェクト（配列以外）の場合は再帰的にマージ
 			if (
 				userValue &&
-				typeof userValue === 'object' &&
+				typeof userValue === "object" &&
 				!Array.isArray(userValue) &&
 				defaultValue &&
-				typeof defaultValue === 'object' &&
+				typeof defaultValue === "object" &&
 				!Array.isArray(defaultValue)
 			) {
 				result[key] = deepMerge(defaultValue as any, userValue as any);
@@ -177,9 +178,7 @@ export async function initializeConfig(): Promise<void> {
  */
 export function getConfig(): StatuslineConfig {
 	if (!initialized) {
-		throw new Error(
-			'Configuration not initialized. Call initializeConfig() first.'
-		);
+		throw new Error("Configuration not initialized. Call initializeConfig() first.");
 	}
 	return config;
 }
@@ -190,7 +189,7 @@ export function getConfig(): StatuslineConfig {
  */
 export function getConfigSync(): StatuslineConfig {
 	if (!initialized) {
-		console.warn('Config not initialized, using default settings');
+		console.warn("Config not initialized, using default settings");
 		return DEFAULT_CONFIG;
 	}
 	return config;

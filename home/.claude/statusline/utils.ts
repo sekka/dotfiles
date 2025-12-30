@@ -129,29 +129,41 @@ export interface TranscriptEntry {
 /**
  * Claude API のレート制限情報
  * 5時間と7日間（週間）の利用率を含みます。
+ * モデル別の制限情報（Sonnet, Opus）もサポートしています。
  *
  * @typedef {Object} UsageLimits
  * @property {Object|null} five_hour - 5時間ウィンドウのレート制限情報
  * @property {number} five_hour.utilization - 利用率パーセンテージ（0-100）
  * @property {string|null} five_hour.resets_at - ISO 8601 形式のリセット時刻、不明な場合は null
- * @property {Object|null} seven_day - 7日間（週間）ウィンドウのレート制限情報
+ * @property {Object|null} seven_day - 7日間（週間）ウィンドウのレート制限情報（全モデル合計）
  * @property {number} seven_day.utilization - 利用率パーセンテージ（0-100）
  * @property {string|null} seven_day.resets_at - ISO 8601 形式のリセット時刻、不明な場合は null
+ * @property {Object|null} seven_day_sonnet - 7日間ウィンドウのSonnet専用レート制限情報
+ * @property {number} seven_day_sonnet.utilization - 利用率パーセンテージ（0-100）
+ * @property {string|null} seven_day_sonnet.resets_at - ISO 8601 形式のリセット時刻、不明な場合は null
+ * @property {Object|null} seven_day_opus - 7日間ウィンドウのOpus専用レート制限情報
+ * @property {number} seven_day_opus.utilization - 利用率パーセンテージ（0-100）
+ * @property {string|null} seven_day_opus.resets_at - ISO 8601 形式のリセット時刻、不明な場合は null
  *
  * @remarks
  * - フィールドが null の場合、その制限情報は利用不可
  * - utilization が 100 に達するとレート制限がかかる
  * - resets_at が null の場合、リセット時刻は不明またはクエリできない状態
+ * - モデル別フィールドはサブスクリプションやプランによって提供されない場合がある
  *
  * @example
  * const limits = {
  *   five_hour: { utilization: 45, resets_at: "2025-01-01T12:00:00Z" },
- *   seven_day: { utilization: 60, resets_at: "2025-01-06T00:00:00Z" }
+ *   seven_day: { utilization: 60, resets_at: "2025-01-06T00:00:00Z" },
+ *   seven_day_sonnet: { utilization: 75, resets_at: "2025-01-06T00:00:00Z" },
+ *   seven_day_opus: null
  * };
  */
 export interface UsageLimits {
 	five_hour: { utilization: number; resets_at: string | null } | null;
 	seven_day: { utilization: number; resets_at: string | null } | null;
+	seven_day_sonnet: { utilization: number; resets_at: string | null } | null;
+	seven_day_opus: { utilization: number; resets_at: string | null } | null;
 }
 
 /**

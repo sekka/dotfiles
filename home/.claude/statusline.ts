@@ -52,13 +52,15 @@ import {
 
 /**
  * ステータスラインの第1行を構築
- * モデル名、ディレクトリ、Git 情報、セッション ID を含みます。
- * 形式：[モデル] 📁 [ディレクトリ名] 🌿 [Git情報] [セッションID]
+ * モデル名、ディレクトリ、Git 情報、セッション情報、セッション ID を含みます。
+ * 形式：[モデル] 📁 [ディレクトリ名] 🌿 [Git情報] [S: セッション時間 コスト] [セッションID]
  *
  * @param {string} model - AI モデル名（例："Claude 3.5 Sonnet"）
  * @param {string} dirName - 現在のディレクトリ名（フルパスの最後の部分）
  * @param {string} gitPart - Git 情報（ブランチ + ahead/behind + diffStats）、なければ空文字列
  * @param {string} sessionId - セッション ID（ユニーク識別子）
+ * @param {string} sessionTimeDisplay - セッション経過時間の表示文字列（例：「2m 30s」）、なければ空文字列
+ * @param {string} costDisplay - セッションコストの表示文字列（例：「$0.05」）、なければ空文字列
  * @param {StatuslineConfig} config - ステータスライン設定（showSessionId フラグ）
  * @returns {string} フォーマット済みの第1行（ANSI カラー付き）
  *
@@ -66,6 +68,7 @@ import {
  * - モデル名はシアン色で表示
  * - ディレクトリとセッション ID はグレー色で表示
  * - config.session.showSessionId が false の場合、セッション ID は表示されない
+ * - config.session.showInFirstLine が true の場合、セッション情報（時間とコスト）は git 情報の後に表示
  * - Git 情報がない場合は 🌿 のセクション全体が表示されない
  *
  * @example
@@ -74,7 +77,9 @@ import {
  *   "statusline",
  *   "feature ↑5",
  *   "abc123xyz",
- *   { session: { showSessionId: true } }
+ *   "1m 30s",
+ *   "$0.05",
+ *   { session: { showSessionId: true, showInFirstLine: true } }
  * );
  */
 function buildFirstLine(
@@ -82,9 +87,17 @@ function buildFirstLine(
 	dirName: string,
 	gitPart: string,
 	sessionId: string,
+	sessionTimeDisplay: string,
+	costDisplay: string,
 	config: StatuslineConfig,
 ): string {
 	let result = `${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`;
+
+	// Add session info (time and cost) if configured to show in first line
+	if (config.session.showInFirstLine && sessionTimeDisplay) {
+		result += ` ${colors.gray("S:")} ${sessionTimeDisplay} ${costDisplay}`;
+	}
+
 	if (config.session.showSessionId) {
 		result += ` ${colors.gray(sessionId)}`;
 	}
@@ -240,7 +253,15 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
 
 	// Build status lines
-	const firstLine = buildFirstLine(model, dirName, gitPart, data.session_id, config);
+	const firstLine = buildFirstLine(
+		model,
+		dirName,
+		gitPart,
+		data.session_id,
+		sessionTimeDisplay,
+		costDisplay,
+		config,
+	);
 	const metricsLine = await buildMetricsLine(
 		config,
 		contextTokens,

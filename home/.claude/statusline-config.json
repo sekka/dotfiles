@@ -8,6 +8,7 @@
 	"rateLimits": {
 		"showFiveHour": true,
 		"showWeekly": true,
+		"showSonnetWeekly": true,
 		"showPeriodCost": true
 	},
 	"costs": {
@@ -19,7 +20,8 @@
 	},
 	"session": {
 		"showSessionId": true,
-		"showElapsedTime": true
+		"showElapsedTime": true,
+		"showInFirstLine": true
 	},
 	"display": {
 		"showSeparators": false

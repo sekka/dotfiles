@@ -63,6 +63,7 @@ export interface StatuslineConfig {
 	session: {
 		showSessionId: boolean; // セッションID表示
 		showElapsedTime: boolean; // 経過時間表示
+		showInFirstLine: boolean; // セッション情報を第1行に表示
 	};
 	display: {
 		showSeparators: boolean; // メトリクス間の区切り表示
@@ -72,6 +73,8 @@ export interface StatuslineConfig {
 export interface UsageLimits {
 	five_hour: { utilization: number; resets_at: string | null } | null;
 	seven_day: { utilization: number; resets_at: string | null } | null;
+	seven_day_sonnet: { utilization: number; resets_at: string | null } | null;
+	seven_day_opus: { utilization: number; resets_at: string | null } | null;
 }
 
 export interface CachedUsageLimits {
