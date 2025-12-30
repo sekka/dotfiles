@@ -36,6 +36,10 @@
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true
 	},
-	"include": ["home/.claude/statusline/**/*.ts", "home/.claude/lib/**/*.ts", "scripts/**/*.ts"],
+	"include": [
+		"home/.claude/statusline/**/*.ts",
+		"home/.claude/lib/**/*.ts", // APEX メソドロジー用タスク管理ライブラリ
+		"scripts/**/*.ts"
+	],
 	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**/*"]
 }

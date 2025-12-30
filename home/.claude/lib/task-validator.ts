@@ -44,56 +44,56 @@ export class TaskValidator {
 			const parsed = parseTaskMarkdown(taskContent);
 
 			// 必須フィールド検証
-			if (!parsed.title || typeof parsed.title !== "string") {
+			if (!parsed["title"] || typeof parsed["title"] !== "string") {
 				errors.push({
 					field: "title",
 					message: "Title is required and must be a string",
 				});
-			} else if (parsed.title.length > 100) {
+			} else if ((parsed["title"] as string).length > 100) {
 				errors.push({
 					field: "title",
 					message: "Title must be 100 characters or less",
-					value: parsed.title,
+					value: parsed["title"],
 				});
 			}
 
 			// Phase検証
-			if (!parsed.phase || typeof parsed.phase !== "string") {
+			if (!parsed["phase"] || typeof parsed["phase"] !== "string") {
 				errors.push({
 					field: "phase",
 					message: "Phase is required",
 				});
-			} else if (!this.isValidPhase(parsed.phase)) {
+			} else if (!this.isValidPhase(parsed["phase"])) {
 				errors.push({
 					field: "phase",
 					message: `Phase must be one of: analyze, plan, execute, examine`,
-					value: parsed.phase,
+					value: parsed["phase"],
 				});
 			}
 
 			// Status検証
-			if (!parsed.status || typeof parsed.status !== "string") {
+			if (!parsed["status"] || typeof parsed["status"] !== "string") {
 				errors.push({
 					field: "status",
 					message: "Status is required",
 				});
-			} else if (!this.isValidStatus(parsed.status)) {
+			} else if (!this.isValidStatus(parsed["status"])) {
 				errors.push({
 					field: "status",
 					message: `Status must be one of: pending, in-progress, completed, blocked`,
-					value: parsed.status,
+					value: parsed["status"],
 				});
 			}
 
 			// 配列フィールド検証
-			if (!Array.isArray(parsed.dependencies)) {
+			if (!Array.isArray(parsed["dependencies"])) {
 				errors.push({
 					field: "dependencies",
 					message: "Dependencies must be an array",
 				});
 			}
 
-			if (!Array.isArray(parsed.success_criteria)) {
+			if (!Array.isArray(parsed["success_criteria"])) {
 				errors.push({
 					field: "success_criteria",
 					message: "Success criteria must be an array",
@@ -101,14 +101,14 @@ export class TaskValidator {
 			}
 
 			// Problem と Solution 検証
-			if (!parsed.problem || typeof parsed.problem !== "string") {
+			if (!parsed["problem"] || typeof parsed["problem"] !== "string") {
 				errors.push({
 					field: "problem",
 					message: "Problem description is required",
 				});
 			}
 
-			if (!parsed.solution || typeof parsed.solution !== "string") {
+			if (!parsed["solution"] || typeof parsed["solution"] !== "string") {
 				errors.push({
 					field: "solution",
 					message: "Solution description is required",
@@ -116,11 +116,12 @@ export class TaskValidator {
 			}
 
 			// Context 検証
+			const context = parsed["context"];
 			if (
-				!parsed.context ||
-				typeof parsed.context !== "object" ||
-				!Array.isArray((parsed.context as Record<string, unknown>).files) ||
-				!Array.isArray((parsed.context as Record<string, unknown>).patterns)
+				!context ||
+				typeof context !== "object" ||
+				!Array.isArray((context as Record<string, unknown>)["files"]) ||
+				!Array.isArray((context as Record<string, unknown>)["patterns"])
 			) {
 				errors.push({
 					field: "context",
@@ -129,19 +130,19 @@ export class TaskValidator {
 			}
 
 			// 日時フィールド検証
-			if (!parsed.created_at || !this.isValidISO8601(parsed.created_at)) {
+			if (!parsed["created_at"] || !this.isValidISO8601(parsed["created_at"])) {
 				errors.push({
 					field: "created_at",
 					message: "Must be valid ISO 8601 datetime",
-					value: parsed.created_at,
+					value: parsed["created_at"],
 				});
 			}
 
-			if (!parsed.updated_at || !this.isValidISO8601(parsed.updated_at)) {
+			if (!parsed["updated_at"] || !this.isValidISO8601(parsed["updated_at"])) {
 				errors.push({
 					field: "updated_at",
 					message: "Must be valid ISO 8601 datetime",
-					value: parsed.updated_at,
+					value: parsed["updated_at"],
 				});
 			}
 
@@ -251,7 +252,9 @@ function parseTaskMarkdown(content: string): Record<string, unknown> {
 	let frontmatterCount = 0;
 
 	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].trim();
+		const currentLine = lines[i];
+		if (!currentLine) continue;
+		const line = currentLine.trim();
 
 		// Frontmatter処理
 		if (line === "---") {
@@ -294,35 +297,36 @@ function parseTaskMarkdown(content: string): Record<string, unknown> {
 		// セクション内容処理
 		if (currentSection === "dependencies" && line.startsWith("- ")) {
 			const dep = line.substring(2).trim();
-			if (dep && Array.isArray(result.dependencies)) {
-				(result.dependencies as string[]).push(dep);
+			if (dep && Array.isArray(result["dependencies"])) {
+				(result["dependencies"] as string[]).push(dep);
 			}
 		}
 
 		if (currentSection === "context") {
 			if (line.startsWith("**Files:**") || line.startsWith("- ")) {
 				const file = line.replace(/^\*\*Files:\*\*\s*/, "").replace(/^- /, "").trim();
+				const ctx = result["context"];
 				if (
 					file &&
-					result.context &&
-					typeof result.context === "object" &&
-					Array.isArray((result.context as Record<string, unknown>).files)
+					ctx &&
+					typeof ctx === "object" &&
+					Array.isArray((ctx as Record<string, unknown>)["files"])
 				) {
-					((result.context as Record<string, unknown>).files as string[]).push(file);
+					((ctx as Record<string, unknown>)["files"] as string[]).push(file);
 				}
 			}
 		}
 
 		if (currentSection === "success_criteria" && line.startsWith("- ")) {
 			const criterion = line.substring(2).trim();
-			if (criterion && Array.isArray(result.success_criteria)) {
-				(result.success_criteria as string[]).push(criterion);
+			if (criterion && Array.isArray(result["success_criteria"])) {
+				(result["success_criteria"] as string[]).push(criterion);
 			}
 		}
 
 		// タイトル抽出
 		if (line.startsWith("# ")) {
-			result.title = line.substring(2).trim();
+			result["title"] = line.substring(2).trim();
 		}
 	}
 
