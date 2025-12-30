@@ -4,10 +4,55 @@ import { realpath } from "fs/promises";
 import { type GitStatus, type StatuslineConfig } from "./utils.ts";
 import { debug } from "./logging.ts";
 import { SecurityValidator } from "./security.ts";
+import { GIT_COMMAND_TIMEOUT_MS } from "./constants.ts";
 
 // ============================================================================
 // Git Operations
 // ============================================================================
+
+/**
+ * Phase 1: タイムアウト付きで git コマンドを実行
+ * Bun.spawn() でタイムアウト付きで git コマンドを実行し、無限待機を防止
+ *
+ * @param {string[]} cmd - git コマンドとその引数（例: ["git", "status"]）
+ * @param {string} cwd - 作業ディレクトリ
+ * @param {number} timeoutMs - タイムアウト時間（ミリ秒）、デフォルト 5000ms
+ * @returns {Promise<Bun.Subprocess>} タイムアウト付きで実行された subprocess
+ * @throws {Error} タイムアウト超過時は エラーをスロー
+ */
+async function spawnWithTimeout(
+	cmd: string[],
+	cwd: string,
+	timeoutMs: number = GIT_COMMAND_TIMEOUT_MS,
+): Promise<Bun.Subprocess> {
+	const proc = Bun.spawn({
+		cmd,
+		cwd,
+		stdout: "pipe",
+		stderr: "pipe",
+	});
+
+	// Phase 1: Timeout protection using AbortController
+	// This prevents git commands from hanging indefinitely
+	const timeoutPromise = new Promise<never>((_, reject) => {
+		const timer = setTimeout(() => {
+			proc.kill();
+			reject(new Error(`Git command timed out after ${timeoutMs}ms: ${cmd.join(" ")}`));
+		}, timeoutMs);
+
+		// Cleanup timer when process completes
+		proc.exited.then(() => clearTimeout(timer)).catch(() => clearTimeout(timer));
+	});
+
+	// Race between process completion and timeout
+	try {
+		await Promise.race([proc.exited, timeoutPromise]);
+	} catch {
+		// Timeout occurred, already killed the process above
+	}
+
+	return proc;
+}
 
 /**
  * 現在のディレクトリの Git ステータスを取得
@@ -52,13 +97,11 @@ export async function getGitStatus(
 	}
 
 	try {
-		// Get branch name
-		const branchProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "branch", "--show-current"],
-			cwd: currentDir,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
+		// Get branch name with timeout protection
+		const branchProc = await spawnWithTimeout(
+			["git", "--no-optional-locks", "branch", "--show-current"],
+			currentDir,
+		);
 
 		const branchStdout = await new Response(branchProc.stdout).text();
 		const branch = branchStdout.trim();
@@ -124,23 +167,12 @@ export async function getGitStatus(
  */
 async function determineParentBranch(cwd: string): Promise<string | null> {
 	try {
-		// Performance optimization: Check both branches in parallel
+		// Performance optimization: Check both branches in parallel with timeout
 		const [mainProc, masterProc] = await Promise.all([
-			Promise.resolve(
-				Bun.spawn({
-					cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"],
-					cwd,
-					stdout: "pipe",
-					stderr: "pipe",
-				}),
-			),
-			Promise.resolve(
-				Bun.spawn({
-					cmd: ["git", "--no-optional-locks", "rev-parse", "--verify", "origin/master"],
-					cwd,
-					stdout: "pipe",
-					stderr: "pipe",
-				}),
+			spawnWithTimeout(["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"], cwd),
+			spawnWithTimeout(
+				["git", "--no-optional-locks", "rev-parse", "--verify", "origin/master"],
+				cwd,
 			),
 		]);
 
@@ -192,24 +224,16 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 		const parentBranch = await determineParentBranch(cwd);
 		if (!parentBranch) return null;
 
-		// Performance optimization: Calculate ahead/behind counts in parallel
+		// Performance optimization: Calculate ahead/behind counts in parallel with timeout
 		// Both operations are independent and can run simultaneously
 		const [aheadProc, behindProc] = await Promise.all([
-			Promise.resolve(
-				Bun.spawn({
-					cmd: ["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
-					cwd,
-					stdout: "pipe",
-					stderr: "pipe",
-				}),
+			spawnWithTimeout(
+				["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
+				cwd,
 			),
-			Promise.resolve(
-				Bun.spawn({
-					cmd: ["git", "--no-optional-locks", "rev-list", "--count", `HEAD..${parentBranch}`],
-					cwd,
-					stdout: "pipe",
-					stderr: "pipe",
-				}),
+			spawnWithTimeout(
+				["git", "--no-optional-locks", "rev-list", "--count", `HEAD..${parentBranch}`],
+				cwd,
 			),
 		]);
 
@@ -372,24 +396,13 @@ async function readUntrackedFileStats(
  */
 export async function getDiffStats(cwd: string): Promise<string | null> {
 	try {
-		// Get unstaged diff
-		const unstagedProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "diff", "--numstat"],
-			cwd,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
+		// Get unstaged and staged diffs in parallel with timeout
+		const [unstagedProc, stagedProc] = await Promise.all([
+			spawnWithTimeout(["git", "--no-optional-locks", "diff", "--numstat"], cwd),
+			spawnWithTimeout(["git", "--no-optional-locks", "diff", "--cached", "--numstat"], cwd),
+		]);
 
 		const unstagedDiff = await new Response(unstagedProc.stdout).text();
-
-		// Get staged diff
-		const stagedProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "diff", "--cached", "--numstat"],
-			cwd,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
-
 		const stagedDiff = await new Response(stagedProc.stdout).text();
 
 		// Parse diff stats
@@ -412,13 +425,11 @@ export async function getDiffStats(cwd: string): Promise<string | null> {
 		parseDiff(unstagedDiff);
 		parseDiff(stagedDiff);
 
-		// Get untracked files
-		const untrackedProc = Bun.spawn({
-			cmd: ["git", "--no-optional-locks", "ls-files", "--others", "--exclude-standard"],
+		// Get untracked files with timeout
+		const untrackedProc = await spawnWithTimeout(
+			["git", "--no-optional-locks", "ls-files", "--others", "--exclude-standard"],
 			cwd,
-			stdout: "pipe",
-			stderr: "pipe",
-		});
+		);
 
 		const untrackedOutput = await new Response(untrackedProc.stdout).text();
 		const untrackedFiles = untrackedOutput.trim().split("\n");

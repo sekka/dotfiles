@@ -7,6 +7,7 @@ import { isValidStatuslineConfig, isValidUsageLimits, sanitizeForLogging } from 
 import { debug } from "./logging.ts";
 import { type StatuslineServices } from "./interfaces.ts";
 import { createDefaultServices } from "./providers.ts";
+import { API_CALL_TIMEOUT_MS } from "./constants.ts";
 
 // ============================================================================
 // Rate Limit Features (Phase 2)
@@ -115,7 +116,7 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 				"anthropic-beta": "oauth-2025-04-20",
 				"Accept-Encoding": "gzip, compress, deflate, br",
 			},
-			signal: AbortSignal.timeout(5000),
+			signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
 		});
 
 		debug(`API response status: ${response.status}`, "verbose");
@@ -124,12 +125,12 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 		if (response.status === 429) {
 			const retryAfter = response.headers.get("Retry-After");
 			const waitSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
-			console.error(`[ERROR] API rate limited, retry after ${waitSeconds}s`);
+			debug(`API rate limited, retry after ${waitSeconds}s`, "error");
 			return null; // Return null to use cache instead
 		}
 
 		if (!response.ok) {
-			console.error(`[ERROR] API request failed: ${response.status}`);
+			debug(`API request failed: ${response.status}`, "error");
 			return null;
 		}
 
@@ -138,7 +139,7 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 
 		// Validate API response
 		if (!isValidUsageLimits(data)) {
-			console.error(`[ERROR] API response validation failed`);
+			debug(`API response validation failed`, "error");
 			return null;
 		}
 
@@ -252,34 +253,34 @@ export async function loadConfigCached(): Promise<StatuslineConfig> {
 
 export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
-	console.error(`[DEBUG] Checking cache file: ${cacheFile}`);
+	debug(`Checking cache file: ${cacheFile}`, "verbose");
 
 	// Try to load from cache
 	try {
 		const cache: CachedUsageLimits = await Bun.file(cacheFile).json();
 		const age = Date.now() - cache.timestamp;
-		console.error(`[DEBUG] Cache found, age: ${age}ms, TTL: ${CACHE_TTL_MS}ms`);
+		debug(`Cache found, age: ${age}ms, TTL: ${CACHE_TTL_MS}ms`, "verbose");
 		if (age < CACHE_TTL_MS) {
-			console.error(`[DEBUG] Cache valid, returning data`);
+			debug(`Cache valid, returning data`, "verbose");
 			return cache.data;
 		}
-		console.error(`[DEBUG] Cache expired`);
+		debug(`Cache expired`, "verbose");
 	} catch (e) {
 		// Cache doesn't exist or is invalid
-		console.error(`[DEBUG] Cache error: ${e instanceof Error ? e.message : String(e)}`);
+		debug(`Cache error: ${e instanceof Error ? e.message : String(e)}`, "verbose");
 	}
 
 	// Fetch from API
-	console.error(`[DEBUG] Fetching from API...`);
+	debug(`Fetching from API...`, "verbose");
 	const token = await getClaudeApiToken();
 	if (!token) {
-		console.error(`[DEBUG] No API token found`);
+		debug(`No API token found`, "verbose");
 		return null;
 	}
 
-	console.error(`[DEBUG] API token found, fetching limits...`);
+	debug(`API token found, fetching limits...`, "verbose");
 	const limits = await fetchUsageLimits(token);
-	console.error(`[DEBUG] API response: ${JSON.stringify(limits)}`);
+	debug(`API response: ${JSON.stringify(limits)}`, "verbose");
 	if (limits) {
 		try {
 			// Security: Create file with secure permissions (0o600) from the start
@@ -317,11 +318,11 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 			// Phase 1.6: Enhanced error handling for cache write
 			const errorMsg = e instanceof Error ? e.message : String(e);
 			if (errorMsg.includes("EACCES")) {
-				console.error(`[ERROR] Permission denied writing cache: ${errorMsg}`);
+				debug(`Permission denied writing cache: ${errorMsg}`, "error");
 			} else if (errorMsg.includes("ENOENT")) {
-				console.error(`[ERROR] Cache directory does not exist: ${errorMsg}`);
+				debug(`Cache directory does not exist: ${errorMsg}`, "error");
 			} else {
-				console.error(`[ERROR] Failed to write cache file: ${errorMsg}`);
+				debug(`Failed to write cache file: ${errorMsg}`, "error");
 			}
 		}
 	}
@@ -727,7 +728,7 @@ export class CacheService {
 		// APIから取得
 		const token = await this.services.tokenProvider.getToken();
 		if (!token) {
-			console.error(`[DEBUG] No API token found`);
+			debug(`No API token found`, "verbose");
 			return null;
 		}
 
