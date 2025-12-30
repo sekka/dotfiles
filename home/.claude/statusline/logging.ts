@@ -56,14 +56,27 @@ function getDebugLevel(): DebugLevel {
 export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
 
 /**
+ * ログレベル優先度マップ
+ * 数値が小さいほど高い優先度（重要度が高い）
+ * @type {Record<DebugLevel, number>}
+ */
+const LEVEL_PRIORITY: Record<DebugLevel, number> = {
+	off: 0,
+	error: 1,
+	warning: 2,
+	basic: 3,
+	verbose: 4,
+};
+
+/**
  * レベル制御を有効にしたデバッグ出力を実行
  *
  * 出力内容はDEBUG_LEVEL設定に従う：
  * - "off": 出力しない
- * - "basic": basic レベルのメッセージのみ出力
+ * - "basic": basic レベルのメッセージのみ出力（error、warning は常に出力）
  * - "verbose": すべてのメッセージ（basic、verbose、error、warning）を出力
  * - "error": エラーメッセージのみ出力
- * - "warning": 警告メッセージを出力
+ * - "warning": 警告とエラーメッセージを出力（basic、verbose は除外）
  *
  * @param {string} message - 出力するデバッグメッセージ
  * @param {DebugLevel} [level="basic"] - メッセージレベル
@@ -76,9 +89,12 @@ export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
  */
 export function debug(message: string, level: DebugLevel = "basic"): void {
 	if (DEBUG_LEVEL === "off") return;
-	if (DEBUG_LEVEL === "basic" && (level === "verbose" || level === "error" || level === "warning"))
-		return;
-	if (DEBUG_LEVEL === "error" && level !== "error") return;
-	if (DEBUG_LEVEL === "warning" && (level === "basic" || level === "verbose")) return;
+
+	const currentPriority = LEVEL_PRIORITY[DEBUG_LEVEL];
+	const messagePriority = LEVEL_PRIORITY[level];
+
+	// 優先度が高い（数値が小さい）メッセージのみ出力
+	if (messagePriority > currentPriority) return;
+
 	console.error(`[DEBUG] ${message}`);
 }

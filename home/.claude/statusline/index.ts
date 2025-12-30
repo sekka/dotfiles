@@ -28,7 +28,7 @@ export {
 } from "./constants.ts";
 
 // Debug
-export { type DebugLevel, validateDebugLevel, DEBUG_LEVEL, debug } from "./debug.ts";
+export { type DebugLevel, validateDebugLevel, DEBUG_LEVEL, debug } from "./logging.ts";
 
 // Validation
 export { isValidUsageLimits } from "./validation/limits.ts";
