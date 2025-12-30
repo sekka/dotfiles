@@ -88,12 +88,22 @@ export function validateCommitMessage(message: string): ValidationResult {
 	}
 
 	// 7. 最初の行の長さ制限（Gitコンベンション）
+	// コメント行と空行を除外して最初の実質的な行を取得
 	const lines = message.split("\n");
-	const firstLine = lines[0];
+	const firstLine = lines.find((line) => line.trim() && !line.trim().startsWith("#")) || "";
 	const maxFirstLineLength = 72;
-	if (firstLine.length > maxFirstLineLength) {
+
+	// Unicodeコードポイント数で計算（絵文字を正しく数える）
+	const titleLength = Array.from(firstLine).length;
+
+	if (titleLength > maxFirstLineLength) {
+		// タイトルのプレビュー表示（100文字まで）
+		const preview = firstLine.length > 100 ? firstLine.slice(0, 97) + "..." : firstLine;
+		const excess = titleLength - maxFirstLineLength;
 		errors.push(
-			`コミットタイトルが長すぎます（${firstLine.length}文字 / 推奨${maxFirstLineLength}文字以下）`,
+			`コミットタイトルが長すぎます（${titleLength}文字 / 推奨${maxFirstLineLength}文字以下）\n` +
+				`  タイトル: "${preview}"\n` +
+				`  削減が必要: ${excess}文字`,
 		);
 	}
 
