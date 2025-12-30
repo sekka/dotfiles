@@ -3,13 +3,11 @@
 		// Phase 2C: TypeScript Strict Mode
 		// Recommended strict checks for production code quality
 		"strict": true,
-		"noImplicitAny": true,
-		"noImplicitThis": true,
-		"strictNullChecks": true,
-		"strictFunctionTypes": true,
-		"strictBindCallApply": true,
-		"strictPropertyInitialization": true,
-		"noImplicitReturns": true,
+		// Note: strict: true automatically enables:
+		// noImplicitAny, noImplicitThis, strictNullChecks, strictFunctionTypes,
+		// strictBindCallApply, strictPropertyInitialization, noImplicitReturns
+
+		// Additional strict checks not included in "strict: true"
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": true,
 		"noPropertyAccessFromIndexSignature": true,

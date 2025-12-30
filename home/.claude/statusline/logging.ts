@@ -41,11 +41,21 @@ export function validateDebugLevel(value: string | undefined): DebugLevel {
  * - process.env.STATUSLINE_DEBUG への直接アクセスを集約
  * - 暗黙的な undefined の処理を明示的に実行
  * - デフォルト値を "off" に統一
+ * - Phase 3: 不正な値が設定された場合は警告を出力
  */
 function getDebugLevel(): DebugLevel {
 	// Phase 2A: null coalescing で undefined を "off" に置換
 	// これにより、process.env.STATUSLINE_DEBUG が undefined でも安全に処理可能
 	const envValue = process.env.STATUSLINE_DEBUG ?? "off";
+
+	// Phase 3: 不正な値の検出と警告
+	const validLevels = ["off", "basic", "verbose", "error", "warning"];
+	if (envValue !== "off" && !validLevels.includes(envValue.toLowerCase())) {
+		console.error(
+			`[WARN] Invalid STATUSLINE_DEBUG value: "${envValue}". Valid values: ${validLevels.join(", ")}. Falling back to "off".`,
+		);
+	}
+
 	return validateDebugLevel(envValue);
 }
 
