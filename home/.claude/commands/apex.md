@@ -107,3 +107,86 @@ Before completing each phase:
 - Test ONLY what you changed
 - Priority: Correctness > Completeness > Speed
   </execution_rules>
+
+<task_management>
+
+## APEX Task Management
+
+Complex implementation projects can create detailed task files in `.claude/tasks/` to track progress across the four phases.
+
+**Task file structure**:
+
+```markdown
+---
+title: Task Title (max 100 characters)
+phase: analyze|plan|execute|examine
+status: pending|in-progress|completed|blocked
+problem: Description of the problem to solve
+solution: Proposed solution approach
+dependencies: [Task #1, Task #2]
+created_at: 2025-12-30T10:00:00Z
+updated_at: 2025-12-30T10:00:00Z
+---
+
+## Context
+
+### Files
+- src/important/file.ts
+- tests/test-file.ts
+
+### Patterns
+- REST API endpoint pattern
+- Error handling convention
+
+## Success Criteria
+
+- Clear measurement of completion
+- Specific, testable outcomes
+
+```
+
+**Task validation**:
+
+All task files must conform to the TaskFile schema (TypeScript types in `.claude/lib/task-schema.ts`). Use the task-validator to ensure tasks are valid before proceeding:
+
+```typescript
+import { TaskValidator } from './.claude/lib/task-validator';
+
+const validator = new TaskValidator();
+const result = validator.validate(taskContent);
+
+if (!result.valid) {
+  console.error('Validation errors:', result.errors);
+} else {
+  console.log('Task is valid:', result.data);
+}
+```
+
+**Phase transitions**:
+
+Tasks follow a strict phase progression: `analyze` → `plan` → `execute` → `examine`
+
+Validator prevents invalid transitions:
+
+```typescript
+// Valid transition
+validator.validatePhaseTransition('analyze', 'plan'); // true
+
+// Invalid transitions
+validator.validatePhaseTransition('analyze', 'execute'); // false (skip)
+validator.validatePhaseTransition('plan', 'analyze'); // false (backward)
+```
+
+**Creating complex tasks**:
+
+For large implementations, create a task before starting APEX:
+
+1. Create `.claude/tasks/NNN-task-name/task.md` with title, phase:analyze, status:pending
+2. Complete ANALYZE phase, update phase:plan, status:in-progress
+3. Get user approval on plan, maintain current status
+4. Execute changes, update phase:execute
+5. Examine and test, update phase:examine, status:completed
+
+This provides clear progress tracking and decision history for complex work.
+
+</task_management>
