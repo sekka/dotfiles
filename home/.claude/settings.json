@@ -3,6 +3,7 @@
 		"DISABLE_AUTOUPDATER": "1"
 	},
 	"model": "haiku",
+	"includeCoAuthoredBy": false,
 	"hooks": {
 		"PreToolUse": [
 			{
@@ -10,7 +11,7 @@
 				"hooks": [
 					{
 						"type": "command",
-						"command": "bun $HOME/dotfiles/scripts/development/safe-command.ts"
+						"command": "bun $HOME/dotfiles/scripts/development/command-validator/src/cli.ts"
 					}
 				]
 			}

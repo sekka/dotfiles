@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * git-fzf-add
+ * git-fzf-add - Simple-Git + Execa版
  *
  * Gitの変更ファイルをfzfで選択してステージングする
  *
@@ -12,71 +12,71 @@
  *   Ctrl+D  - 選択ファイルのdiffを表示
  */
 
-import { $ } from "bun";
+import simpleGit from "simple-git";
+import { execa } from "execa";
+
+const git = simpleGit();
 
 /**
  * gitリポジトリ内かどうかを確認
  */
 export async function isGitRepository(): Promise<boolean> {
-	const result = await $`git rev-parse --git-dir`.quiet().nothrow();
-	return result.exitCode === 0;
+	try {
+		await git.revparse(["--git-dir"]);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 /**
  * 変更されたファイルの一覧を取得
  */
 export async function getChangedFiles(): Promise<string[]> {
-	const result = await $`git diff -z --name-only --diff-filter=ACMRU`.quiet().nothrow();
-
-	if (result.exitCode !== 0 || !result.stdout.length) {
+	try {
+		const diff = await git.diff(["--name-only", "--diff-filter=ACMRU"]);
+		return diff.split("\n").filter((f) => f.length > 0);
+	} catch {
 		return [];
 	}
-
-	return result.stdout
-		.toString()
-		.split("\0")
-		.filter((f) => f.length > 0);
 }
 
 /**
  * fzfでファイルを選択
+ * Execa の input パラメータを直接使用して null byte を安全に処理
  */
 export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
 	if (files.length === 0) {
 		return [];
 	}
 
-	// NUL区切りで入力を渡す
 	const input = files.join("\0");
+	const fzfCmd = process.env.TMUX ? "fzf-tmux" : "fzf";
+	const args = [
+		...(process.env.TMUX ? ["-p", "90%,90%", "--"] : []),
+		"--read0",
+		"--print0",
+		"--multi",
+		"--preview",
+		"git diff --color=always {} 2>/dev/null || cat {}",
+		"--preview-window=right:60%:wrap",
+		"--header",
+		"Select files to add (Tab: multi-select, Ctrl-d: diff)",
+		"--bind",
+		"ctrl-d:execute(git diff --color=always {} | less -R)",
+	];
 
-	// tmuxセッション内ならpopup表示、外なら通常のfzf
-	let result: Awaited<ReturnType<typeof $>>;
-	if (process.env.TMUX) {
-		result = await $`echo -n ${input} | fzf-tmux -p 90%,90% -- --read0 --print0 --multi \
-    --preview "git diff --color=always {} 2>/dev/null || cat {}" \
-    --preview-window=right:60%:wrap \
-    --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
-    --bind "ctrl-d:execute(git diff --color=always {} | less -R)"`
-			.quiet()
-			.nothrow();
-	} else {
-		result = await $`echo -n ${input} | fzf --read0 --print0 --multi \
-    --preview "git diff --color=always {} 2>/dev/null || cat {}" \
-    --preview-window=right:60%:wrap \
-    --header "Select files to add (Tab: multi-select, Ctrl-d: diff)" \
-    --bind "ctrl-d:execute(git diff --color=always {} | less -R)"`
-			.quiet()
-			.nothrow();
-	}
-
-	if (result.exitCode !== 0 || !result.stdout.length) {
+	try {
+		// Shell を経由せず、Execa の input パラメータを直接使用
+		// これにより null byte を安全に処理でき、shell injection リスクが低減される
+		const { stdout } = await execa(fzfCmd, args, {
+			input: input,
+			reject: false,
+		});
+		return stdout.split("\0").filter((f) => f.length > 0);
+	} catch {
 		return [];
 	}
-
-	return result.stdout
-		.toString()
-		.split("\0")
-		.filter((f) => f.length > 0);
 }
 
 /**
@@ -87,8 +87,12 @@ export async function stageFiles(files: string[]): Promise<boolean> {
 		return false;
 	}
 
-	const result = await $`git add ${files}`.quiet().nothrow();
-	return result.exitCode === 0;
+	try {
+		await git.add(files);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 /**

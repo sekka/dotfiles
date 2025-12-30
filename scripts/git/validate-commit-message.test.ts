@@ -99,6 +99,54 @@ describe("validateCommitMessage - 基本機能", () => {
 		const result = validateCommitMessage("fix: Update eval function description");
 		expect(result.valid).toBe(true);
 	});
+
+	// 新しいテストケース：コメント行と空行のスキップ
+	it("should skip comment lines when finding first line", () => {
+		const message = "# This is a comment\n# Another comment\nfix: actual title";
+		const result = validateCommitMessage(message);
+		expect(result.valid).toBe(true);
+	});
+
+	it("should skip empty lines when finding first line", () => {
+		const message = "\n\nfix: title after empty lines";
+		const result = validateCommitMessage(message);
+		expect(result.valid).toBe(true);
+	});
+
+	it("should handle mixed empty lines and comments", () => {
+		const message = "\n# Comment\n\nfix: real title";
+		const result = validateCommitMessage(message);
+		expect(result.valid).toBe(true);
+	});
+
+	// 絵文字テスト
+	it("should count emoji as single character", () => {
+		const titleWithEmoji = "fix: " + "🐛".repeat(35); // 5 + 35 = 40文字
+		const result = validateCommitMessage(titleWithEmoji);
+		expect(result.valid).toBe(true); // 40文字 < 72文字
+	});
+
+	it("should reject title with too many emojis", () => {
+		const titleWithEmoji = "fix: " + "🐛".repeat(70); // 5 + 70 = 75文字
+		const result = validateCommitMessage(titleWithEmoji);
+		expect(result.valid).toBe(false); // 75文字 > 72文字制限
+	});
+
+	// 長すぎるタイトルのエラーメッセージテスト
+	it("should provide helpful error message for too long title", () => {
+		const longTitle = "fix: " + "a".repeat(70); // 74文字
+		const result = validateCommitMessage(longTitle);
+		expect(result.valid).toBe(false);
+		expect(result.errors[0]).toContain("削減が必要");
+		expect(result.errors[0]).toContain("2文字"); // 74 - 72 = 2
+	});
+
+	it("should show title preview in error message", () => {
+		const longTitle = "fix: " + "long".repeat(30); // かなり長いタイトル
+		const result = validateCommitMessage(longTitle);
+		expect(result.valid).toBe(false);
+		expect(result.errors[0]).toContain("タイトル:");
+	});
 });
 
 describe("hasCommandInjectionPattern", () => {
