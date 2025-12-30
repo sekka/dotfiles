@@ -5,6 +5,7 @@
       "Bash(brew list:*)",
       "Bash(bun:*)",
       "Bash(bunx @biomejs/biome:*)",
+      "Bash(bunx tsc:*)",
       "Bash(cat:*)",
       "Bash(chmod:*)",
       "Bash(claude help:*)",
@@ -58,6 +59,7 @@
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
+      "mcp__plugin_claude-mem_mem-search__*",
       "mcp__plugin_playwright_playwright__*",
       "mcp__plugin_serena_serena__*",
       "mcp__sequential-thinking__sequentialthinking",
@@ -71,6 +73,7 @@
       "Skill(review-with-gemini)",
       "Skill(review-with-multi-ai)",
       "WebFetch(domain:azukiazusa.dev)",
+      "WebFetch(domain:bundlephobia.com)",
       "WebFetch(domain:coliss.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:ghostty.org)",
@@ -81,14 +84,9 @@
       "WebFetch(domain:oraios.github.io)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:sheldon.cli.rs)",
+      "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebSearch",
-      "Bash(bunx tsc:*)",
-      "mcp__plugin_claude-mem_mem-search__get_recent_context",
-      "mcp__plugin_claude-mem_mem-search__search",
-      "mcp__plugin_claude-mem_mem-search__get_observation",
-      "WebFetch(domain:bundlephobia.com)",
-      "WebFetch(domain:www.npmjs.com)"
+      "WebSearch"
     ],
     "deny": [
       "Read(./.env.*)"
