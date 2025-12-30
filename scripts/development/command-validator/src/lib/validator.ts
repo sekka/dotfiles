@@ -347,4 +347,35 @@ export class CommandValidator {
 
 		return false;
 	}
+
+	/**
+	 * POSIX シェルエスケープ
+	 * 単一引用符でラップし、内部のシングルクォートをエスケープ
+	 *
+	 * @param arg - エスケープする文字列
+	 * @returns エスケープされた文字列
+	 *
+	 * @example
+	 * shellEscape("hello'world") // => 'hello'"'"'world'
+	 * shellEscape("test") // => 'test'
+	 */
+	shellEscape(arg: string): string {
+		return "'" + arg.replace(/'/g, "'\\''") + "'";
+	}
+
+	/**
+	 * 安全なコマンド実行文字列の生成
+	 * パラメータ化されたコマンドを構築（インジェクション対策）
+	 *
+	 * @param cmd - コマンド名
+	 * @param args - コマンド引数の配列
+	 * @returns シェルエスケープされた安全なコマンド文字列
+	 *
+	 * @example
+	 * buildSafeCommand("echo", ["hello", "world's"]) // => echo 'hello' 'world'"'"'s'
+	 */
+	buildSafeCommand(cmd: string, args: string[]): string {
+		const escapedArgs = args.map((arg) => this.shellEscape(arg));
+		return escapedArgs.length > 0 ? `${cmd} ${escapedArgs.join(" ")}` : cmd;
+	}
 }

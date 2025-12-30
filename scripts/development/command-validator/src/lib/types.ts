@@ -31,3 +31,18 @@ export interface HookOutput {
 		permissionDecisionReason: string;
 	};
 }
+
+/**
+ * 安全なコマンド実行ビルダーの型
+ * シェルインジェクション対策用のパラメータ化コマンド構築
+ */
+export interface SafeCommandBuilder {
+	/** 実行するコマンド */
+	command: string;
+
+	/** コマンドの引数配列 */
+	args: string[];
+
+	/** シェルエスケープされた実行可能な文字列 */
+	escaped: string;
+}
