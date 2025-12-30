@@ -35,7 +35,7 @@ async function getClaudeApiToken(): Promise<string | null> {
 
 		// 基本的な形式チェック
 		if (!trimmedOutput.startsWith("{")) {
-			console.error("[ERROR] Invalid credential format from Keychain");
+			debug(`Invalid credential format from Keychain`, "error");
 			return null;
 		}
 
@@ -44,13 +44,13 @@ async function getClaudeApiToken(): Promise<string | null> {
 			credentials = JSON.parse(trimmedOutput);
 		} catch (e) {
 			const errorMsg = e instanceof Error ? e.message : String(e);
-			console.error(`[ERROR] Failed to parse credentials: ${errorMsg}`);
+			debug(`Failed to parse credentials: ${errorMsg}`, "error");
 			return null;
 		}
 
 		// 構造バリデーション
 		if (typeof credentials !== "object" || !credentials.claudeAiOauth) {
-			console.error("[ERROR] Invalid credentials structure from Keychain");
+			debug(`Invalid credentials structure from Keychain`, "error");
 			return null;
 		}
 
@@ -58,13 +58,13 @@ async function getClaudeApiToken(): Promise<string | null> {
 
 		// トークンの有効性チェック
 		if (typeof token !== "string" || token.length === 0) {
-			console.error("[ERROR] No valid access token found in credentials");
+			debug(`No valid access token found in credentials`, "error");
 			return null;
 		}
 
 		// 基本的なトークン形式チェック（最小限の長さ）
 		if (token.length < 10) {
-			console.error("[ERROR] Access token appears invalid (too short)");
+			debug(`Access token appears invalid (too short)`, "error");
 			return null;
 		}
 
@@ -73,11 +73,11 @@ async function getClaudeApiToken(): Promise<string | null> {
 		const errorMsg = e instanceof Error ? e.message : String(e);
 
 		if (errorMsg.includes("ENOENT")) {
-			console.error("[ERROR] Credentials not found in Keychain");
+			debug(`Credentials not found in Keychain`, "error");
 		} else if (errorMsg.includes("EACCES")) {
-			console.error("[ERROR] Permission denied accessing Keychain");
+			debug(`Permission denied accessing Keychain`, "error");
 		} else {
-			console.error("[ERROR] Failed to retrieve credentials from Keychain");
+			debug(`Failed to retrieve credentials from Keychain: ${errorMsg}`, "error");
 		}
 		return null;
 	}
@@ -148,13 +148,13 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 		const errorMsg = e instanceof Error ? e.message : String(e);
 
 		if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
-			console.error(`[ERROR] API request timeout`);
+			debug(`API request timeout`, "error");
 		} else if (errorMsg.includes("fetch") || errorMsg.includes("Network")) {
-			console.error(`[ERROR] Network error accessing API`);
+			debug(`Network error accessing API: ${errorMsg}`, "error");
 		} else if (errorMsg.includes("JSON")) {
-			console.error(`[ERROR] Invalid JSON response from API`);
+			debug(`Invalid JSON response from API: ${errorMsg}`, "error");
 		} else {
-			console.error(`[ERROR] API request failed`);
+			debug(`API request failed: ${errorMsg}`, "error");
 		}
 		return null;
 	}
@@ -169,17 +169,17 @@ async function loadConfig(): Promise<StatuslineConfig> {
 
 	try {
 		const rawConfig = await Bun.file(localConfigFile).json();
-		console.error(`[DEBUG] Loaded user config from ${localConfigFile}`);
+		debug(`Loaded user config from ${localConfigFile}`, "verbose");
 
 		// カスタム検証関数で検証
 		if (isValidStatuslineConfig(rawConfig)) {
 			validatedConfig = rawConfig;
-			console.error(`[DEBUG] Config validated successfully from ${localConfigFile}`);
+			debug(`Config validated successfully from ${localConfigFile}`, "verbose");
 		} else {
-			console.error(`[DEBUG] Config validation failed from ${localConfigFile}`);
+			debug(`Config validation failed from ${localConfigFile}`, "warning");
 		}
 	} catch {
-		console.error(`[DEBUG] User config not found at ${localConfigFile}`);
+		debug(`User config not found at ${localConfigFile}`, "verbose");
 	}
 
 	// Try to load dotfiles config (fallback if no user override)
@@ -187,17 +187,17 @@ async function loadConfig(): Promise<StatuslineConfig> {
 		const dotfilesConfigFile = `${HOME}/dotfiles/home/.claude/statusline-config.json`;
 		try {
 			const rawConfig = await Bun.file(dotfilesConfigFile).json();
-			console.error(`[DEBUG] Loaded dotfiles config from ${dotfilesConfigFile}`);
+			debug(`Loaded dotfiles config from ${dotfilesConfigFile}`, "verbose");
 
 			// カスタム検証関数で検証
 			if (isValidStatuslineConfig(rawConfig)) {
 				validatedConfig = rawConfig;
-				console.error(`[DEBUG] Config validated successfully from ${dotfilesConfigFile}`);
+				debug(`Config validated successfully from ${dotfilesConfigFile}`, "verbose");
 			} else {
-				console.error(`[DEBUG] Config validation failed from ${dotfilesConfigFile}`);
+				debug(`Config validation failed from ${dotfilesConfigFile}`, "warning");
 			}
 		} catch {
-			console.error(`[DEBUG] Dotfiles config not found at ${dotfilesConfigFile}`);
+			debug(`Dotfiles config not found at ${dotfilesConfigFile}`, "verbose");
 		}
 	}
 
@@ -214,7 +214,7 @@ async function loadConfig(): Promise<StatuslineConfig> {
 	}
 
 	// Return default if no config found
-	console.error(`[DEBUG] No config found, using DEFAULT_CONFIG`);
+	debug(`No config found, using DEFAULT_CONFIG`, "verbose");
 	return DEFAULT_CONFIG;
 }
 
@@ -391,12 +391,15 @@ export async function getPeriodCost(resetTime: string): Promise<number> {
 		// Calculate period range (5 hours)
 		const periodEndMs = new Date(resetTime).getTime();
 		if (isNaN(periodEndMs)) {
-			console.error(`[DEBUG] Invalid resetTime: ${resetTime}`);
+			debug(`Invalid resetTime: ${resetTime}`, "verbose");
 			return 0;
 		}
 
 		const periodStartMs = periodEndMs - 5 * 60 * 60 * 1000; // 5 hours ago
-		console.error(`[DEBUG] Period: ${new Date(periodStartMs).toISOString()} - ${resetTime}`);
+		debug(
+			`Calculating period cost from ${new Date(periodStartMs).toISOString()} to ${resetTime}`,
+			"verbose",
+		);
 
 		// Read session costs
 		const store: SessionCostStore = await Bun.file(storeFile).json();
@@ -412,10 +415,13 @@ export async function getPeriodCost(resetTime: string): Promise<number> {
 			}
 		}
 
-		console.error(`[DEBUG] Period cost: $${total.toFixed(2)} (${count} sessions)`);
+		debug(`Period cost: $${total.toFixed(2)} from ${count} sessions`, "verbose");
 		return total;
 	} catch (error) {
-		console.error(`[DEBUG] getPeriodCost error: ${error}`);
+		debug(
+			`Failed to calculate period cost: ${error instanceof Error ? error.message : String(error)}`,
+			"error",
+		);
 		return 0;
 	}
 }
