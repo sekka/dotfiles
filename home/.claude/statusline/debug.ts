@@ -1,10 +1,10 @@
 // Debug Level Control
 
-export type DebugLevel = "off" | "basic" | "verbose";
+export type DebugLevel = "off" | "basic" | "verbose" | "error" | "warning";
 
 // Phase 3.1: DEBUG_LEVEL enum 検証の実装
 export function validateDebugLevel(value: string | undefined): DebugLevel {
-	const validLevels: DebugLevel[] = ["off", "basic", "verbose"];
+	const validLevels: DebugLevel[] = ["off", "basic", "verbose", "error", "warning"];
 	const level = (value || "off").toLowerCase();
 	return validLevels.includes(level as DebugLevel) ? (level as DebugLevel) : "off";
 }
@@ -18,8 +18,11 @@ function getDebugLevel(): DebugLevel {
 
 export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
 
-export function debug(message: string, level: "basic" | "verbose" = "basic"): void {
+export function debug(message: string, level: DebugLevel = "basic"): void {
 	if (DEBUG_LEVEL === "off") return;
-	if (DEBUG_LEVEL === "basic" && level === "verbose") return;
+	if (DEBUG_LEVEL === "basic" && (level === "verbose" || level === "error" || level === "warning"))
+		return;
+	if (DEBUG_LEVEL === "error" && level !== "error") return;
+	if (DEBUG_LEVEL === "warning" && (level === "basic" || level === "verbose")) return;
 	console.error(`[DEBUG] ${message}`);
 }

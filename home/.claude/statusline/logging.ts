@@ -4,12 +4,14 @@
 
 /**
  * デバッグレベルの種類
- * @typedef {("off" | "basic" | "verbose")} DebugLevel
+ * @typedef {("off" | "basic" | "verbose" | "error" | "warning")} DebugLevel
  * - "off": デバッグ出力を表示しない
  * - "basic": 基本的なデバッグメッセージのみ表示
  * - "verbose": すべてのデバッグメッセージを表示（詳細情報を含む）
+ * - "error": エラーメッセージのみ表示（重大な問題）
+ * - "warning": 警告メッセージを表示（注意が必要）
  */
-export type DebugLevel = "off" | "basic" | "verbose";
+export type DebugLevel = "off" | "basic" | "verbose" | "error" | "warning";
 
 /**
  * 環境変数または文字列からデバッグレベルを検証・正規化する
@@ -24,7 +26,7 @@ export type DebugLevel = "off" | "basic" | "verbose";
  * validateDebugLevel(undefined) // => "off"
  */
 export function validateDebugLevel(value: string | undefined): DebugLevel {
-	const validLevels: DebugLevel[] = ["off", "basic", "verbose"];
+	const validLevels: DebugLevel[] = ["off", "basic", "verbose", "error", "warning"];
 	const level = (value || "off").trim().toLowerCase();
 	return validLevels.includes(level as DebugLevel) ? (level as DebugLevel) : "off";
 }
@@ -59,19 +61,24 @@ export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
  * 出力内容はDEBUG_LEVEL設定に従う：
  * - "off": 出力しない
  * - "basic": basic レベルのメッセージのみ出力
- * - "verbose": すべてのメッセージ（basic と verbose）を出力
+ * - "verbose": すべてのメッセージ（basic、verbose、error、warning）を出力
+ * - "error": エラーメッセージのみ出力
+ * - "warning": 警告メッセージを出力
  *
  * @param {string} message - 出力するデバッグメッセージ
- * @param {"basic" | "verbose"} [level="basic"] - メッセージレベル
+ * @param {DebugLevel} [level="basic"] - メッセージレベル
  * @returns {void}
  *
  * @example
  * debug("Starting operation"); // "basic" レベルで出力
  * debug("Detailed info", "verbose"); // "verbose" レベルで出力
- * debug("Error occurred", "basic"); // "basic" レベルで出力
+ * debug("Error occurred", "error"); // "error" レベルで出力
  */
-export function debug(message: string, level: "basic" | "verbose" = "basic"): void {
+export function debug(message: string, level: DebugLevel = "basic"): void {
 	if (DEBUG_LEVEL === "off") return;
-	if (DEBUG_LEVEL === "basic" && level === "verbose") return;
+	if (DEBUG_LEVEL === "basic" && (level === "verbose" || level === "error" || level === "warning"))
+		return;
+	if (DEBUG_LEVEL === "error" && level !== "error") return;
+	if (DEBUG_LEVEL === "warning" && (level === "basic" || level === "verbose")) return;
 	console.error(`[DEBUG] ${message}`);
 }
