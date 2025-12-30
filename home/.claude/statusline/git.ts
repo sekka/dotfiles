@@ -167,8 +167,9 @@ export async function getGitStatus(
  */
 async function determineParentBranch(cwd: string): Promise<string | null> {
 	try {
-		// Performance optimization: Check both branches in parallel with timeout
-		const [mainProc, masterProc] = await Promise.all([
+		// Phase 2B: Resilience improvement with allSettled
+		// Even if one git command fails, the other result is still available
+		const results = await Promise.allSettled([
 			spawnWithTimeout(["git", "--no-optional-locks", "rev-parse", "--verify", "origin/main"], cwd),
 			spawnWithTimeout(
 				["git", "--no-optional-locks", "rev-parse", "--verify", "origin/master"],
@@ -176,11 +177,18 @@ async function determineParentBranch(cwd: string): Promise<string | null> {
 			),
 		]);
 
-		// Get results from both in parallel
-		const [mainResult, masterResult] = await Promise.all([
-			new Response(mainProc.stdout).text(),
-			new Response(masterProc.stdout).text(),
+		// Extract successful processes
+		const mainProc = results[0].status === "fulfilled" ? results[0].value : null;
+		const masterProc = results[1].status === "fulfilled" ? results[1].value : null;
+
+		// Get results from successful processes
+		const textResults = await Promise.allSettled([
+			mainProc ? new Response(mainProc.stdout).text() : Promise.resolve(""),
+			masterProc ? new Response(masterProc.stdout).text() : Promise.resolve(""),
 		]);
+
+		const mainResult = textResults[0].status === "fulfilled" ? textResults[0].value : "";
+		const masterResult = textResults[1].status === "fulfilled" ? textResults[1].value : "";
 
 		// Return first valid branch
 		if (mainResult.trim()) {
@@ -226,7 +234,8 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 
 		// Performance optimization: Calculate ahead/behind counts in parallel with timeout
 		// Both operations are independent and can run simultaneously
-		const [aheadProc, behindProc] = await Promise.all([
+		// Using allSettled() for resilience - if one git command fails, the other still completes
+		const procResults = await Promise.allSettled([
 			spawnWithTimeout(
 				["git", "--no-optional-locks", "rev-list", "--count", `${parentBranch}..HEAD`],
 				cwd,
@@ -237,11 +246,22 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 			),
 		]);
 
-		// Get results from both spawn operations in parallel
-		const [aheadOutput, behindOutput] = await Promise.all([
-			new Response(aheadProc.stdout).text(),
-			new Response(behindProc.stdout).text(),
-		]);
+		// Extract processes - null if timed out or failed
+		const aheadProc = procResults[0].status === "fulfilled" ? procResults[0].value : null;
+		const behindProc = procResults[1].status === "fulfilled" ? procResults[1].value : null;
+
+		// Get results from both spawn operations in parallel (with null safety)
+		const aheadTextPromise = aheadProc
+			? new Response(aheadProc.stdout).text()
+			: Promise.resolve("0");
+		const behindTextPromise = behindProc
+			? new Response(behindProc.stdout).text()
+			: Promise.resolve("0");
+
+		const textResults = await Promise.allSettled([aheadTextPromise, behindTextPromise]);
+
+		const aheadOutput = textResults[0].status === "fulfilled" ? textResults[0].value : "0";
+		const behindOutput = textResults[1].status === "fulfilled" ? textResults[1].value : "0";
 
 		const aheadStr = aheadOutput.trim();
 		const behindStr = behindOutput.trim();
@@ -363,7 +383,11 @@ async function readUntrackedFileStats(
 	});
 
 	// Execute all file reads in parallel and sum results
-	const fileLinesCounts = await Promise.all(fileStatPromises);
+	// Using allSettled() for resilience - if one file read fails, we still process the others
+	const fileStatResults = await Promise.allSettled(fileStatPromises);
+	const fileLinesCounts = fileStatResults.map((result) =>
+		result.status === "fulfilled" ? result.value : 0,
+	);
 	const added = fileLinesCounts.reduce((sum, count) => sum + count, 0);
 
 	// Count skipped files (pre-filtered + those that failed validation/read)
@@ -397,13 +421,28 @@ async function readUntrackedFileStats(
 export async function getDiffStats(cwd: string): Promise<string | null> {
 	try {
 		// Get unstaged and staged diffs in parallel with timeout
-		const [unstagedProc, stagedProc] = await Promise.all([
+		// Using allSettled() for resilience - if one git diff times out, we still get the other
+		const procResults = await Promise.allSettled([
 			spawnWithTimeout(["git", "--no-optional-locks", "diff", "--numstat"], cwd),
 			spawnWithTimeout(["git", "--no-optional-locks", "diff", "--cached", "--numstat"], cwd),
 		]);
 
-		const unstagedDiff = await new Response(unstagedProc.stdout).text();
-		const stagedDiff = await new Response(stagedProc.stdout).text();
+		// Extract processes - null if timed out or failed
+		const unstagedProc = procResults[0].status === "fulfilled" ? procResults[0].value : null;
+		const stagedProc = procResults[1].status === "fulfilled" ? procResults[1].value : null;
+
+		// Get diff output (with null safety - default to empty string if process failed)
+		const unstagedTextPromise = unstagedProc
+			? new Response(unstagedProc.stdout).text()
+			: Promise.resolve("");
+		const stagedTextPromise = stagedProc
+			? new Response(stagedProc.stdout).text()
+			: Promise.resolve("");
+
+		const textResults = await Promise.allSettled([unstagedTextPromise, stagedTextPromise]);
+
+		const unstagedDiff = textResults[0].status === "fulfilled" ? textResults[0].value : "";
+		const stagedDiff = textResults[1].status === "fulfilled" ? textResults[1].value : "";
 
 		// Parse diff stats
 		let added = 0;
