@@ -30,10 +30,28 @@ export function validateDebugLevel(value: string | undefined): DebugLevel {
 }
 
 /**
+ * Phase 2A: 環境変数の安全なアクセス
+ * 環境変数 STATUSLINE_DEBUG から安全にデバッグレベルを取得
+ * 環境変数が undefined または空文字の場合は "off" をデフォルト値とする
+ *
+ * @returns {DebugLevel} 検証済みのデバッグレベル
+ * @remarks
+ * - process.env.STATUSLINE_DEBUG への直接アクセスを集約
+ * - 暗黙的な undefined の処理を明示的に実行
+ * - デフォルト値を "off" に統一
+ */
+function getDebugLevel(): DebugLevel {
+	// Phase 2A: null coalescing で undefined を "off" に置換
+	// これにより、process.env.STATUSLINE_DEBUG が undefined でも安全に処理可能
+	const envValue = process.env.STATUSLINE_DEBUG ?? "off";
+	return validateDebugLevel(envValue);
+}
+
+/**
  * 現在のデバッグレベル（環境変数 STATUSLINE_DEBUG から決定）
  * @type {DebugLevel}
  */
-export const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
+export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
 
 /**
  * レベル制御を有効にしたデバッグ出力を実行

@@ -9,7 +9,14 @@ export function validateDebugLevel(value: string | undefined): DebugLevel {
 	return validLevels.includes(level as DebugLevel) ? (level as DebugLevel) : "off";
 }
 
-export const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
+// Phase 2A: 環境変数の安全なアクセス
+// null coalescing で undefined を "off" に置換
+function getDebugLevel(): DebugLevel {
+	const envValue = process.env.STATUSLINE_DEBUG ?? "off";
+	return validateDebugLevel(envValue);
+}
+
+export const DEBUG_LEVEL: DebugLevel = getDebugLevel();
 
 export function debug(message: string, level: "basic" | "verbose" = "basic"): void {
 	if (DEBUG_LEVEL === "off") return;
