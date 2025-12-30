@@ -86,7 +86,9 @@
       "Bash(bunx tsc:*)",
       "mcp__plugin_claude-mem_mem-search__get_recent_context",
       "mcp__plugin_claude-mem_mem-search__search",
-      "mcp__plugin_claude-mem_mem-search__get_observation"
+      "mcp__plugin_claude-mem_mem-search__get_observation",
+      "WebFetch(domain:bundlephobia.com)",
+      "WebFetch(domain:www.npmjs.com)"
     ],
     "deny": [
       "Read(./.env.*)"
