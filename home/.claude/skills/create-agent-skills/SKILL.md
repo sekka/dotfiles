@@ -1,429 +1,268 @@
 ---
 name: create-agent-skills
-description: Expert guidance for creating, writing, building, and refining Claude Code Skills. Use when working with SKILL.md files, authoring new skills, improving existing skills, or understanding skill structure, progressive disclosure, workflows, validation patterns, and XML formatting.
+description: Create reusable agent skills that provide domain-specific expertise through progressive disclosure
+extends: shared/template-generator
+template_type: agent-skill
+model: haiku
 ---
 
 <objective>
-Agent Skills are modular, filesystem-based capabilities that provide domain-specific expertise through progressive disclosure. This Skill teaches you how to create effective Skills that Claude can discover and use successfully.
-
-Skills are organized prompts that get loaded on-demand. All prompting best practices apply, with an emphasis on pure XML structure for consistent parsing and efficient token usage.
+Agent Skills are modular, filesystem-based capabilities that get loaded on-demand and provide domain-specific expertise. This skill teaches you how to create effective skills using XML structure, progressive disclosure, and clear workflows.
 </objective>
 
-<quick_start>
-<workflow>
+## About This Skill
 
-1. **Identify the reusable pattern**: What context or procedural knowledge would be useful for similar future tasks?
-2. **Create directory and SKILL.md**:
-   - Directory name: Follow verb-noun convention: `create-*`, `manage-*`, `setup-*`, `generate-*` (see [references/skill-structure.md](references/skill-structure.md) for details)
-   - YAML frontmatter:
-     - `name`: Matches directory name, lowercase-with-hyphens, max 64 chars
-     - `description`: What it does AND when to use it (third person, max 1024 chars)
-3. **If skill requires API credentials**: See [references/api-security.md](references/api-security.md) for credential setup
-4. **Write concise instructions**: Assume Claude is smart. Only add context Claude doesn't have. Use pure XML structure.
-5. **Test with real usage**: Iterate based on observations.
-   </workflow>
+This skill extends **shared/template-generator** which handles common creation workflows (naming, validation, file generation).
 
-<example_skill>
+**Agent-skill-specific focus**: XML structure, progressive disclosure, and writing effective skill content.
 
-````yaml
----
-name: process-pdfs
-description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
----
+## What Are Skills?
 
-<objective>
-Extract text and tables from PDF files, fill forms, and merge documents using Python libraries.
-</objective>
+- **Organized prompts** loaded on-demand when Claude needs specific expertise
+- **Filesystem-based** - stored in `.claude/skills/` directories
+- **Discoverable** - Claude finds and uses them automatically
+- **Reusable patterns** - capture knowledge for future tasks
 
-<quick_start>
-Extract text with pdfplumber:
+## When to Create Skills
 
-```python
-import pdfplumber
-with pdfplumber.open("file.pdf") as pdf:
-    text = pdf.pages[0].extract_text()
-````
-
-</quick_start>
-
-<advanced_features>
-**Form filling**: See [forms.md](forms.md)
-**API reference**: See [reference.md](reference.md)
-</advanced_features>
-
-````
-</example_skill>
-</quick_start>
-
-<xml_structure>
-<required_tags>
-All skills must have these tags:
-
-- **`<objective>`** - What the skill does and why it matters
-- **`<quick_start>`** - Immediate, actionable guidance
-- **`<success_criteria>`** or **`<when_successful>`** - How to know it worked
-</required_tags>
-
-<conditional_tags>
-Based on skill complexity, add these tags as needed:
-
-- **`<context>`** - Background/situational information
-- **`<workflow>` or `<process>`** - Step-by-step procedures
-- **`<advanced_features>`** - Deep-dive topics (progressive disclosure)
-- **`<validation>`** - How to verify outputs
-- **`<examples>`** - Multi-shot learning
-- **`<anti_patterns>`** - Common mistakes to avoid
-- **`<security_checklist>`** - Non-negotiable security patterns
-- **`<testing>`** - Testing workflows
-- **`<common_patterns>`** - Code examples and recipes
-- **`<reference_guides>` or `<detailed_references>`** - Links to reference files
-</conditional_tags>
-
-<critical_rule>
-**Remove ALL markdown headings (#, ##, ###) from skill body content.** Replace with semantic XML tags. Keep markdown formatting WITHIN content (bold, italic, lists, code blocks, links).
-</critical_rule>
-</xml_structure>
-
-<intelligence_rules>
-<simple_skills>
-Single domain, straightforward tasks: Use required tags only.
-
-Example: Text extraction, file format conversion, simple API calls
-</simple_skills>
-
-<medium_skills>
-Multiple patterns, some complexity: Use required tags + workflow/examples as needed.
-
-Example: Document processing with multiple steps, API integration with configuration
-</medium_skills>
-
-<complex_skills>
-Multiple domains, security concerns, API integrations: Use required tags + conditional tags as appropriate.
-
-Example: Payment processing, authentication systems, multi-step workflows with validation
-</complex_skills>
-
-<principle>
-Don't over-engineer simple skills. Don't under-specify complex skills. Match tag selection to actual complexity and user needs.
-</principle>
-</intelligence_rules>
-
-<generation_protocol>
-<step_0>
-<description>
-**Adaptive Requirements Gathering**: Before building, gather requirements through intelligent questioning that infers obvious details and asks about genuine gaps.
-</description>
-
-<critical_first_action>
-**BEFORE doing anything else**, check if context was provided.
-
-IF no context provided (user just invoked the skill without describing what to build):
-→ **IMMEDIATELY use AskUserQuestion** with these exact options:
-
-1. **Create a new skill** - Build a skill from scratch
-2. **Update an existing skill** - Modify or improve an existing skill
-3. **Get guidance on skill design** - Help me think through what kind of skill I need
-
-**DO NOT** ask "what would you like to build?" in plain text. **USE the AskUserQuestion tool.**
-
-Routing after selection:
-- "Create new" → proceed to adaptive intake below
-- "Update existing" → enumerate existing skills as numbered list (see below), then gather requirements for changes
-- "Guidance" → help user clarify needs before building
-
-<update_existing_flow>
-When "Update existing" is selected:
-
-1. **List all skills in chat as numbered list** (DO NOT use AskUserQuestion - there may be many skills):
-   - Glob for `~/.claude/skills/*/SKILL.md`
-   - Present as numbered list in chat:
-     ```
-     Available skills:
-     1. create-agent-skills
-     2. generate-natal-chart
-     3. manage-stripe
-     ...
-     ```
-   - Ask: "Which skill would you like to update? (enter number)"
-
-2. After user enters number, read that skill's SKILL.md
-3. Ask what they want to change/improve using AskUserQuestion or direct question
-4. Proceed with modifications
-</update_existing_flow>
-
-IF context was provided (user said "build a skill for X"):
-→ Skip this gate. Proceed directly to adaptive intake.
-</critical_first_action>
-
-<adaptive_intake>
-<analyze_description>
-Parse the initial description:
-- What's explicitly stated (operations, services, outputs)
-- What can be inferred without asking (skill type, complexity, obvious patterns)
-- What's genuinely unclear or ambiguous (scope boundaries, edge cases, specific behaviors)
-
-Do NOT ask about things that are obvious from context.
-</analyze_description>
-
-<generate_questions>
-Use AskUserQuestion to ask 2-4 domain-specific questions based on actual gaps.
-
-Question generation guidance:
-- **Scope questions**: "What specific operations?" not "What should it do?"
-- **Complexity questions**: "Should this handle [specific edge case]?" based on domain knowledge
-- **Output questions**: "What should the user see/get when successful?"
-- **Boundary questions**: "Should this also handle [related thing] or stay focused?"
-
-Avoid:
-- Questions answerable from the initial description
-- Generic questions that apply to all skills
-- Yes/no questions when options would be more helpful
-- Obvious questions like "what should it be called?" when the name is clear
-
-Each question option should include a description explaining the implications of that choice.
-</generate_questions>
-
-<decision_gate>
-After receiving answers, present decision gate using AskUserQuestion:
-
-Question: "Ready to proceed with building, or would you like me to ask more questions?"
-
-Options:
-1. **Proceed to building** - I have enough context to build the skill
-2. **Ask more questions** - There are more details to clarify
-3. **Let me add details** - I want to provide additional context
-
-If "Ask more questions" selected → loop back to generate_questions with refined focus
-If "Let me add details" → receive additional context, then re-evaluate
-If "Proceed" → continue to research_trigger, then step_1
-</decision_gate>
-
-<research_trigger>
-Detect if the skill involves external APIs or services.
-
-When external service detected, ask using AskUserQuestion:
-"This involves [service name] API. Would you like me to research current endpoints and patterns before building?"
-
-Options:
-1. **Yes, research first** - Fetch 2024-2025 documentation for accurate implementation
-2. **No, proceed with general patterns** - Use common patterns without specific API research
-
-If research requested:
-- Use Context7 MCP to fetch current library documentation
-- Or use WebSearch for recent API documentation
-- Focus on 2024-2025 sources for current patterns
-- Store findings for use in content generation
-
-Research findings flow into step_1 analysis and inform code examples in later steps.
-</research_trigger>
-</adaptive_intake>
-</step_0>
-
-<step_1>
-**Analyze the domain**: Understand what the skill needs to teach and its complexity level. Incorporate gathered requirements and any research findings from step_0.
-</step_1>
-
-<step_2>
-**Select XML tags**: Choose required tags + conditional tags based on intelligence rules.
-</step_2>
-
-<step_3>
-**Write YAML frontmatter**: Validate name (matches directory, verb-noun convention) and description (third person, includes triggers).
-</step_3>
-
-<step_4>
-**Structure content in pure XML**: No markdown headings in body. Use semantic XML tags for all sections.
-</step_4>
-
-<step_5>
-**Apply progressive disclosure**: Keep SKILL.md under 500 lines. Split detailed content into reference files.
-</step_5>
-
-<step_6>
-**Validate structure**:
-- YAML frontmatter valid
-- Required tags present (objective, quick_start, success_criteria)
-- No markdown headings in body
-- Proper XML nesting and closing tags
-- Reference files linked appropriately
-</step_6>
-
-<step_7>
-**Write skill files**: Save the skill to the filesystem.
-
-**Directory structure**:
-````
-
-~/.claude/skills/{skill-name}/
-├── SKILL.md # Main skill file (required)
-└── references/ # Reference files (optional, for progressive disclosure)
-├── patterns.md
-├── api-reference.md
-└── examples.md
-
-````
-
-**Writing the SKILL.md**:
-1. Create the skill directory: `~/.claude/skills/{skill-name}/`
-2. Write `SKILL.md` with:
-   - Valid YAML frontmatter (name, description)
-   - Pure XML body structure
-   - All required tags
-3. Create reference files if skill is complex (>500 lines potential)
-
-**Verification after writing**:
-- Confirm directory created at correct location
-- Validate YAML frontmatter parses correctly
-- Check all XML tags properly closed
-- Verify reference file links are valid relative paths
-
-**After saving**:
-- Confirm location to user: `Created skill at ~/.claude/skills/{skill-name}/SKILL.md`
-- Show how to invoke: `Use the Skill tool with skill: "{skill-name}"`
-</step_7>
-
-<step_8>
-**Test with real usage**: Observe Claude using the skill. Iterate based on actual behavior, not assumptions.
-</step_8>
-
-<step_9>
-**Create slash command wrapper**: Create a lightweight slash command that invokes the skill.
-
-Location: `~/.claude/commands/{skill-name}.md`
-
-Template:
-```yaml
----
-description: {Brief description of what the skill does}
-argument-hint: [{argument description}]
-allowed-tools: Skill({skill-name})
----
-
-<objective>
-Delegate {task} to the {skill-name} skill for: #$ARGUMENTS
-
-This routes to specialized skill containing patterns, best practices, and workflows.
-</objective>
-
-<process>
-1. Use Skill tool to invoke {skill-name} skill
-2. Pass user's request: #$ARGUMENTS
-3. Let skill handle workflow
-</process>
-
-<success_criteria>
-- Skill successfully invoked
-- Arguments passed correctly to skill
-</success_criteria>
-````
-
-The slash command's only job is routing—all expertise lives in the skill.
-</step_8>
-</generation_protocol>
-
-<yaml_requirements>
-<required_fields>
-
-```yaml
----
-name: skill-name-here
-description: What it does and when to use it (third person, specific triggers)
----
-```
-
-</required_fields>
-
-<validation_rules>
-See [references/skill-structure.md](references/skill-structure.md) for complete validation rules and naming conventions.
-</validation_rules>
-</yaml_requirements>
-
-<when_to_use>
-<create_skills_for>
-
+**Create skills for:**
 - Reusable patterns across multiple tasks
 - Domain knowledge that doesn't change frequently
 - Complex workflows that benefit from structured guidance
 - Reference materials (schemas, APIs, libraries)
 - Validation scripts and quality checks
-  </create_skills_for>
 
-<use_prompts_for>
-One-off tasks that won't be reused
-</use_prompts_for>
+**Use prompts for:**
+- One-off tasks that won't be reused
 
-<use_slash_commands_for>
-Explicit user-triggered workflows that run with fresh context
-</use_slash_commands_for>
-</when_to_use>
+**Use slash commands for:**
+- Explicit user-triggered workflows with fresh context
 
-<reference_guides>
-For deeper topics, see reference files:
+## Skill Structure
 
-**Core principles**: [references/core-principles.md](references/core-principles.md)
+All skills require:
 
-- XML structure (consistency, parseability, Claude performance)
-- Conciseness (context window is shared)
-- Degrees of freedom (matching specificity to task fragility)
-- Model testing (Haiku vs Sonnet vs Opus)
+```markdown
+---
+name: verb-noun-skill          # kebab-case
+description: What it does AND when to use it
+---
 
-**Skill structure**: [references/skill-structure.md](references/skill-structure.md)
+<objective>
+What the skill accomplishes and why it matters.
+</objective>
 
-- XML structure requirements
-- Naming conventions
-- Writing effective descriptions
-- Progressive disclosure patterns
-- File organization
-
-**Workflows and validation**: [references/workflows-and-validation.md](references/workflows-and-validation.md)
-
-- Complex workflows with checklists
-- Feedback loops (validate → fix → repeat)
-- Plan-validate-execute pattern
-
-**Common patterns**: [references/common-patterns.md](references/common-patterns.md)
-
-- Template patterns
-- Examples patterns
-- Consistent terminology
-- Anti-patterns to avoid
-
-**Executable code**: [references/executable-code.md](references/executable-code.md)
-
-- When to use utility scripts
-- Error handling in scripts
-- Package dependencies
-- MCP tool references
-
-**API security**: [references/api-security.md](references/api-security.md)
-
-- Preventing credentials from appearing in chat
-- Using the secure API wrapper
-- Adding new services and operations
-- Credential storage patterns
-
-**Iteration and testing**: [references/iteration-and-testing.md](references/iteration-and-testing.md)
-
-- Evaluation-driven development
-- Claude A/B development pattern
-- Observing how Claude navigates Skills
-- XML structure validation during testing
-
-**Prompting fundamentals**:
-
-- [references/be-clear-and-direct.md](references/be-clear-and-direct.md)
-- [references/use-xml-tags.md](references/use-xml-tags.md)
-  </reference_guides>
+<quick_start>
+Immediate, actionable guidance to get started quickly.
+</quick_start>
 
 <success_criteria>
-A well-structured skill has:
+How to know the skill worked successfully.
+</success_criteria>
+```
 
-- Valid YAML frontmatter with descriptive name and comprehensive description
-- Pure XML structure with no markdown headings in body
-- Required tags: objective, quick_start, success_criteria
-- Conditional tags appropriate to complexity level
-- Progressive disclosure (SKILL.md < 500 lines, details in reference files)
-- Clear, concise instructions that assume Claude is smart
-- Real-world testing and iteration based on observed behavior
-- Lightweight slash command wrapper for discoverability
-  </success_criteria>
+## Required Content
+
+**`<objective>`** - Explain what the skill does and the value it provides.
+
+**`<quick_start>`** - Give Claude enough context to start using it immediately. Avoid lengthy preamble.
+
+**`<success_criteria>`** - Define measurable completion criteria.
+
+## Optional, Conditional Tags
+
+Add these based on skill complexity:
+
+```markdown
+<context>
+Situational/background information
+
+<workflow> or <process>
+Step-by-step procedures
+
+<advanced_features>
+Deep-dive topics (progressive disclosure)
+
+<validation>
+How to verify outputs
+
+<examples>
+Multi-shot learning examples
+
+<anti_patterns>
+Common mistakes to avoid
+
+<testing>
+Testing workflows
+
+<common_patterns>
+Code recipes and examples
+
+<reference_guides>
+Links to detailed reference files
+```
+
+## Writing Effective Skills
+
+1. **Concise** - Share context window efficiently. Assume Claude is smart.
+2. **Progressive disclosure** - Start simple, add complexity gradually
+3. **Pure XML structure** - No markdown headings, use semantic tags
+4. **Specific** - Provide depth where it matters
+5. **Actionable** - Include examples and clear next steps
+
+## Naming Conventions
+
+Directory and file names use verb-noun patterns:
+
+- `create-*` - Create new things (create-prompts, create-scripts)
+- `manage-*` - Manage existing things (manage-files, manage-versions)
+- `setup-*` - Set up systems or tools (setup-database, setup-ci)
+- `generate-*` - Generate content (generate-tests, generate-docs)
+- `optimize-*` - Improve performance (optimize-queries, optimize-images)
+- `debug-*` - Find and fix issues (debug-auth, debug-performance)
+
+## Skill Examples
+
+**Simple skill** (text extraction):
+```markdown
+---
+name: extract-tables
+description: Extract tables from text, PDFs, or images using pattern matching
+---
+
+<objective>
+Extract structured table data from various formats into CSV or JSON.
+</objective>
+
+<quick_start>
+For text tables, use regex. For PDFs, use pdfplumber. For images, use image analysis.
+
+[Specific patterns for each format]
+</quick_start>
+
+<success_criteria>
+- Correct number of rows/columns extracted
+- Data types preserved
+- Special characters handled properly
+</success_criteria>
+```
+
+**Complex skill** (includes workflow, examples, reference):
+```markdown
+---
+name: build-api
+description: Design and build REST APIs with validation, documentation, and testing
+---
+
+<objective>
+Build production-ready REST APIs with proper structure, validation, and test coverage.
+</objective>
+
+<quick_start>
+1. Define endpoints with clear purposes
+2. Add input validation
+3. Write tests first
+4. Generate documentation
+
+[Quick example for each step]
+</quick_start>
+
+<workflow>
+1. Understand requirements and design schema
+2. Define endpoint contracts
+3. Implement with error handling
+4. Add validation middleware
+5. Write comprehensive tests
+6. Generate OpenAPI docs
+</workflow>
+
+<examples>
+[Real-world patterns with code]
+</examples>
+
+<anti_patterns>
+- Returning raw database errors
+- Missing input validation
+- No error status codes
+- [Other common mistakes]
+</anti_patterns>
+
+<reference_guides>
+- [api-design.md](references/api-design.md) - Design patterns
+- [validation.md](references/validation.md) - Input validation patterns
+```
+
+## XML Structure Rules
+
+**Critical rule**: Remove all markdown headings (#, ##, ###). Use semantic XML tags instead.
+
+Keep markdown formatting **within** content:
+- Bold: `**text**`
+- Italic: `*text*`
+- Lists: `- item`
+- Code blocks: ` ``` `
+- Links: `[text](url)`
+
+## YAML Frontmatter
+
+```yaml
+---
+name: skill-name                    # Required: kebab-case
+description: Concise description    # Required: what + when to use
+---
+```
+
+Description should be clear and specific about when Claude should use this skill.
+
+## File Organization
+
+Skills live in `.claude/skills/` with structure:
+
+```
+.claude/skills/
+├── create-prompts/
+│   ├── SKILL.md
+│   └── references/
+│       ├── xml-structure.md
+│       ├── examples.md
+│       └── anti-patterns.md
+├── manage-database/
+│   ├── SKILL.md
+│   └── references/
+└── debug-api/
+    └── SKILL.md
+```
+
+Reference files go in `references/` subdirectory.
+
+## Progressive Disclosure Pattern
+
+Structure complex skills to build understanding gradually:
+
+```markdown
+<quick_start>
+Simple case that works immediately
+</quick_start>
+
+<workflow>
+Full step-by-step procedure
+</workflow>
+
+<advanced_features>
+Optional patterns and edge cases
+</advanced_features>
+```
+
+This way Claude starts with what's essential, then learns more advanced patterns as needed.
+
+## Reference Guides
+
+For detailed guidance, see:
+
+- [references/core-principles.md](references/core-principles.md) - XML structure, conciseness, degrees of freedom
+- [references/skill-structure.md](references/skill-structure.md) - Structure requirements and naming conventions
+- [references/workflows-and-validation.md](references/workflows-and-validation.md) - Complex workflows with validation
+- [references/common-patterns.md](references/common-patterns.md) - Template and example patterns
+- [references/executable-code.md](references/executable-code.md) - Using utility scripts and dependencies
+- [references/api-security.md](references/api-security.md) - Securing credentials in skills
+- [references/iteration-and-testing.md](references/iteration-and-testing.md) - Evaluation-driven development
