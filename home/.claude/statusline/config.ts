@@ -1,107 +1,53 @@
 // ============================================================================
-// Phase 3.1: Configuration Module (Extracted from utils.ts)
+// Cosmiconfig ベースの設定管理（手動実装から置き換え）
 // ============================================================================
 
+import { cosmiconfig } from 'cosmiconfig';
+import type { CosmiconfigResult } from 'cosmiconfig';
+
 // ============================================================================
-// Type Definitions
+// 型定義
 // ============================================================================
 
 /**
  * ステータスライン表示設定インターフェース
  * このインターフェースはステータスラインの各セクションの表示/非表示を制御します。
- * 部分的な設定が提供される場合は、DEFAULT_CONFIG とマージされて使用されます。
- *
- * @typedef {Object} StatuslineConfig
- * @property {Object} git - Git関連情報の表示設定
- * @property {boolean} git.showBranch - Git ブランチ名を表示するかどうか
- * @property {boolean} git.showAheadBehind - 上流ブランチとの ahead/behind を表示するかどうか
- * @property {boolean} git.showDiffStats - 変更統計（+行数/-行数）を表示するかどうか
- * @property {boolean} git.alwaysShowMain - main/master ブランチでも ahead/behind を表示するかどうか
- * @property {Object} rateLimits - API レート制限表示設定
- * @property {boolean} rateLimits.showFiveHour - 5時間ウィンドウのレート制限を表示するかどうか
- * @property {boolean} rateLimits.showWeekly - 週間ウィンドウのレート制限を表示するかどうか
- * @property {boolean} rateLimits.showPeriodCost - 請求期間のコスト制限（例：$119）を表示するかどうか
- * @property {Object} costs - コスト表示設定
- * @property {boolean} costs.showDailyCost - 日次コストを表示するかどうか
- * @property {boolean} costs.showSessionCost - セッションコストを表示するかどうか
- * @property {Object} tokens - トークン使用量表示設定
- * @property {boolean} tokens.showContextUsage - コンテキストウィンドウの使用率パーセンテージを表示するかどうか
- * @property {Object} session - セッション情報表示設定
- * @property {boolean} session.showSessionId - セッション ID を表示するかどうか
- * @property {boolean} session.showElapsedTime - セッション開始からの経過時間を表示するかどうか
- * @property {Object} display - 表示形式の設定
- * @property {boolean} display.showSeparators - メトリクス間の区切り文字を表示するかどうか
- *
- * @example
- * // 最小限の設定上書き（他はデフォルト値を使用）
- * const customConfig = {
- *   git: { showBranch: false }
- * };
- * // DEFAULT_CONFIG とマージされて、git.showBranch のみが false に、他は DEFAULT_CONFIG の値を使用
- *
- * @example
- * // コスト表示を無効化
- * const noCostConfig = {
- *   costs: { showDailyCost: false, showSessionCost: false }
- * };
  */
 export interface StatuslineConfig {
 	git: {
-		showBranch: boolean; // ブランチ名表示
-		showAheadBehind: boolean; // ahead/behind表示
-		showDiffStats: boolean; // 差分統計（+/-）表示
-		alwaysShowMain: boolean; // main/masterでもahead/behind表示
+		showBranch: boolean;
+		showAheadBehind: boolean;
+		showDiffStats: boolean;
+		alwaysShowMain: boolean;
 	};
 	rateLimits: {
-		showFiveHour: boolean; // 5時間レート制限表示
-		showWeekly: boolean; // 週間レート制限表示
-		showPeriodCost: boolean; // 期間コスト（$119）表示
+		showFiveHour: boolean;
+		showWeekly: boolean;
+		showPeriodCost: boolean;
 	};
 	costs: {
-		showDailyCost: boolean; // 日次コスト表示
-		showSessionCost: boolean; // セッションコスト表示
+		showDailyCost: boolean;
+		showSessionCost: boolean;
 	};
 	tokens: {
-		showContextUsage: boolean; // コンテキスト使用率表示
+		showContextUsage: boolean;
 	};
 	session: {
-		showSessionId: boolean; // セッションID表示
-		showElapsedTime: boolean; // 経過時間表示
+		showSessionId: boolean;
+		showElapsedTime: boolean;
 	};
 	display: {
-		showSeparators: boolean; // メトリクス間の区切り表示
+		showSeparators: boolean;
 	};
 }
 
 // ============================================================================
-// Default Configuration
+// デフォルト設定
 // ============================================================================
 
 /**
  * デフォルトステータスライン設定
  * ステータスラインのすべてのセクションを有効にした推奨設定です。
- * この設定をベースにして、ユーザーが特定のセクションを無効化することで、
- * 表示をカスタマイズできます。
- *
- * @type {StatuslineConfig}
- *
- * @property {Object} git - Git セクションを完全に有効
- * @property {Object} rateLimits - レート制限表示を完全に有効
- * @property {Object} costs - コスト表示を完全に有効
- * @property {Object} tokens - トークン使用率表示を有効
- * @property {Object} session - セッションID表示を有効、経過時間は無効
- * @property {Object} display - メトリクス間の区切りを無効（モダンな見た目）
- *
- * @remarks
- * すべてのフラグが明示的に設定されているため、新しい設定オプションが追加される
- * 場合は、DEFAULT_CONFIG にも新しいフラグを追加する必要があります。
- *
- * @example
- * // ユーザー設定を DEFAULT_CONFIG と マージ
- * const userConfig = { git: { showBranch: false } };
- * const finalConfig = { ...DEFAULT_CONFIG, ...userConfig };
- * // finalConfig.git.showBranch === false
- * // finalConfig.git.showAheadBehind === true (DEFAULT_CONFIG から)
  */
 export const DEFAULT_CONFIG: StatuslineConfig = {
 	git: {
@@ -130,3 +76,122 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 		showSeparators: false,
 	},
 };
+
+// ============================================================================
+// 設定の読み込みと統合
+// ============================================================================
+
+/**
+ * Cosmiconfigエクスプローラー
+ * .statuslinerc.json, .statuslinerc.yaml, statuslinerc.js等を自動探索
+ */
+const explorer = cosmiconfig('statusline');
+
+/**
+ * ファイルベースの設定をDEFAULT_CONFIGとマージして返す
+ */
+async function loadConfig(): Promise<StatuslineConfig> {
+	try {
+		const result: CosmiconfigResult = await explorer.search();
+
+		if (!result) {
+			return DEFAULT_CONFIG;
+		}
+
+		// ファイルベースの設定とDEFAULT_CONFIGを再帰的にマージ
+		return deepMerge(DEFAULT_CONFIG, result.config);
+	} catch {
+		// ファイル読み込み失敗時はデフォルト設定を返す
+		return DEFAULT_CONFIG;
+	}
+}
+
+/**
+ * オブジェクトの深いマージ
+ * DEFAULTを基本に、userの値で上書き
+ * ネストされたオブジェクトも正しくコピーされることを保証
+ */
+function deepMerge<T extends Record<string, any>>(
+	defaultObj: T,
+	userObj: Partial<T>
+): T {
+	const result = { ...defaultObj } as T;
+
+	for (const key in userObj) {
+		if (Object.prototype.hasOwnProperty.call(userObj, key)) {
+			const userValue = userObj[key];
+			const defaultValue = defaultObj[key];
+
+			// ネストされたオブジェクト（配列以外）の場合は再帰的にマージ
+			if (
+				userValue &&
+				typeof userValue === 'object' &&
+				!Array.isArray(userValue) &&
+				defaultValue &&
+				typeof defaultValue === 'object' &&
+				!Array.isArray(defaultValue)
+			) {
+				result[key] = deepMerge(defaultValue as any, userValue as any);
+			} else if (userValue !== undefined) {
+				result[key] = userValue as any;
+			}
+		}
+	}
+
+	return result;
+}
+
+/**
+ * グローバル設定オブジェクト
+ * 初期値はDEFAULT_CONFIG
+ * loadConfig() で更新される
+ */
+let config: StatuslineConfig = DEFAULT_CONFIG;
+let initialized = false;
+let initPromise: Promise<void> | null = null;
+
+/**
+ * 設定を初期化（非同期）
+ * アプリケーション起動時に一度だけ呼び出される
+ * 複数回呼び出されても初期化は1回のみ実行
+ */
+export async function initializeConfig(): Promise<void> {
+	// 既に初期化中の場合はそれを待つ
+	if (initPromise) {
+		return initPromise;
+	}
+
+	// 初期化開始
+	initPromise = (async () => {
+		config = await loadConfig();
+		initialized = true;
+	})();
+
+	return initPromise;
+}
+
+/**
+ * 現在の設定を取得
+ * 同期的にアクセス可能（初期化後）
+ * 初期化前に呼び出された場合はエラーを投げる
+ */
+export function getConfig(): StatuslineConfig {
+	if (!initialized) {
+		throw new Error(
+			'Configuration not initialized. Call initializeConfig() first.'
+		);
+	}
+	return config;
+}
+
+/**
+ * 現在の設定を取得（フォールバック版）
+ * 初期化前の場合はデフォルト設定を警告付きで返す
+ */
+export function getConfigSync(): StatuslineConfig {
+	if (!initialized) {
+		console.warn('Config not initialized, using default settings');
+		return DEFAULT_CONFIG;
+	}
+	return config;
+}
