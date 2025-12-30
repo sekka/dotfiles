@@ -5,6 +5,7 @@
 import type { StatuslineConfig } from "./config.ts";
 import type { UsageLimits } from "./utils.ts";
 import { colors } from "./colors.ts";
+import { debug } from "./logging.ts";
 import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly } from "./tokens.ts";
 import { getPeriodCost } from "./cache.ts";
 
@@ -73,6 +74,10 @@ export interface MetricsData {
  */
 export class SessionMetricsBuilder implements MetricsBuilder {
 	shouldBuild(config: StatuslineConfig): boolean {
+		// S を第1行に表示する場合はメトリクス行に表示しない
+		if (config.session.showInFirstLine && config.session.showElapsedTime) {
+			return false;
+		}
 		return config.session.showElapsedTime;
 	}
 
@@ -131,7 +136,7 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 		}
 
 		const fiveHour = data.usageLimits.five_hour;
-		const bar = formatBrailleProgressBar(fiveHour.utilization);
+		const bar = formatBrailleProgressBar(fiveHour.utilization, 5);
 
 		// Get period cost with error handling
 		let periodCost = 0;
@@ -204,7 +209,7 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
 		}
 
 		const sevenDay = data.usageLimits.seven_day;
-		const bar = formatBrailleProgressBar(sevenDay.utilization);
+		const bar = formatBrailleProgressBar(sevenDay.utilization, 5);
 		let weeklyPart = `${colors.gray("W:")} ${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
 
 		if (sevenDay.resets_at) {
@@ -214,6 +219,38 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
 		}
 
 		return weeklyPart;
+	}
+}
+
+// ============================================================================
+// Sonnet Weekly Rate Limit Builder (WS)
+// ============================================================================
+
+/**
+ * Sonnet専用の週間レート制限メトリクスビルダー
+ * 他のモデル（OpusやHaikuなど）と区別されたSonnetの使用量を表示する
+ */
+export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
+	shouldBuild(config: StatuslineConfig): boolean {
+		return config.rateLimits.showSonnetWeekly;
+	}
+
+	async build(_: StatuslineConfig, data: MetricsData): Promise<string | null> {
+		if (!data.usageLimits?.seven_day_sonnet) {
+			return null;
+		}
+
+		const sevenDaySonnet = data.usageLimits.seven_day_sonnet;
+		const bar = formatBrailleProgressBar(sevenDaySonnet.utilization, 5);
+		let sonnetWeeklyPart = `${colors.gray("WS:")} ${bar} ${colors.lightGray(sevenDaySonnet.utilization.toString())}${colors.gray("%")}`;
+
+		if (sevenDaySonnet.resets_at) {
+			const resetDate = formatResetDateOnly(sevenDaySonnet.resets_at);
+			const timeLeft = formatResetTime(sevenDaySonnet.resets_at);
+			sonnetWeeklyPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
+		}
+
+		return sonnetWeeklyPart;
 	}
 }
 
@@ -230,7 +267,7 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
  * 動作：
  * 1. 各ビルダーに対して `shouldBuild()` を呼び出し、表示すべきか確認
  * 2. 表示すべきビルダーについて `build()` を呼び出してメトリクスを取得
- * 3. 取得したメトリクスを特定の順序（S → T → L → D → W）で連結
+ * 3. 取得したメトリクスを特定の順序（S → T → L → D → W → WS）で連結
  * 4. 必要に応じてセパレータ（・）を挿入
  *
  * このアーキテクチャにより、新しいメトリクスタイプを追加する際は
@@ -244,6 +281,7 @@ export class MetricsLineBuilder {
 		new LimitMetricsBuilder(),
 		new CostMetricsBuilder(),
 		new WeeklyMetricsBuilder(),
+		new SonnetWeeklyMetricsBuilder(),
 	];
 
 	/**
