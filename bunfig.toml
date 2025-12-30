@@ -1,0 +1,13 @@
+# Bun Configuration
+
+[dev]
+# Prefer loading ESM over CJS
+prefer-esbuild = true
+
+[test]
+# Enable TypeScript type checking in tests
+typecheck = true
+
+[compile]
+# Enable strict TypeScript checking during compilation
+type_check = true

@@ -82,7 +82,11 @@
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:zenn.dev)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(bunx tsc:*)",
+      "mcp__plugin_claude-mem_mem-search__get_recent_context",
+      "mcp__plugin_claude-mem_mem-search__search",
+      "mcp__plugin_claude-mem_mem-search__get_observation"
     ],
     "deny": [
       "Read(./.env.*)"
