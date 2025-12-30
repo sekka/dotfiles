@@ -1,0 +1,43 @@
+{
+	"compilerOptions": {
+		// Phase 2C: TypeScript Strict Mode
+		// Recommended strict checks for production code quality
+		"strict": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitOverride": true,
+
+		// Bun compatibility options
+		"allowImportingTsExtensions": true,
+		"types": ["bun-types"],
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+		// Module and target settings
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+
+		// Output settings
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"outDir": "./dist",
+		"rootDir": "./",
+
+		// Other options
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true
+	},
+	"include": ["home/.claude/statusline/**/*.ts", "scripts/**/*.ts"],
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**/*"]
+}
