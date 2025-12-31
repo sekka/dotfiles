@@ -1,111 +1,109 @@
 # statusline モジュール
 
-Claude Code のステータスライン表示を管理するモジュール群です。
+Claude Code のステータスライン表示を管理するモジュール群。リアルタイムのセッション情報、使用量制限、Git情報、トークン使用率を表示します。
 
 ## ディレクトリ構造
 
 ```
 statusline/
-├── types.ts                    # 型定義
-├── constants.ts                # デフォルト設定、定数
-├── debug.ts                    # デバッグレベル制御
-├── index.ts                    # モジュールエクスポート
-├── validation/
-│   ├── index.ts                # エクスポート
-│   ├── config.ts               # isValidStatuslineConfig()
-│   └── limits.ts               # isValidUsageLimits()
-├── security/
-│   ├── index.ts                # エクスポート
-│   ├── validator.ts            # SecurityValidator クラス
-│   └── sanitizer.ts            # sanitizeForLogging()
-└── error/
-    ├── index.ts                # エクスポート
-    └── handler.ts              # ErrorCategory enum, 分類関数
+├── index.ts              # Public API entry point
+├── colors.ts             # ANSI カラーヘルパー (chalk-based)
+├── constants.ts          # 定数定義（設定、TTL値）
+├── types.ts              # TypeScript 型定義
+├── git.ts                # Git 情報取得
+├── tokens.ts             # トークン使用率計算
+├── providers.ts          # API データ取得
+├── cache.ts              # キャッシング機構
+├── config.ts             # ユーザー設定管理
+├── utils.ts              # ユーティリティ関数
+├── logging.ts            # デバッグログ
+├── validation.ts         # バリデーション
+└── __tests__/
+    └── colors.test.ts    # カラー関数テスト (16 tests)
 ```
 
-## モジュール説明
+## 🎨 カラーシステム
 
-### types.ts
-全ての型定義を集約：
-- `HookInput` - Claude Code hook 入力型
-- `GitStatus` - Git 状態情報型
-- `StatuslineConfig` - 設定型
-- `UsageLimits` - API 使用制限型
-- その他関連型
-
-### constants.ts
-グローバル定数：
-- `colors` - ANSI カラーヘルパー
-- `DEFAULT_CONFIG` - デフォルト設定
-- `CACHE_TTL_MS`, `CONFIG_CACHE_TTL` - キャッシュ TTL
-- `BINARY_EXTENSIONS` - バイナリファイル拡張子リスト
-
-### debug.ts
-デバッグ機能：
-- `DebugLevel` 型（"off" | "basic" | "verbose"）
-- `validateDebugLevel()` - 環境変数検証
-- `DEBUG_LEVEL` - グローバル定数
-- `debug()` - デバッグログ関数
-
-### validation/
-入力データ検証：
-- `isValidStatuslineConfig()` - 設定ファイル検証
-- `isValidUsageLimits()` - API レスポンス検証
-
-### security/
-セキュリティ機能：
-- `SecurityValidator` クラス
-  - `validatePath()` - パストトラバーサル防止
-  - `validateFileSize()` - ファイルサイズ制限
-  - `isBinaryExtension()` - バイナリファイル判定
-- `sanitizeForLogging()` - 機密情報マスキング
-
-### error/
-統一エラーハンドリング：
-- `ErrorCategory` enum - 6つのエラーカテゴリ
-- `categorizeError()` - エラー分類関数
-- `logCategorizedError()` - エラーログ出力関数
-
-## 使用例
+### 利用可能な色関数
 
 ```typescript
-import {
-  colors,
-  DEFAULT_CONFIG,
-  SecurityValidator,
-  sanitizeForLogging,
-  isValidStatuslineConfig,
-} from "./statusline/index.ts";
+import { colors } from "./statusline/index.ts";
 
-// カラー出力
-console.log(colors.cyan("Hello"));
-
-// セキュリティ検証
-const isValid = await SecurityValidator.validatePath(cwd, filePath);
-
-// 機密情報マスキング
-const safeData = sanitizeForLogging(apiResponse);
-
-// 設定検証
-if (isValidStatuslineConfig(userConfig)) {
-  // 有効な設定
-}
+colors.gray(text)        // ANSI code 90 (bright black)
+colors.cyan(text)        // ANSI code 36
+colors.white(text)       // ANSI code 37
+colors.dimWhite(text)    // dim style + white
+colors.lightGray(text)   // ANSI code 97 (bright white)
+colors.yellow(text)      // ANSI code 33
+colors.green(text)       // ANSI code 32
+colors.red(text)         // ANSI code 91 (bright red)
+colors.orange(text)      // ANSI code 208 (256-color mode)
 ```
 
-## 段階的な使用法
+### 色レベル制御
 
-現在、main の `statusline.ts` はそのまま機能します。
-新しいモジュールは以下の用途で使用できます：
+色出力は環境変数で制御可能：
 
-1. **新機能開発** - statusline の機能拡張時に各モジュールをインポート
-2. **テスト** - ユニットテストで個別モジュールをテスト
-3. **再利用** - 他のスクリプトから共通機能をインポート
+```bash
+# 色を無効化
+NO_COLOR=1 command
 
-## 今後の拡張
+# 色レベルを強制指定
+FORCE_COLOR=0    # 色なし
+FORCE_COLOR=1    # 16色
+FORCE_COLOR=2    # 256色
+FORCE_COLOR=3    # TrueColor (16M色)
+FORCE_COLOR=256  # 256色 (別形式)
+FORCE_COLOR=16m  # TrueColor (別形式)
+FORCE_COLOR=true # 有効化
+```
 
-Phase 2 では以下のモジュールを追加予定：
-- `git/` - Git 操作（getGitStatus, getDiffStats など）
-- `format/` - フォーマット関数（カラー、日付など）
-- `cache/` - キャッシュ機能
-- `metrics/` - メトリクス計算
-- `builder/` - statusline 構築メイン処理
+#### 優先度
+
+1. `NO_COLOR=1` が設定されている → 色なし
+2. `FORCE_COLOR` で明示的に指定 → その値に従う
+3. TTY 接続 → TrueColor 有効
+4. TTY なし (パイプ等) → 色なし
+
+## 🧪 テスト (16 tests)
+
+```bash
+bun test ./home/.claude/statusline/__tests__/colors.test.ts
+```
+
+テストカバレッジ：
+- ANSI コード出力 (3 tests)
+- カラー区別 (2 tests)
+- 環境変数サポート (3 tests)
+- テキスト保持 (3 tests)
+- エッジケース (5 tests)
+
+## 🚀 パフォーマンス特性
+
+- **カラー関数**: O(1) - Chalk インスタンス生成は軽量
+- **キャッシング**: 5 分間のレスポンスキャッシュ
+- **Git 情報**: 非同期取得、5 秒のタイムアウト
+
+## 📝 最適化履歴 (Phase 1-5)
+
+このモジュールは以下のリファクタリングを経ています：
+
+1. ✅ **Phase 1.1**: Chalk キャッシング削除 (30行削減)
+2. ✅ **Phase 1.2**: 未使用カラー関数削除 (50行削減)
+3. ✅ **Phase 1.3-1.4**: ドキュメント簡潔化 (70行削減)
+4. ✅ **Phase 1.5**: ANSI コードを color 関数に統一
+5. ✅ **Phase 5**: テスト集約 (30+ → 16 tests)
+6. ✅ **Phase 5**: README ドキュメント更新
+
+**合計削減: 150行+のコード短縮、テスト効率化**
+
+## 定数一覧
+
+```typescript
+CACHE_TTL_MS = 5 * 60 * 1000        // 5 分
+CONFIG_CACHE_TTL = 60 * 1000        // 1 分
+GIT_COMMAND_TIMEOUT_MS = 5000        // 5 秒
+API_CALL_TIMEOUT_MS = 5000           // 5 秒
+FILE_OPERATION_TIMEOUT_MS = 10000    // 10 秒
+MAX_FILE_SIZE = 10 * 1024 * 1024     // 10 MB
+```
