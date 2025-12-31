@@ -53,11 +53,34 @@ function getColorLevel(): 0 | 1 | 2 | 3 {
 }
 
 /**
- * 環境変数の変更を反映させるため、Chalk インスタンスを動的に生成します
- * これにより、テスト環境での環境変数変更に対応します
+ * Chalk インスタンスをキャッシュします
+ * 色レベルが変わっていない場合は既存インスタンスを再利用し、パフォーマンスを最適化します
+ * テスト環境での環境変数変更も反映される設計です
  */
+let cachedChalk: Chalk | null = null;
+let cachedColorLevel: 0 | 1 | 2 | 3 | null = null;
+
 function getChalk(): Chalk {
-	return new Chalk({ level: getColorLevel() });
+	const currentLevel = getColorLevel();
+
+	// 色レベルが変わっていない場合はキャッシュを返す
+	if (cachedChalk !== null && cachedColorLevel === currentLevel) {
+		return cachedChalk;
+	}
+
+	// 色レベルが変更された場合は新規インスタンスを生成してキャッシュ
+	cachedColorLevel = currentLevel;
+	cachedChalk = new Chalk({ level: currentLevel });
+	return cachedChalk;
+}
+
+/**
+ * テスト用：キャッシュを無効化します
+ * テスト環境で環境変数を変更する場合に使用
+ */
+export function resetChalkCache(): void {
+	cachedChalk = null;
+	cachedColorLevel = null;
 }
 
 /**

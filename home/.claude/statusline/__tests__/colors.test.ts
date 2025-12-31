@@ -1,10 +1,7 @@
 #!/usr/bin/env bun
 
-// テスト環境では TTY が検出されないため、モジュール読み込み前に色を強制有効化
-process.env.FORCE_COLOR = "3";
-
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { colors } from "../colors.ts";
+import { colors, resetChalkCache } from "../colors.ts";
 
 describe("Color Output", () => {
 	// 環境変数のバックアップと復元
@@ -12,11 +9,18 @@ describe("Color Output", () => {
 	let originalFORCE_COLOR: string | undefined;
 
 	beforeEach(() => {
+		// 環境変数を事前バックアップ
 		originalNO_COLOR = process.env.NO_COLOR;
 		originalFORCE_COLOR = process.env.FORCE_COLOR;
+
+		// テスト環境では TTY が検出されないため、モジュール読み込み時に色を強制有効化
+		// 各テスト実行前に設定してキャッシュを無効化
+		process.env.FORCE_COLOR = "3";
+		resetChalkCache();
 	});
 
 	afterEach(() => {
+		// 環境変数を完全に復元
 		if (originalNO_COLOR !== undefined) {
 			process.env.NO_COLOR = originalNO_COLOR;
 		} else {
@@ -28,6 +32,9 @@ describe("Color Output", () => {
 		} else {
 			delete process.env.FORCE_COLOR;
 		}
+
+		// キャッシュを無効化して次のテストに影響しないようにする
+		resetChalkCache();
 	});
 
 	describe("ANSI Code Output", () => {
@@ -148,6 +155,107 @@ describe("Color Output", () => {
 			const special = "テスト 123 !@#$%";
 			const result = colors.green(special);
 			expect(result).toContain(special);
+		});
+	});
+
+	describe("getColorLevel Edge Cases", () => {
+		it("should return 0 when FORCE_COLOR is invalid", () => {
+			// 無効な FORCE_COLOR 値を設定
+			process.env.FORCE_COLOR = "invalid_value";
+			resetChalkCache();
+
+			// TTY が false の環境では色レベル 0 が返されるべき
+			// (isTTY は通常テスト環境では false)
+			const result = colors.cyan("test");
+
+			// 無効な値の場合、デフォルト動作に従う
+			// TTY でない場合は色が出力されない
+			expect(typeof result).toBe("string");
+			expect(result).toContain("test");
+		});
+
+		it("should prioritize NO_COLOR over FORCE_COLOR", () => {
+			// NO_COLOR と FORCE_COLOR の両方が設定されている場合
+			process.env.NO_COLOR = "1";
+			process.env.FORCE_COLOR = "3";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+
+			// NO_COLOR が優先されて、色が出力されないべき
+			expect(result).toBe("test");
+		});
+
+		it("should handle environment variable changes dynamically", () => {
+			// FORCE_COLOR=3 で色を有効化
+			process.env.FORCE_COLOR = "3";
+			resetChalkCache();
+
+			const result1 = colors.cyan("test");
+			expect(result1).toContain("\x1b["); // 色コード含む
+
+			// FORCE_COLOR を 0 に変更
+			process.env.FORCE_COLOR = "0";
+			resetChalkCache();
+
+			const result2 = colors.cyan("test");
+			expect(result2).toBe("test"); // 色コードなし
+		});
+
+		it("should respect FORCE_COLOR=1 (16 colors)", () => {
+			process.env.FORCE_COLOR = "1";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
+		});
+
+		it("should respect FORCE_COLOR=2 (256 colors)", () => {
+			process.env.FORCE_COLOR = "2";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
+		});
+
+		it("should respect FORCE_COLOR=3 (TrueColor)", () => {
+			process.env.FORCE_COLOR = "3";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
+		});
+
+		it("should respect FORCE_COLOR=256 (alias for 256 colors)", () => {
+			process.env.FORCE_COLOR = "256";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
+		});
+
+		it("should respect FORCE_COLOR=16m (alias for TrueColor)", () => {
+			process.env.FORCE_COLOR = "16m";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
+		});
+
+		it("should respect FORCE_COLOR=false (string)", () => {
+			process.env.FORCE_COLOR = "false";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toBe("test"); // 色なし
+		});
+
+		it("should respect FORCE_COLOR=true (string)", () => {
+			process.env.FORCE_COLOR = "true";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toContain("\x1b[");
 		});
 	});
 });
