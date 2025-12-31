@@ -95,7 +95,7 @@ function buildFirstLine(
 
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
-		result += ` ${colors.gray("S:")} ${sessionTimeDisplay} ${costDisplay}`;
+		result += ` ${colors.gray("S:")} ${colors.white(sessionTimeDisplay)} ${costDisplay}`;
 	}
 
 	if (config.session.showSessionId) {
