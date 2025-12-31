@@ -26,19 +26,52 @@ import type { ValidationResult } from "../types";
 
 /**
  * rm -rf コマンドの安全性をチェック
+ * フラグが分散している場合（-r -f）や大文字（-R, -F）も検出
  * @param command - チェックするコマンド
  * @returns 安全性がある場合true、危険な場合false
  */
 export function isRmRfSafe(command: string): boolean {
-	const rmRfMatch = command.match(/rm\s+.*-rf\s+([^\s;&|]+)/);
-	if (!rmRfMatch || !rmRfMatch[1]) {
+	// rm コマンドの存在確認
+	if (!command.match(/^\s*rm\b/)) {
+		return true;
+	}
+
+	// -r（-R）フラグの存在確認（フラグが分散している可能性を考慮）
+	const hasRecursiveFlag =
+		/\s-[a-zA-Z]*r[a-zA-Z]*(\s|$)/.test(command) || /\s--recursive\b/.test(command);
+
+	// -f（-F）フラグの存在確認
+	const hasForceFlag = /\s-[a-zA-Z]*f[a-zA-Z]*(\s|$)/.test(command) || /\s--force\b/.test(command);
+
+	// -rf または -fr が両方ない場合は安全
+	if (!hasRecursiveFlag || !hasForceFlag) {
+		return true;
+	}
+
+	// -r と -f の両方がある場合、パスを抽出
+	// パターン：rm [flags] <path>
+	const pathMatch = command.match(/(?:\s-[a-zA-Z]*(?:r|f)[a-zA-Z]*)*\s+([^\s;&|]+)(?:\s|$|;|&|\|)/);
+
+	if (!pathMatch || !pathMatch[1]) {
+		// パスが明示的に指定されていない可能性
+		// より厳密なチェック：-r -f の後に何かがあるか
+		const rfWithPath = command.match(
+			/\s-[a-zA-Z]*r[a-zA-Z]*\s+(?:-[a-zA-Z]*f[a-zA-Z]*)?\s+([^\s;&|]+)/,
+		);
+		if (!rfWithPath || !rfWithPath[1]) {
+			return false;
+		}
+	}
+
+	const targetPath = pathMatch ? pathMatch[1] : "";
+
+	// ルート削除や末尾スラッシュは危険
+	if (targetPath === "/" || targetPath === "/." || targetPath.endsWith("/")) {
 		return false;
 	}
 
-	const targetPath = rmRfMatch[1];
-
-	// ルート削除や末尾スラッシュは危険
-	if (targetPath === "/" || targetPath.endsWith("/")) {
+	// システムルートは危険
+	if (targetPath === "." && command.includes("~/")) {
 		return false;
 	}
 

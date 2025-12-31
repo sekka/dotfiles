@@ -38,11 +38,26 @@ export function splitCommandChain(command: string): string[] {
 	let current = "";
 	let inQuotes = false;
 	let quoteChar = "";
+	let escaped = false;
 
 	for (let i = 0; i < command.length; i++) {
 		const char = command[i];
 		const nextChar = command[i + 1];
 
+		// エスケープ文字（バックスラッシュ）の処理
+		if (escaped) {
+			current += char;
+			escaped = false;
+			continue;
+		}
+
+		if (char === "\\") {
+			escaped = true;
+			current += char;
+			continue;
+		}
+
+		// クォート処理（エスケープされていないもののみ）
 		if ((char === '"' || char === "'") && !inQuotes) {
 			inQuotes = true;
 			quoteChar = char;

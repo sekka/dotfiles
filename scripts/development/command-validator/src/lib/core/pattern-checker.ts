@@ -42,13 +42,160 @@ function parseCommand(command: string): {
 }
 
 /**
- * 危険なパターンをチェック
+ * コマンド内に存在する危険なキーワードを抽出（パフォーマンス最適化）
+ * 正規表現テストの前に事前フィルタリング用
+ * @param command - チェック対象のコマンド
+ * @returns 見つかったキーワードのセット
+ */
+function extractDangerousKeywords(command: string): Set<string> {
+	const keywords = new Set<string>();
+	const lowerCmd = command.toLowerCase();
+
+	// rm コマンド関連
+	if (lowerCmd.includes("rm ")) keywords.add("rm");
+
+	// dd コマンド
+	if (lowerCmd.includes("dd ")) keywords.add("dd");
+
+	// shred コマンド
+	if (lowerCmd.includes("shred ")) keywords.add("shred");
+
+	// mkfs コマンド
+	if (lowerCmd.includes("mkfs")) keywords.add("mkfs");
+
+	// fork bomb の危険なシンボル（様々な表現形式に対応）
+	if (lowerCmd.includes(":()") || lowerCmd.includes("while true") || lowerCmd.includes("for ((")) {
+		keywords.add("fork");
+	}
+
+	// パイプとシェル
+	if (
+		lowerCmd.includes("| sh") ||
+		lowerCmd.includes("| bash") ||
+		lowerCmd.includes("| zsh") ||
+		lowerCmd.includes("| fish")
+	) {
+		keywords.add("shell_pipe");
+	}
+
+	// wget/curl
+	if (lowerCmd.includes("wget ") || lowerCmd.includes("curl ")) keywords.add("wget_curl");
+
+	// コマンド置換
+	if (lowerCmd.includes("$(") || lowerCmd.includes("`")) keywords.add("command_substitution");
+
+	// ネットワークコマンド
+	if (lowerCmd.includes("nc ") || lowerCmd.includes("ncat ")) keywords.add("netcat");
+
+	// デバイスファイル操作（/dev/mem, /dev/kmem等）
+	if (lowerCmd.includes("/dev/mem") || lowerCmd.includes("/dev/kmem")) keywords.add("device_mem");
+	// その他の /dev/ 操作
+	if (lowerCmd.includes("/dev/")) keywords.add("device_file");
+
+	// 危険なシステムパス
+	if (lowerCmd.includes("/etc/")) keywords.add("etc_files");
+	if (lowerCmd.includes("/var/log/")) keywords.add("var_log");
+	if (lowerCmd.includes(".bash_history")) keywords.add("bash_history");
+
+	// その他の危険なコマンド
+	if (lowerCmd.includes("docker ")) keywords.add("docker");
+	if (
+		lowerCmd.includes("insmod ") ||
+		lowerCmd.includes("rmmod ") ||
+		lowerCmd.includes("modprobe ")
+	) {
+		keywords.add("kernel_module");
+	}
+	if (lowerCmd.includes("crontab ") || lowerCmd.includes("/var/spool/cron"))
+		keywords.add("crontab");
+	if (lowerCmd.includes("ssh-keygen")) keywords.add("ssh_keygen");
+	if (
+		lowerCmd.includes("xmrig") ||
+		lowerCmd.includes("ccminer") ||
+		lowerCmd.includes("cgminer") ||
+		lowerCmd.includes("bfgminer")
+	) {
+		keywords.add("miner");
+	}
+	if (lowerCmd.includes("env ") || lowerCmd.includes("printenv")) keywords.add("env_vars");
+	// prisma コマンド
+	if (lowerCmd.includes("prisma ")) keywords.add("prisma");
+
+	return keywords;
+}
+
+/**
+ * 危険なパターンをチェック（事前フィルタリング付き）
  * @param command - チェックするコマンド
  * @returns 違反が見つかった場合はValidationResult、見つからなければnull
  */
 export function checkDangerousPatterns(command: string): ValidationResult | null {
+	const keywords = extractDangerousKeywords(command);
+
+	// キーワードが全く見つからない場合は安全
+	if (keywords.size === 0) {
+		return null;
+	}
+
+	// キーワードに基づいて関連パターンのみをテスト
 	for (const pattern of SECURITY_RULES.DANGEROUS_PATTERNS) {
-		if (pattern.test(command)) {
+		const source = pattern.source.toLowerCase();
+
+		// パターンが含むキーワードをチェック
+		let shouldTest = false;
+
+		if (keywords.has("rm") && source.includes("rm")) shouldTest = true;
+		else if (keywords.has("dd") && source.includes("dd")) shouldTest = true;
+		else if (keywords.has("shred") && source.includes("shred")) shouldTest = true;
+		else if (keywords.has("mkfs") && source.includes("mkfs")) shouldTest = true;
+		else if (
+			keywords.has("fork") &&
+			(source.includes(":()") ||
+				source.includes(":\\(\\)") ||
+				source.includes("while") ||
+				source.includes("for"))
+		)
+			shouldTest = true;
+		else if (keywords.has("shell_pipe") && source.includes("sh|bash|zsh|fish")) shouldTest = true;
+		else if (keywords.has("wget_curl") && (source.includes("wget") || source.includes("curl")))
+			shouldTest = true;
+		else if (
+			keywords.has("command_substitution") &&
+			(source.includes("$(") || source.includes("`"))
+		)
+			shouldTest = true;
+		else if (keywords.has("netcat") && (source.includes("nc") || source.includes("ncat")))
+			shouldTest = true;
+		else if (
+			keywords.has("device_mem") &&
+			(source.includes("mem|kmem") || source.includes("mem") || source.includes("kmem"))
+		)
+			shouldTest = true;
+		else if (keywords.has("device_file") && source.includes("/dev/")) shouldTest = true;
+		else if (keywords.has("etc_files") && source.includes("etc")) shouldTest = true;
+		else if (keywords.has("var_log") && source.includes("var/log")) shouldTest = true;
+		else if (keywords.has("bash_history") && source.includes("bash_history")) shouldTest = true;
+		else if (keywords.has("docker") && source.includes("docker")) shouldTest = true;
+		else if (
+			keywords.has("kernel_module") &&
+			(source.includes("insmod") || source.includes("rmmod") || source.includes("modprobe"))
+		)
+			shouldTest = true;
+		else if (keywords.has("crontab") && source.includes("crontab")) shouldTest = true;
+		else if (keywords.has("ssh_keygen") && source.includes("ssh")) shouldTest = true;
+		else if (
+			keywords.has("miner") &&
+			(source.includes("xmrig") ||
+				source.includes("ccminer") ||
+				source.includes("cgminer") ||
+				source.includes("bfgminer"))
+		)
+			shouldTest = true;
+		else if (keywords.has("env_vars") && (source.includes("env") || source.includes("printenv")))
+			shouldTest = true;
+		else if (keywords.has("prisma") && source.includes("prisma")) shouldTest = true;
+
+		if (shouldTest && pattern.test(command)) {
 			return {
 				isValid: false,
 				severity: "CRITICAL",
