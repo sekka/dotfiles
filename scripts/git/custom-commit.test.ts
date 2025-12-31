@@ -3,12 +3,12 @@
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { $ } from "bun";
 
 import { appendTokyoTimezone, commitWithCustomDate, parseArgs } from "./custom-commit";
+import { createTempGitRepo, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("custom-commit", () => {
 	let tempDir: string;
@@ -16,13 +16,8 @@ describe("custom-commit", () => {
 
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "custom-commit-test-"));
+		tempDir = await createTempGitRepo("custom-commit-test-");
 		process.chdir(tempDir);
-
-		// gitリポジトリを初期化
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
 
 		// 初期コミット
 		await writeFile(join(tempDir, "README.md"), "# Test");
@@ -32,7 +27,7 @@ describe("custom-commit", () => {
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	beforeEach(async () => {

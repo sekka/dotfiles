@@ -5,11 +5,11 @@
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { $ } from "bun";
 
+import { createTempDir, createTempGitRepo, cleanupTempDir } from "../__tests__/test-helpers";
 import { getChangedFiles, isGitRepository, stageFiles } from "./git-fzf-add";
 
 describe("git-fzf-add", () => {
@@ -19,13 +19,8 @@ describe("git-fzf-add", () => {
 	// テスト用の一時gitリポジトリを作成
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "git-fzf-add-test-"));
+		tempDir = await createTempGitRepo("git-fzf-add-test-");
 		process.chdir(tempDir);
-
-		// gitリポジトリを初期化
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
 
 		// 初期コミットを作成
 		await writeFile(join(tempDir, "initial.txt"), "initial content");
@@ -35,7 +30,7 @@ describe("git-fzf-add", () => {
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	// 各テスト前に作業ディレクトリをクリーンにする
@@ -51,7 +46,7 @@ describe("git-fzf-add", () => {
 		});
 
 		it("gitリポジトリ外ではfalseを返す", async () => {
-			const nonGitDir = await mkdtemp(join(tmpdir(), "non-git-"));
+			const nonGitDir = await createTempDir("non-git-");
 			const currentCwd = process.cwd();
 
 			try {
@@ -60,7 +55,7 @@ describe("git-fzf-add", () => {
 				expect(result).toBe(false);
 			} finally {
 				process.chdir(currentCwd);
-				await rm(nonGitDir, { recursive: true, force: true });
+				await cleanupTempDir(nonGitDir);
 			}
 		});
 	});

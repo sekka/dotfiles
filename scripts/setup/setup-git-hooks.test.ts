@@ -1,24 +1,23 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { copyHook, getHookFiles, hasGithooksDir, isGitRepository } from "./setup-git-hooks";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("setup-git-hooks", () => {
 	let testDir: string;
 	let originalCwd: string;
 
-	beforeEach(() => {
-		testDir = join(tmpdir(), `setup-git-hooks-test-${Date.now()}`);
-		mkdirSync(testDir, { recursive: true });
+	beforeEach(async () => {
+		testDir = await createTempDir("setup-git-hooks-test-");
 		originalCwd = process.cwd();
 		process.chdir(testDir);
 	});
 
-	afterEach(() => {
+	afterEach(async () => {
 		process.chdir(originalCwd);
 		if (existsSync(testDir)) {
-			rmSync(testDir, { recursive: true, force: true });
+			await cleanupTempDir(testDir);
 		}
 	});
 

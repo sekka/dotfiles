@@ -3,12 +3,12 @@
  */
 
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { $ } from "bun";
 
 import { getCommitLog, isGitRepository } from "./git-fzf-show";
+import { createTempGitRepo, createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("git-fzf-show", () => {
 	let tempDir: string;
@@ -16,13 +16,8 @@ describe("git-fzf-show", () => {
 
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "git-fzf-show-test-"));
+		tempDir = await createTempGitRepo("git-fzf-show-test-");
 		process.chdir(tempDir);
-
-		// gitリポジトリを初期化
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
 
 		// 複数のコミットを作成
 		await writeFile(join(tempDir, "file1.txt"), "content1");
@@ -36,7 +31,7 @@ describe("git-fzf-show", () => {
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	describe("isGitRepository", () => {
@@ -46,7 +41,7 @@ describe("git-fzf-show", () => {
 		});
 
 		it("gitリポジトリ外ではfalseを返す", async () => {
-			const nonGitDir = await mkdtemp(join(tmpdir(), "non-git-"));
+			const nonGitDir = await createTempDir("non-git-");
 			const currentCwd = process.cwd();
 
 			try {
@@ -55,7 +50,7 @@ describe("git-fzf-show", () => {
 				expect(result).toBe(false);
 			} finally {
 				process.chdir(currentCwd);
-				await rm(nonGitDir, { recursive: true, force: true });
+				await cleanupTempDir(nonGitDir);
 			}
 		});
 	});

@@ -3,11 +3,11 @@
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { getScripts, packageJsonExists } from "./npm-scripts";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("npm-scripts", () => {
 	let tempDir: string;
@@ -15,13 +15,13 @@ describe("npm-scripts", () => {
 
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "npm-scripts-test-"));
+		tempDir = await createTempDir("npm-scripts-test-");
 		process.chdir(tempDir);
 	});
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	beforeEach(async () => {
