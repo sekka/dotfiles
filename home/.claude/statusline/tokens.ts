@@ -1,5 +1,6 @@
 import { HookInput, TranscriptEntry } from "./utils.ts";
 import { debug } from "./logging.ts";
+import { colors } from "./colors.ts";
 
 // ============================================================================
 // Token Calculation
@@ -292,13 +293,13 @@ export function formatBrailleProgressBar(percentage: number, length = 10): strin
 	const emptyPart = "⣀".repeat(emptyBlocks);
 
 	// Progressive color: 0-50% gray, 51-70% yellow, 71-90% orange, 91-100% red
-	let colorFn = (s: string) => `\x1b[90m${s}\x1b[0m`; // gray
+	let colorFn = colors.gray;
 	if (percentage > 50 && percentage <= 70) {
-		colorFn = (s: string) => `\x1b[33m${s}\x1b[0m`; // yellow
+		colorFn = colors.yellow;
 	} else if (percentage > 70 && percentage <= 90) {
-		colorFn = (s: string) => `\x1b[38;5;208m${s}\x1b[0m`; // orange
+		colorFn = colors.orange;
 	} else if (percentage > 90) {
-		colorFn = (s: string) => `\x1b[91m${s}\x1b[0m`; // red
+		colorFn = colors.red;
 	}
 
 	return colorFn(`${fullPart}${partialPart}${emptyPart}`);
