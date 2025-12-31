@@ -20,7 +20,7 @@
  */
 
 // Utilities
-import { HookInput, type StatuslineConfig } from "./statusline/utils.ts";
+import { HookInput, type StatuslineConfig, type UsageLimits } from "./statusline/utils.ts";
 import { colors } from "./statusline/colors.ts";
 import { debug } from "./statusline/logging.ts";
 
@@ -32,7 +32,6 @@ import { getContextTokens, formatElapsedTime, getSessionElapsedTime } from "./st
 
 // Caching and cost tracking
 import {
-	UsageLimits,
 	loadConfigCached,
 	getCachedUsageLimits,
 	getTodayCost,
@@ -322,4 +321,4 @@ async function main() {
 	}
 }
 
-main();
+await main();
