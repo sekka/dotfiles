@@ -18,11 +18,11 @@ PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
 }
 
 # TypeScript検証ツールの確認
-VALIDATE_SCRIPT="$PROJECT_ROOT/scripts/git/hooks/validate-commit.ts"
+VALIDATE_SCRIPT="$PROJECT_ROOT/scripts/git/validate-commit-message.ts"
 if [[ ! -f "$VALIDATE_SCRIPT" ]]; then
 	echo "❌ エラー: 検証スクリプトが見つかりません: $VALIDATE_SCRIPT" >&2
 	exit 1
 fi
 
 # TypeScript検証ツールを実行
-exec bun "$VALIDATE_SCRIPT" "$@"
+exec bun "$VALIDATE_SCRIPT" "$1"

@@ -11,19 +11,6 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${YELLOW}INFO [Git Hook] commit前のチェックを実行しています...${NC}"
-
-# コミットメッセージ検証（TypeScript）
-echo -e "${YELLOW}INFO [Git Hook] コミットメッセージ検証中${NC}"
-COMMIT_MSG_FILE="${GIT_DIR:-.git}/COMMIT_EDITMSG"
-
-if [[ -f $COMMIT_MSG_FILE ]]; then
-  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if bun "$SCRIPT_DIR/hooks/validate-commit.ts" "$COMMIT_MSG_FILE"; then
-    echo -e "${GREEN}SUCCESS [Git Hook] コミットメッセージ検証成功${NC}"
-  else
-    exit 1
-  fi
-fi
 echo ""
 
 # 各種チェックの実行（統合スクリプト使用）
