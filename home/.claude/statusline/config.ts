@@ -1,9 +1,10 @@
 // ============================================================================
-// Cosmiconfig ベースの設定管理（手動実装から置き換え）
+// Cosmiconfig ベースの設定管理（deepmergeパッケージを使用）
 // ============================================================================
 
 import { cosmiconfig } from "cosmiconfig";
 import type { CosmiconfigResult } from "cosmiconfig";
+import merge from "deepmerge";
 
 // ============================================================================
 // 型定義
@@ -103,43 +104,11 @@ async function loadConfig(): Promise<StatuslineConfig> {
 		}
 
 		// ファイルベースの設定とDEFAULT_CONFIGを再帰的にマージ
-		return deepMerge(DEFAULT_CONFIG, result.config);
+		return merge(DEFAULT_CONFIG, result.config) as StatuslineConfig;
 	} catch {
 		// ファイル読み込み失敗時はデフォルト設定を返す
 		return DEFAULT_CONFIG;
 	}
-}
-
-/**
- * オブジェクトの深いマージ
- * DEFAULTを基本に、userの値で上書き
- * ネストされたオブジェクトも正しくコピーされることを保証
- */
-function deepMerge<T extends Record<string, any>>(defaultObj: T, userObj: Partial<T>): T {
-	const result = { ...defaultObj } as T;
-
-	for (const key in userObj) {
-		if (Object.prototype.hasOwnProperty.call(userObj, key)) {
-			const userValue = userObj[key];
-			const defaultValue = defaultObj[key];
-
-			// ネストされたオブジェクト（配列以外）の場合は再帰的にマージ
-			if (
-				userValue &&
-				typeof userValue === "object" &&
-				!Array.isArray(userValue) &&
-				defaultValue &&
-				typeof defaultValue === "object" &&
-				!Array.isArray(defaultValue)
-			) {
-				result[key] = deepMerge(defaultValue as any, userValue as any);
-			} else if (userValue !== undefined) {
-				result[key] = userValue as any;
-			}
-		}
-	}
-
-	return result;
 }
 
 /**
