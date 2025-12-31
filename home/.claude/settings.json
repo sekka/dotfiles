@@ -1,7 +1,6 @@
 {
 	"env": {
-		"DISABLE_AUTOUPDATER": "1",
-		"ENABLE_TOOL_SEARCH": "1"
+		"DISABLE_AUTOUPDATER": "1"
 	},
 	"model": "haiku",
 	"includeCoAuthoredBy": false,
