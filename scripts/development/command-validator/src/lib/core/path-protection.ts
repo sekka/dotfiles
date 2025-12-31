@@ -1,6 +1,24 @@
 /**
- * パス保護モジュール
- * rm -rf 安全性チェックと保護パス検証
+ * パス保護モジュール（バリデーション段階3）
+ *
+ * 責務：
+ * - rm -rf コマンドの破壊性チェック（ルート削除防止）
+ * - 保護パス（/etc, /sys, /proc等）への危険な操作検出
+ * - パス走査攻撃の防止（../ディレクトリトラバーサル対策）
+ *
+ * 入力：文字列型のシェルコマンド
+ * 出力：ValidationResult | null（違反検出時のみ結果を返す）
+ *
+ * セキュリティ保証：
+ * - rm -rf / 等のシステム全体削除を絶対ブロック
+ * - ルートディレクトリや末尾スラッシュを含むパスを拒否
+ * - /dev, /etc, /sys, /proc等の保護パスへのリダイレクト削除を検出
+ * - SAFE_RM_PATHS のホワイトリスト内でのみ rm -rf を許可
+ * - /dev/{null,stderr,stdout} 等の安全な特殊ファイルは例外許可
+ *
+ * パス走査対策：
+ * - POSIX パス正規化による ../ 攻撃対策
+ * - Windows パス（バックスラッシュ）との互換性対応
  */
 
 import { SECURITY_RULES } from "../security-rules";
@@ -13,7 +31,7 @@ import type { ValidationResult } from "../types";
  */
 export function isRmRfSafe(command: string): boolean {
 	const rmRfMatch = command.match(/rm\s+.*-rf\s+([^\s;&|]+)/);
-	if (!rmRfMatch) {
+	if (!rmRfMatch || !rmRfMatch[1]) {
 		return false;
 	}
 

@@ -1,6 +1,24 @@
 /**
- * パターン検出モジュール
- * 危険なコマンドパターンとコマンド分類による検出
+ * パターン検出モジュール（バリデーション段階2）
+ *
+ * 責務：
+ * - 危険な正規表現パターンの検出（fork bombs, 権限昇格コマンド）
+ * - コマンド分類による検出（CRITICAL/PRIVILEGE/NETWORK/SYSTEM）
+ * - メインコマンド（exe名）の抽出と正規化
+ *
+ * 入力：文字列型のシェルコマンド
+ * 出力：ValidationResult | null（違反検出時のみ結果を返す）
+ *
+ * セキュリティ保証：
+ * - DANGEROUS_PATTERNS正規表現群による既知マルウェアパターン検出
+ * - CRITICAL_COMMANDS（dd, mkfs, shred等）の絶対ブロック
+ * - PRIVILEGE_COMMANDS（sudo, passwd, chmod等）の検出
+ * - NETWORK_COMMANDS（nc, nmap, telnet等）の検出
+ * - SYSTEM_COMMANDS（shutdown, reboot, service等）の検出
+ *
+ * ReDoS対策：
+ * - パターン正規表現は予めコンパイル・検証済み
+ * - 複雑な量指定子/交互を避けた設計
  */
 
 import { SECURITY_RULES } from "../security-rules";
@@ -17,8 +35,8 @@ function parseCommand(command: string): {
 	cmdParts: string[];
 } {
 	const normalizedCmd = command.trim().toLowerCase();
-	const cmdParts = normalizedCmd.split(/\s+/);
-	const mainCommand = cmdParts[0].split("/").pop() || "";
+	const cmdParts = normalizedCmd.split(/\s+/).filter((part) => part.length > 0);
+	const mainCommand = cmdParts[0]?.split("/").pop() || "";
 
 	return { normalizedCmd, mainCommand, cmdParts };
 }
