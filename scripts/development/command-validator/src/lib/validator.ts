@@ -1,8 +1,24 @@
-import { SAFE_COMMANDS, SECURITY_RULES } from "./security-rules";
+import { SAFE_COMMANDS } from "./security-rules";
 import type { ValidationResult } from "./types";
+import { runBasicValidation } from "./core/basic-validation";
+import { runPatternCheck, getMainCommand } from "./core/pattern-checker";
+import { runPathProtectionCheck } from "./core/path-protection";
+import {
+	splitCommandChain,
+	hasAndOperator,
+	hasOrOperator,
+	hasSemicolonOperator,
+} from "./core/command-parser";
 
 export class CommandValidator {
-	validate(command: string, toolName = "Unknown"): ValidationResult {
+	/**
+	 * 4段階バリデーションパイプラインの実行（段階1-3）
+	 * 基本検証、パターン検出、パス保護を順次実行
+	 *
+	 * @param command - 検証するコマンド
+	 * @returns 検証結果。段階1で失敗した場合は即座に結果を返す
+	 */
+	private runValidationPipeline(command: string): ValidationResult {
 		const result: ValidationResult = {
 			isValid: true,
 			severity: "LOW",
@@ -10,99 +26,83 @@ export class CommandValidator {
 			sanitizedCommand: command,
 		};
 
-		if (!command || typeof command !== "string") {
+		// 段階1: 基本検証（形式、長さ、エンコード）
+		let checkResult = runBasicValidation(command);
+		if (checkResult) {
 			result.isValid = false;
-			result.violations.push("Invalid command format");
+			result.severity = checkResult.severity;
+			result.violations = checkResult.violations;
 			return result;
 		}
 
-		if (command.length > 2000) {
-			result.isValid = false;
-			result.severity = "MEDIUM";
-			result.violations.push("Command too long (potential buffer overflow)");
-			return result;
-		}
+		const mainCommand = getMainCommand(command);
 
-		if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]/.test(command)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push("Binary or encoded content detected");
-			return result;
-		}
-
-		const normalizedCmd = command.trim().toLowerCase();
-		const cmdParts = normalizedCmd.split(/\s+/);
-		const mainCommand = cmdParts[0].split("/").pop() || "";
-
+		// ホワイトリスト：source と python は許可
 		if (mainCommand === "source" || mainCommand === "python") {
 			return result;
 		}
 
-		for (const pattern of SECURITY_RULES.DANGEROUS_PATTERNS) {
-			if (pattern.test(command)) {
-				result.isValid = false;
-				result.severity = "CRITICAL";
-				result.violations.push(`Dangerous pattern detected: ${pattern.source}`);
+		// 段階2: パターン検出（危険なパターン、コマンド分類）
+		checkResult = runPatternCheck(command);
+		if (checkResult) {
+			result.isValid = false;
+			result.violations.push(...checkResult.violations);
+			// 重大度の更新：より重大な場合のみ更新
+			if (this.shouldUpdateSeverity(result.severity, checkResult.severity)) {
+				result.severity = checkResult.severity;
 			}
 		}
 
-		if (SECURITY_RULES.CRITICAL_COMMANDS.includes(mainCommand)) {
+		// 段階3: パス保護（rm -rf安全性、保護パス）
+		checkResult = runPathProtectionCheck(command);
+		if (checkResult) {
 			result.isValid = false;
-			result.severity = "CRITICAL";
-			result.violations.push(`Critical dangerous command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.PRIVILEGE_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`Privilege escalation command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.NETWORK_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`Network/remote access command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.SYSTEM_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`System manipulation command: ${mainCommand}`);
-		}
-
-		if (/rm\s+.*-rf\s/.test(command)) {
-			const isRmRfSafe = this.isRmRfCommandSafe(command);
-			if (!isRmRfSafe) {
-				result.isValid = false;
-				result.severity = "CRITICAL";
-				result.violations.push("rm -rf command targeting unsafe path");
+			result.violations.push(...checkResult.violations);
+			// 重大度の更新：より重大な場合のみ更新
+			if (this.shouldUpdateSeverity(result.severity, checkResult.severity)) {
+				result.severity = checkResult.severity;
 			}
 		}
 
+		// ホワイトリスト確認：SAFE_COMMANDS で違反がなければ許可
 		if (SAFE_COMMANDS.includes(mainCommand) && result.violations.length === 0) {
 			return result;
 		}
 
-		if (command.includes("&&")) {
-			const chainedCommands = this.splitCommandChain(command);
+		return result;
+	}
+
+	validate(command: string, toolName = "Unknown"): ValidationResult {
+		// 段階1-3の検証パイプラインを実行
+		const result = this.runValidationPipeline(command);
+
+		// 初期段階で失敗した場合はここで返す（段階1での失敗）
+		if (!result.isValid && result.violations.length === 1) {
+			return result;
+		}
+
+		// 段階4: コマンドチェーン検証（&&, ||, ;）
+		if (hasAndOperator(command)) {
+			const chainedCommands = splitCommandChain(command);
 			let allSafe = true;
 			for (const chainedCmd of chainedCommands) {
 				const trimmedCmd = chainedCmd.trim();
-				const cmdParts = trimmedCmd.split(/\s+/);
-				const mainCommand = cmdParts[0];
+				const chainMainCommand = getMainCommand(trimmedCmd);
 
 				if (
-					mainCommand === "source" ||
-					mainCommand === "python" ||
-					SAFE_COMMANDS.includes(mainCommand)
+					chainMainCommand === "source" ||
+					chainMainCommand === "python" ||
+					SAFE_COMMANDS.includes(chainMainCommand)
 				) {
 					continue;
 				}
 
-				const chainResult = this.validateSingleCommand(trimmedCmd, toolName);
+				const chainResult = this.runValidationPipeline(trimmedCmd);
 				if (!chainResult.isValid) {
 					result.isValid = false;
-					result.severity = chainResult.severity;
+					if (this.shouldUpdateSeverity(result.severity, chainResult.severity)) {
+						result.severity = chainResult.severity;
+					}
 					result.violations.push(
 						`Chained command violation: ${trimmedCmd} - ${chainResult.violations.join(", ")}`,
 					);
@@ -114,13 +114,15 @@ export class CommandValidator {
 			}
 		}
 
-		if (command.includes(";") || command.includes("||")) {
-			const chainedCommands = this.splitCommandChain(command);
+		if (hasOrOperator(command) || hasSemicolonOperator(command)) {
+			const chainedCommands = splitCommandChain(command);
 			for (const chainedCmd of chainedCommands) {
-				const chainResult = this.validateSingleCommand(chainedCmd.trim(), toolName);
+				const chainResult = this.runValidationPipeline(chainedCmd.trim());
 				if (!chainResult.isValid) {
 					result.isValid = false;
-					result.severity = chainResult.severity;
+					if (this.shouldUpdateSeverity(result.severity, chainResult.severity)) {
+						result.severity = chainResult.severity;
+					}
 					result.violations.push(
 						`Chained command violation: ${chainedCmd.trim()} - ${chainResult.violations.join(", ")}`,
 					);
@@ -129,223 +131,20 @@ export class CommandValidator {
 			return result;
 		}
 
-		for (const path of SECURITY_RULES.PROTECTED_PATHS) {
-			if (command.includes(path)) {
-				if (
-					path === "/dev/" &&
-					(command.includes("/dev/null") ||
-						command.includes("/dev/stderr") ||
-						command.includes("/dev/stdout"))
-				) {
-					continue;
-				}
-
-				const cmdStart = command.trim();
-				let isSafeExecutable = false;
-				for (const safePath of SECURITY_RULES.SAFE_EXECUTABLE_PATHS) {
-					if (cmdStart.startsWith(safePath)) {
-						isSafeExecutable = true;
-						break;
-					}
-				}
-
-				const pathIndex = command.indexOf(path);
-				const beforePath = command.substring(0, pathIndex);
-				const redirectBeforePath = />\s*$/.test(beforePath.trim());
-
-				if (!isSafeExecutable && redirectBeforePath) {
-					result.isValid = false;
-					result.severity = "HIGH";
-					result.violations.push(`Dangerous operation on protected path: ${path}`);
-				}
-			}
-		}
-
 		return result;
 	}
 
+	/**
+	 * 単一のコマンドを検証（チェーン処理なし）
+	 * 段階1-3の検証パイプラインのみを実行
+	 * チェーンコマンドの検証時に再帰的に使用されます
+	 *
+	 * @param command - 検証するコマンド
+	 * @param _toolName - ツール名（未使用、互換性のため保持）
+	 * @returns 検証結果
+	 */
 	validateSingleCommand(command: string, _toolName = "Unknown"): ValidationResult {
-		const result: ValidationResult = {
-			isValid: true,
-			severity: "LOW",
-			violations: [],
-			sanitizedCommand: command,
-		};
-
-		if (!command || typeof command !== "string") {
-			result.isValid = false;
-			result.violations.push("Invalid command format");
-			return result;
-		}
-
-		if (command.length > 2000) {
-			result.isValid = false;
-			result.severity = "MEDIUM";
-			result.violations.push("Command too long (potential buffer overflow)");
-			return result;
-		}
-
-		if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\xFF]/.test(command)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push("Binary or encoded content detected");
-			return result;
-		}
-
-		const normalizedCmd = command.trim().toLowerCase();
-		const cmdParts = normalizedCmd.split(/\s+/);
-		const mainCommand = cmdParts[0].split("/").pop() || "";
-
-		if (mainCommand === "source" || mainCommand === "python") {
-			return result;
-		}
-
-		for (const pattern of SECURITY_RULES.DANGEROUS_PATTERNS) {
-			if (pattern.test(command)) {
-				result.isValid = false;
-				result.severity = "CRITICAL";
-				result.violations.push(`Dangerous pattern detected: ${pattern.source}`);
-			}
-		}
-
-		if (SECURITY_RULES.CRITICAL_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "CRITICAL";
-			result.violations.push(`Critical dangerous command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.PRIVILEGE_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`Privilege escalation command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.NETWORK_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`Network/remote access command: ${mainCommand}`);
-		}
-
-		if (SECURITY_RULES.SYSTEM_COMMANDS.includes(mainCommand)) {
-			result.isValid = false;
-			result.severity = "HIGH";
-			result.violations.push(`System manipulation command: ${mainCommand}`);
-		}
-
-		if (/rm\s+.*-rf\s/.test(command)) {
-			const isRmRfSafe = this.isRmRfCommandSafe(command);
-			if (!isRmRfSafe) {
-				result.isValid = false;
-				result.severity = "CRITICAL";
-				result.violations.push("rm -rf command targeting unsafe path");
-			}
-		}
-
-		if (SAFE_COMMANDS.includes(mainCommand) && result.violations.length === 0) {
-			return result;
-		}
-
-		for (const path of SECURITY_RULES.PROTECTED_PATHS) {
-			if (command.includes(path)) {
-				if (
-					path === "/dev/" &&
-					(command.includes("/dev/null") ||
-						command.includes("/dev/stderr") ||
-						command.includes("/dev/stdout"))
-				) {
-					continue;
-				}
-
-				const cmdStart = command.trim();
-				let isSafeExecutable = false;
-				for (const safePath of SECURITY_RULES.SAFE_EXECUTABLE_PATHS) {
-					if (cmdStart.startsWith(safePath)) {
-						isSafeExecutable = true;
-						break;
-					}
-				}
-
-				const pathIndex = command.indexOf(path);
-				const beforePath = command.substring(0, pathIndex);
-				const redirectBeforePath = />\s*$/.test(beforePath.trim());
-
-				if (!isSafeExecutable && redirectBeforePath) {
-					result.isValid = false;
-					result.severity = "HIGH";
-					result.violations.push(`Dangerous operation on protected path: ${path}`);
-				}
-			}
-		}
-
-		return result;
-	}
-
-	splitCommandChain(command: string): string[] {
-		const commands: string[] = [];
-		let current = "";
-		let inQuotes = false;
-		let quoteChar = "";
-
-		for (let i = 0; i < command.length; i++) {
-			const char = command[i];
-			const nextChar = command[i + 1];
-
-			if ((char === '"' || char === "'") && !inQuotes) {
-				inQuotes = true;
-				quoteChar = char;
-				current += char;
-			} else if (char === quoteChar && inQuotes) {
-				inQuotes = false;
-				quoteChar = "";
-				current += char;
-			} else if (inQuotes) {
-				current += char;
-			} else if (char === "&" && nextChar === "&") {
-				commands.push(current.trim());
-				current = "";
-				i++;
-			} else if (char === "|" && nextChar === "|") {
-				commands.push(current.trim());
-				current = "";
-				i++;
-			} else if (char === ";") {
-				commands.push(current.trim());
-				current = "";
-			} else {
-				current += char;
-			}
-		}
-
-		if (current.trim()) {
-			commands.push(current.trim());
-		}
-
-		return commands.filter((cmd) => cmd.length > 0);
-	}
-
-	isRmRfCommandSafe(command: string): boolean {
-		const rmRfMatch = command.match(/rm\s+.*-rf\s+([^\s;&|]+)/);
-		if (!rmRfMatch) {
-			return false;
-		}
-
-		const targetPath = rmRfMatch[1];
-
-		if (targetPath === "/" || targetPath.endsWith("/")) {
-			return false;
-		}
-
-		for (const safePath of SECURITY_RULES.SAFE_RM_PATHS) {
-			if (targetPath.startsWith(safePath)) {
-				return true;
-			}
-		}
-
-		if (!targetPath.startsWith("/")) {
-			return true;
-		}
-
-		return false;
+		return this.runValidationPipeline(command);
 	}
 
 	/**
@@ -377,5 +176,21 @@ export class CommandValidator {
 	buildSafeCommand(cmd: string, args: string[]): string {
 		const escapedArgs = args.map((arg) => this.shellEscape(arg));
 		return escapedArgs.length > 0 ? `${cmd} ${escapedArgs.join(" ")}` : cmd;
+	}
+
+	/**
+	 * 重大度の比較と更新判定
+	 * より高い重大度の場合のみtrueを返す
+	 *
+	 * @param currentSeverity - 現在の重大度
+	 * @param newSeverity - 新しい重大度
+	 * @returns 新しい重大度がより高い場合true
+	 */
+	private shouldUpdateSeverity(
+		currentSeverity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+		newSeverity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+	): boolean {
+		const severityLevel = { LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 3 };
+		return severityLevel[newSeverity] > severityLevel[currentSeverity];
 	}
 }

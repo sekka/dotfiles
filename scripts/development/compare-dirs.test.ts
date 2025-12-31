@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAllFiles, hashFile, parseArgs } from "./compare-dirs";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("compare-dirs", () => {
 	describe("parseArgs", () => {
@@ -57,14 +57,13 @@ describe("compare-dirs", () => {
 	describe("ファイル操作", () => {
 		let testDir: string;
 
-		beforeEach(() => {
-			testDir = join(tmpdir(), `compare-dirs-test-${Date.now()}`);
-			mkdirSync(testDir, { recursive: true });
+		beforeEach(async () => {
+			testDir = await createTempDir("compare-dirs-test-");
 		});
 
-		afterEach(() => {
+		afterEach(async () => {
 			if (existsSync(testDir)) {
-				rmSync(testDir, { recursive: true, force: true });
+				await cleanupTempDir(testDir);
 			}
 		});
 

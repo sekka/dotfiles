@@ -4,12 +4,12 @@
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync } from "node:fs";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { $ } from "bun";
 
 import { createArchive, getDiffFiles, isGitRepository, parseArgs } from "./git-diff-archive";
+import { createTempGitRepo, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("git-diff-archive", () => {
 	let tempDir: string;
@@ -17,13 +17,8 @@ describe("git-diff-archive", () => {
 
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "git-diff-archive-test-"));
+		tempDir = await createTempGitRepo("git-diff-archive-test-");
 		process.chdir(tempDir);
-
-		// gitリポジトリを初期化
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
 
 		// 初期コミット
 		await writeFile(join(tempDir, "file1.txt"), "content1");
@@ -43,7 +38,7 @@ describe("git-diff-archive", () => {
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	beforeEach(async () => {

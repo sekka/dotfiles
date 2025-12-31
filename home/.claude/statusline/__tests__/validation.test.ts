@@ -232,8 +232,8 @@ describe("sanitizeForLogging", () => {
 
 		const sanitized = sanitizeForLogging(data) as any;
 		expect(sanitized.user.name).toBe("John");
-		expect(sanitized.user.credentials.token).toBe("***REDACTED***");
-		expect(sanitized.user.credentials.username).toBe("john");
+		// credentials キー自体がセンシティブキーとしてマスキングされる
+		expect(sanitized.user.credentials).toBe("***REDACTED***");
 	});
 
 	it("should handle arrays", () => {

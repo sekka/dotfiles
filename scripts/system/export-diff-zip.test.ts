@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { $ } from "bun";
 import { getDiffFiles, parseArgs } from "./export-diff-zip";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("export-diff-zip", () => {
 	describe("parseArgs", () => {
@@ -38,8 +38,7 @@ describe("export-diff-zip", () => {
 		let testDir: string;
 
 		beforeEach(async () => {
-			testDir = join(tmpdir(), `export-diff-zip-test-${Date.now()}`);
-			mkdirSync(testDir, { recursive: true });
+			testDir = await createTempDir("export-diff-zip-test-");
 
 			// テスト用のGitリポジトリを作成
 			await $`git init ${testDir}`.quiet();
@@ -47,9 +46,9 @@ describe("export-diff-zip", () => {
 			await $`git -C ${testDir} config user.name "Test User"`.quiet();
 		});
 
-		afterEach(() => {
+		afterEach(async () => {
 			if (existsSync(testDir)) {
-				rmSync(testDir, { recursive: true, force: true });
+				await cleanupTempDir(testDir);
 			}
 		});
 
