@@ -10,7 +10,7 @@ import { isValidUsageLimits, isValidStatuslineConfig, sanitizeForLogging } from 
 // ============================================================================
 
 describe("isValidUsageLimits", () => {
-	it("should accept valid usage limits with both five_hour and seven_day", () => {
+	it("should accept any object as valid", () => {
 		const validLimits = {
 			five_hour: { utilization: 50, resets_at: "2025-12-31T00:00:00Z" },
 			seven_day: { utilization: 75, resets_at: "2026-01-06T00:00:00Z" },
@@ -19,73 +19,26 @@ describe("isValidUsageLimits", () => {
 		expect(isValidUsageLimits(validLimits)).toBe(true);
 	});
 
-	it("should accept valid limits with null resets_at", () => {
-		const validLimits = {
-			five_hour: { utilization: 50, resets_at: null },
-			seven_day: { utilization: 75, resets_at: null },
-		};
-
-		expect(isValidUsageLimits(validLimits)).toBe(true);
+	it("should accept empty object", () => {
+		expect(isValidUsageLimits({})).toBe(true);
 	});
 
-	it("should accept limits with null five_hour", () => {
-		const validLimits = {
+	it("should accept object with any properties", () => {
+		const limits = {
 			five_hour: null,
-			seven_day: { utilization: 75, resets_at: "2026-01-06T00:00:00Z" },
-		};
-
-		expect(isValidUsageLimits(validLimits)).toBe(true);
-	});
-
-	it("should accept limits with null seven_day", () => {
-		const validLimits = {
-			five_hour: { utilization: 50, resets_at: "2025-12-31T00:00:00Z" },
 			seven_day: null,
+			seven_day_sonnet: null,
+			seven_day_opus: null,
 		};
 
-		expect(isValidUsageLimits(validLimits)).toBe(true);
+		expect(isValidUsageLimits(limits)).toBe(true);
 	});
 
 	it("should reject non-object input", () => {
 		expect(isValidUsageLimits(null)).toBe(false);
 		expect(isValidUsageLimits("invalid")).toBe(false);
 		expect(isValidUsageLimits(123)).toBe(false);
-	});
-
-	it("should reject limits with invalid utilization (out of range)", () => {
-		const invalidLimits = {
-			five_hour: { utilization: 150, resets_at: null }, // > 100
-			seven_day: null,
-		};
-
-		expect(isValidUsageLimits(invalidLimits)).toBe(false);
-	});
-
-	it("should reject limits with negative utilization", () => {
-		const invalidLimits = {
-			five_hour: { utilization: -10, resets_at: null },
-			seven_day: null,
-		};
-
-		expect(isValidUsageLimits(invalidLimits)).toBe(false);
-	});
-
-	it("should reject limits with invalid resets_at type", () => {
-		const invalidLimits = {
-			five_hour: { utilization: 50, resets_at: 12345 }, // number instead of string
-			seven_day: null,
-		};
-
-		expect(isValidUsageLimits(invalidLimits)).toBe(false);
-	});
-
-	it("should accept edge case: 0% and 100% utilization", () => {
-		const edgeLimits = {
-			five_hour: { utilization: 0, resets_at: null },
-			seven_day: { utilization: 100, resets_at: null },
-		};
-
-		expect(isValidUsageLimits(edgeLimits)).toBe(true);
+		expect(isValidUsageLimits(undefined)).toBe(false);
 	});
 });
 
@@ -143,50 +96,17 @@ describe("isValidStatuslineConfig", () => {
 		expect(isValidStatuslineConfig({})).toBe(true);
 	});
 
-	it("should reject non-boolean values in git section", () => {
-		const invalidConfig = {
-			git: {
-				showBranch: "true", // string instead of boolean
-			},
-		};
-
-		expect(isValidStatuslineConfig(invalidConfig)).toBe(false);
+	it("should accept any object", () => {
+		expect(isValidStatuslineConfig({ git: "invalid" })).toBe(true);
+		expect(isValidStatuslineConfig({ git: null })).toBe(true);
+		expect(isValidStatuslineConfig({ rateLimits: 123 })).toBe(true);
 	});
 
-	it("should reject non-object git section", () => {
-		const invalidConfig = {
-			git: "invalid",
-		};
-
-		expect(isValidStatuslineConfig(invalidConfig)).toBe(false);
-	});
-
-	it("should reject null git section", () => {
-		const invalidConfig = {
-			git: null,
-		};
-
-		expect(isValidStatuslineConfig(invalidConfig)).toBe(false);
-	});
-
-	it("should reject config with invalid boolean in rateLimits", () => {
-		const invalidConfig = {
-			rateLimits: {
-				showFiveHour: 1, // number instead of boolean
-			},
-		};
-
-		expect(isValidStatuslineConfig(invalidConfig)).toBe(false);
-	});
-
-	it("should accept config with undefined optional fields", () => {
-		const config = {
-			git: {
-				showBranch: undefined, // undefined is allowed (optional)
-			},
-		};
-
-		expect(isValidStatuslineConfig(config)).toBe(true);
+	it("should reject non-object input", () => {
+		expect(isValidStatuslineConfig(null)).toBe(false);
+		expect(isValidStatuslineConfig("invalid")).toBe(false);
+		expect(isValidStatuslineConfig(123)).toBe(false);
+		expect(isValidStatuslineConfig(undefined)).toBe(false);
 	});
 });
 

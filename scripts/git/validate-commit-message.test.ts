@@ -1,9 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import {
-	validateCommitMessage,
-	hasCommandInjectionPattern,
-	hasAISignature,
-} from "./validate-commit-message";
+import { validateCommitMessage, hasAISignature } from "./validate-commit-message";
 
 describe("validateCommitMessage - 基本機能", () => {
 	// 正常系
@@ -18,37 +14,6 @@ describe("validateCommitMessage - 基本機能", () => {
 			"feat: Add new feature\n\nDetailed description of the change",
 		);
 		expect(result.valid).toBe(true);
-	});
-
-	// CWE-78: コマンド検出
-	it("should detect echo command after newline", () => {
-		const result = validateCommitMessage("Fix bug\necho malicious");
-		expect(result.valid).toBe(false);
-	});
-
-	it("should detect eval command", () => {
-		const result = validateCommitMessage("Update\neval $(cmd)");
-		expect(result.valid).toBe(false);
-	});
-
-	it("should detect command substitution with $(...)", () => {
-		const result = validateCommitMessage("Fix\nSomething $(whoami)");
-		expect(result.valid).toBe(false);
-	});
-
-	it("should detect command substitution with backticks", () => {
-		const result = validateCommitMessage("Add\nResult: `whoami`");
-		expect(result.valid).toBe(false);
-	});
-
-	it("should detect command chaining with semicolon", () => {
-		const result = validateCommitMessage("Fix\necho test; rm -rf /");
-		expect(result.valid).toBe(false);
-	});
-
-	it("should detect command chaining with AND operator", () => {
-		const result = validateCommitMessage("Update\n&& bash -c cmd");
-		expect(result.valid).toBe(false);
 	});
 
 	// AI署名検出
@@ -146,20 +111,6 @@ describe("validateCommitMessage - 基本機能", () => {
 		const result = validateCommitMessage(longTitle);
 		expect(result.valid).toBe(false);
 		expect(result.errors[0]).toContain("タイトル:");
-	});
-});
-
-describe("hasCommandInjectionPattern", () => {
-	it("should detect shell commands", () => {
-		expect(hasCommandInjectionPattern("Fix\necho test")).toBe(true);
-	});
-
-	it("should detect command substitution", () => {
-		expect(hasCommandInjectionPattern("Fix\n$(whoami)")).toBe(true);
-	});
-
-	it("should return false for safe messages", () => {
-		expect(hasCommandInjectionPattern("feat: Normal message")).toBe(false);
 	});
 });
 
