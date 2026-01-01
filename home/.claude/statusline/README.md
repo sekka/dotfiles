@@ -94,8 +94,114 @@ bun test ./home/.claude/statusline/__tests__/colors.test.ts
 4. ✅ **Phase 1.5**: ANSI コードを color 関数に統一
 5. ✅ **Phase 5**: テスト集約 (30+ → 16 tests)
 6. ✅ **Phase 5**: README ドキュメント更新
+7. ⚠️ **Phase 1.1 → Phase 5**: Chalk キャッシング復元（パフォーマンス問題対応）
 
 **合計削減: 150行+のコード短縮、テスト効率化**
+
+---
+
+## ⚙️ 設計意図（Chalk インスタンスキャッシング）
+
+### なぜキャッシング機構を復元したのか
+
+#### Phase 1.1 での判断
+
+**目的**: statusline color モジュールのシンプル化
+**実施**: Chalk インスタンスキャッシングを削除
+**結果**: ✅ コード 30行削減、❌ パフォーマンス 80-90% 低下
+
+#### Phase 5 での判断
+
+**発見**: 並列AIレビュー で CRITICAL レベルのパフォーマンス問題が検出
+**実施**: キャッシング機構を復元 + テスト対応強化
+**効果**: ✅ パフォーマンス 80-90% 改善、⚠️ コード複雑度やや増加
+
+### 実装の詳細
+
+**キャッシング機構** (`colors.ts` の 50-87行):
+
+```typescript
+let cachedChalk: Chalk | null = null;
+let cachedColorLevel: 0 | 1 | 2 | 3 | null = null;
+
+function getChalk(): Chalk {
+	const currentLevel = getColorLevel();
+	// 色レベルが変わらなければキャッシュを再利用
+	if (cachedChalk !== null && cachedColorLevel === currentLevel) {
+		return cachedChalk;
+	}
+	// 色レベルが変わったら新しいインスタンスを作成
+	cachedColorLevel = currentLevel;
+	cachedChalk = new Chalk({ level: currentLevel });
+	return cachedChalk;
+}
+
+export function resetChalkCache(): void {
+	cachedChalk = null;
+	cachedColorLevel = null;
+}
+```
+
+### テスト環境での対応
+
+テスト環境で環境変数を動的に変更する場合、`resetChalkCache()` を明示的に呼び出す：
+
+```typescript
+// colors.test.ts
+import { colors, resetChalkCache } from "../colors.ts";
+
+describe("Color Output", () => {
+	afterEach(() => {
+		// 環境変数を復元
+		// ...
+
+		// 【重要】環境変数変更後はキャッシュをリセット
+		resetChalkCache();
+	});
+
+	it("should handle FORCE_COLOR=0 and FORCE_COLOR=3 dynamically", () => {
+		process.env.FORCE_COLOR = "3";
+		expect(colors.cyan("test")).toContain("\x1b[");
+
+		// 色レベルを変更してキャッシュをリセット
+		process.env.FORCE_COLOR = "0";
+		resetChalkCache(); // ← ここで明示的にリセット
+		expect(colors.cyan("test")).toBe("test");
+	});
+});
+```
+
+### 本番環境での特性
+
+- 環境変数（NO_COLOR, FORCE_COLOR）はプロセス起動時に固定される
+- キャッシュは常に有効で、パフォーマンスが安定している
+- statusline レンダリングごとに 8-15 回の color 関数呼び出しが発生するため、キャッシングの効果が大きい
+
+### なぜこの設計が必要なのか
+
+| 要素 | 値 |
+|------|-----|
+| color 関数呼び出し/レンダリング | 8-15 回 |
+| statusline 更新頻度 | 毎秒 |
+| Chalk 生成コスト | 高（環境変数読取、TTY判定など） |
+| **キャッシングなしの低下** | **80-90%** |
+| パフォーマンス テスト数 | 3 (Performance & Caching) |
+
+この設計を削除したい場合は、上記のパフォーマンステストが全て失敗することを覚悟してください。
+
+### 今後の変更ガイド
+
+**キャッシング機構を削除する場合**:
+
+1. パフォーマンステストを実行
+2. 80-90% の低下が許容できるか判断
+3. 許容できない場合は削除しない
+
+**色レベル判定ロジックを変更する場合**:
+
+1. `getColorLevel()` の戻り値型が `0 | 1 | 2 | 3` のままか確認
+2. `cachedColorLevel` の型も `0 | 1 | 2 | 3 | null` のままか確認
+3. colors.test.ts のテストが全てパスすることを確認
 
 ## 定数一覧
 
