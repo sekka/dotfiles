@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// Phase 4-1: Comprehensive tests for cache.ts module
+// Phase 3.3: Simplified tests for cache.ts module
 import { describe, it, expect, beforeEach } from "bun:test";
 
 import { loadConfigCached, LRUCache } from "../cache.ts";
@@ -60,20 +60,17 @@ describe("loadConfigCached", () => {
 });
 
 // ============================================================================
-// LRUCache Tests (Phase 5-1: Performance Optimization)
+// SimpleCache Tests (Phase 3.3: Simplified)
 // ============================================================================
 
-describe("LRUCache", () => {
+describe("SimpleCache", () => {
 	let cache: LRUCache<number>;
 
 	beforeEach(() => {
-		cache = new LRUCache<number>({ maxSize: 3, ttl: 1000 }); // 1 second TTL for testing
+		cache = new LRUCache<number>({ ttl: 1000 }); // 1 second TTL for testing
 	});
 
-	// ========================================================================
 	// Basic Functionality Tests
-	// ========================================================================
-
 	it("should be defined and initialized with correct defaults", () => {
 		const defaultCache = new LRUCache<string>();
 		expect(defaultCache).toBeDefined();
@@ -95,83 +92,7 @@ describe("LRUCache", () => {
 		expect(cache.get("key1")).toBe(200);
 	});
 
-	it("should update access order on get", () => {
-		cache.set("key1", 1);
-		cache.set("key2", 2);
-		cache.set("key3", 3);
-
-		// Access key1 to make it most recently used
-		cache.get("key1");
-
-		// Now key2 is least recently used
-		// Adding a new key should evict key2
-		cache.set("key4", 4);
-
-		expect(cache.has("key1")).toBe(true);
-		expect(cache.has("key2")).toBe(false);
-		expect(cache.has("key3")).toBe(true);
-		expect(cache.has("key4")).toBe(true);
-	});
-
-	// ========================================================================
-	// LRU Eviction Tests
-	// ========================================================================
-
-	it("should evict least recently used entry when maxSize exceeded", () => {
-		cache.set("key1", 1);
-		cache.set("key2", 2);
-		cache.set("key3", 3);
-
-		// All keys present
-		expect(cache.size()).toBe(3);
-
-		// Adding key4 should evict key1 (least recently used)
-		cache.set("key4", 4);
-
-		expect(cache.size()).toBe(3);
-		expect(cache.has("key1")).toBe(false);
-		expect(cache.has("key2")).toBe(true);
-		expect(cache.has("key3")).toBe(true);
-		expect(cache.has("key4")).toBe(true);
-	});
-
-	it("should maintain LRU order correctly across multiple operations", () => {
-		cache.set("a", 1);
-		cache.set("b", 2);
-		cache.set("c", 3);
-
-		// Access order: a, b, c
-		// LRU candidate: a
-
-		cache.get("a"); // Access a (now most recent)
-		// Access order: b, c, a
-		// LRU candidate: b
-
-		cache.get("b"); // Access b (now most recent)
-		// Access order: c, a, b
-		// LRU candidate: c
-
-		cache.set("d", 4); // Should evict c
-		expect(cache.has("c")).toBe(false);
-		expect(cache.has("a")).toBe(true);
-		expect(cache.has("b")).toBe(true);
-		expect(cache.has("d")).toBe(true);
-	});
-
-	it("should handle edge case with maxSize=1", () => {
-		const smallCache = new LRUCache<number>({ maxSize: 1 });
-		smallCache.set("key1", 1);
-		expect(smallCache.has("key1")).toBe(true);
-
-		smallCache.set("key2", 2);
-		expect(smallCache.has("key1")).toBe(false);
-		expect(smallCache.has("key2")).toBe(true);
-	});
-
-	// ========================================================================
 	// TTL Expiration Tests
-	// ========================================================================
-
 	it("should remove expired entries on get", async () => {
 		cache.set("key1", 100);
 		expect(cache.get("key1")).toBe(100);
@@ -183,21 +104,6 @@ describe("LRUCache", () => {
 		expect(cache.get("key1")).toBe(null);
 	});
 
-	it("should not count expired entries in size", async () => {
-		cache.set("key1", 1);
-		cache.set("key2", 2);
-		expect(cache.size()).toBe(2);
-
-		// Wait for TTL to expire
-		await new Promise((resolve) => setTimeout(resolve, 1100));
-
-		// Access should trigger cleanup
-		cache.get("key1");
-
-		// Size should not count expired entries
-		expect(cache.size()).toBe(0);
-	});
-
 	it("should handle has() with expired entries", async () => {
 		cache.set("key1", 100);
 		expect(cache.has("key1")).toBe(true);
@@ -207,25 +113,13 @@ describe("LRUCache", () => {
 		expect(cache.has("key1")).toBe(false);
 	});
 
-	it("should not include expired entries in keys()", async () => {
-		cache.set("key1", 1);
-		cache.set("key2", 2);
-		cache.set("key3", 3);
-
-		expect(cache.keys().length).toBe(3);
-
-		await new Promise((resolve) => setTimeout(resolve, 1100));
-
-		// Trigger cleanup by accessing
-		cache.get("key1");
-
-		expect(cache.keys().length).toBe(0);
+	it("should handle has() with valid entries", () => {
+		cache.set("key1", 100);
+		expect(cache.has("key1")).toBe(true);
+		expect(cache.has("key2")).toBe(false);
 	});
 
-	// ========================================================================
-	// Statistics Methods Tests
-	// ========================================================================
-
+	// Size and Keys Tests
 	it("should return correct size", () => {
 		expect(cache.size()).toBe(0);
 
@@ -239,7 +133,7 @@ describe("LRUCache", () => {
 		expect(cache.size()).toBe(3);
 
 		cache.set("key4", 4);
-		expect(cache.size()).toBe(3); // maxSize=3
+		expect(cache.size()).toBe(4);
 	});
 
 	it("should return correct keys list", () => {
@@ -254,47 +148,7 @@ describe("LRUCache", () => {
 		expect(keys).toContain("key3");
 	});
 
-	it("should report stats correctly", () => {
-		cache.set("key1", 1);
-		cache.set("key2", 2);
-
-		const stats = cache.getStats();
-		expect(stats).toBeDefined();
-		expect(typeof stats.size).toBe("number");
-		expect(typeof stats.maxSize).toBe("number");
-		expect(stats.size).toBe(2);
-		expect(stats.maxSize).toBe(3);
-	});
-
-	it("should track hit and miss statistics", () => {
-		cache.set("key1", 1);
-
-		cache.get("key1"); // Hit
-		cache.get("key2"); // Miss
-		cache.get("key1"); // Hit
-
-		const stats = cache.getStats();
-		expect(stats.hits).toBe(2);
-		expect(stats.misses).toBe(1);
-	});
-
-	it("should calculate hit rate correctly", () => {
-		cache.set("key1", 1);
-
-		// 3 hits, 1 miss = 75% hit rate
-		cache.get("key1");
-		cache.get("key1");
-		cache.get("key1");
-		cache.get("key2"); // Miss
-
-		const stats = cache.getStats();
-		expect(stats.hitRate).toBe(0.75);
-	});
-
-	// ========================================================================
 	// Clear Operation Tests
-	// ========================================================================
-
 	it("should clear all entries", () => {
 		cache.set("key1", 1);
 		cache.set("key2", 2);
@@ -310,27 +164,7 @@ describe("LRUCache", () => {
 		expect(cache.has("key3")).toBe(false);
 	});
 
-	it("should reset stats on clear", () => {
-		cache.set("key1", 1);
-		cache.get("key1");
-		cache.get("key2");
-
-		let stats = cache.getStats();
-		expect(stats.hits).toBe(1);
-		expect(stats.misses).toBe(1);
-
-		cache.clear();
-
-		stats = cache.getStats();
-		expect(stats.hits).toBe(0);
-		expect(stats.misses).toBe(0);
-		expect(stats.size).toBe(0);
-	});
-
-	// ========================================================================
 	// Type Safety Tests
-	// ========================================================================
-
 	it("should maintain type safety with different types", () => {
 		const stringCache = new LRUCache<string>();
 		stringCache.set("key1", "value1");
@@ -347,18 +181,12 @@ describe("LRUCache", () => {
 		}
 	});
 
-	// ========================================================================
 	// Edge Cases Tests
-	// ========================================================================
-
 	it("should handle empty cache gracefully", () => {
 		expect(cache.size()).toBe(0);
 		expect(cache.keys().length).toBe(0);
 		expect(cache.get("any")).toBe(null);
 		expect(cache.has("any")).toBe(false);
-
-		const stats = cache.getStats();
-		expect(stats.size).toBe(0);
 	});
 
 	it("should handle single entry operations", () => {
@@ -387,12 +215,9 @@ describe("LRUCache", () => {
 		expect(cache.get("456")).toBe(2);
 	});
 
-	// ========================================================================
 	// Token Counting Use Case Tests
-	// ========================================================================
-
 	it("should work for token counting use case", () => {
-		const tokenCache = new LRUCache<number>({ maxSize: 1000, ttl: 3600000 }); // 1 hour
+		const tokenCache = new LRUCache<number>({ ttl: 3600000 }); // 1 hour
 
 		// Simulate token count caching
 		tokenCache.set("session-1", 1500);
@@ -403,20 +228,6 @@ describe("LRUCache", () => {
 		expect(tokenCache.get("session-2")).toBe(2300);
 		expect(tokenCache.get("session-3")).toBe(1800);
 
-		const stats = tokenCache.getStats();
-		expect(stats.size).toBe(3);
-		expect(stats.maxSize).toBe(1000);
-	});
-
-	it("should prevent memory growth beyond maxSize", () => {
-		const largeCache = new LRUCache<number>({ maxSize: 100 });
-
-		// Add 1000 entries
-		for (let i = 0; i < 1000; i++) {
-			largeCache.set(`key-${i}`, i);
-		}
-
-		// Cache should never exceed maxSize
-		expect(largeCache.size()).toBeLessThanOrEqual(100);
+		expect(tokenCache.size()).toBe(3);
 	});
 });

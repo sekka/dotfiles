@@ -440,256 +440,74 @@ export async function getTodayCost(): Promise<number> {
 }
 
 // ============================================================================
-// Phase 5.1: LRU キャッシュ実装
+// Phase 3.3: シンプルなキャッシュ実装
 // ============================================================================
 
 /**
- * LRU キャッシュエントリ
- * 値とタイムスタンプを保持
+ * TTLベースのシンプルなキャッシュ
+ * @template T キャッシュする値の型
  */
-interface LRUCacheEntry<T> {
+interface CacheEntry<T> {
 	value: T;
 	timestamp: number;
 }
 
 /**
- * LRU（Least Recently Used）キャッシュの実装
- *
- * メモリ効率的なキャッシング戦略：
- * - maxSize 超過時は最も古いエントリを自動削除
- * - TTL により期限切れキャッシュを無効化
- * - アクセス時に LRU 順序を更新（最新に移動）
- *
+ * TTL付きのシンプルなキャッシュ
  * @example
- * const cache = new LRUCache<number>({ maxSize: 1000, ttl: 3600000 });
+ * const cache = new SimpleCache<number>({ ttl: 3600000 });
  * cache.set('key1', 100);
- * const value = cache.get('key1'); // 100
- * const stats = cache.getStats();  // { size: 1, utilization: 0.1, ... }
+ * console.log(cache.get('key1')); // 100
  */
-export class LRUCache<T> {
-	private cache: Map<string, LRUCacheEntry<T>> = new Map();
-	private accessOrder: string[] = []; // アクセス順序を記録（最古...最新）
-	private hits: number = 0;
-	private misses: number = 0;
+export class SimpleCache<T> {
+	private cache: Map<string, CacheEntry<T>> = new Map();
+	private readonly ttl: number;
 
-	private readonly maxSize: number;
-	private readonly ttl: number; // Time To Live (ミリ秒)
-
-	/**
-	 * LRU キャッシュを初期化
-	 *
-	 * @param options - キャッシュオプション
-	 * @param options.maxSize - 最大エントリ数（デフォルト：1000）
-	 * @param options.ttl - キャッシュの有効期限（ミリ秒、デフォルト：1時間）
-	 */
-	constructor(options: { maxSize?: number; ttl?: number } = {}) {
-		this.maxSize = options.maxSize ?? 1000;
-		this.ttl = options.ttl ?? 3600000; // 1時間
+	constructor(options: { ttl?: number } = {}) {
+		this.ttl = options.ttl ?? 3600000; // 1時間デフォルト
 	}
 
-	/**
-	 * キャッシュから値を取得
-	 *
-	 * キャッシュヒット時：
-	 * - TTL を確認（超過なら削除）
-	 * - アクセス順序を更新（最新にマーク）
-	 * - 値を返す
-	 *
-	 * @param key - キャッシュキー
-	 * @returns キャッシュ値、または null（未存在またはTTL切れ）
-	 */
 	get(key: string): T | null {
 		const entry = this.cache.get(key);
+		if (!entry) return null;
 
-		// キャッシュ未存在
-		if (!entry) {
-			this.misses++;
-			return null;
-		}
-
-		// TTL 超過チェック
-		const elapsed = Date.now() - entry.timestamp;
-		if (elapsed > this.ttl) {
+		if (Date.now() - entry.timestamp > this.ttl) {
 			this.cache.delete(key);
-			this.removeFromAccessOrder(key);
-			this.misses++;
 			return null;
 		}
-
-		// LRU: アクセス順序を更新（最新に移動）
-		this.updateAccessOrder(key);
-		this.hits++;
 
 		return entry.value;
 	}
 
-	/**
-	 * キャッシュに値を設定
-	 *
-	 * 処理フロー：
-	 * 1. 既存エントリがあれば削除（再挿入で最新化）
-	 * 2. キャッシュサイズが上限に達していれば最古を削除
-	 * 3. 新規エントリを追加
-	 * 4. アクセス順序に追加
-	 *
-	 * @param key - キャッシュキー
-	 * @param value - 格納する値
-	 */
 	set(key: string, value: T): void {
-		// 既に存在する場合は削除（再挿入で最新化）
-		if (this.cache.has(key)) {
-			this.cache.delete(key);
-			this.removeFromAccessOrder(key);
-		}
-
-		// キャッシュサイズが上限に達した場合は最古を削除
-		if (this.cache.size >= this.maxSize) {
-			const oldestKey = this.accessOrder[0];
-			if (oldestKey) {
-				this.cache.delete(oldestKey);
-				this.accessOrder.shift();
-			}
-		}
-
-		// 新規エントリを追加
-		this.cache.set(key, {
-			value,
-			timestamp: Date.now(),
-		});
-
-		this.accessOrder.push(key);
+		this.cache.set(key, { value, timestamp: Date.now() });
 	}
 
-	/**
-	 * キャッシュ全体をクリア
-	 */
-	clear(): void {
-		this.cache.clear();
-		this.accessOrder = [];
-		this.hits = 0;
-		this.misses = 0;
-	}
-
-	/**
-	 * キャッシュの統計情報を取得
-	 *
-	 * @returns キャッシュ統計情報
-	 */
-	getStats(): {
-		size: number;
-		maxSize: number;
-		utilization: number;
-		ttl: number;
-		hits: number;
-		misses: number;
-		hitRate: number;
-	} {
-		const totalAccess = this.hits + this.misses;
-		const hitRate = totalAccess === 0 ? 0 : this.hits / totalAccess;
-
-		return {
-			size: this.cache.size,
-			maxSize: this.maxSize,
-			utilization: Math.round((this.cache.size / this.maxSize) * 100),
-			ttl: this.ttl,
-			hits: this.hits,
-			misses: this.misses,
-			hitRate,
-		};
-	}
-
-	/**
-	 * キャッシュの現在のサイズを取得
-	 *
-	 * @returns キャッシュエントリ数（有効なエントリのみ）
-	 */
-	size(): number {
-		const now = Date.now();
-		let validCount = 0;
-
-		for (const [key, entry] of this.cache.entries()) {
-			const elapsed = now - entry.timestamp;
-			if (elapsed <= this.ttl) {
-				validCount++;
-			} else {
-				// 期限切れエントリを削除
-				this.cache.delete(key);
-				this.removeFromAccessOrder(key);
-			}
-		}
-
-		return validCount;
-	}
-
-	/**
-	 * キャッシュに指定キーが存在するかチェック
-	 *
-	 * @param key - キャッシュキー
-	 * @returns キャッシュに存在する場合は true
-	 */
 	has(key: string): boolean {
 		const entry = this.cache.get(key);
-		if (!entry) {
-			return false;
-		}
-
-		// TTL チェック
-		const elapsed = Date.now() - entry.timestamp;
-		if (elapsed > this.ttl) {
+		if (!entry) return false;
+		if (Date.now() - entry.timestamp > this.ttl) {
 			this.cache.delete(key);
-			this.removeFromAccessOrder(key);
 			return false;
 		}
-
 		return true;
 	}
 
-	/**
-	 * すべてのキャッシュキーを取得
-	 *
-	 * @returns キャッシュキーの配列（有効なエントリのみ）
-	 */
+	clear(): void {
+		this.cache.clear();
+	}
+
+	size(): number {
+		return this.cache.size;
+	}
+
 	keys(): string[] {
-		const now = Date.now();
-		const validKeys: string[] = [];
-
-		for (const [key, entry] of this.cache.entries()) {
-			const elapsed = now - entry.timestamp;
-			if (elapsed <= this.ttl) {
-				validKeys.push(key);
-			} else {
-				// 期限切れエントリを削除
-				this.cache.delete(key);
-				this.removeFromAccessOrder(key);
-			}
-		}
-
-		return validKeys;
-	}
-
-	/**
-	 * アクセス順序を更新（最新に移動）
-	 * @private
-	 */
-	private updateAccessOrder(key: string): void {
-		const index = this.accessOrder.indexOf(key);
-		if (index > -1) {
-			this.accessOrder.splice(index, 1);
-		}
-		this.accessOrder.push(key);
-	}
-
-	/**
-	 * アクセス順序から削除
-	 * @private
-	 */
-	private removeFromAccessOrder(key: string): void {
-		const index = this.accessOrder.indexOf(key);
-		if (index > -1) {
-			this.accessOrder.splice(index, 1);
-		}
+		return Array.from(this.cache.keys());
 	}
 }
+
+// 後方互換性のためのエイリアス
+export class LRUCache<T> extends SimpleCache<T> {}
 
 /**
  * グローバルなトークンカウントキャッシュ
