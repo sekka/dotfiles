@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { colors } from "../colors.ts";
+import { colors, resetChalkCache } from "../colors.ts";
 
 describe("Color Output", () => {
 	// 環境変数のバックアップと復元
@@ -30,6 +30,9 @@ describe("Color Output", () => {
 		} else {
 			delete process.env.FORCE_COLOR;
 		}
+
+		// 【重要】環境変数変更後はキャッシュをリセット
+		resetChalkCache();
 	});
 
 	describe("ANSI Code Output", () => {
@@ -141,6 +144,7 @@ describe("Color Output", () => {
 			expect(colors.cyan("test")).toContain("\x1b[");
 
 			process.env.FORCE_COLOR = "0";
+			resetChalkCache(); // 【重要】キャッシュをリセットして色レベル変更を反映
 			expect(colors.cyan("test")).toBe("test");
 		});
 
@@ -148,6 +152,7 @@ describe("Color Output", () => {
 			const colorValues = ["1", "2", "3", "256", "16m", "true"];
 			colorValues.forEach((value) => {
 				process.env.FORCE_COLOR = value;
+				resetChalkCache(); // 各テスト間でキャッシュをリセット
 				expect(colors.cyan("test")).toContain("\x1b[");
 			});
 		});
@@ -155,6 +160,44 @@ describe("Color Output", () => {
 		it("should respect FORCE_COLOR=false", () => {
 			process.env.FORCE_COLOR = "false";
 			expect(colors.cyan("test")).toBe("test");
+		});
+	});
+
+	describe("Performance & Caching", () => {
+		it("should reuse Chalk instance when color level unchanged", () => {
+			// 同じ色レベルで複数回呼び出し
+			const result1 = colors.cyan("test1");
+			const result2 = colors.cyan("test2");
+			const result3 = colors.yellow("test3");
+
+			// 全て同じ色レベル（同じインスタンスを使用）
+			expect(result1).toContain("\x1b[");
+			expect(result2).toContain("\x1b[");
+			expect(result3).toContain("\x1b[");
+		});
+
+		it("should create new instance when color level changes", () => {
+			process.env.FORCE_COLOR = "3";
+			const colored = colors.cyan("test");
+			expect(colored).toContain("\x1b[");
+
+			// 色レベルを変更
+			process.env.FORCE_COLOR = "0";
+			resetChalkCache(); // 【重要】キャッシュをリセット
+			const uncolored = colors.cyan("test");
+			expect(uncolored).toBe("test");
+		});
+
+		it("resetChalkCache should invalidate cache", () => {
+			process.env.FORCE_COLOR = "3";
+			colors.cyan("test"); // キャッシュ作成
+
+			// 環境変数変更 + リセット
+			process.env.FORCE_COLOR = "0";
+			resetChalkCache();
+
+			const result = colors.cyan("test");
+			expect(result).toBe("test"); // 新しい色レベルが反映されている
 		});
 	});
 });

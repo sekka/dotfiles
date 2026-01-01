@@ -47,8 +47,43 @@ function getColorLevel(): 0 | 1 | 2 | 3 {
 	return 3;
 }
 
+let cachedChalk: Chalk | null = null;
+let cachedColorLevel: 0 | 1 | 2 | 3 | null = null;
+
 function getChalk(): Chalk {
-	return new Chalk({ level: getColorLevel() });
+	const currentLevel = getColorLevel();
+	// キャッシュの有効性チェック：色レベルが変わらなければ再利用
+	if (cachedChalk !== null && cachedColorLevel === currentLevel) {
+		return cachedChalk;
+	}
+	// 新しいインスタンスを作成してキャッシュを更新
+	cachedColorLevel = currentLevel;
+	cachedChalk = new Chalk({ level: currentLevel });
+	return cachedChalk;
+}
+
+/**
+ * Chalk インスタンスキャッシュをリセット（テスト用）
+ *
+ * テスト中に環境変数（NO_COLOR, FORCE_COLOR）を動的に変更する場合、
+ * キャッシュされた Chalk インスタンスが古い色レベルのままになるため、
+ * このメソッドを呼び出してキャッシュを破棄する必要があります。
+ *
+ * 【設計意図】
+ * - 本番環境：環境変数は起動時に固定されるため、キャッシュが常に有効
+ * - テスト環境：環境変数を動的に変更するため、明示的なリセットが必要
+ * - 環境変数が変わった場合は自動的に新しいインスタンスを作成（色レベル比較）
+ *
+ * @example
+ * // テストで環境変数を変更する前に必ず呼び出す
+ * afterEach(() => {
+ *   delete process.env.FORCE_COLOR;
+ *   resetChalkCache(); // ← 重要：キャッシュをリセット
+ * });
+ */
+export function resetChalkCache(): void {
+	cachedChalk = null;
+	cachedColorLevel = null;
 }
 
 export const colors = {
