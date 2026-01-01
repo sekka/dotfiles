@@ -94,12 +94,7 @@
       "Edit(*)",
       "Write(*)",
       "mcp__plugin_context7_context7__*",
-      "Bash(git rm:*)",
-      "Bash(scripts/git/validate-commit-message.test.ts )",
-      "Bash(home/.claude/statusline/security.ts )",
-      "Bash(home/.claude/statusline/git.ts )",
-      "Bash(home/.claude/statusline/utils.ts )",
-      "Bash(home/.claude/statusline/__tests__/security.test.ts )"
+      "Bash(git rm:*)"
     ],
     "deny": [
       "Read(./.env.*)"
