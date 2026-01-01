@@ -5,8 +5,6 @@ import { type StatuslineConfig, DEFAULT_CONFIG } from "./config.ts";
 import { type UsageLimits, type CachedUsageLimits } from "./utils.ts";
 import { isValidStatuslineConfig, isValidUsageLimits, sanitizeForLogging } from "./validation.ts";
 import { debug } from "./logging.ts";
-import { type StatuslineServices } from "./interfaces.ts";
-import { createDefaultServices } from "./providers.ts";
 import { API_CALL_TIMEOUT_MS } from "./constants.ts";
 
 // ============================================================================
@@ -701,91 +699,3 @@ export const tokenCountCache = new LRUCache<number>({
 	maxSize: 1000, // 最大 1000 エントリ
 	ttl: 3600000, // 1 時間の有効期限
 });
-
-// ============================================================================
-// Phase 3-2: Dependency Injection Service
-// ============================================================================
-
-/**
- * Phase 3-2: キャッシュサービスの DI対応クラス
- * インターフェースを通じて依存関係を注入可能
- */
-export class CacheService {
-	constructor(private services: StatuslineServices) {}
-
-	/**
-	 * キャッシュされた使用制限を取得
-	 */
-	async getCachedUsageLimits(): Promise<UsageLimits | null> {
-		// キャッシュから取得を試みる
-		const cacheKey = "usage-limits";
-		const cachedValue = await this.services.cacheProvider.get<UsageLimits>(cacheKey);
-		if (cachedValue) {
-			debug("Using cached usage limits", "verbose");
-			return cachedValue;
-		}
-
-		// APIから取得
-		const token = await this.services.tokenProvider.getToken();
-		if (!token) {
-			debug(`No API token found`, "verbose");
-			return null;
-		}
-
-		const limits = await this.services.usageLimitsProvider.fetchLimits(token);
-		if (limits) {
-			const CACHE_TTL_MS = 5 * 60 * 1000; // 5分
-			await this.services.cacheProvider.set(cacheKey, limits, CACHE_TTL_MS);
-		}
-
-		return limits;
-	}
-
-	/**
-	 * キャッシュされた設定を取得
-	 */
-	async getConfig(): Promise<StatuslineConfig> {
-		const cacheKey = "config";
-		const cachedValue = await this.services.cacheProvider.get<StatuslineConfig>(cacheKey);
-		if (cachedValue) {
-			debug("Using cached config", "verbose");
-			return cachedValue;
-		}
-
-		const config = await this.services.configProvider.loadConfig();
-		const CONFIG_CACHE_TTL = 60 * 1000; // 1分
-		await this.services.cacheProvider.set(cacheKey, config, CONFIG_CACHE_TTL);
-
-		return config;
-	}
-}
-
-// ============================================================================
-// Singleton Instance for Backward Compatibility
-// ============================================================================
-
-/**
- * Phase 3-2: デフォルトサービスインスタンス
- * 既存コードの互換性を保つ
- */
-const defaultCacheService = new CacheService(createDefaultServices());
-
-/**
- * 現在のシングルトンキャッシュサービスを取得
- * テスト時に置き換え可能
- */
-let currentCacheService = defaultCacheService;
-
-/**
- * キャッシュサービスを設定（主にテスト用）
- */
-export function setCacheService(service: CacheService): void {
-	currentCacheService = service;
-}
-
-/**
- * 現在のキャッシュサービスを取得
- */
-export function getCacheService(): CacheService {
-	return currentCacheService;
-}
