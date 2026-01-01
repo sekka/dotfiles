@@ -7,12 +7,7 @@ export { type DebugLevel, DEBUG_LEVEL, debug, validateDebugLevel } from "./loggi
 export { colors } from "./colors.ts";
 export { DEFAULT_CONFIG, type StatuslineConfig } from "./config.ts";
 export { sanitizeForLogging, isValidUsageLimits, isValidStatuslineConfig } from "./validation.ts";
-export {
-	SecurityValidator,
-	ErrorCategory,
-	categorizeError,
-	logCategorizedError,
-} from "./security.ts";
+export { logError } from "./security.ts";
 
 // ============================================================================
 // Type Definitions

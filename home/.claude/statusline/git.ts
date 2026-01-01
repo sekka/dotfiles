@@ -3,7 +3,6 @@ import { realpath } from "fs/promises";
 
 import { type GitStatus, type StatuslineConfig } from "./utils.ts";
 import { debug } from "./logging.ts";
-import { SecurityValidator } from "./security.ts";
 import { GIT_COMMAND_TIMEOUT_MS } from "./constants.ts";
 import { colors } from "./colors.ts";
 
@@ -324,8 +323,6 @@ async function readUntrackedFileStats(
 	cwd: string,
 	files: string[],
 ): Promise<{ added: number; skipped: number }> {
-	const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
 	let resolvedCwd: string;
 	try {
 		resolvedCwd = await realpath(cwd);
@@ -335,18 +332,13 @@ async function readUntrackedFileStats(
 		return { added: 0, skipped: files.length }; // 全てをスキップ扱い
 	}
 
-	// Pre-filter files: security checks and binary detection
+	// Pre-filter files: remove empty entries and prevent obvious path traversal
 	const validFiles = files.filter((file) => {
 		if (!file.trim()) return false;
 
-		// Security: Prevent path traversal attacks
+		// Prevent obvious path traversal attempts
 		if (file.includes("..") || file.startsWith("/")) {
 			debug(`Rejected unsafe path: ${file}`, "verbose");
-			return false;
-		}
-
-		// Skip binary files
-		if (SecurityValidator.isBinaryExtension(file)) {
 			return false;
 		}
 
@@ -361,21 +353,7 @@ async function readUntrackedFileStats(
 		try {
 			// Construct the file path
 			const filePath = `${resolvedCwd}/${file}`;
-
-			// Phase 4.1: SecurityValidator を使用したパス検証
-			const validation = await SecurityValidator.validatePath(resolvedCwd, filePath);
-			if (!validation.isValid || !validation.resolvedPath) {
-				return 0;
-			}
-
-			// Phase 4.1: ファイルサイズ検証
-			const fileObj = Bun.file(validation.resolvedPath);
-			const stat = await fileObj.stat();
-
-			if (!SecurityValidator.validateFileSize(stat.size, MAX_FILE_SIZE)) {
-				return 0;
-			}
-
+			const fileObj = Bun.file(filePath);
 			const fileContent = await fileObj.text();
 			return fileContent.split("\n").length;
 		} catch (e) {
