@@ -37,8 +37,7 @@ export { isValidUsageLimits } from "./validation/limits.ts";
 export { isValidStatuslineConfig } from "./validation/config.ts";
 
 // Security
-export { SecurityValidator } from "./security/validator.ts";
 export { sanitizeForLogging } from "./security/sanitizer.ts";
 
 // Error Handling
-export { ErrorCategory, categorizeError, logCategorizedError } from "./error/handler.ts";
+export { logError } from "./error/handler.ts";
