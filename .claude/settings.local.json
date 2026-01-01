@@ -86,7 +86,15 @@
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)",
+      "Bash(git log:*)",
+      "Bash(node -e:*)",
+      "Edit(*)",
+      "Write(*)",
+      "mcp__plugin_context7_context7__*",
+      "Bash(git rm:*)"
     ],
     "deny": [
       "Read(./.env.*)"

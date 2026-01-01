@@ -20,7 +20,7 @@
  */
 
 // Utilities
-import { HookInput, type StatuslineConfig } from "./statusline/utils.ts";
+import { HookInput, type StatuslineConfig, type UsageLimits } from "./statusline/utils.ts";
 import { colors } from "./statusline/colors.ts";
 import { debug } from "./statusline/logging.ts";
 
@@ -32,7 +32,6 @@ import { getContextTokens, formatElapsedTime, getSessionElapsedTime } from "./st
 
 // Caching and cost tracking
 import {
-	UsageLimits,
 	loadConfigCached,
 	getCachedUsageLimits,
 	getTodayCost,
@@ -95,7 +94,7 @@ function buildFirstLine(
 
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
-		result += ` ${colors.gray("S:")} ${sessionTimeDisplay} ${costDisplay}`;
+		result += ` ${colors.gray("S:")} ${colors.white(sessionTimeDisplay)} ${costDisplay}`;
 	}
 
 	if (config.session.showSessionId) {
@@ -322,4 +321,4 @@ async function main() {
 	}
 }
 
-main();
+await main();

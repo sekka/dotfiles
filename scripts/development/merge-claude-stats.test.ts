@@ -7,10 +7,9 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { existsSync } from "node:fs";
-import { mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { tmpdir } from "node:os";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 import type { StatsCache, DailyActivity, DailyModelToken, ModelUsage } from "./types/claude-stats";
 
 // ============================================================================
@@ -84,14 +83,13 @@ const createMockStats = (overrides?: Partial<StatsCache>): StatsCache => ({
 
 let testDir: string;
 
-beforeAll(() => {
-	testDir = join(tmpdir(), `claude-stats-test-${Date.now()}`);
-	mkdirSync(testDir, { recursive: true });
+beforeAll(async () => {
+	testDir = await createTempDir("claude-stats-test-");
 });
 
-afterAll(() => {
+afterAll(async () => {
 	if (existsSync(testDir)) {
-		rmSync(testDir, { recursive: true, force: true });
+		await cleanupTempDir(testDir);
 	}
 });
 

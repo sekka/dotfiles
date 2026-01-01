@@ -19,13 +19,15 @@ export type {
 
 // Constants
 export {
-	colors,
 	DEFAULT_CONFIG,
 	CACHE_TTL_MS,
 	CONFIG_CACHE_TTL,
 	MAX_FILE_SIZE,
 	BINARY_EXTENSIONS,
 } from "./constants.ts";
+
+// Colors
+export { colors } from "./colors.ts";
 
 // Debug
 export { type DebugLevel, validateDebugLevel, DEBUG_LEVEL, debug } from "./logging.ts";

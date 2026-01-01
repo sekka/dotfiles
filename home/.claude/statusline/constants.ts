@@ -1,20 +1,5 @@
 import type { StatuslineConfig } from "./types.ts";
 
-// ANSI Color Helpers (no external dependencies)
-export const colors = {
-	reset: (s: string) => `${s}\x1b[0m`,
-	gray: (s: string) => `\x1b[90m${s}\x1b[0m`,
-	red: (s: string) => `\x1b[91m${s}\x1b[0m`,
-	green: (s: string) => `\x1b[32m${s}\x1b[0m`,
-	yellow: (s: string) => `\x1b[33m${s}\x1b[0m`,
-	cyan: (s: string) => `\x1b[36m${s}\x1b[0m`,
-	white: (s: string) => `\x1b[37m${s}\x1b[0m`,
-	dimWhite: (s: string) => `\x1b[37m${s}\x1b[39m`,
-	lightGray: (s: string) => `\x1b[97m${s}\x1b[0m`,
-	peach: (s: string) => `\x1b[38;5;216m${s}\x1b[0m`,
-	darkOrange: (s: string) => `\x1b[38;5;202m${s}\x1b[0m`,
-};
-
 // Configuration
 export const DEFAULT_CONFIG: StatuslineConfig = {
 	git: {

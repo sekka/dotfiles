@@ -3,20 +3,21 @@
  */
 
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdirSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
-const testDir = resolve(tmpdir(), "test-sort-permissions");
+let testDir: string;
 
-beforeAll(() => {
+beforeAll(async () => {
 	// テストディレクトリを作成
+	testDir = await createTempDir("test-sort-permissions-");
 	mkdirSync(resolve(testDir, ".claude"), { recursive: true });
 });
 
-afterAll(() => {
+afterAll(async () => {
 	// テストディレクトリを削除
-	rmSync(testDir, { recursive: true, force: true });
+	await cleanupTempDir(testDir);
 });
 
 describe("sort-permissions.ts", () => {

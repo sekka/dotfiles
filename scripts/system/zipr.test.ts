@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs, zipDirectory } from "./zipr";
+import { createTempDir, cleanupTempDir } from "../__tests__/test-helpers";
 
 describe("zipr", () => {
 	describe("parseArgs", () => {
@@ -30,14 +30,13 @@ describe("zipr", () => {
 	describe("zipDirectory", () => {
 		let testDir: string;
 
-		beforeEach(() => {
-			testDir = join(tmpdir(), `zipr-test-${Date.now()}`);
-			mkdirSync(testDir, { recursive: true });
+		beforeEach(async () => {
+			testDir = await createTempDir("zipr-test-");
 		});
 
-		afterEach(() => {
+		afterEach(async () => {
 			if (existsSync(testDir)) {
-				rmSync(testDir, { recursive: true, force: true });
+				await cleanupTempDir(testDir);
 			}
 		});
 

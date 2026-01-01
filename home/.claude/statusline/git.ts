@@ -5,6 +5,7 @@ import { type GitStatus, type StatuslineConfig } from "./utils.ts";
 import { debug } from "./logging.ts";
 import { SecurityValidator } from "./security.ts";
 import { GIT_COMMAND_TIMEOUT_MS } from "./constants.ts";
+import { colors } from "./colors.ts";
 
 // ============================================================================
 // Git Operations
@@ -273,13 +274,13 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 
 		// Format result (yellow)
 		if (ahead > 0 && behind > 0) {
-			return `\x1b[33m↑${ahead}↓${behind}\x1b[0m`;
+			return colors.yellow(`↑${ahead}↓${behind}`);
 		}
 		if (ahead > 0) {
-			return `\x1b[33m↑${ahead}\x1b[0m`;
+			return colors.yellow(`↑${ahead}`);
 		}
 		if (behind > 0) {
-			return `\x1b[33m↓${behind}\x1b[0m`;
+			return colors.yellow(`↓${behind}`);
 		}
 
 		return null;
@@ -474,7 +475,7 @@ export async function getDiffStats(cwd: string): Promise<string | null> {
 
 		// Format result
 		if (added > 0 || deleted > 0) {
-			return `\x1b[32m+${added}\x1b[0m \x1b[31m-${deleted}\x1b[0m`;
+			return `${colors.green(`+${added}`)} ${colors.red(`-${deleted}`)}`;
 		}
 
 		return null;

@@ -4,12 +4,12 @@
 
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, realpath, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { mkdir, realpath, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { $ } from "bun";
 
 import { getGhqRoot, getMainRepoPath, removeWorktree, resolvePath } from "./worktree-remove";
+import { createTempDir, cleanupTempDir, setupGitRepo } from "../__tests__/test-helpers";
 
 describe("worktree-remove", () => {
 	let tempDir: string;
@@ -19,16 +19,14 @@ describe("worktree-remove", () => {
 
 	beforeAll(async () => {
 		originalCwd = process.cwd();
-		tempDir = await mkdtemp(join(tmpdir(), "worktree-remove-test-"));
+		tempDir = await createTempDir("worktree-remove-test-");
 
 		// メインリポジトリを作成
 		mainRepoPath = join(tempDir, "main-repo");
 		await mkdir(mainRepoPath);
 		process.chdir(mainRepoPath);
 
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
+		await setupGitRepo(mainRepoPath);
 
 		// 初期コミット
 		await writeFile(join(mainRepoPath, "README.md"), "# Main Repo");
@@ -42,7 +40,7 @@ describe("worktree-remove", () => {
 
 	afterAll(async () => {
 		process.chdir(originalCwd);
-		await rm(tempDir, { recursive: true, force: true });
+		await cleanupTempDir(tempDir);
 	});
 
 	describe("getGhqRoot", () => {
