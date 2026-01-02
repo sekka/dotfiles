@@ -5,6 +5,7 @@ Brewfile.lock.json
 # Claude Code セッション固有データ
 .claude/memory/
 .claude/state/
+.claude/stats-cache.json
 ### https://raw.github.com/github/gitignore//Swift.gitignore
 
 # Xcode
