@@ -6,12 +6,12 @@
 
 このアルゴリズムは以下の外部Pythonスクリプトとして実装します：
 
-**スクリプトパス**: `~/.claude/bin/parallel-review-merge.py`
+**スクリプトパス**: `~/.claude/skills/review-parallel/parallel-review-merge.py`
 
 SKILL.md Phase 4からの呼び出し：
 
 ```bash
-python ~/.claude/bin/parallel-review-merge.py \
+python ~/.claude/skills/review-parallel/parallel-review-merge.py \
   --codex codex-output.md \
   --coderabbit coderabbit-output.md \
   --copilot copilot-output.md \

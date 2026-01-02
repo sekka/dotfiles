@@ -189,7 +189,7 @@ if 'coderabbit' in failed_reviewers:
 統合処理は外部Pythonスクリプトで実行されます。詳細はALGORITHMS.mdを参照。
 
 ```bash
-python ~/.claude/bin/parallel-review-merge.py \
+python ~/.claude/skills/review-parallel/parallel-review-merge.py \
   --codex <(echo "$codex_output") \
   --coderabbit <(echo "$coderabbit_output") \
   --copilot <(echo "$copilot_output") \
