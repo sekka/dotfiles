@@ -133,6 +133,7 @@ HOME_CLAUDE_DIR="$HOME/.claude"
 CLAUDE_FILES=(
   CLAUDE.md
   settings.json
+  stats-cache.json
   statusline.ts
 )
 
@@ -171,7 +172,7 @@ CLAUDE_FOLDERS=(
   "commands:Commands"
   "agents:Agents"
   "skills:Skills"
-  "rules:Rules"
+  "plans:Plans"
 )
 
 for folder_pair in "${CLAUDE_FOLDERS[@]}"; do
