@@ -508,12 +508,3 @@ export class SimpleCache<T> {
 
 // 後方互換性のためのエイリアス
 export class LRUCache<T> extends SimpleCache<T> {}
-
-/**
- * グローバルなトークンカウントキャッシュ
- * 各セッションで計算されたトークン数をメモリ内に保持
- */
-export const tokenCountCache = new LRUCache<number>({
-	maxSize: 1000, // 最大 1000 エントリ
-	ttl: 3600000, // 1 時間の有効期限
-});

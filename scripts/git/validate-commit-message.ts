@@ -3,7 +3,7 @@
  *
  * 検証項目:
  * 1. AI署名の検出と拒否
- * 2. メッセージサイズ制限
+ * 2. 最初の行の長さ制限
  */
 
 export interface ValidationResult {
@@ -35,13 +35,7 @@ export function validateCommitMessage(message: string): ValidationResult {
 		errors.push("AI署名が含まれています。AI署名は自動的に削除して送信してください");
 	}
 
-	// 2. メッセージサイズ制限（DoS防止）
-	const maxSize = 10000;
-	if (message.length > maxSize) {
-		errors.push(`コミットメッセージが長すぎます（${message.length}文字 / 最大${maxSize}文字）`);
-	}
-
-	// 3. 最初の行の長さ制限（Gitコンベンション）
+	// 2. 最初の行の長さ制限（Gitコンベンション）
 	// コメント行と空行を除外して最初の実質的な行を取得
 	const lines = message.split("\n");
 	const firstLine = lines.find((line) => line.trim() && !line.trim().startsWith("#")) || "";

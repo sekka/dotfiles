@@ -89,23 +89,6 @@ function getFileType(filePath: string): string | null {
 // ============================================
 
 /**
- * コマンドが利用可能かチェック
- */
-async function isCommandAvailable(command: string): Promise<boolean> {
-	try {
-		const proc = spawn({
-			cmd: ["which", command],
-			stdout: "pipe",
-			stderr: "pipe",
-		});
-		const exitCode = await proc.exited;
-		return exitCode === 0;
-	} catch {
-		return false;
-	}
-}
-
-/**
  * コマンドを実行して結果を返す
  */
 async function runCommand(
@@ -138,18 +121,6 @@ async function runDprint(files: string[], mode: Mode, verbose: boolean): Promise
 		return { tool: "dprint", success: true, output: "No files to process" };
 	}
 
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("dprint"))) {
-		if (verbose) {
-			console.log("⏭️ dprint: skipped (not installed)");
-		}
-		return {
-			tool: "dprint",
-			success: true,
-			output: "Skipped (not installed)",
-		};
-	}
-
 	// dprint fmt で修正、dprint check でチェック
 	const args = mode === "fix" ? ["dprint", "fmt", ...files] : ["dprint", "check", ...files];
 
@@ -175,18 +146,6 @@ async function runOxlint(files: string[], verbose: boolean): Promise<LintResult>
 		return { tool: "oxlint", success: true, output: "No files to process" };
 	}
 
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("oxlint"))) {
-		if (verbose) {
-			console.log("⏭️ oxlint: skipped (not installed)");
-		}
-		return {
-			tool: "oxlint",
-			success: true,
-			output: "Skipped (not installed)",
-		};
-	}
-
 	const args = ["oxlint", ...files];
 
 	if (verbose) {
@@ -209,18 +168,6 @@ async function runOxlint(files: string[], verbose: boolean): Promise<LintResult>
 async function runOxfmt(files: string[], mode: Mode, verbose: boolean): Promise<LintResult> {
 	if (files.length === 0) {
 		return { tool: "oxfmt", success: true, output: "No files to process" };
-	}
-
-	// ツールが利用可能かチェック
-	if (!(await isCommandAvailable("oxfmt"))) {
-		if (verbose) {
-			console.log("⏭️ oxfmt: skipped (not installed)");
-		}
-		return {
-			tool: "oxfmt",
-			success: true,
-			output: "Skipped (not installed)",
-		};
 	}
 
 	const args = mode === "fix" ? ["oxfmt", "--write", ...files] : ["oxfmt", ...files];

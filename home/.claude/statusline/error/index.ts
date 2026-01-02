@@ -1,1 +1,1 @@
-export { ErrorCategory, categorizeError, logCategorizedError } from "./handler.ts";
+export { logError } from "./handler.ts";
