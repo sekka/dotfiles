@@ -8,14 +8,14 @@
 
 ```bash
 # Homebrew、Xcode、基本ツールのインストール
-./setup/01_base.sh
+./setup/01_setup_base.sh
 ```
 
 ### 2. 全設定ファイルのシンボリックリンク作成
 
 ```bash
 # home/ ディレクトリから全設定のシンボリックリンクを一括作成
-./setup/02_dotfiles.sh
+./setup/02_setup_home.sh
 ```
 
 作成される設定：
@@ -63,7 +63,7 @@ direnv status
 direnv reload
 ```
 
-**注**: 設定ファイルのシンボリックリンクは初回セットアップ時のみ必要です。`02_dotfiles.sh` 実行後は、設定ファイルの編集が自動的に反映されます。
+**注**: 設定ファイルのシンボリックリンクは初回セットアップ時のみ必要です。`02_setup_home.sh` 実行後は、設定ファイルの編集が自動的に反映されます。
 
 ### Git hooks の設定
 
@@ -117,8 +117,8 @@ dotfiles/
 │       ├── export-diff-zip.ts      # 差分アーカイブ
 │       └── zipr.ts                 # 圧縮ツール
 ├── setup/                          # 初回セットアップ用
-│   ├── 01_base.sh                  # システム基盤セットアップ
-│   ├── 02_dotfiles.sh              # 全設定ファイルのシンボリックリンク作成
+│   ├── 01_setup_base.sh            # システム基盤セットアップ
+│   ├── 02_setup_home.sh            # 全設定ファイルのシンボリックリンク作成
 │   ├── 10_homebrew.sh              # Homebrewアプリインストール
 │   ├── 11_web.sh                   # Web開発ツール
 │   └── Brewfile                    # Homebrew設定
@@ -139,7 +139,7 @@ vim ~/dotfiles/home/.zshrc
 vim ~/dotfiles/home/.gitconfig
 
 # 新しい設定ファイルを追加した場合
-./setup/02_dotfiles.sh  # 再実行でシンボリックリンク作成
+./setup/02_setup_home.sh  # 再実行でシンボリックリンク作成
 ```
 
 ### Claude 設定の管理
@@ -150,7 +150,7 @@ echo "# 新しいコマンド" > ~/dotfiles/home/.claude/commands/new-command.md
 
 # シンボリックリンクにより自動的に反映される
 # 再リンクが必要な場合のみ以下を実行
-./setup/02_dotfiles.sh
+./setup/02_setup_home.sh
 ```
 
 ### Claude Code プラグイン
@@ -192,81 +192,3 @@ mise run llm-serena  # serena-mcp-serverを起動
 # Git hooks設定済みの場合、commit時に自動実行
 git commit -m "変更内容"
 ```
-
----
-
-## 🔧 トラブルシューティング
-
-### シンボリックリンクの確認
-
-```bash
-# シンボリックリンクの状態確認
-ls -la ~ | grep dotfiles
-
-# .config/ ディレクトリのリンク確認
-ls -la ~/.config/
-```
-
-### direnv の確認
-
-```bash
-# direnv の状態確認
-direnv status
-
-# .envrc の再許可
-direnv allow
-
-# 動作テスト
-cd .. && cd ~/dotfiles  # ディレクトリ再入で実行確認
-```
-
-### Claude 設定の確認
-
-```bash
-# Claude設定のシンボリックリンク状態確認
-ls -la ~/.claude/
-
-# シンボリックリンクの再作成が必要な場合
-./setup/02_dotfiles.sh
-```
-
----
-
-## ⚠️ 重要な変更点
-
-### 最近の主な変更
-
-#### 2025 年 12 月
-
-1. **セットアップスクリプトの統合**
-   - `03_dev_configs.sh` を `02_dotfiles.sh` に統合
-   - 全ての設定ファイルのシンボリックリンク作成を一元化
-   - 初回セットアップが 2 ステップで完了（01→02 のみ）
-   - direnv による自動同期は不要に（Git hooks のみ自動実行）
-
-#### 2025 年 1 月
-
-1. **Python 環境管理の変更**
-
-   - pyenv から uv へ移行
-   - より高速でモダンな環境管理
-
-2. **シェル環境の改善**
-
-   - PATH に個別スクリプトディレクトリを追加
-   - .local 環境変数の読み込み追加
-
-3. **開発ツールの強化**
-
-   - compare_dirs.sh スクリプトの大幅改善
-   - mise 設定に LLM タスク（serena-mcp-server）追加
-
-4. **Claude 設定の最適化**
-   - CLAUDE.md の AI 署名ルール明確化
-   - settings.json のシンプル化
-
-### 移行時の注意事項
-
-- 既存のシンボリックリンクは自動的にスキップされます
-- 設定ファイルのパス参照が `home/` ディレクトリに変更されています
-- シンボリックリンクは初回セットアップ時のみ作成が必要です

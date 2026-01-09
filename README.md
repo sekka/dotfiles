@@ -1,6 +1,6 @@
 # dotfiles
 
-個人用のdotfiles管理リポジトリです。macOS環境での開発環境セットアップを自動化します。
+個人用の dotfiles 管理リポジトリです。macOS 環境での開発環境セットアップを自動化します。
 
 ## 📁 ディレクトリ構造
 
@@ -30,8 +30,8 @@ dotfiles/
 │   ├── setup/                      # セットアップ関連
 │   └── system/                     # システム関連ツール
 └── setup/                          # 初回セットアップ用スクリプト
-    ├── 01_base.sh                  # システム基盤セットアップ
-    ├── 02_dotfiles.sh              # 全設定ファイルのシンボリックリンク作成
+    ├── 01_setup_base.sh            # システム基盤セットアップ
+    ├── 02_setup_home.sh            # 全設定ファイルのシンボリックリンク作成
     ├── 10_homebrew.sh              # Homebrewアプリインストール
     ├── 11_web.sh                   # Web開発ツール
     └── Brewfile                    # Homebrew設定
@@ -43,11 +43,11 @@ dotfiles/
 
 ```bash
 # 1. システム基盤のセットアップ
-./setup/01_base.sh
+./setup/01_setup_base.sh
 
 # 2. 全設定ファイルのシンボリックリンク作成
 # (dotfiles, .config, Claude, Serena等すべて含む)
-./setup/02_dotfiles.sh
+./setup/02_setup_home.sh
 
 # 3. Homebrewアプリのインストール
 ./setup/10_homebrew.sh
@@ -74,15 +74,15 @@ dotfiles/
 ### 開発ツール
 
 - **mise**: 言語バージョン管理とタスク定義
-- **Claude Code**: AI支援開発環境（CLAUDE.md、MCP設定）
-- **Code Quality**: lint/format自動チェック（pre-commit統合）
-- **Python**: uvによるモダンな環境管理
+- **Claude Code**: AI 支援開発環境（CLAUDE.md、MCP 設定）
+- **Code Quality**: lint/format 自動チェック（pre-commit 統合）
+- **Python**: uv によるモダンな環境管理
 
 ### メディア・システムツール
 
 - 画像・動画変換スクリプト
 - システム情報取得ツール
-- tmux用ステータス表示スクリプト
+- tmux 用ステータス表示スクリプト
 - ディレクトリ比較ツール（compare_dirs.sh）
 
 ## 📋 要件
@@ -95,7 +95,7 @@ dotfiles/
 
 ### Git hooks
 
-自動でlint/formatチェックが実行されます：
+自動で lint/format チェックが実行されます：
 
 ```bash
 # Git hooks設定
@@ -120,11 +120,11 @@ mise run format    # 全ファイル形式の整形（oxfmt, dprint, shfmt）
 
 - `home/` 内のファイルを直接編集
 - シンボリックリンクにより自動反映
-- 新規ファイル追加時は `./setup/02_dotfiles.sh` を再実行
+- 新規ファイル追加時は `./setup/02_setup_home.sh` を再実行
 
 ## 🎯 Claude Code 設定
 
-このdotfilesはClaude Codeの開発環境統合をサポートしています。
+この dotfiles は Claude Code の開発環境統合をサポートしています。
 
 ### 依存ツール
 
@@ -152,18 +152,20 @@ Claude Code は以下のファイル編集時に自動でツールを実行し�
 
 ### セットアップ手順
 
-1. **Homebrewで必要ツールをインストール**
+1. **Homebrew で必要ツールをインストール**
 
    ```bash
    ./setup/10_homebrew.sh
    ```
 
    これにより以下がインストールされます：
+
    - gawk (GNU Awk)
    - tmux と関連プラグイン
    - その他の開発ツール
 
 2. **Claude Code が自動実行する機能**
+
    - ファイル編集後に自動チェックが実行されます
    - エラーが発生した場合、ターミナルに警告メッセージが表示されます
 
@@ -198,5 +200,5 @@ bun scripts/development/sort-permissions.ts --file=.claude/settings.local.json
 ## 📖 詳細情報
 
 - [セットアップガイド](SETUP.md) - 詳細な環境構築手順
-- [mise設定](home/config/mise/config.toml) - タスクとツール管理
-- [Claude設定](home/.claude/) - AI支援開発設定
+- [mise 設定](home/config/mise/config.toml) - タスクとツール管理
+- [Claude 設定](home/.claude/) - AI 支援開発設定
