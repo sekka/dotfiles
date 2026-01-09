@@ -27,7 +27,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/post-tool-use.ts"
+            "command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
           }
         ]
       }

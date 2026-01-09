@@ -467,6 +467,15 @@ async function main(): Promise<void> {
 	if (options.file) {
 		// 単一ファイルモード（hooks用）
 		const filePath = resolve(options.file);
+
+		// .claude/settings.local.json は除外（sort-permissions.sh が処理する）
+		if (filePath.endsWith(".claude/settings.local.json")) {
+			if (options.verbose) {
+				console.log("⏭️ Skipped: .claude/settings.local.json (handled by sort-permissions)");
+			}
+			process.exit(0);
+		}
+
 		if (!existsSync(filePath)) {
 			console.error(`File not found: ${filePath}`);
 			process.exit(1);
