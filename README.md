@@ -2,41 +2,6 @@
 
 個人用の dotfiles 管理リポジトリです。macOS 環境での開発環境セットアップを自動化します。
 
-## 📁 ディレクトリ構造
-
-```text
-dotfiles/
-├── home/                           # 個人設定ファイル（ホームディレクトリにシンボリックリンク）
-│   ├── .zshrc, .gitconfig など     # シェル・Git設定
-│   ├── .claude/                    # Claude AI設定
-│   │   ├── CLAUDE.md               # 作業ルール・設定
-│   │   ├── settings.json           # Claude設定
-│   │   ├── commands/               # カスタムコマンド
-│   │   ├── agents/                 # エージェント定義
-│   │   ├── skills/                 # スキル定義
-│   │   └── rules/                  # ルール定義
-│   ├── .serena/                    # Serena設定
-│   ├── .tmux/                      # tmux追加設定
-│   └── config/                     # アプリケーション設定（.config/にリンク）
-│       ├── ghostty/                # ターミナル設定
-│       ├── mise/                   # ツールバージョン管理
-│       ├── sheldon/                # zshプラグインマネージャー
-│       ├── terminal/               # ターミナル設定
-│       └── zsh/                    # zsh設定ファイル群
-├── scripts/                        # 実行用スクリプト
-│   ├── development/                # 開発関連ツール
-│   ├── git/                        # Git関連ツール
-│   ├── media/                      # メディア変換ツール
-│   ├── setup/                      # セットアップ関連
-│   └── system/                     # システム関連ツール
-└── setup/                          # 初回セットアップ用スクリプト
-    ├── 01_setup_base.sh            # システム基盤セットアップ
-    ├── 02_setup_home.sh            # 全設定ファイルのシンボリックリンク作成
-    ├── 10_homebrew.sh              # Homebrewアプリインストール
-    ├── 11_web.sh                   # Web開発ツール
-    └── Brewfile                    # Homebrew設定
-```
-
 ## 🚀 クイックスタート
 
 ### 初回セットアップ
@@ -52,8 +17,6 @@ dotfiles/
 # 3. Homebrewアプリのインストール
 ./setup/10_homebrew.sh
 ```
-
-詳細なセットアップ手順は [SETUP.md](SETUP.md) を参照してください。
 
 ## ⚡ 自動機能
 
@@ -197,8 +160,45 @@ cat ~/.claude/settings.json | jq '.hooks.PostToolUse'
 bun scripts/development/sort-permissions.ts --file=.claude/settings.local.json
 ```
 
+### Claude Code プラグイン
+
+各環境でマーケットプレイスの追加とプラグインのインストールが必要です：
+
+```bash
+# skill-creator（スキル作成スキル）
+claude /plugin marketplace add anthropics/skills
+claude /plugin install example-skills@anthropic-agent-skills
+
+# claude-mem（セッション間メモリ）
+claude /plugin marketplace add thedotmack/claude-mem
+claude /plugin install claude-mem@thedotmack
+
+# claude-mem-japanese（claude-mem日本語対応）
+claude /plugin marketplace add Chachamaru127/claude-mem-jp
+claude /plugin install claude-mem-japanese@claude-mem-jp
+
+# claude-code-harness（コード管理ツール）
+claude /plugin marketplace add Chachamaru127/claude-code-harness
+claude /plugin install claude-code-harness@claude-code-harness-marketplace
+```
+
+プラグインのインストール後は Claude Code の再起動が必要です。
+
+### コード品質チェック
+
+```bash
+# 手動でlint/format実行
+mise run lint        # 全ファイル形式のチェック
+mise run format      # 全ファイル形式の整形
+
+# LLM関連タスク
+mise run llm-serena  # serena-mcp-serverを起動
+
+# Git hooks設定済みの場合、commit時に自動実行
+git commit -m "変更内容"
+```
+
 ## 📖 詳細情報
 
-- [セットアップガイド](SETUP.md) - 詳細な環境構築手順
 - [mise 設定](home/config/mise/config.toml) - タスクとツール管理
 - [Claude 設定](home/.claude/) - AI 支援開発設定
