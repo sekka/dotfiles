@@ -2,21 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(bash:*)",
-      "Bash(brew list:*)",
       "Bash(bun:*)",
       "Bash(bunx @biomejs/biome:*)",
       "Bash(bunx tsc:*)",
       "Bash(cat:*)",
       "Bash(chmod:*)",
       "Bash(claude help:*)",
-      "Bash(codemass --help:*)",
       "Bash(coderabbit review:*)",
       "Bash(codex review:*)",
-      "Bash(command -v putclip:*)",
-      "Bash(command -v xsel:*)",
-      "Bash(command -v:*)",
       "Bash(copilot:*)",
-      "Bash(dprint check:*)",
       "Bash(echo:*)",
       "Bash(env)",
       "Bash(eza:*)",
@@ -45,24 +39,9 @@
       "Bash(mkdir:*)",
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
-      "Bash(oxfmt --version:*)",
       "Bash(oxlint:*)",
-      "Bash(perl -w:*)",
-      "Bash(python:*)",
-      "Bash(python3 -u:*)",
-      "Bash(python3:*)",
       "Bash(rg:*)",
-      "Bash(tmux -V:*)",
-      "Bash(tmux capture-pane:*)",
-      "Bash(tmux display-message:*)",
-      "Bash(tmux kill-session:*)",
-      "Bash(tmux list-keys:*)",
-      "Bash(tmux list-panes:*)",
-      "Bash(tmux list-sessions:*)",
-      "Bash(tmux list-windows:*)",
-      "Bash(tmux show-environment:*)",
-      "Bash(tmux show-option:*)",
-      "Bash(tmux show-options:*)",
+      "Bash(tmux:*)",
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
@@ -71,8 +50,10 @@
       "mcp__plugin_context7_context7__*",
       "mcp__plugin_playwright_playwright__*",
       "mcp__plugin_serena_serena__*",
-      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__sequential-thinking__*",
+      "Skill(agent-memory)",
       "Skill(commit)",
+      "Skill(memorizing)",
       "Skill(review-parallel)",
       "Skill(review-pr)",
       "Skill(review-with-claude)",
@@ -98,14 +79,8 @@
       "WebSearch",
       "Write(*)"
     ],
-    "deny": [
-      "Read(./.env.*)"
-    ]
+    "deny": ["Read(./.env.*)"]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "context7",
-    "deepwiki",
-    "sequential-thinking"
-  ]
+  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
 }
