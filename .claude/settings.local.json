@@ -11,6 +11,7 @@
       "Bash(coderabbit review:*)",
       "Bash(codex review:*)",
       "Bash(copilot:*)",
+      "Bash(dprint fmt:*)",
       "Bash(echo:*)",
       "Bash(env)",
       "Bash(eza:*)",
@@ -36,6 +37,7 @@
       "Bash(head:*)",
       "Bash(ls:*)",
       "Bash(mise run lint:*)",
+      "Bash(mise tasks:*)",
       "Bash(mkdir:*)",
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
@@ -77,8 +79,7 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:zenn.dev)",
       "WebSearch",
-      "Write(*)",
-      "Bash(dprint fmt:*)"
+      "Write(*)"
     ],
     "deny": [
       "Read(./.env.*)"
