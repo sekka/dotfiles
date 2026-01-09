@@ -31,6 +31,8 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
     export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
 fi
 
+export HOMEBREW_FORBIDDEN_FORMULAE="node python python3 pip npm pnpm yarn"
+
 # Language-specific paths are managed in config/zsh/00_environment.zsh
 
 # NOTE: Heavy operations (direnv, cargo) moved to .zprofile

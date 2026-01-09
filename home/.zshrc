@@ -10,3 +10,5 @@ if [ -d $ZSHHOME -a -r $ZSHHOME -a \
 fi
 
 . "$HOME/.local/bin/env"
+
+alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
