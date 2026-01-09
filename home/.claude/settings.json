@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/command-validator/src/cli.ts"
+            "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
           }
         ]
       }
