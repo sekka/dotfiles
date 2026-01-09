@@ -157,18 +157,6 @@ if (sorted) {
 description = "codemassを起動"
 run = "codemass"
 
-# Claude Code統計同期（iCloud）
-[tasks.llm-claude-sync-stats]
-alias = "ccss"
-description = "Claude Code統計をiCloud Driveに同期"
-run = "bun ~/dotfiles/scripts/development/sync-claude-stats-to-icloud.ts"
-
-# Claude Code統計マージ（iCloud自動検出）
-[tasks.llm-claude-merge-stats-cache]
-alias = "ccmsc"
-description = "複数マシンのClaude Code統計をstats-cache.json形式でマージ（ccusage/cc-wrapped用）"
-run = "bun ~/dotfiles/scripts/development/merge-claude-stats.ts --auto-discover-icloud --format stats-cache"
-
 # cc-sdd
 [tasks.ccsdd-install]
 description = "cc-sddを導入"

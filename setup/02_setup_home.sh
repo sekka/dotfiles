@@ -181,64 +181,6 @@ for folder_pair in "${CLAUDE_FOLDERS[@]}"; do
 done
 
 # ========================================
-# Claude 統計ファイル（iCloud Drive同期）
-# ========================================
-
-echo ""
-echo "☁️  Claude 統計ファイル（iCloud Drive）のシンボリックリンクを作成..."
-
-# iCloud Drive内のClaudeCodeStatsディレクトリ
-ICLOUD_CLAUDE_STATS="$HOME/Library/Mobile Documents/com~apple~CloudDocs/ClaudeCodeStats"
-ICLOUD_STATS_FILE="$ICLOUD_CLAUDE_STATS/stats-cache.json"
-LOCAL_STATS_FILE="$HOME_CLAUDE_DIR/stats-cache.json"
-
-# iCloud Driveが利用可能かチェック
-if [[ -d $ICLOUD_CLAUDE_STATS ]]; then
-  # ディレクトリが存在する場合
-  if [[ ! -f $ICLOUD_STATS_FILE ]]; then
-    # stats-cache.jsonが存在しない場合は作成（空ファイル）
-    echo -e "${BLUE}📝 初期化:${NC} iCloud Drive に stats-cache.json を作成"
-    cat >"$ICLOUD_STATS_FILE" <<'EOF'
-{
-  "version": 1,
-  "lastComputedDate": "1970-01-01",
-  "dailyActivity": [],
-  "dailyModelTokens": {},
-  "longestSession": null,
-  "sessionIds": {}
-}
-EOF
-    echo -e "${GREEN}✅ 作成:${NC} iCloud Drive stats-cache.json"
-  fi
-
-  # ローカルの統計ファイルにシンボリックリンクを作成
-  if [[ -L $LOCAL_STATS_FILE ]]; then
-    current_target=$(readlink "$LOCAL_STATS_FILE")
-    if [[ $current_target == "$ICLOUD_STATS_FILE" ]]; then
-      echo -e "${YELLOW}⏭️  スキップ:${NC} stats-cache.json (既に正しくリンクされています)"
-      ((skipped++))
-    else
-      echo -e "${GREEN}🔄 更新:${NC} stats-cache.json (リンク先: $current_target → $ICLOUD_STATS_FILE)"
-      rm "$LOCAL_STATS_FILE"
-      ln -s "$ICLOUD_STATS_FILE" "$LOCAL_STATS_FILE"
-      ((created++))
-    fi
-  elif [[ -f $LOCAL_STATS_FILE ]]; then
-    echo -e "${RED}⚠️  警告:${NC} stats-cache.json は通常のファイルとして存在します。"
-    echo "    iCloud Drive との同期を有効にする場合は、次のコマンドを実行してください:"
-    echo "    rm $LOCAL_STATS_FILE && ln -s $ICLOUD_STATS_FILE $LOCAL_STATS_FILE"
-  else
-    echo -e "${GREEN}✅ 作成:${NC} stats-cache.json (iCloud Drive へのシンボリックリンク)"
-    ln -s "$ICLOUD_STATS_FILE" "$LOCAL_STATS_FILE"
-    ((created++))
-  fi
-else
-  # iCloud Driveが利用不可の場合
-  echo -e "${YELLOW}⚠️  スキップ:${NC} iCloud Drive が利用できません"
-  echo "    iCloud Drive を有効にすると、複数マシン間で自動的に統計データが同期されます"
-fi
-
-# ========================================
 # Serena 設定
 # ========================================
 
