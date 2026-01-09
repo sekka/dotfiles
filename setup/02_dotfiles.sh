@@ -314,6 +314,56 @@ for file in "${SERENA_FILES[@]}"; do
 done
 
 # ========================================
+# claude-mem 設定
+# ========================================
+
+echo ""
+echo "🧠 claude-mem 設定のシンボリックリンクを作成..."
+
+# .claude-mem ディレクトリが存在しない場合は作成
+if [[ ! -d "$HOME/.claude-mem" ]]; then
+  mkdir -p "$HOME/.claude-mem"
+  echo -e "${BLUE}📁 ディレクトリを作成:${NC} .claude-mem"
+fi
+
+DOTFILES_CLAUDEMEM_DIR="$HOME/dotfiles/home/.claude-mem"
+HOME_CLAUDEMEM_DIR="$HOME/.claude-mem"
+
+# claude-mem設定ファイル
+CLAUDEMEM_FILES=(
+  settings.json
+)
+
+for file in "${CLAUDEMEM_FILES[@]}"; do
+  source_file="$DOTFILES_CLAUDEMEM_DIR/$file"
+  target_file="$HOME_CLAUDEMEM_DIR/$file"
+
+  if [[ ! -f $source_file ]]; then
+    echo -e "${YELLOW}⚠️  警告:${NC} $file がソースディレクトリに見つかりません"
+    continue
+  fi
+
+  if [[ -L $target_file ]]; then
+    current_target=$(readlink "$target_file")
+    if [[ $current_target == "$source_file" ]]; then
+      echo -e "${YELLOW}⏭️  スキップ:${NC} $file (既に正しくリンクされています)"
+      ((skipped++))
+    else
+      echo -e "${GREEN}🔄 更新:${NC} $file"
+      rm "$target_file"
+      ln -s "$source_file" "$target_file"
+      ((created++))
+    fi
+  elif [[ -f $target_file ]]; then
+    echo -e "${RED}⚠️  警告:${NC} $file は通常のファイルとして存在します。手動で確認してください。"
+  else
+    echo -e "${GREEN}✅ 作成:${NC} $file"
+    ln -s "$source_file" "$target_file"
+    ((created++))
+  fi
+done
+
+# ========================================
 # サマリー表示
 # ========================================
 
@@ -328,5 +378,6 @@ echo "   📄 ホームディレクトリ: zsh, git, vim等の設定"
 echo "   📁 .config/: ghostty, mise, sheldon"
 echo "   🤖 .claude/: AI開発支援ツール設定"
 echo "   🔧 .serena/: セマンティックコーディング設定"
+echo "   🧠 .claude-mem/: Claude メモリ設定"
 echo ""
 echo "💡 今後の設定変更は dotfiles/ ディレクトリで行ってください"
