@@ -40,7 +40,17 @@ interface HookOutput {
 // セキュリティルール
 // ============================================
 
-const CRITICAL_COMMANDS = ["del", "format", "mkfs", "shred", "dd", "fdisk", "parted", "gparted", "cfdisk"];
+const CRITICAL_COMMANDS = [
+	"del",
+	"format",
+	"mkfs",
+	"shred",
+	"dd",
+	"fdisk",
+	"parted",
+	"gparted",
+	"cfdisk",
+];
 
 const PRIVILEGE_COMMANDS = [
 	"sudo",
@@ -55,9 +65,29 @@ const PRIVILEGE_COMMANDS = [
 	"setgid",
 ];
 
-const NETWORK_COMMANDS = ["nc", "netcat", "nmap", "telnet", "ssh-keygen", "iptables", "ufw", "firewall-cmd", "ipfw"];
+const NETWORK_COMMANDS = [
+	"nc",
+	"netcat",
+	"nmap",
+	"telnet",
+	"ssh-keygen",
+	"iptables",
+	"ufw",
+	"firewall-cmd",
+	"ipfw",
+];
 
-const SYSTEM_COMMANDS = ["systemctl", "service", "kill", "killall", "pkill", "mount", "umount", "swapon", "swapoff"];
+const SYSTEM_COMMANDS = [
+	"systemctl",
+	"service",
+	"kill",
+	"killall",
+	"pkill",
+	"mount",
+	"umount",
+	"swapon",
+	"swapoff",
+];
 
 const SAFE_COMMANDS = [
 	"ls",
@@ -187,7 +217,16 @@ const DANGEROUS_PATTERNS: RegExp[] = [
 	/prisma\s+(migrate\s+reset|db\s+push\s+--force-reset)/i,
 ];
 
-const PROTECTED_PATHS = ["/etc/", "/usr/", "/sbin/", "/boot/", "/sys/", "/proc/", "/dev/", "/root/"];
+const PROTECTED_PATHS = [
+	"/etc/",
+	"/usr/",
+	"/sbin/",
+	"/boot/",
+	"/sys/",
+	"/proc/",
+	"/dev/",
+	"/root/",
+];
 
 const SAFE_RM_PATHS = [join(homedir(), "Developer/"), "/tmp/", "/var/tmp/", `${process.cwd()}/`];
 
