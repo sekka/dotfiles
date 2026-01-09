@@ -265,11 +265,11 @@ echo "✅ Setup complete!"
 # --------------------------------------
 # セットアップ
 # --------------------------------------
-# dotfilesシンボリックリンク作成
-[tasks.setup-dotfiles-symlink]
+# homeシンボリックリンク作成
+[tasks.setup-home-symlink]
 alias = "sds"
-description = "dotfilesのシンボリックリンクを作成"
-run = "bash ~/dotfiles/setup/02_dotfiles.sh"
+description = "homeのシンボリックリンクを作成"
+run = "bash ~/dotfiles/setup/02_setup_home.sh"
 
 # --------------------------------------
 # Docker/Container
