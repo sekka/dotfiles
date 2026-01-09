@@ -2,19 +2,13 @@
  * Git commit message validation logic
  *
  * 検証項目:
- * 1. AI署名の検出と拒否
- * 2. 最初の行の長さ制限
+ * 1. 最初の行の長さ制限
  */
 
 export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
 }
-
-/**
- * AI署名パターン
- */
-export const AI_SIGNATURE_PATTERN = /🤖 Generated with Claude Code|Co-Authored-By: Claude/;
 
 /**
  * コミットメッセージを検証
@@ -30,12 +24,7 @@ export function validateCommitMessage(message: string): ValidationResult {
 		return { valid: false, errors };
 	}
 
-	// 1. AI署名検出（優先度高）
-	if (AI_SIGNATURE_PATTERN.test(message)) {
-		errors.push("AI署名が含まれています。AI署名は自動的に削除して送信してください");
-	}
-
-	// 2. 最初の行の長さ制限（Gitコンベンション）
+	// 最初の行の長さ制限（Gitコンベンション）
 	// コメント行と空行を除外して最初の実質的な行を取得
 	const lines = message.split("\n");
 	const firstLine = lines.find((line) => line.trim() && !line.trim().startsWith("#")) || "";
@@ -59,13 +48,6 @@ export function validateCommitMessage(message: string): ValidationResult {
 		valid: errors.length === 0,
 		errors,
 	};
-}
-
-/**
- * AI署名の有無を判定
- */
-export function hasAISignature(message: string): boolean {
-	return AI_SIGNATURE_PATTERN.test(message);
 }
 
 // CLI entry point for git hooks

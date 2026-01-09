@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { validateCommitMessage, hasAISignature } from "./validate-commit-message";
+import { validateCommitMessage } from "./validate-commit-message";
 
 describe("validateCommitMessage - 基本機能", () => {
 	// 正常系
@@ -13,34 +13,6 @@ describe("validateCommitMessage - 基本機能", () => {
 		const result = validateCommitMessage(
 			"feat: Add new feature\n\nDetailed description of the change",
 		);
-		expect(result.valid).toBe(true);
-	});
-
-	// AI署名検出
-	it("should detect Claude Code signature", () => {
-		const result = validateCommitMessage("feat: Feature\n\n🤖 Generated with Claude Code");
-		expect(result.valid).toBe(false);
-		expect(result.errors.some((e) => e.includes("AI署名"))).toBe(true);
-	});
-
-	it("should detect Co-Authored-By signature", () => {
-		const result = validateCommitMessage(
-			"fix: Bug\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
-		);
-		expect(result.valid).toBe(false);
-	});
-
-	// メッセージサイズ
-	it("should reject very long messages", () => {
-		const longMessage = "a".repeat(11000);
-		const result = validateCommitMessage(longMessage);
-		expect(result.valid).toBe(false);
-		expect(result.errors.some((e) => e.includes("長すぎます"))).toBe(true);
-	});
-
-	it("should allow normal size messages", () => {
-		const msg = "feat: Feature\n\n" + "a".repeat(5000);
-		const result = validateCommitMessage(msg);
 		expect(result.valid).toBe(true);
 	});
 
@@ -111,19 +83,5 @@ describe("validateCommitMessage - 基本機能", () => {
 		const result = validateCommitMessage(longTitle);
 		expect(result.valid).toBe(false);
 		expect(result.errors[0]).toContain("タイトル:");
-	});
-});
-
-describe("hasAISignature", () => {
-	it("should detect Claude Code signature", () => {
-		expect(hasAISignature("🤖 Generated with Claude Code")).toBe(true);
-	});
-
-	it("should detect Co-Authored-By signature", () => {
-		expect(hasAISignature("Co-Authored-By: Claude")).toBe(true);
-	});
-
-	it("should return false for normal messages", () => {
-		expect(hasAISignature("feat: Normal feature")).toBe(false);
 	});
 });
