@@ -160,6 +160,9 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "transmission"
 #tap "hmarr/tap"
 #cask "vitals"
+
+# === ネットワーク ===
+#cask "cloudflare-warp"
 #cask "vpn-by-google-one"
 
 # === AI ===
