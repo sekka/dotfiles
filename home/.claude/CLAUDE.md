@@ -32,6 +32,58 @@
 - Context7/DeepWiki 使用時は、公開情報のみを問い合わせ対象とする
 - 送信前に機密情報が含まれていないか確認する
 
+## フロントエンドナレッジベースの自動参照
+
+Web開発に関する質問があった場合、`managing-frontend-knowledge` スキルのナレッジベースを自発的に参照すること。
+
+### トリガーキーワード（自動参照の対象）
+
+以下のトピックに関する質問では、必ずナレッジベースを確認する：
+
+**CSS関連:**
+- レイアウト（Grid、Flexbox、Container Queries、中央寄せ、全幅、responsive）
+- アニメーション（transition、animation、View Transitions、Scroll-driven）
+- ビジュアル（filter、clip-path、mask、shape、backdrop-filter）
+- タイポグラフィ（font、text、フォント、テキスト装飾）
+- セレクタ（@scope、:has、:is、:where、擬似クラス、擬似要素）
+- CSS値（clamp、ビューポート単位、currentColor、カスタムプロパティ）
+- UIコンポーネント（Popover、Anchor Positioning、dialog、details）
+- テーマ（light-dark、color-scheme、ダークモード）
+- モダンCSS（CSS Nesting、@layer、新機能）
+
+**JavaScript関連:**
+- DOM操作、イベントハンドリング
+- 非同期処理（async/await、Promise、fetch）
+- アニメーション（requestAnimationFrame、補間、数学的アニメーション）
+- デザインパターン、ベストプラクティス
+- Web API（IntersectionObserver、matchMedia、CSSStyleSheet）
+
+**HTML関連:**
+- セマンティックHTML
+- モダンHTML要素（dialog、details、search、picture）
+- フォーム、アクセシビリティ
+
+**横断的トピック:**
+- パフォーマンス最適化（lazy-load、Core Web Vitals、LCP、CLS、画像最適化）
+- アクセシビリティ（WCAG、a11y、ARIA、スクリーンリーダー）
+- ブラウザ互換性（Safari、iOS、回避策、workarounds）
+- レスポンシブデザイン、UX、デザインシステム
+
+### 参照方法
+
+1. **質問内容からキーワードを抽出**
+2. **該当するカテゴリを特定**（css/layout、javascript/patterns、cross-cutting/performance など）
+3. **ナレッジファイルを Read**（`~/.claude/skills/managing-frontend-knowledge/knowledge/[カテゴリ]/[ファイル].md`）
+4. **ナレッジに基づいて回答**
+
+### 注意事項
+
+- ナレッジベースに該当情報がない場合は、一般的な知識で回答
+- 出典URLがある場合は必ず記載
+- コード例は実用的で実際に使えるものを優先
+- ブラウザサポート情報を明記
+- 複数カテゴリにまたがる場合は、関連するファイルを複数参照
+
 ## コード実装のワークフロー
 
 ### 実装の 4 段階アプローチ
