@@ -1,28 +1,29 @@
-# --------------------------------------
-# Environment & PATH Management
-# --------------------------------------
-# helpers, platform, environmentを統合
+# ===========================================
+# 環境変数と PATH 管理
+# ===========================================
+# helpers、platform、environment を統合
 
-# ======================
-# Helper Functions
-# ======================
+# ===========================================
+# ヘルパー関数
+# ===========================================
 
-# Function to add a directory to PATH only if it exists and is not already in PATH
+# PATH にディレクトリを追加（重複チェック付き）
+# 使用法: add_to_path "/path/to/dir" [prepend|append]
 add_to_path() {
     local dir="$1"
-    local position="${2:-prepend}"  # prepend or append
+    local position="${2:-prepend}"  # デフォルトは先頭に追加
 
-    # Check if directory exists
+    # ディレクトリが存在しない場合はスキップ
     if [[ ! -d "$dir" ]]; then
         return 1
     fi
 
-    # Check if already in PATH
+    # PATH に既に含まれている場合はスキップ
     case ":$PATH:" in
-        *":$dir:"*) return 0 ;;  # Already in PATH
+        *":$dir:"*) return 0 ;;
     esac
 
-    # Add to PATH
+    # PATH に追加
     if [[ "$position" == "append" ]]; then
         export PATH="$PATH:$dir"
     else
@@ -30,64 +31,64 @@ add_to_path() {
     fi
 }
 
-# Function to add a directory to fpath only if it exists and is not already in fpath
+# fpath にディレクトリを追加（重複チェック付き）
+# 使用法: add_to_fpath "/path/to/dir"
 add_to_fpath() {
     local dir="$1"
 
-    # Check if directory exists
+    # ディレクトリが存在しない場合はスキップ
     if [[ ! -d "$dir" ]]; then
         return 1
     fi
 
-    # Check if already in fpath using zsh array subscript (more robust)
+    # fpath に既に含まれている場合はスキップ（zsh の配列添字を使用）
     if [[ -z "${fpath[(r)${dir}]}" ]]; then
         fpath=("$dir" $fpath)
     fi
 }
 
-# ======================
-# Platform-specific Settings
-# ======================
+# ===========================================
+# プラットフォーム固有設定
+# ===========================================
 
-# OS別設定
 case ${OSTYPE} in
     darwin*)
-        # macOS用設定
+        # macOS 用設定
         export CLICOLOR=1
-        # Note: ls alias moved to main aliases.zsh with eza
+        # ls エイリアスは 50_aliases.zsh で eza を使用
         ;;
 esac
 
-# ======================
-# Centralized PATH Management
-# ======================
-# すべてのPATH設定を一元管理する
-# 重複を防ぐため、add_to_path関数を使用してパスを追加する
+# ===========================================
+# PATH 管理（一元化）
+# ===========================================
+# すべての PATH 設定をここで一元管理
+# add_to_path 関数で重複を自動的に防止
 
-# === 基本システムパス ===
+# --- 基本システムパス ---
 add_to_path "/usr/local/bin"
 add_to_path "/usr/local/sbin"
 
-# === dotfiles関連 ===
+# --- dotfiles スクリプト ---
 add_to_path "$HOME/dotfiles/scripts/development"
 add_to_path "$HOME/dotfiles/scripts/git"
 add_to_path "$HOME/dotfiles/scripts/media"
 add_to_path "$HOME/dotfiles/scripts/setup"
 add_to_path "$HOME/dotfiles/scripts/system"
 
-# === Homebrew ===
-# 環境変数は.zshenvで設定済み
+# --- Homebrew ---
+# 環境変数は .zshenv で設定済み
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
     add_to_path "$HOMEBREW_PREFIX/bin"
     add_to_path "$HOMEBREW_PREFIX/sbin"
 fi
 
-# === GNU awk ===
-# macOS互換性のため、GNU awkのgnubinをPATHに追加
-# tmux-sessionxなどが期待する構文に対応
+# --- GNU awk ---
+# macOS 互換性のため、GNU awk の gnubin を PATH に追加
+# tmux-sessionx などが期待する構文に対応
 add_to_path "$HOMEBREW_PREFIX/opt/gawk/libexec/gnubin"
 
-# === プログラミング言語関連 ===
+# --- プログラミング言語 ---
 
 # Go
 export GOPATH="${GOPATH:-$HOME/go}"
@@ -96,12 +97,12 @@ add_to_path "$GOPATH/bin" append
 # Rust
 add_to_path "$HOME/.cargo/bin" append
 
-# === 開発ツール ===
+# --- 開発ツール ---
 
 # Docker Desktop
 add_to_path "/Applications/Docker.app/Contents/Resources/bin" append
 
-# Docker CLI completions
+# Docker CLI 補完
 add_to_fpath "$HOME/.docker/completions"
 
 # VS Code
@@ -113,14 +114,14 @@ add_to_path "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" append
 # Antigravity
 add_to_path "$HOME/.antigravity/antigravity/bin" append
 
-# === アプリケーション固有 ===
+# --- アプリケーション ---
 
 # Rancher Desktop
 if [[ -d "$HOME/.rd/bin" ]]; then
     add_to_path "$HOME/.rd/bin" append
 fi
 
-# === クラウドツール ===
+# --- クラウドツール ---
 
 # Google Cloud SDK
 if [[ -d "$HOME/google-cloud-sdk/bin" ]]; then
@@ -132,17 +133,18 @@ if [[ -d "$HOME/.local/aws-cli/v2/current/bin" ]]; then
     add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 fi
 
-# ======================
-# Core Functions
-# ======================
+# ===========================================
+# コア機能
+# ===========================================
 
-# ディレクトリ変更時自動実行
-# add-zsh-hookを使用して他のプラグインとの競合を回避
+# ディレクトリ変更時の自動実行
+# add-zsh-hook で他のプラグインとの競合を回避
 autoload -Uz add-zsh-hook
 
 function _chpwd_list_directory() {
     pwd
     local file_count=$(ls -1A 2>/dev/null | wc -l)
+    # ファイル数が 500 未満で eza が利用可能なら詳細表示
     if [[ $file_count -lt 500 ]] && command -v eza >/dev/null 2>&1; then
         eza --long --all --binary --bytes --header --changed --git --git-repos --icons auto --time-style long-iso --sort name --group-directories-first --hyperlink -F always
     else
@@ -152,36 +154,36 @@ function _chpwd_list_directory() {
 
 add-zsh-hook chpwd _chpwd_list_directory
 
-# PATH表示関数
+# PATH 表示関数
 function path_show() { echo -e ${PATH//:/'\n'} }
 
-# ======================
-# PATH Management Utilities
-# ======================
+# ===========================================
+# PATH 管理ユーティリティ
+# ===========================================
 
-# デバッグ用：重複したPATHエントリを表示
-# 使用方法: check_path_duplicates を実行してPATHの重複を確認
+# デバッグ用: PATH の重複エントリを表示
+# 使用方法: check_path_duplicates
 check_path_duplicates() {
-    echo "=== PATH Entries ==="
+    echo "=== PATH エントリ ==="
     echo "$PATH" | tr ':' '\n' | nl
     echo
-    echo "=== Duplicates ==="
+    echo "=== 重複 ==="
     echo "$PATH" | tr ':' '\n' | sort | uniq -d
 }
 
-# 重複を削除してPATHを最適化
-# 使用方法: optimize_path を実行してPATHから重複エントリを削除
-# Note: これは手動実行用のユーティリティ関数です。
-#       自動起動時には実行されません。必要に応じて手動で実行してください。
+# PATH から重複を削除して最適化
+# 使用方法: optimize_path
+# 注意: これは手動実行用のユーティリティ関数
+#       自動起動時には実行されない
 optimize_path() {
-    # zshのpath配列を使用してより安全に重複削除
+    # zsh の path 配列を使用して安全に重複削除
     local -a old_path_array
     old_path_array=("${path[@]}")
     local old_count=${#old_path_array}
 
-    # typeset -U で重複を削除（zsh組み込み機能）
+    # typeset -U で重複を削除（zsh 組み込み機能）
     typeset -U path
 
     local new_count=${#path}
-    echo "PATH optimized. Removed $(( old_count - new_count )) duplicate entries."
+    echo "PATH を最適化しました。$(( old_count - new_count )) 個の重複エントリを削除。"
 }

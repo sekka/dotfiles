@@ -1,14 +1,14 @@
-# --------------------------------------
-# Completion & Keybindings
-# --------------------------------------
-# completion, keybindを統合
+# ===========================================
+# 補完とキーバインド
+# ===========================================
+# completion、keybind を統合
 
-# ======================
-# Completion Configuration
-# ======================
+# ===========================================
+# 補完設定
+# ===========================================
 
-# zsh-completions設定
-# HOMEBREW_PREFIXは.zshenvで設定済み
+# zsh-completions を fpath に追加
+# HOMEBREW_PREFIX は .zshenv で設定済み
 if [[ -n "$HOMEBREW_PREFIX" ]]; then
     add_to_fpath "$HOMEBREW_PREFIX/share/zsh-completions"
 fi
@@ -18,6 +18,7 @@ ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 [[ ! -d "$ZSH_CACHE_DIR" ]] && mkdir -p "$ZSH_CACHE_DIR"
 
 # 補完機能の初期化（高速化版）
+# 24時間以内なら再コンパイルをスキップ
 autoload -U compinit
 if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
     compinit
@@ -41,7 +42,7 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # ../ の後は今いるディレクトリを補完しない
 zstyle ':completion:*' ignore-parents parent pwd ..
 
-# sudoコマンド補完設定
+# sudo コマンド補完設定
 local system_paths=(
     /usr/local/sbin /usr/local/bin
     /usr/sbin /usr/bin
@@ -68,9 +69,9 @@ zstyle ':completion:*' group-name ''              # 補完候補をタイプ別�
 zstyle ':completion:*' squeeze-slashes true       # 重複するスラッシュを削除
 zstyle ':completion:*' special-dirs true          # . と .. ディレクトリも補完対象に含める
 
-# ======================
-# Keybindings
-# ======================
+# ===========================================
+# キーバインド
+# ===========================================
 
-# Emacsキーバインド設定
+# Emacs キーバインド設定
 bindkey -e
