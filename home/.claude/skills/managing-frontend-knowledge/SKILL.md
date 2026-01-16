@@ -1,6 +1,6 @@
 ---
 name: managing-frontend-knowledge
-description: フロントエンド技術のナレッジベース管理。URLや記事から技術情報を要約・蓄積し、CSS、JavaScript、パフォーマンス、アクセシビリティなどの質問に対してナレッジベースを参照して回答します。ナレッジ追加時、技術的な質問への回答時に使用してください。
+description: フロントエンド技術（CSS、JavaScript、HTML、パフォーマンス、アクセシビリティ）のナレッジベース管理。Web開発に関する質問があった場合は自動的にナレッジベースを参照して回答。URLや記事からの技術情報の要約・蓄積も行います。モダンCSS（Grid、Flexbox、@scope、View Transitions）、JavaScript パターン、Core Web Vitals、WCAG、ブラウザ互換性などの質問に対応。
 ---
 
 # フロントエンドナレッジ管理
@@ -87,29 +87,41 @@ URLが渡された場合は `WebFetch` で内容を取得。
 
 ### Step 3: カテゴリ判定
 
-以下のカテゴリから最適なものを選択：
+以下のカテゴリから最適なものを選択（新しい階層構造）：
 
-| カテゴリ | ファイル | 対象 | キーワード |
-|---------|---------|------|-----------|
-| レイアウト | `css-layout.md` | Grid, Flexbox, 配置, Container Queries | レイアウト, 幅, 高さ, 中央寄せ |
-| アニメーション | `css-animation.md` | Transitions, Keyframes, View Transitions | 動き, アニメーション, 遷移 |
-| フルブリードレイアウト | `css-full-bleed-layout.md` | フルブリード, エッジツーエッジ | 全幅, エッジ |
-| スコープ | `css-scope.md`, `css-scope-basics.md` | @scope, スコープ | スコープ, カプセル化 |
-| ビューポート | `css-viewport-size.md` | ビューポート単位, dvh, svh | ビューポート, 単位 |
-| モダンCSS | `css-modern.md` | @layer, ネスティング, 新機能 | モダン, 新機能, 2024 |
-| HTML | `html-modern.md` | モダンHTML, セマンティック | HTML, マークアップ |
-| JavaScript | `javascript-patterns.md` | DOM, イベント, 非同期 | JS, DOM, イベント |
-| JSアニメーション | `js-animation.md` | JavaScript アニメーション | JS アニメーション |
-| パフォーマンス | `performance.md` | 最適化, Core Web Vitals | 速度, 最適化, LCP |
-| アクセシビリティ | `accessibility-link-underline.md` | リンク下線, a11y | a11y, アクセシビリティ |
-| TypeScript | `typescript.md` | TypeScript パターン | TS, 型 |
-| ブラウザ回避策 | `browser-workarounds.md` | ブラウザバグ, 回避策 | バグ, 回避 |
+| カテゴリ | ファイルパス | 対象 | キーワード |
+|---------|-------------|------|-----------|
+| **CSS - レイアウト** | `knowledge/css/layout/` | Grid, Flexbox, Container Queries, full-bleed | レイアウト, 幅, 高さ, 中央寄せ, 全幅 |
+| **CSS - アニメーション** | `knowledge/css/animation/` | Transitions, View Transitions, Scroll-driven | 動き, アニメーション, 遷移, トランジション |
+| **CSS - ビジュアル** | `knowledge/css/visual/` | filter, clip-path, mask, shape | フィルター, マスク, 図形, 視覚効果 |
+| **CSS - タイポグラフィ** | `knowledge/css/typography/` | text-box, フォント, paint-order | 文字, フォント, テキスト |
+| **CSS - セレクタ** | `knowledge/css/selectors/` | @scope, :has, :is, :where | スコープ, セレクタ, 擬似クラス |
+| **CSS - 値** | `knowledge/css/values/` | clamp, viewport units, currentColor | 値, 単位, ビューポート, カスタムプロパティ |
+| **CSS - コンポーネント** | `knowledge/css/components/` | Popover, Anchor Positioning, field-sizing | UI, コンポーネント, ポップオーバー |
+| **CSS - テーマ** | `knowledge/css/theming/` | light-dark, color-scheme | テーマ, ダークモード, 配色 |
+| **HTML** | `knowledge/html/` | モダンHTML, セマンティック, dialog, details | HTML, マークアップ, 要素 |
+| **JavaScript - パターン** | `knowledge/javascript/patterns/` | DOM, イベント, 非同期, Utilities | JS, DOM, イベント, パターン |
+| **JavaScript - アニメーション** | `knowledge/javascript/animation/` | requestAnimationFrame, 補間 | JS アニメーション, 数学的補間 |
+| **パフォーマンス** | `knowledge/cross-cutting/performance/` | 最適化, Core Web Vitals, lazy-load | 速度, 最適化, LCP, CLS |
+| **アクセシビリティ** | `knowledge/cross-cutting/accessibility/` | WCAG, a11y, リンク | a11y, アクセシビリティ, WCAG |
+| **ブラウザ互換性** | `knowledge/cross-cutting/browser-compat/` | ブラウザバグ, 回避策, workarounds | バグ, 回避, Safari, iOS |
 
 ### Step 4: ファイル更新
 
-1. `~/.claude/skills/managing-frontend-knowledge/[カテゴリ].md` を Read
+1. `~/.claude/skills/managing-frontend-knowledge/knowledge/[カテゴリ]/[ファイル名].md` を Read
 2. 既存コンテンツの末尾に新しいテクニックを追加
-3. ファイルが存在しない場合は新規作成
+3. ファイルが存在しない場合は新規作成し、YAML frontmatterを追加
+4. YAML frontmatter形式:
+   ```yaml
+   ---
+   title: タイトル
+   category: css/layout (カテゴリパス)
+   tags: [タグ1, タグ2, タグ3]
+   browser_support: ブラウザ対応状況
+   created: YYYY-MM-DD
+   updated: YYYY-MM-DD
+   ---
+   ```
 
 ### Step 5: 確認
 
@@ -330,8 +342,32 @@ css-animation.md:
 
 1. ユーザーの質問からキーワードを抽出
 2. 上記カテゴリ一覧から該当するファイルを特定
-3. `~/.claude/skills/managing-frontend-knowledge/` 内の該当ファイルを Read
+3. `~/.claude/skills/managing-frontend-knowledge/knowledge/` 内の該当ファイルを Read
 4. 蓄積された知識を基に回答
+
+### ディレクトリ構造
+
+```
+knowledge/
+├── INDEX.md                          # 全体インデックス
+├── css/
+│   ├── layout/                       # Grid, Flexbox, 配置
+│   ├── animation/                    # Transitions, アニメーション
+│   ├── visual/                       # filter, mask, shape
+│   ├── typography/                   # フォント, テキスト
+│   ├── selectors/                    # @scope, :has, 擬似クラス
+│   ├── values/                       # clamp, 単位, カスタムプロパティ
+│   ├── components/                   # Popover, Anchor Positioning
+│   └── theming/                      # light-dark, テーマ
+├── javascript/
+│   ├── patterns/                     # DOM, イベント, パターン
+│   └── animation/                    # requestAnimationFrame, 補間
+├── html/                             # モダンHTML, セマンティック
+└── cross-cutting/
+    ├── performance/                  # 最適化, Core Web Vitals
+    ├── accessibility/                # WCAG, a11y
+    └── browser-compat/               # ブラウザバグ, 回避策
+```
 
 ## 回答フォーマット
 
