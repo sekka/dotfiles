@@ -47,6 +47,7 @@ brew "wget"               # https://formulae.brew.sh/formula/wget             # 
 brew "colima"             # https://formulae.brew.sh/formula/colima           # 軽量Dockerランタイム（Docker Desktop代替）
 brew "docker"             # https://formulae.brew.sh/formula/docker           # コンテナ管理CLI
 brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
+brew "lazydocker"         # https://formulae.brew.sh/formula/lazydocker       # コンテナ管理CLI
 brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
 
 # === formatter/linter ===

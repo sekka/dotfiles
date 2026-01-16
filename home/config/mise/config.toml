@@ -419,7 +419,9 @@ pnpm = "latest"
 
 rust = "stable"
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
+"cargo:filetree" = "latest"     # https://crates.io/crates/filetree File explorer TUI interface
 "cargo:hx" = "latest"           # https://crates.io/crates/hx Hex Viewer
+"cargo:keifu" = "latest"        # https://crates.io/crates/keifu Git commit graphs
 "cargo:needle-cli" = "latest"   # https://crates.io/crates/needle-cli GitHub PRs レビュー支援
 "cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
 "cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
@@ -428,3 +430,4 @@ rust = "stable"
 
 go = "latest"
 # "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"
+"go:github.com/d-kuro/gwq/cmd/gwq" = "latest" # Git worktree tool
