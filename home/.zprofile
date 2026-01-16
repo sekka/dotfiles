@@ -1,41 +1,49 @@
-# --------------------------------------
-# .zprofile - Login shell configuration
-# --------------------------------------
-# This file is sourced only for login shells
-# Heavy initialization operations should go here
+# ===========================================
+# .zprofile - ログインシェル専用の設定
+# ===========================================
+# このファイルはログインシェルでのみ読み込まれる
+# 重い初期化処理はここに配置すること
 
-# Load PATH helper functions (if not already loaded)
+# ===========================================
+# PATH ヘルパー関数の読み込み（未読み込みの場合のみ）
+# ===========================================
 if ! typeset -f add_to_path > /dev/null; then
     source "$HOME/dotfiles/home/config/zsh/00_environment.zsh"
 fi
 
-# Set default editor and visual editor
+# ===========================================
+# エディタ設定
+# ===========================================
+# デフォルトのテキストエディタと ビジュアルエディタ
 export EDITOR="${EDITOR:-vim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 
-# Set language environment
+# ===========================================
+# 言語環境設定
+# ===========================================
 export LANG="${LANG:-en_US.UTF-8}"
 export LC_CTYPE="${LC_CTYPE:-en_US.UTF-8}"
 export LC_ALL="${LC_ALL:-en_US.UTF-8}"
 
-# XDG Base Directory specification
+# ===========================================
+# XDG Base Directory 仕様
+# ===========================================
+# アプリケーション設定ファイルの標準的な配置場所を定義
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
-# --------------------------------------
-# Development environment initialization
-# --------------------------------------
+# ===========================================
+# 開発環境の初期化（重い処理）
+# ===========================================
 
-# direnv - per-directory environment variables (heavy operation)
+# direnv - ディレクトリごとの環境変数管理（重い処理）
 if command -v direnv >/dev/null 2>&1; then
     eval "$(direnv hook zsh)"
 fi
 
-# Rust/Cargo environment
+# Rust/Cargo 環境
 if [[ -f "$HOME/.cargo/env" ]]; then
     source "$HOME/.cargo/env"
 fi
-
-# zplug path setup is now handled in 08_zplug.zsh

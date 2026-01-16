@@ -23,6 +23,9 @@ alias mkdir="mkdir -p"
 alias be="bundle exec"
 alias sudo="sudo "
 
+# Claude Code メモリプラグインのワーカーサービス起動
+alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
+
 # ======================
 # Search
 # ======================

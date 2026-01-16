@@ -1,14 +1,22 @@
-
+# ===========================================
+# Zsh 設定ファイルローダー
+# ===========================================
+# zsh 設定ファイル格納ディレクトリのパス定義
 ZSHHOME="${HOME}/dotfiles/home/config/zsh"
 
+# ZSHHOME ディレクトリが存在し、読み取り・実行可能な場合のみ処理
 if [ -d $ZSHHOME -a -r $ZSHHOME -a \
     -x $ZSHHOME ]; then
+    # ディレクトリ内の全ファイルをループ
     for i in $ZSHHOME/*; do
+        # .zsh 拡張子のファイル（通常ファイルまたはシンボリックリンク）を読み込み
         [[ ${i##*/} = *.zsh ]] &&
             [ \( -f $i -o -h $i \) -a -r $i ] && . $i
     done
 fi
 
+# ===========================================
+# 環境変数
+# ===========================================
+# mise (旧 rtx) などで管理される環境変数を読み込み
 . "$HOME/.local/bin/env"
-
-alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
