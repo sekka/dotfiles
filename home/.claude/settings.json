@@ -8,6 +8,7 @@
   "permissions": {
     "defaultMode": "plan"
   },
+  "plansDirectory": "./plans",
   "model": "opusplan",
   "hooks": {
     "PreToolUse": [
