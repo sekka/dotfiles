@@ -1,6 +1,6 @@
 ---
-name: create-agent-skills
-description: Create reusable agent skills that provide domain-specific expertise through progressive disclosure
+name: creating-agent-skills
+description: ドメイン固有の知識を持つ再利用可能なagent skillsを作成します。プログレッシブディスクロージャとXML構造を使用し、効果的なスキルプロンプトを生成します。新しいスキルの作成、既存スキルのリファクタリング、スキル構造のベストプラクティス適用が必要な場合に使用してください。
 extends: shared/template-generator
 template_type: agent-skill
 model: haiku

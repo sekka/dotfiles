@@ -1,6 +1,6 @@
 ---
-name: create-slash-commands
-description: Create custom Claude Code slash commands with `/command-name` syntax
+name: creating-slash-commands
+description: カスタムClaude Codeスラッシュコマンド（/command-name構文）を作成します。ユーザーが明示的にトリガーするワークフローを実装し、新鮮なコンテキストで実行します。頻繁に使うワークフローのショートカット、明示的なユーザートリガー、コマンド形式のインターフェースが必要な場合に使用してください。
 extends: shared/template-generator
 template_type: slash-command
 model: haiku

@@ -1,6 +1,6 @@
 ---
-name: create-meta-prompts
-description: Create prompts optimized for Claude-to-Claude pipelines with research, planning, and execution stages
+name: creating-meta-prompts
+description: Claude間のパイプライン用に最適化されたメタプロンプトを作成します。リサーチ、計画、実行の各段階を含む多段階ワークフローを設計します。複雑なタスクの段階的処理、Claude間の連携、構造化されたワークフローが必要な場合に使用してください。
 extends: shared/template-generator
 template_type: meta-prompt
 model: opus

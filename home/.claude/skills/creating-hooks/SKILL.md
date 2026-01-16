@@ -1,6 +1,6 @@
 ---
-name: create-hooks
-description: Create Claude Code hooks for event-driven automation and validation
+name: creating-hooks
+description: Claude Codeのイベント駆動型自動化とバリデーション用のhooksを作成します。tool呼び出し、ユーザーメッセージ、コミット前チェックなどのイベントに反応するhooksを実装します。自動化ワークフロー、バリデーション、イベント駆動処理が必要な場合に使用してください。
 extends: shared/template-generator
 template_type: hook
 model: haiku

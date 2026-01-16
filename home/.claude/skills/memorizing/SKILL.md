@@ -1,6 +1,6 @@
 ---
 name: memorizing
-description: "Use this skill when the user asks to save, remember, recall, or organize memories. Triggers on: 'remember this', 'save this', 'note this', 'what did we discuss about...', 'check your notes', 'clean up memories'. Also use proactively when discovering valuable findings worth preserving."
+description: ユーザーの要求に応じて記憶の保存、呼び出し、整理を行います。有用な発見や重要な情報を保存し、後から検索・参照できるようにします。「覚えておいて」「保存して」「メモして」などのキーワード、過去の議論の照会、発見した重要な情報の保存が必要な場合に使用してください。
 ---
 
 # Agent Memory
