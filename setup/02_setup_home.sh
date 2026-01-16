@@ -134,6 +134,7 @@ ensure_dir "$HOME/.config"
 
 CONFIG_DIRS=(
   ghostty
+  gwq
   lazygit
   mise
   sheldon
