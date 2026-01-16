@@ -84,20 +84,27 @@ Claude Code は以下のファイル編集時に自動でツールを実行し�
 
 ```bash
 # skill-creator（スキル作成スキル）
-claude /plugin marketplace add anthropics/skills
-claude /plugin install example-skills@anthropic-agent-skills
+claude plugin marketplace add anthropics/skills
+claude plugin install example-skills@anthropic-agent-skills
 
 # claude-mem（セッション間メモリ）
-claude /plugin marketplace add thedotmack/claude-mem
-claude /plugin install claude-mem@thedotmack
+claude plugin marketplace add thedotmack/claude-mem
+claude plugin install claude-mem@thedotmack
 
 # claude-mem-japanese（claude-mem日本語対応）
-claude /plugin marketplace add Chachamaru127/claude-mem-jp
-claude /plugin install claude-mem-japanese@claude-mem-jp
+claude plugin marketplace add Chachamaru127/claude-mem-jp
+claude plugin install claude-mem-japanese@claude-mem-jp
 
 # claude-code-harness（コード管理ツール）
-claude /plugin marketplace add Chachamaru127/claude-code-harness
-claude /plugin install claude-code-harness@claude-code-harness-marketplace
+claude plugin marketplace add Chachamaru127/claude-code-harness
+claude plugin install claude-code-harness@claude-code-harness-marketplace
+
+# Asking（AI同士の相談）
+claude plugin marketplace add hiroro-work/claude-plugins
+claude plugin install ask-claude@hiropon-plugins
+claude plugin install ask-codex@hiropon-plugins
+claude plugin install ask-gemini@hiropon-plugins
+claude plugin install peer@hiropon-plugins
 ```
 
 ### コード品質チェック
