@@ -117,7 +117,8 @@
     "feature-dev@claude-plugins-official": false,
     "example-skills@anthropic-agent-skills": false,
     "greptile@claude-plugins-official": false,
-    "document-skills@anthropic-agent-skills": false
+    "document-skills@anthropic-agent-skills": false,
+    "code-simplifier@claude-plugins-official": true
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true
