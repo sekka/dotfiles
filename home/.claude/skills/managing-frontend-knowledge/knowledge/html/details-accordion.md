@@ -110,7 +110,37 @@ details[open] summary {
 | Firefox | 130+ |
 | Safari | 17.2+ |
 
+---
+
+## details要素の開閉アニメーション
+
+> 出典（追加情報）: https://shimotsuki.wwwxyz.jp/20251126-1984
+
+CSSで`details`要素に開閉アニメーションを追加。`transition-behavior`と`::details-content`擬似要素を活用。
+
+```css
+details {
+  display: grid;
+  grid: auto 0fr / 1fr;
+  transition: grid 0.3s;
+  transition-behavior: allow-discrete;
+}
+
+details[open] {
+  grid: auto 1fr / 1fr;
+}
+
+details::details-content {
+  overflow: hidden;
+}
+```
+
+**ブラウザ対応:** Chrome 117+（transition-behavior）, Chrome 131+（::details-content）
+
+---
+
 ## 関連ナレッジ
 
 - [::details-content](./details-content-pseudo.md)
 - [Accordion パターン](../cross-cutting/design-patterns/accordion.md)
+- [transition-behavior](../css/animation/transition-behavior.md)

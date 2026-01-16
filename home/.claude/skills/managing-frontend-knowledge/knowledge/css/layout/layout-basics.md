@@ -70,6 +70,9 @@ Grid, Flexbox, 配置、Container Queries に関するナレッジ集。
 
 ### gap（Flexbox / Grid 共通）
 
+> 出典（追加情報）: https://zenn.dev/tonkotsuboy_com/articles/2021-css-new-features
+> Flexbox での gap サポート: Safari 14（2021年4月）で全モダンブラウザ対応完了
+
 ```css
 .flex {
   display: flex;
@@ -83,6 +86,108 @@ Grid, Flexbox, 配置、Container Queries に関するナレッジ集。
 ```
 
 `margin` を使わずに要素間の余白を統一できる。
+
+#### 歴史的背景
+
+- **Grid**: 当初から `gap` が使用可能
+- **Flexbox**: Safari 14（2021年4月）で対応完了
+- Chrome 84, Firefox 63 では先行してサポート
+
+#### 従来の方法（margin ハック）との比較
+
+**従来の方法:**
+
+```css
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -10px; /* ネガティブマージン */
+}
+
+.flex-item {
+  margin: 10px;
+}
+```
+
+**問題点:**
+- 親要素にネガティブマージンが必要
+- 最初/最後の要素の扱いが複雑
+- 複数行レイアウトでの余白調整が困難
+
+**gap を使った方法（推奨）:**
+
+```css
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* シンプル */
+}
+
+/* 子要素に margin 不要 */
+.flex-item {
+  /* margin なし */
+}
+```
+
+#### 複数行Flexboxでの使用例
+
+```css
+/* カードグリッド */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.card {
+  flex: 1 1 calc(33.333% - 14px); /* gap を考慮した幅計算 */
+  min-width: 250px;
+}
+```
+
+**ポイント:**
+- `gap` は要素間にのみ適用される（最初/最後の要素の外側には適用されない）
+- `flex-wrap: wrap` との組み合わせで、複数行の余白も自動調整
+
+#### row-gap / column-gap の個別指定
+
+```css
+.flex-horizontal {
+  display: flex;
+  column-gap: 20px; /* 水平方向のみ */
+}
+
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px; /* 垂直方向のみ */
+}
+
+.flex-both {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 30px; /* 行間 */
+  column-gap: 20px; /* 列間 */
+}
+
+/* 短縮記法 */
+.flex-both {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px 20px; /* row column */
+}
+```
+
+#### ブラウザ対応
+
+- **Grid での gap**: 全モダンブラウザ対応
+- **Flexbox での gap**:
+  - Chrome 84+ (2020年7月)
+  - Firefox 63+ (2018年10月)
+  - Safari 14+ (2021年4月) ← 最後に対応
+  - Edge 84+
+
+**現在:** 全モダンブラウザで安心して使用可能
 
 ### 中央配置パターン
 

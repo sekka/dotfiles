@@ -72,6 +72,163 @@ dialog.addEventListener("close", () => {
 
 **ブラウザ対応:** Chrome 37+, Firefox 98+, Safari 15.4+
 
+#### command / commandfor 属性による制御
+
+> 出典（追加情報）: https://ics.media/entry/250904/
+> https://shimotsuki.wwwxyz.jp/20251227-2003
+
+JavaScript不要でdialogを制御できる新しい属性。
+
+```html
+<!-- モーダルダイアログ（JavaScript不要） -->
+<button command="show-modal" commandfor="my-dialog">開く</button>
+<dialog id="my-dialog">
+  <p>モーダルの内容</p>
+  <button command="close" commandfor="my-dialog">閉じる</button>
+</dialog>
+
+<!-- 非モーダルダイアログ -->
+<button command="show-dialog" commandfor="nonmodal">開く</button>
+<dialog id="nonmodal">
+  <p>非モーダルの内容</p>
+  <button command="close" commandfor="nonmodal">閉じる</button>
+</dialog>
+```
+
+**command属性の値:**
+- `show-modal`: モーダルとして開く
+- `show-dialog`: 非モーダルとして開く
+- `close`: ダイアログを閉じる
+
+#### closedby 属性
+
+ダイアログの閉じ方を制御。
+
+```html
+<!-- 任意の方法で閉じる（デフォルト） -->
+<dialog closedby="any">...</dialog>
+
+<!-- 明示的な操作のみで閉じる -->
+<dialog closedby="closerequest">...</dialog>
+
+<!-- プログラムでのみ閉じる -->
+<dialog closedby="none">...</dialog>
+```
+
+**値の説明:**
+- `any`: Escキー、外側クリック、closeメソッドすべて有効
+- `closerequest`: Escキーまたはcloseメソッドのみ
+- `none`: closeメソッドのみ
+
+#### popover との違い
+
+| 特性 | dialog（モーダル） | popover |
+|------|------------------|---------|
+| 外部操作 | 無効化 | 可能 |
+| 閉じ方 | 特定操作のみ | 外側クリックで自動 |
+| 背景 | `::backdrop` | なし |
+| フォーカストラップ | あり | なし |
+| 用途 | 重要な操作 | 補助情報 |
+
+**使い分け:**
+- **モーダル**: ユーザーの注意が必要な場合（確認ダイアログなど）
+- **非モーダル**: 情報表示しつつ他の操作も可能にする
+- **popover**: 軽量な情報表示（ツールチップなど）
+
+#### イベント
+
+```javascript
+const dialog = document.querySelector('dialog');
+
+// ダイアログが閉じられた時
+dialog.addEventListener('close', () => {
+  console.log('閉じられました');
+});
+
+// ダイアログを閉じる要求が発生した時（キャンセル可能）
+dialog.addEventListener('cancel', (event) => {
+  if (shouldPreventClose) {
+    event.preventDefault();
+  }
+});
+```
+
+#### CSSセレクタ
+
+```css
+/* モーダル状態を選択 */
+dialog:modal {
+  /* モーダルとして表示中のスタイル */
+}
+
+/* open属性による選択 */
+dialog[open] {
+  /* 開いている状態のスタイル */
+}
+
+/* 背景オーバーレイ */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+```
+
+#### 完全な実装例
+
+```html
+<button command="show-modal" commandfor="confirm-dialog">
+  削除する
+</button>
+
+<dialog id="confirm-dialog" closedby="closerequest">
+  <h2>確認</h2>
+  <p>本当に削除しますか？この操作は取り消せません。</p>
+  <div class="dialog-actions">
+    <button command="close" commandfor="confirm-dialog">
+      キャンセル
+    </button>
+    <button class="danger" id="confirm-button">
+      削除する
+    </button>
+  </div>
+</dialog>
+```
+
+```css
+dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.danger {
+  background: #dc3545;
+  color: white;
+}
+```
+
+```javascript
+// 削除確認後の処理
+document.getElementById('confirm-button').addEventListener('click', () => {
+  performDelete();
+  document.getElementById('confirm-dialog').close();
+});
+```
+
 ### details / summary 要素（アコーディオン）
 
 JavaScript なしでアコーディオンを実装。
@@ -144,25 +301,263 @@ details[open] > *:not(summary) {
 
 ### picture 要素（レスポンシブ画像）
 
-画面幅やフォーマットに応じて最適な画像を配信。
+> 出典（追加情報）: https://catnose.me/learning/html/picture/
+
+CSSやJavaScriptを使わずにレスポンシブな画像切り替えを実現。
+
+#### 基本構造
 
 ```html
 <picture>
+  <source srcset="image-url" media="(min-width: 800px)" />
+  <source srcset="image-url" media="(min-width: 500px)" />
+  <img src="fallback-url" alt="説明" />
+</picture>
+```
+
+#### 2つの主要な用途
+
+**1. 画面幅に応じた画像の切り替え**
+
+```html
+<picture>
+  <!-- 1200px以上: デスクトップ用高解像度画像 -->
+  <source srcset="desktop-large.jpg" media="(min-width: 1200px)" />
+
+  <!-- 768px以上: タブレット用画像 -->
+  <source srcset="tablet.jpg" media="(min-width: 768px)" />
+
+  <!-- 500px以上: スマートフォン横向き用 -->
+  <source srcset="mobile-landscape.jpg" media="(min-width: 500px)" />
+
+  <!-- フォールバック: スマートフォン縦向き用 */
+  <img src="mobile-portrait.jpg" alt="レスポンシブ画像" />
+</picture>
+```
+
+**2. 画像フォーマットのフォールバック**
+
+```html
+<picture>
+  <!-- AVIF対応ブラウザ用（最も軽量） -->
+  <source srcset="image.avif" type="image/avif" />
+
   <!-- WebP対応ブラウザ用 -->
   <source srcset="image.webp" type="image/webp" />
 
-  <!-- 大画面用 -->
-  <source srcset="large.jpg" media="(min-width: 768px)" width="800" height="600" />
+  <!-- フォールバック（JPEG/PNG） -->
+  <img src="image.jpg" alt="画像" />
+</picture>
+```
 
-  <!-- フォールバック -->
-  <img src="small.jpg" alt="説明" width="400" height="300" loading="lazy" />
+#### 評価順序
+
+**重要:** `<source>` 要素は**上から順に評価**される。最初にマッチした条件の画像が使用される。
+
+```html
+<picture>
+  <!-- ❌ 悪い例: 小さい条件を先に書くと、大きい画面でも小さい画像が選ばれる -->
+  <source srcset="small.jpg" media="(min-width: 500px)" />
+  <source srcset="large.jpg" media="(min-width: 1200px)" />
+
+  <!-- ✅ 良い例: 大きい条件から順に書く -->
+  <source srcset="large.jpg" media="(min-width: 1200px)" />
+  <source srcset="small.jpg" media="(min-width: 500px)" />
+
+  <img src="fallback.jpg" alt="画像" />
+</picture>
+```
+
+#### 属性の説明
+
+**srcset（必須）**
+- 画像のURL
+- カンマ区切りで複数指定可能（解像度対応）
+
+```html
+<source
+  srcset="image-1x.jpg 1x, image-2x.jpg 2x"
+  media="(min-width: 768px)"
+/>
+```
+
+**media（オプション）**
+- CSSメディアクエリと同じ構文
+- レスポンシブ画像切り替えに使用
+
+```html
+<source srcset="wide.jpg" media="(min-width: 1024px)" />
+<source srcset="narrow.jpg" media="(max-width: 767px)" />
+```
+
+**type（オプション）**
+- MIMEタイプ
+- 画像フォーマットのフォールバックに使用
+
+```html
+<source srcset="image.avif" type="image/avif" />
+<source srcset="image.webp" type="image/webp" />
+```
+
+**width / height（推奨）**
+- CLS（Cumulative Layout Shift）対策
+- `<img>` に指定するのと同じ効果
+
+```html
+<source srcset="large.jpg" media="(min-width: 768px)" width="1200" height="800" />
+```
+
+#### img 要素は必須
+
+```html
+<picture>
+  <source srcset="image.webp" type="image/webp" />
+  <!-- img 要素は必須 -->
+  <img src="image.jpg" alt="必須の代替テキスト" />
+</picture>
+```
+
+**理由:**
+1. **フォールバック**: すべての `<source>` がマッチしない場合
+2. **アクセシビリティ**: `alt` 属性で代替テキストを提供
+3. **SEO**: 検索エンジンが画像を認識
+
+#### CSSとの併用
+
+```html
+<picture>
+  <source srcset="wide.jpg" media="(min-width: 768px)" />
+  <img src="narrow.jpg" alt="画像" class="responsive-image" />
+</picture>
+```
+
+```css
+/* pictureではなくimgにスタイルを適用 */
+.responsive-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+```
+
+**注意:** CSSメディアクエリで画像を切り替えることも可能だが、`<picture>` を使う方が効率的（不要な画像をダウンロードしない）。
+
+```css
+/* 非推奨: すべての画像をダウンロードしてしまう */
+.hero {
+  background-image: url('small.jpg');
+}
+
+@media (min-width: 768px) {
+  .hero {
+    background-image: url('large.jpg'); /* small.jpgもダウンロード済み */
+  }
+}
+```
+
+#### 実践例
+
+**アートディレクション（構図を変える）**
+
+```html
+<picture>
+  <!-- デスクトップ: 横長の画像 -->
+  <source srcset="landscape.jpg" media="(min-width: 768px)" />
+
+  <!-- モバイル: 縦長の画像（主要な被写体をクロップ） -->
+  <img src="portrait.jpg" alt="レスポンシブアートディレクション" />
+</picture>
+```
+
+**高解像度ディスプレイ対応**
+
+```html
+<picture>
+  <source
+    srcset="image-1x.webp 1x, image-2x.webp 2x"
+    type="image/webp"
+  />
+  <source
+    srcset="image-1x.jpg 1x, image-2x.jpg 2x"
+    type="image/jpeg"
+  />
+  <img src="image-1x.jpg" alt="高解像度対応画像" />
+</picture>
+```
+
+**ダークモード対応**
+
+```html
+<picture>
+  <!-- ダークモード用 -->
+  <source srcset="dark.jpg" media="(prefers-color-scheme: dark)" />
+
+  <!-- ライトモード用（デフォルト） -->
+  <img src="light.jpg" alt="ダークモード対応画像" />
+</picture>
+```
+
+#### loading / decoding 属性との併用
+
+```html
+<picture>
+  <source srcset="large.webp" type="image/webp" />
+  <img
+    src="large.jpg"
+    alt="画像"
+    loading="lazy"
+    decoding="async"
+    width="1200"
+    height="800"
+  />
 </picture>
 ```
 
 **ポイント:**
-- `<source>` は上から順に評価される
-- `type` でフォーマット、`media` で画面幅を指定
-- `<img>` は必須（フォールバック兼アクセシビリティ）
+- `loading` と `decoding` は `<img>` 要素に指定
+- `width` と `height` は CLS 対策のため必須
+
+#### ブラウザ対応
+
+全モダンブラウザで対応済み（HTML5機能）。
+
+**画像フォーマットのサポート:**
+- **WebP**: Chrome, Firefox, Safari 14+, Edge
+- **AVIF**: Chrome 85+, Firefox 93+, Safari 16+
+
+#### パフォーマンスのベストプラクティス
+
+```html
+<picture>
+  <!-- 最新フォーマットから順に -->
+  <source srcset="image.avif" type="image/avif" />
+  <source srcset="image.webp" type="image/webp" />
+
+  <!-- フォールバック + 最適化 -->
+  <img
+    src="image.jpg"
+    alt="最適化された画像"
+    width="1200"
+    height="800"
+    loading="lazy"
+    decoding="async"
+  />
+</picture>
+```
+
+**チェックリスト:**
+- [ ] AVIFを最優先で指定
+- [ ] WebPをフォールバックに
+- [ ] JPEGを最終フォールバックに
+- [ ] width/height を指定（CLS対策）
+- [ ] loading="lazy" を追加（ファーストビュー外）
+- [ ] decoding="async" を追加（必要に応じて）
+
+#### 関連ナレッジ
+
+- [loading 属性](./loading-attribute.md)
+- [decoding 属性](#decoding-属性)
+- [object-fit](../../css/layout/object-fit.md)
 
 ### button 要素の type 属性
 
@@ -215,10 +610,380 @@ details[open] > *:not(summary) {
 
 ### decoding 属性
 
+> 出典（詳細情報）: https://zenn.dev/ixkaito/articles/deep-dive-into-decoding
+> 執筆日: 2023年7月
+> 検証環境: Chrome 115
+
+画像のデコード方法をブラウザに示唆する属性。
+
+#### 基本的な使い方
+
 ```html
+<!-- 同期デコード -->
+<img src="image.jpg" alt="" decoding="sync" />
+
+<!-- 非同期デコード -->
 <img src="image.jpg" alt="" decoding="async" />
+
+<!-- 自動（デフォルト） -->
+<img src="image.jpg" alt="" decoding="auto" />
 ```
 
-画像デコードを非同期化。ただし、モダンブラウザではデフォルトで最適化されるため効果は限定的。
+#### loading 属性との違い
+
+| 属性 | 制御対象 | 説明 |
+|------|---------|------|
+| `loading` | ダウンロード時期 | 画像を即座に取得するか、遅延させるか |
+| `decoding` | デコード方法 | 画像をどのようにデコードするか |
+
+```html
+<!-- loading: ダウンロードのタイミングを制御 -->
+<img src="image.jpg" loading="lazy" />
+
+<!-- decoding: デコードの方法を制御 -->
+<img src="image.jpg" decoding="async" />
+
+<!-- 併用可能 -->
+<img src="image.jpg" loading="lazy" decoding="async" />
+```
+
+#### 各値の動作
+
+**sync（同期）**
+- デコードが完了するまで、画像表示を待機
+- 他のコンテンツのレンダリングには影響しない（よくある誤解）
+
+**async（非同期）**
+- デコードを非同期で実行
+- 他のコンテンツのレンダリングをブロックしない
+- FP（First Paint）、FCP（First Contentful Paint）への影響を最小化
+
+**auto（デフォルト）**
+- ブラウザが最適な方法を自動選択
+- ほとんどの場合、これで十分
+
+#### パフォーマンス特性
+
+**検証結果（Chrome 115）:**
+
+| 状況 | sync | async | 差異 |
+|------|------|-------|------|
+| キャッシュなし | 顕著な差なし | 顕著な差なし | ダウンロードがボトルネック |
+| キャッシュあり | FP/FCP/LCPがデコード依存 | FP/FCP/LCPがデコード非依存 | asyncが有利 |
+
+**重要な発見:**
+- ダウンロードされた画像がすべてデコードされるわけではない
+- ビューポート近くの画像のみがデコードされる
+- キャッシュされた画像では`async`の効果が顕著
+
+#### 使用推奨
+
+```html
+<!-- ファーストビューの重要な画像: sync -->
+<img src="hero.jpg" alt="" decoding="sync" fetchpriority="high" />
+
+<!-- スクロールで表示される画像: async -->
+<img src="content.jpg" alt="" decoding="async" loading="lazy" />
+
+<!-- 通常はautoで十分 -->
+<img src="image.jpg" alt="" decoding="auto" />
+```
+
+#### よくある誤解
+
+**誤解1:** `decoding="sync"` はページレンダリングをブロックする
+- **実際:** 画像表示のみを待機、他のコンテンツは表示される
+
+**誤解2:** `async` はダウンロードを非同期化する
+- **実際:** デコードを非同期化、ダウンロードは `loading` 属性で制御
+
+**誤解3:** `async` を使えば必ず高速化する
+- **実際:** キャッシュされた画像や、デコードがボトルネックの場合に効果あり
+
+#### 推奨戦略
+
+```html
+<!-- 基本方針: autoに任せる -->
+<img src="image.jpg" alt="" />
+
+<!-- 明示的な制御が必要な場合のみ指定 -->
+<img src="important.jpg" alt="" decoding="sync" fetchpriority="high" />
+<img src="lazy-image.jpg" alt="" decoding="async" loading="lazy" />
+```
+
+**著者の結論（記事より）:**
+- 基本的に `decoding="auto"` で問題ない
+- 必要に応じて明示的に選択
+- ブラウザの実装変更に注意
+
+#### ブラウザ対応
+
+全モダンブラウザで対応済み。ただし、実装の詳細はブラウザにより異なる可能性あり。
+
+#### 注意事項
+
+- 過度な最適化は不要（autoで十分なケースが多い）
+- パフォーマンス計測をせずに盲目的に`async`を使わない
+- ブラウザの最適化は日々進化しているため、定期的な検証が推奨される
+
+### fetchpriority 属性
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+リソースの取得優先度を明示的に指定。LCP（Largest Contentful Paint）の最適化に有効。
+
+```html
+<!-- 重要な画像を優先的に読み込む -->
+<img src="hero.jpg" alt="" fetchpriority="high" />
+
+<!-- 優先度を下げる -->
+<img src="thumbnail.jpg" alt="" fetchpriority="low" />
+
+<!-- デフォルト（省略時） -->
+<img src="normal.jpg" alt="" fetchpriority="auto" />
+```
+
+**ユースケース:**
+- ファーストビューの大きな画像（ヒーロー画像）に `high` を指定
+- スクロールしないと見えない画像に `low` を指定
+- 重要度の高いスクリプトやスタイルシートに適用可能
+
+```html
+<link rel="stylesheet" href="critical.css" fetchpriority="high" />
+<script src="analytics.js" fetchpriority="low" async></script>
+```
+
+**ブラウザ対応:** Chrome 101+, Edge 101+, Safari 17.2+
+
+### blocking 属性
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+レンダリングのブロック動作を制御。
+
+```html
+<!-- レンダリングをブロックする -->
+<link rel="stylesheet" href="critical.css" blocking="render" />
+
+<!-- ブロックしない（非同期読み込み） -->
+<script src="app.js" blocking="none"></script>
+```
+
+**注意:** デフォルトでは `<link rel="stylesheet">` と `<script>` はレンダリングをブロックするため、意図的に制御したい場合に使用。
+
+### inputmode 属性
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+仮想キーボードの種類を最適化。モバイルUX改善に有効。
+
+```html
+<!-- 数値入力 -->
+<input type="text" inputmode="numeric" />
+
+<!-- 電話番号 -->
+<input type="text" inputmode="tel" />
+
+<!-- メールアドレス -->
+<input type="text" inputmode="email" />
+
+<!-- URL -->
+<input type="text" inputmode="url" />
+
+<!-- 検索 -->
+<input type="text" inputmode="search" />
+
+<!-- 小数点を含む数値 -->
+<input type="text" inputmode="decimal" />
+```
+
+**`type="number"` との違い:**
+- `type="number"` はスピンボタン（増減ボタン）が表示される
+- `inputmode="numeric"` は見た目は通常のテキストフィールドだが、キーボードは数値用
+
+**ブラウザ対応:** 全モダンブラウザ対応（iOS Safari 12.2+）
+
+### enterkeyhint 属性
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+仮想キーボードのEnterキーの表示を最適化。
+
+```html
+<!-- 次のフィールドへ -->
+<input type="text" enterkeyhint="next" />
+
+<!-- 完了 -->
+<input type="text" enterkeyhint="done" />
+
+<!-- 移動 -->
+<input type="url" enterkeyhint="go" />
+
+<!-- 検索 -->
+<input type="search" enterkeyhint="search" />
+
+<!-- 送信 -->
+<input type="text" enterkeyhint="send" />
+
+<!-- 前のフィールドへ -->
+<input type="text" enterkeyhint="previous" />
+```
+
+**ユースケース:**
+- フォームの最後のフィールドに `done`
+- 検索ボックスに `search`
+- チャット送信に `send`
+- URL入力に `go`
+
+**ブラウザ対応:** Chrome 77+, Safari 13.7+
+
+### inert 属性
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+要素とその子要素を完全に無効化（操作不可、フォーカス不可、スクリーンリーダー非表示）。
+
+```html
+<div inert>
+  <!-- この中の全要素が無効化される -->
+  <button>クリックできない</button>
+  <input type="text" />
+</div>
+```
+
+**ユースケース:**
+- モーダル表示時に背景コンテンツを無効化
+- ローディング中の操作を防ぐ
+- サイドバーの開閉時の制御
+
+```javascript
+// モーダルを開く
+const modal = document.getElementById('modal');
+const mainContent = document.getElementById('main');
+
+modal.showModal();
+mainContent.inert = true; // 背景を無効化
+
+// モーダルを閉じる
+modal.close();
+mainContent.inert = false;
+```
+
+**`disabled` との違い:**
+- `disabled` はフォーム要素のみ
+- `inert` はあらゆる要素に適用可能で、子孫要素すべてが対象
+
+**ブラウザ対応:** Chrome 102+, Firefox 112+, Safari 15.5+
+
+### Popover API
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+JavaScript最小限でポップオーバーを実装。トップレイヤーで表示されるため、z-index競合を回避。
+
+```html
+<button popovertarget="my-popover">ポップオーバーを開く</button>
+
+<div id="my-popover" popover>
+  <p>ポップオーバーの内容</p>
+  <button popovertarget="my-popover" popovertargetaction="hide">
+    閉じる
+  </button>
+</div>
+```
+
+**自動と手動の制御:**
+
+```html
+<!-- 自動: 外側クリックで自動的に閉じる（デフォルト） -->
+<div popover="auto">...</div>
+
+<!-- 手動: 明示的に閉じる必要がある -->
+<div popover="manual">...</div>
+```
+
+**JavaScript API:**
+
+```javascript
+const popover = document.getElementById('my-popover');
+
+// 開く
+popover.showPopover();
+
+// 閉じる
+popover.hidePopover();
+
+// トグル
+popover.togglePopover();
+
+// イベントリスナー
+popover.addEventListener('beforetoggle', (e) => {
+  console.log('開閉前:', e.newState); // 'open' or 'closed'
+});
+```
+
+**CSS でのスタイリング:**
+
+```css
+[popover] {
+  /* デフォルトは display: none */
+  border: 1px solid #ccc;
+  padding: 1em;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 開いた状態 */
+[popover]:popover-open {
+  /* アニメーション可能 */
+  animation: fadeIn 0.2s;
+}
+
+/* 背景（::backdrop は使えない） */
+/* トップレイヤーだが backdrop なし */
+```
+
+**ブラウザ対応:** Chrome 114+, Edge 114+, Safari 17+
+
+### rel 属性の SEO 値
+
+> 出典: https://zenn.dev/dinii/articles/16b3e71b580b6c
+
+リンクの性質を検索エンジンに伝える。
+
+```html
+<!-- スポンサーリンク -->
+<a href="https://sponsor.example.com" rel="sponsored">
+  スポンサー
+</a>
+
+<!-- ユーザー生成コンテンツ（UGC） -->
+<a href="https://user-post.example.com" rel="ugc">
+  ユーザーの投稿
+</a>
+
+<!-- SEO評価を渡さない -->
+<a href="https://untrusted.example.com" rel="nofollow">
+  リンク先
+</a>
+
+<!-- 複数指定可能 -->
+<a href="https://example.com" rel="sponsored nofollow">
+  広告リンク
+</a>
+```
+
+**値の意味:**
+
+| 値 | 意味 | 用途 |
+|----|------|------|
+| `sponsored` | 広告・スポンサーリンク | アフィリエイト、広告 |
+| `ugc` | ユーザー生成コンテンツ | コメント欄、フォーラム投稿 |
+| `nofollow` | リンク先を推薦しない | 信頼できないコンテンツ |
+
+**SEO への影響:**
+- Googleは `sponsored`/`ugc`/`nofollow` を区別して評価
+- 適切に使用することでペナルティを回避
+- `nofollow` は古い記法だが、依然として有効
 
 ---
