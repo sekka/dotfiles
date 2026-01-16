@@ -208,26 +208,61 @@ function toggleCheck() {
 
 ### タブUI
 
+> 追加出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+アクセシブルなタブUIの実装には、適切なARIA属性とキーボード操作の実装が必要です。
+
+#### button要素を使った実装
+
 ```html
 <div class="tabs">
   <div role="tablist">
-    <button role="tab" aria-selected="true" aria-controls="panel1">
+    <button role="tab" aria-selected="true" aria-controls="panel1" id="tab1" tabindex="0">
       タブ1
     </button>
-    <button role="tab" aria-selected="false" aria-controls="panel2">
+    <button role="tab" aria-selected="false" aria-controls="panel2" id="tab2" tabindex="-1">
       タブ2
     </button>
   </div>
 
-  <div role="tabpanel" id="panel1">
+  <div role="tabpanel" id="panel1" aria-labelledby="tab1" tabindex="0">
     パネル1の内容
   </div>
 
-  <div role="tabpanel" id="panel2" hidden>
+  <div role="tabpanel" id="panel2" aria-labelledby="tab2" tabindex="0" hidden>
     パネル2の内容
   </div>
 </div>
 ```
+
+#### a要素を使った実装（ページ内リンクと併用）
+
+```html
+<div role="tablist">
+  <a href="#tab-panel-1" id="tab1" role="tab" aria-controls="tab-panel-1" aria-selected="true" tabindex="0">
+    タブ1
+  </a>
+  <a href="#tab-panel-2" id="tab2" role="tab" aria-controls="tab-panel-2" aria-selected="false" tabindex="-1">
+    タブ2
+  </a>
+</div>
+
+<div id="tab-panel-1" role="tabpanel" aria-labelledby="tab1" tabindex="0">
+  コンテンツ1
+</div>
+
+<div id="tab-panel-2" role="tabpanel" aria-labelledby="tab2" tabindex="0" hidden>
+  コンテンツ2
+</div>
+```
+
+**重要な属性:**
+- `tabindex="0"`: 選択されているタブはフォーカス可能
+- `tabindex="-1"`: 非選択のタブはフォーカス不可（矢印キーで移動）
+- `aria-labelledby`: タブパネルとタブを関連付け
+- `aria-controls`: タブが制御するパネルを指定
+
+参考: [アクセシブルなタブを実装する](https://baigie.me/engineerblog/building-accessible-tabs/)
 
 ### モーダルダイアログ
 

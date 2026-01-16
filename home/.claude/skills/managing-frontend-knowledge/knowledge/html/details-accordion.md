@@ -1,17 +1,30 @@
 ---
-title: details 要素の排他的アコーディオン
+title: details 要素のアコーディオン実装
 category: html
-tags: [details, accordion, name-attribute, 2024]
+tags: [details, accordion, name-attribute, animation, accessibility, 2024]
 browser_support: Chrome 120+, Firefox 130+, Safari 17.2+
 created: 2025-01-16
 updated: 2025-01-16
 ---
 
-# details 要素の排他的アコーディオン
+# details 要素のアコーディオン実装
 
-> 出典: https://coliss.com/articles/build-websites/operation/css/css-in-2024.html
+> 出典:
+> - https://coliss.com/articles/build-websites/operation/css/css-in-2024.html
+> - https://zenn.dev/necscat/articles/bc9bba54babaf5
 > 執筆日: 2024年
-> 追加日: 2025-12-17
+> 追加日: 2025-01-16
+
+## details 要素を使う利点
+
+アコーディオンの実装には `<details>` 要素を使うことで、以下のメリットがあります：
+
+1. **ページ内検索対応**: 閉じているアコーディオンの中身もCtrl+F/Cmd+Fのページ内検索でヒットします
+2. **開閉処理が備え付け**: JavaScriptなしで開閉が機能します
+3. **アクセシビリティ**: スクリーンリーダーに適切に認識されます
+4. **軽量**: 追加のライブラリ不要
+
+## 排他的アコーディオン
 
 複数の `details` 要素に同じ `name` 属性を付与すると、1つ開くと他は自動で閉じる。
 
@@ -114,9 +127,16 @@ details[open] summary {
 
 ## details要素の開閉アニメーション
 
-> 出典（追加情報）: https://shimotsuki.wwwxyz.jp/20251126-1984
+> 出典（追加情報）:
+> - https://shimotsuki.wwwxyz.jp/20251126-1984
+> - https://ics.media/entry/220901/
+> - https://www.tak-dcxi.com/article/accordion-slide-animation-can-be-implemented-in-two-line-of-css
 
-CSSで`details`要素に開閉アニメーションを追加。`transition-behavior`と`::details-content`擬似要素を活用。
+開閉処理のアニメーションには、以下の方法があります：
+
+### 方法1: grid-template-rowsを使った方法（CSS2行）
+
+最もシンプルな実装。`grid-template-rows`と`transition`だけで実現できます。
 
 ```css
 details {
@@ -136,6 +156,14 @@ details::details-content {
 ```
 
 **ブラウザ対応:** Chrome 117+（transition-behavior）, Chrome 131+（::details-content）
+
+参考: [CSS2行でアコーディオンのスライドアニメーション](https://www.tak-dcxi.com/article/accordion-slide-animation-can-be-implemented-in-two-line-of-css)
+
+### 方法2: GSAPを使った方法
+
+より高度なアニメーションが必要な場合は、GSAPライブラリを使用します。イージング関数やタイムラインなど、細かい制御が可能です。
+
+参考: [detailsとsummaryタグで作るアコーディオンUI](https://ics.media/entry/220901/)
 
 ---
 

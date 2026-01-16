@@ -25,6 +25,14 @@ updated: 2025-01-16
 
 JavaScript なしでモーダルの基本機能を実現。
 
+**dialog要素の利点:**
+- **アクセシビリティ**: フォーカストラップや適切なARIA属性が自動的に設定される
+- **自動的な最前面表示**: `z-index`を使わなくても最上位に表示される
+- **標準化された閉じ方**: Escキーやバックドロップクリックに対応
+- **フォームとの統合**: `method="dialog"`で簡単にフォーム送信と連携
+
+参考: [dialog要素を使用したモーダルウィンドウの実装例](https://www.tak-dcxi.com/article/implementation-example-of-a-modal-created-using-the-dialog-element)
+
 ```html
 <dialog id="modal">
   <div>モーダルのコンテンツ</div>
@@ -71,6 +79,8 @@ dialog.addEventListener("close", () => {
 ```
 
 **ブラウザ対応:** Chrome 37+, Firefox 98+, Safari 15.4+
+
+**注意:** iOS Safari 15.3以下はサポート外のため、プロジェクトの要件を確認してから使用してください。
 
 #### command / commandfor 属性による制御
 
@@ -281,9 +291,82 @@ details[open] > *:not(summary) {
 
 **ブラウザ対応:** 全モダンブラウザ対応
 
+### hgroup 要素（見出しグループ）
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+見出しに複数の要素（主題+副題）がある場合は `<hgroup>` でグルーピングします。
+
+```html
+<hgroup>
+  <h2>DX支援事業</h2>
+  <p>経営課題をDXで解決</p>
+</hgroup>
+```
+
+**メリット:**
+- セマンティックに主題と副題の関係を表現できる
+- スクリーンリーダーが見出しグループとして認識する
+- CSSでスタイリングしやすくなる
+
+参考: [主見出しと副見出しのマークアップにはhgroupを使う](https://www.tak-dcxi.com/article/use-hgroup-for-marking-up-the-main-heading-and-subheading)
+
+**ブラウザ対応:** 全モダンブラウザ対応
+
+### dl 要素（記述リスト）
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+`<dl>` の直下には `<div>` を置き、その直下に `<dt>` と `<dd>` を置くことでスタイリングがしやすくなります。最新のWHATWGの仕様では `<dl>` の直下に `<div>` を置けるようになっています。
+
+```html
+<!-- divあり: スタイリングしやすい -->
+<dl>
+  <div>
+    <dt>クラウドコンピューティング</dt>
+    <dd>インターネット経由でコンピューターの資源を提供する...</dd>
+  </div>
+  <div>
+    <dt>API</dt>
+    <dd>Application Programming Interfaceの略で、ソフトウェア間で...</dd>
+  </div>
+</dl>
+
+<!-- divなし: 従来の書き方（仕様的には問題なし） -->
+<dl>
+  <dt>クラウドコンピューティング</dt>
+  <dd>インターネット経由でコンピューターの資源を提供する...</dd>
+  <dt>API</dt>
+  <dd>Application Programming Interfaceの略で、ソフトウェア間で...</dd>
+</dl>
+```
+
+**CSSスタイリング例:**
+
+```css
+/* divを使うと、項目ごとにスタイリングしやすい */
+dl > div {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  margin: 0;
+}
+```
+
+**ブラウザ対応:** 全モダンブラウザ対応
+
 ### search 要素（検索ランドマーク）
 
-検索フォームのセマンティックなラッパー。スクリーンリーダーが検索領域として認識する。
+検索フォームやフィルター機能のセマンティックなラッパー。スクリーンリーダーが検索領域として認識する。
 
 ```html
 <search>
@@ -295,9 +378,18 @@ details[open] > *:not(summary) {
 </search>
 ```
 
-`<div role="search">` の代替として使用可能。
+**用途:**
+- サイト内検索フォーム
+- 商品フィルタリング機能
+- 絞り込み検索UI
+
+`<div role="search">` の代替として使用可能。スクリーンリーダーに「検索フォーム」であることを明示的に伝えられます。
+
+参考: [HTML仕様にsearch要素が追加された](https://azukiazusa.dev/blog/the-search-element-has-been-added-to-the-html-specification/)
 
 **ブラウザ対応:** Chrome 118+, Firefox 118+, Safari 17+
+
+**注意:** iOS Safari 16.7以下はサポート外のため、プロジェクトの要件を確認してから使用してください。
 
 ### picture 要素（レスポンシブ画像）
 
@@ -559,7 +651,13 @@ CSSやJavaScriptを使わずにレスポンシブな画像切り替えを実現�
 - [decoding 属性](#decoding-属性)
 - [object-fit](../../css/layout/object-fit.md)
 
-### button 要素の type 属性
+### button 要素の適切な使用
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+`<button>` はフォーム送信ボタンだけでなく、フォーム以外の部分でも使えます。
+
+#### type 属性
 
 ```html
 <!-- フォーム送信（デフォルト） -->
@@ -572,7 +670,25 @@ CSSやJavaScriptを使わずにレスポンシブな画像切り替えを実現�
 <button type="reset">リセット</button>
 ```
 
-**注意:** `type` を省略すると `submit` になる。JS でクリックイベントを処理する場合は `type="button"` を明示。
+**重要:** `type` を省略すると `submit` になります。JS でクリックイベントを処理する場合は `type="button"` を必ず明示してください。
+
+#### button要素を使うべき理由
+
+「要素をクリックした時に特定の処理を実行する」場合、クリック対象の要素は `<button>` か `<a>` を使います。`<div>` や `<p>` を使うと以下のデメリットが生じます：
+
+```html
+<!-- ✅ 正しい: button要素を使う -->
+<button type="button" id="js-trigger-button">ボタン</button>
+
+<!-- ❌ 間違い: divやpを使う -->
+<p id="js-trigger-button">ボタン</p>
+```
+
+**divやpを使った場合の問題:**
+- ブラウザによってはクリックやタップが反応しない
+- フォーカスが当たらない（キーボード操作不可）
+- スクリーンリーダーがボタンとして認識しない
+- `:hover`、`:focus`、`:active` などの疑似クラスが期待通り動作しない
 
 ### input の新しい type
 
@@ -985,5 +1101,139 @@ popover.addEventListener('beforetoggle', (e) => {
 - Googleは `sponsored`/`ugc`/`nofollow` を区別して評価
 - 適切に使用することでペナルティを回避
 - `nofollow` は古い記法だが、依然として有効
+
+---
+
+## パフォーマンスとベストプラクティス
+
+### rel="preload" によるリソースの優先読み込み
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+優先的に読み込みたいリソースがある場合は `<link>` の `rel="preload"` を使います。ファーストビューの画像や動画の表示が遅い時に、優先的に読み込むと改善する可能性があります。
+
+```html
+<link rel="preload" href="mv.webp" as="image" type="image/webp" />
+```
+
+**用途:**
+- ファーストビューの画像
+- ファーストビューの動画
+- Webフォント
+- 重要なCSSファイル
+
+**as 属性の値:**
+- `image`: 画像
+- `video`: 動画
+- `font`: フォント（`crossorigin`属性も必要）
+- `style`: スタイルシート
+- `script`: JavaScript
+
+```html
+<!-- Webフォント -->
+<link rel="preload" href="font.woff2" as="font" type="font/woff2" crossorigin />
+
+<!-- 重要なCSS -->
+<link rel="preload" href="critical.css" as="style" />
+
+<!-- 重要なJavaScript -->
+<link rel="preload" href="main.js" as="script" />
+```
+
+参考:
+- [MDN: rel="preload"](https://developer.mozilla.org/ja/docs/Web/HTML/Attributes/rel/preload)
+- [画像をプリロードする](https://zenn.dev/hrbrain/articles/7f1d1d45f027c7#画像をプリロードする)
+
+**注意:** 過度な使用はかえってパフォーマンスを悪化させるため、本当に必要なリソースにのみ使用してください。
+
+### CDNの使用は非推奨
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+CDN（Contents Delivery Network）でプラグインなどの外部ファイルを読み込むのは非推奨です。
+
+```html
+<!-- ❌ 非推奨: CDNから読み込み -->
+<script src="https://cdn.jsdelivr.net/..."></script>
+
+<!-- ✅ 推奨: ローカルファイルを使用 -->
+<script src="/js/bundle.js"></script>
+```
+
+**CDNを避けるべき理由:**
+- CDNのサーバーに障害が発生したら動かなくなる
+- CDNの提供自体が終了したらプラグインが動かなくなる
+- セキュリティリスク（第三者によるコード改ざんの可能性）
+- プライバシーの問題（ユーザーのアクセス情報が第三者に送信される）
+
+**推奨される方法:**
+1. **NPMを使える環境**: NPMで依存関係を管理
+2. **NPMを使えない環境**: ファイルをダウンロードして同プロジェクト内に配置
+
+### インラインSVGの最適な管理方法
+
+> 出典: https://zenn.dev/necscat/articles/bc9bba54babaf5
+
+SVGの色をCSS側で変えたい時は、SVGを `<symbol>` に変換して別ファイルに保存し、それを `<use>` で呼び出します。こうすることでSVGの記述量が少なくなるのでHTMLの可読性が高まります。
+
+```html
+<div class="icon">
+  <svg>
+    <use xlink:href="img/arrow.svg#arrow"></use>
+  </svg>
+</div>
+```
+
+**img/arrow.svg:**
+```xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="arrow" viewBox="0 0 24 24">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+  </symbol>
+</svg>
+```
+
+**最適化のポイント:**
+- `<svg>` の `width`、`height`、`fill` 属性を削除する（CSSで扱いやすくなる）
+- 複数のSVGを1つのファイルにまとめる（スプライト化）
+- CSSで色やサイズを自由に変更できる
+
+```css
+.icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor; /* 親要素のcolorを継承 */
+}
+
+.icon:hover svg {
+  fill: blue;
+}
+```
+
+**従来の方法との比較:**
+
+```html
+<!-- ❌ 非効率: SVGコードをそのまま埋め込み -->
+<div class="icon">
+  <svg viewBox="0 0 24 24" width="24" height="24">
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="red"/>
+  </svg>
+</div>
+
+<!-- ✅ 効率的: use要素で参照 -->
+<div class="icon">
+  <svg>
+    <use xlink:href="img/arrow.svg#arrow"></use>
+  </svg>
+</div>
+```
+
+**メリット:**
+- HTMLの可読性が向上
+- 同じSVGを複数箇所で再利用可能
+- CSSでスタイリングしやすい
+- ファイルサイズの削減（同じSVGを何度も書かない）
 
 ---
