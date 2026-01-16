@@ -80,10 +80,18 @@
       "WebFetch(domain:zenn.dev)",
       "WebSearch",
       "Write(*)",
-      "Bash(navi *)"
+      "Bash(navi *)",
+      "WebFetch(domain:note.com)",
+      "Skill(asking-peer)"
     ],
-    "deny": ["Read(./.env.*)"]
+    "deny": [
+      "Read(./.env.*)"
+    ]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
+  "enabledMcpjsonServers": [
+    "context7",
+    "deepwiki",
+    "sequential-thinking"
+  ]
 }
