@@ -182,6 +182,16 @@ for folder_pair in "${CLAUDE_FOLDERS[@]}"; do
 done
 
 # ========================================
+# Navi チートシート
+# ========================================
+
+echo ""
+echo "📖 Navi チートシートのシンボリックリンクを作成..."
+
+ensure_dir "$HOME/.local/share/navi/cheats/dotfiles"
+link_file "$HOME/dotfiles/home/config/navi/dotfiles.cheat" "$HOME/.local/share/navi/cheats/dotfiles/dotfiles.cheat" "dotfiles.cheat"
+
+# ========================================
 # Serena 設定
 # ========================================
 
@@ -213,7 +223,8 @@ echo "   ⏭️  スキップ: $skipped"
 echo ""
 echo "✨ dotfiles のセットアップが完了しました！"
 echo "   📄 ホームディレクトリ: zsh, git, vim等の設定"
-echo "   📁 .config/: ghostty, mise, sheldon"
+echo "   📁 .config/: ghostty, mise, sheldon, gwq, lazygit"
+echo "   📖 navi/: コマンドチートシート"
 echo "   🤖 .claude/: AI開発支援ツール設定"
 echo "   🔧 .serena/: セマンティックコーディング設定"
 echo "   🧠 .claude-mem/: Claude メモリ設定"

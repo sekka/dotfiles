@@ -1,0 +1,315 @@
+% Git Workflow
+
+# ローカルブランチを fzf で選択してチェックアウト
+fbr
+
+# リモートブランチを含めて fzf で選択してチェックアウト
+fbrm
+
+# 変更ファイルを fzf で選択して git add
+fadd
+
+# Git ログを fzf で表示
+fshow
+
+# コミット範囲を選択して difit で差分確認
+gifit
+
+# ブランチを作成してチェックアウト
+git checkout -b <branch-name>
+
+# 特定のコミットをチェックアウト
+git checkout <commit-hash>
+
+# ブランチを削除
+git branch -d <branch-name>
+
+# リモートブランチを削除
+git push origin --delete <branch-name>
+
+# 最新のコミットを修正
+git commit --amend
+
+# 直前のコミットをリセット（変更は保持）
+git reset --soft HEAD~1
+
+# stash に保存
+git stash push -m "<stash-message>"
+
+# stash を適用
+git stash pop
+
+# stash 一覧を表示
+git stash list
+
+$ branch-name: git branch --format='%(refname:short)' | grep -v '^*'
+$ commit-hash: git log --oneline --color=always | fzf --ansi | awk '{print $1}'
+
+% Git Repository Management
+
+# ghq でリポジトリをクローン
+ghq get <repository-url>
+
+# リポジトリに移動（Ctrl+] のコマンド版）
+cd $(ghq list --full-path | fzf)
+
+# リポジトリ一覧を表示
+ghq list
+
+# 未使用のリポジトリを削除
+ghq list --full-path | fzf --multi | xargs rm -rf
+
+# worktree を作成して issue 対応
+issue-worktree-create <issue-number>
+
+# worktree を作成して PR 対応
+pr-worktree-create <pr-number>
+
+# worktree を削除
+worktree-remove
+
+% Directory Navigation
+
+# fzf でディレクトリを選択して移動
+fcd
+
+# プロジェクトルートに移動
+cd $(git rev-parse --show-toplevel 2>/dev/null || pwd)
+
+# 履歴から頻繁に使うディレクトリにジャンプ
+z <keyword>
+
+# ディレクトリスタックを表示
+dirs -v
+
+# ディレクトリスタックから選択
+cd ~<stack-number>
+
+$ keyword: dirs -v | awk '{print $2}' | sed 's|~|'$HOME'|'
+
+% Development Tools
+
+# npm スクリプトを fzf で選択して実行
+prun
+
+# mise タスクを fzf で選択して実行
+mrun
+
+# Node.js バージョンを切り替え
+mise use node@<node-version>
+
+# Python バージョンを切り替え
+mise use python@<python-version>
+
+# プロジェクトで使用中のツールバージョンを表示
+mise current
+
+# インストール可能なバージョンを一覧表示
+mise ls-remote <tool-name>
+
+# プロジェクトで使用するツールをインストール
+mise install
+
+$ node-version: mise ls-remote node | tail -20
+$ python-version: mise ls-remote python | tail -20
+$ tool-name: echo -e "node\npython\nbun\ndeno"
+
+% Tmux Session Management
+
+# セッション一覧を表示
+tmux ls
+
+# 新しいセッションを作成
+tmux new -s <session-name>
+
+# セッションにアタッチ
+tmux attach -t <session-name>
+
+# セッションを削除
+tmux kill-session -t <session-name>
+
+# すべてのセッションを削除（現在のセッション以外）
+tmux kill-session -a
+
+# セッションの名前を変更
+tmux rename-session -t <old-session-name> <new-session-name>
+
+# デタッチして新しいセッションを作成
+tmux new -s <new-session-name> -d
+
+$ session-name: tmux ls 2>/dev/null | awk -F: '{print $1}'
+$ old-session-name: tmux ls 2>/dev/null | awk -F: '{print $1}'
+$ new-session-name: echo ""
+
+% Tmux Window & Pane
+
+# 現在のペインを新しいウィンドウに分離
+tmux break-pane
+
+# ウィンドウを横に分割
+tmux split-window -h
+
+# ウィンドウを縦に分割
+tmux split-window -v
+
+# ペインのレイアウトを変更
+tmux select-layout <layout-type>
+
+# すべてのペインを同期（同時入力）
+tmux setw synchronize-panes on
+
+# ペイン同期を解除
+tmux setw synchronize-panes off
+
+$ layout-type: echo -e "even-horizontal\neven-vertical\nmain-horizontal\nmain-vertical\ntiled"
+
+% Search & History
+
+# コマンド履歴を fzf で検索（Ctrl+R のコマンド版）
+history | fzf | cut -d' ' -f4-
+
+# ファイルを ripgrep + fzf で検索
+rg --files | fzf --preview 'bat --color=always {}'
+
+# ファイル内容を ripgrep で検索
+rg -i <search-pattern>
+
+# ファイル内容を検索してエディタで開く
+$EDITOR $(rg -l <search-pattern> | fzf)
+
+# 最近変更したファイルを検索
+find . -type f -mtime -<days> | fzf
+
+$ search-pattern: echo ""
+$ days: echo -e "1\n7\n30"
+
+% System & PATH Management
+
+# PATH を改行区切りで表示
+path_show
+
+# PATH の重複エントリを確認
+check_path_duplicates
+
+# PATH から重複を削除
+optimize_path
+
+# 環境変数を確認
+env | fzf
+
+# プロセスを検索して kill
+ps aux | fzf --multi | awk '{print $2}' | xargs kill
+
+# ポートを使用しているプロセスを確認
+lsof -i :<port-number>
+
+# ポートを使用しているプロセスを kill
+lsof -ti :<port-number> | xargs kill -9
+
+$ port-number: lsof -i -P -n | grep LISTEN | awk '{print $9}' | cut -d: -f2 | sort -u
+
+% File Operations
+
+# ファイルを fzf で選択してエディタで開く
+$EDITOR $(fzf)
+
+# 最近変更したファイルを開く
+$EDITOR $(find . -type f -mtime -7 | fzf)
+
+# ディレクトリサイズを確認
+du -sh <directory-path> | sort -h
+
+# 大きなファイルを検索
+find . -type f -size +<size>M | fzf
+
+# ファイルを再帰的に検索
+find . -name "<filename-pattern>" -type f
+
+# シンボリックリンクを作成
+ln -s <source-path> <destination-path>
+
+$ directory-path: find . -maxdepth 2 -type d | fzf
+$ size: echo -e "10\n50\n100\n500\n1000"
+$ filename-pattern: echo "*.txt"
+$ source-path: find . -type f | fzf
+$ destination-path: echo ""
+
+% Homebrew
+
+# パッケージを検索
+brew search <package-name>
+
+# パッケージをインストール
+brew install <package-name>
+
+# インストール済みパッケージを一覧表示
+brew list
+
+# パッケージをアンインストール
+brew uninstall <package-name>
+
+# パッケージ情報を表示
+brew info <package-name>
+
+# 古いバージョンを削除
+brew cleanup
+
+# 使用されていない依存関係を削除
+brew autoremove
+
+$ package-name: brew search | fzf
+
+% Docker (if installed)
+
+# 実行中のコンテナを表示
+docker ps
+
+# すべてのコンテナを表示
+docker ps -a
+
+# コンテナに入る
+docker exec -it <container-id> /bin/bash
+
+# コンテナを停止
+docker stop <container-id>
+
+# コンテナを削除
+docker rm <container-id>
+
+# イメージを削除
+docker rmi <image-id>
+
+# 未使用のリソースを削除
+docker system prune -a
+
+$ container-id: docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Status}}" | tail -n +2 | fzf | awk '{print $1}'
+$ image-id: docker images --format "table {{.ID}}\t{{.Repository}}\t{{.Tag}}" | tail -n +2 | fzf | awk '{print $1}'
+
+% Miscellaneous
+
+# 絵文字を選択してコピー
+emoji
+
+# コマンドの実行時間を計測
+time <command>
+
+# JSON を整形して表示
+cat <json-file> | jq '.'
+
+# クリップボードにコピー
+echo <text> | pbcopy
+
+# クリップボードから貼り付け
+pbpaste
+
+# ファイルの変更を監視
+fswatch <file-path> | xargs -n1 <command>
+
+# QR コードを生成
+qrencode -o <output-png> <text>
+
+$ json-file: find . -name "*.json" | fzf
+$ command: echo ""
+$ text: echo ""
+$ output-png: echo "qr.png"
+$ file-path: find . -type f | fzf
