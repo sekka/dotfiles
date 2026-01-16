@@ -82,7 +82,10 @@
       "Write(*)",
       "Bash(navi *)",
       "WebFetch(domain:note.com)",
-      "Skill(asking-peer)"
+      "Skill(asking-peer)",
+      "WebFetch(domain:yuheiy.com)",
+      "WebFetch(domain:catnose.me)",
+      "WebFetch(domain:shimotsuki.wwwxyz.jp)"
     ],
     "deny": [
       "Read(./.env.*)"
