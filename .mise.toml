@@ -1,0 +1,18 @@
+# mise task configuration for dotfiles
+# https://mise.jdx.dev/tasks/
+
+[tasks."macos:check"]
+description = "現在のmacOS設定がデフォルトから変更されているかチェック"
+run = "scripts/system/macos/check-defaults.sh"
+
+[tasks."macos:apply"]
+description = "メジャーなmacOS設定を適用（setup/05_macos_defaults.sh）"
+run = "setup/05_macos_defaults.sh"
+
+[tasks."macos:snapshot-before"]
+description = "設定変更前のスナップショットを取得（pdef用）"
+run = "scripts/system/macos/snapshot-before.sh"
+
+[tasks."macos:snapshot-after"]
+description = "設定変更後のスナップショットを取得して差分を生成（pdef用）"
+run = "scripts/system/macos/snapshot-after.sh"

@@ -56,6 +56,60 @@ mise run format    # 全ファイル形式の整形（oxfmt, dprint, shfmt）
 - シンボリックリンクにより自動反映
 - 新規ファイル追加時は `./setup/02_setup_home.sh` を再実行
 
+## 🍎 macOS設定管理
+
+macOSの設定を`defaults`コマンドでコード化して管理できます。
+
+### 現在の設定をチェック
+
+```bash
+# デフォルトから変更されている設定を確認
+mise run macos:check
+```
+
+### メジャーな設定を適用
+
+一般的によく使われるmacOS設定をまとめて適用します：
+
+```bash
+# 設定を適用（実行前にバックアップが自動作成されます）
+mise run macos:apply
+```
+
+含まれる設定：
+
+- **Finder**: 拡張子表示、隠しファイル表示、パスバー表示
+- **Dock**: 自動非表示、アニメーション高速化
+- **キーボード**: キーリピート速度、自動修正無効化
+- **トラックパッド**: タップでクリック、速度調整
+- **スクリーンショット**: 形式、影の有無
+- **Safari**: 開発メニュー、完全URL表示
+
+### 今後の設定変更を追跡
+
+システム環境設定で行った変更をスクリプト化できます：
+
+```bash
+# 1. 変更前のスナップショットを取得
+mise run macos:snapshot-before
+
+# 2. システム環境設定で設定を変更
+
+# 3. 変更後のスナップショットを取得して差分を生成
+mise run macos:snapshot-after
+```
+
+デスクトップに`macos_settings_diff_*.sh`が生成されます。
+
+**pdefツールのインストール（推奨）**:
+
+```bash
+git clone https://github.com/yammerjp/pdef.git
+cd pdef && make && sudo cp bin/pdef /usr/local/bin/
+```
+
+pdefを使用すると、`defaults write`コマンドが自動生成されます。
+
 ## 🎯 Claude Code 設定
 
 この dotfiles は Claude Code の開発環境統合をサポートしています。

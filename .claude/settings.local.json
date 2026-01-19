@@ -86,7 +86,11 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:zenn.dev)",
       "WebSearch",
-      "Write(*)"
+      "Write(*)",
+      "WebFetch(domain:www.tak-dcxi.com)",
+      "Bash(defaults read:*)",
+      "Bash(dscl:*)",
+      "Bash(mise run:*)"
     ],
     "deny": [
       "Read(./.env.*)"
