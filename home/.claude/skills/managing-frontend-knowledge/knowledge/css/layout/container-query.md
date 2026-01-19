@@ -481,6 +481,112 @@ Container Queryは「コンポーネントがどこに配置されても適切�
 }
 ```
 
+## 実践的な応用パターン
+
+> 出典: https://zenn.dev/stellarcreate/articles/css-container-query-responsive-design
+> 執筆日: 2025年11月18日
+> 追加日: 2026-01-19
+
+### 多言語レイアウト対応
+
+テキスト長が異なる多言語サイトで、自動的に最適なレイアウトに切り替わる。
+
+```css
+.card-container {
+  container-type: inline-size;
+  container-name: card;
+}
+
+@container card (min-width: 400px) {
+  .card-content {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+@container card (max-width: 399px) {
+  .card-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+```
+
+**利点**: 英語（短いテキスト）と日本語（長いテキスト）で、カードの幅が自動調整される。
+
+### アニメーション制御
+
+Container Query を使ってアニメーションパターンを切り替える（JavaScript 不要）。
+
+```css
+.animation-container {
+  container-type: inline-size;
+}
+
+/* 狭い場合: シンプルなアニメーション */
+@container (max-width: 500px) {
+  .animated-element {
+    animation: simple-fade 1s ease-in-out;
+  }
+}
+
+/* 広い場合: 複雑なアニメーション */
+@container (min-width: 501px) {
+  .animated-element {
+    animation: complex-slide 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+```
+
+### 無限ループの回避
+
+**注意**: サイズ変更が連鎖的にスタイル更新を引き起こすパターンを避ける。
+
+```css
+/* ❌ 無限ループの例 */
+.container {
+  container-type: inline-size;
+}
+
+@container (min-width: 500px) {
+  .item {
+    width: 100%; /* コンテナサイズが変わる → 再評価 → ループ */
+  }
+}
+
+/* ✅ 安全な実装 */
+.container {
+  container-type: inline-size;
+}
+
+@container (min-width: 500px) {
+  .item {
+    padding: 2rem; /* サイズは変わらない */
+    font-size: 1.2rem;
+  }
+}
+```
+
+**ルール**: Container Query 内でコンテナ自身のサイズを変更するスタイルを適用しない。
+
+### Container Query Units の活用
+
+コンテナサイズに相対的な単位を使用:
+
+```css
+.container {
+  container-type: inline-size;
+}
+
+.item {
+  /* cqi: コンテナのインライン方向の1% */
+  padding: 2cqi;
+  font-size: calc(1rem + 1cqi);
+}
+```
+
+**利点**: ブレークポイントなしで流動的にサイズが変化。
+
 ## 参考リソース
 
 - [MDN: CSS Container Queries](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_container_queries)

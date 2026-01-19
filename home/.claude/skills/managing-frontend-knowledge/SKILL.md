@@ -115,6 +115,9 @@ URLが渡された場合は `WebFetch` で内容を取得。
 | **パフォーマンス** | `knowledge/cross-cutting/performance/` | 最適化, Core Web Vitals, lazy-load | 速度, 最適化, LCP, CLS |
 | **アクセシビリティ** | `knowledge/cross-cutting/accessibility/` | WCAG, a11y, リンク | a11y, アクセシビリティ, WCAG |
 | **ブラウザ互換性** | `knowledge/cross-cutting/browser-compat/` | ブラウザバグ, 回避策, workarounds | バグ, 回避, Safari, iOS |
+| **Apple Style Guide** | `knowledge/apple-style-guide/` | Apple製品のライティング規約、UI用語、スタイルガイド | Apple, ライティング, UI用語, 製品名, スタイル規約, 表記 |
+| **Human Interface Guidelines** | `knowledge/human-interface-guidelines/` | Appleデザイン原則、iOS/macOS UI設計 | HIG, Apple design, iOS, macOS, SwiftUI, UIKit, アプリデザイン |
+| **Material Design 3** | `knowledge/material-design-3/` | Googleデザインシステム、Material You、デザイン哲学 | Material Design, Material You, Google, デザインシステム, Dynamic Color |
 
 ### Step 4: 重複チェックと処理方針の決定
 
@@ -454,10 +457,13 @@ knowledge/
 │   ├── patterns/                     # DOM, イベント, パターン
 │   └── animation/                    # requestAnimationFrame, 補間
 ├── html/                             # モダンHTML, セマンティック
-└── cross-cutting/
-    ├── performance/                  # 最適化, Core Web Vitals
-    ├── accessibility/                # WCAG, a11y
-    └── browser-compat/               # ブラウザバグ, 回避策
+├── cross-cutting/
+│   ├── performance/                  # 最適化, Core Web Vitals
+│   ├── accessibility/                # WCAG, a11y
+│   └── browser-compat/               # ブラウザバグ, 回避策
+├── apple-style-guide/               # Appleライティング規約
+├── human-interface-guidelines/      # Apple HIG、デザイン原則
+└── material-design-3/               # Material Design 3、デザイン哲学
 ```
 
 ## 回答フォーマット

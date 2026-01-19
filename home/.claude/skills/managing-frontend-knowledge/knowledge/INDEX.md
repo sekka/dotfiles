@@ -6,20 +6,21 @@
 
 ### CSS
 [CSS ナレッジ一覧](css/INDEX.md)
-- [Layout](css/layout/) - Grid, Flexbox, Container Queries など
-- [Animation](css/animation/) - Transitions, Keyframes, Scroll-Driven Animations
+- [Modern CSS](css/modern-css-2025.md) - 2025年の最新CSS機能（UIデザイン向け）
+- [Layout](css/layout/) - Grid, Flexbox, Container Queries, overscroll-behavior など
+- [Animation](css/animation/) - Transitions, Keyframes, Scroll-Driven Animations, background-image アニメーション
 - [Visual](css/visual/) - Filter, Mask, Clip-path, Backdrop
-- [Typography](css/typography/) - Font, Text-box, Line-height
+- [Typography](css/typography/) - Font, Text-box, Line-height, 日本語テキスト折り返し
 - [Selectors](css/selectors/) - :has, :is, :where, :scope
-- [Values](css/values/) - clamp, Viewport units, currentColor
-- [Components](css/components/) - Popover, Dialog, Anchor Positioning
+- [Values](css/values/) - clamp, Viewport units, currentColor, 三角関数
+- [Components](css/components/) - Popover, Dialog, Anchor Positioning (anchor-size() 関数含む)
 - [Theming](css/theming/) - light-dark, color-scheme
 
 ### JavaScript
 [JavaScript ナレッジ一覧](javascript/INDEX.md)
-- [DOM](javascript/dom/) - DOM 操作、イベント
-- [Animation](javascript/animation/) - WAAPI, requestAnimationFrame
-- [Patterns](javascript/patterns/) - デザインパターン、実装パターン
+- [DOM](javascript/dom/) - DOM 操作、イベント、Lenis スムーススクロール
+- [Animation](javascript/animation/) - WAAPI, requestAnimationFrame, GSAP, パーティクルエフェクト
+- [Patterns](javascript/patterns/) - デザインパターン、実装パターン、命名規則
 
 ### HTML
 [HTML ナレッジ一覧](html/INDEX.md)
@@ -30,6 +31,33 @@
 - [Performance](cross-cutting/performance/) - パフォーマンス最適化
 - [Accessibility](cross-cutting/accessibility/) - アクセシビリティ
 - [Browser Compatibility](cross-cutting/browser-compat/) - ブラウザ互換性、Workarounds
+
+### デザインシステム・ガイドライン
+
+#### Apple Style Guide
+[Apple Style Guide ナレッジ一覧](apple-style-guide/README.md)
+- [About](apple-style-guide/about/) - ガイドの目的と変更履歴
+- [Style and Usage A-Z](apple-style-guide/style-usage/) - 用語集（Numbers + A-Z）
+- [Writing Inclusively](apple-style-guide/writing-inclusively/) - 包括的なライティング
+- [Units of Measure](apple-style-guide/units-of-measure/) - 測定単位の表記
+- [Technical Notation](apple-style-guide/technical-notation/) - 技術表記法
+- [International Style](apple-style-guide/international-style/) - 国際化スタイル
+
+#### Human Interface Guidelines (HIG)
+[Apple HIG ナレッジ一覧](human-interface-guidelines/README.md)
+- [Getting Started](human-interface-guidelines/getting-started.md) - HIGの基本と使い方
+- [Foundations](human-interface-guidelines/foundations/) - Color, Typography, Layout, Accessibility
+- [Patterns](human-interface-guidelines/patterns/) - Navigation, Feedback, Data Entry
+- [Components](human-interface-guidelines/components/) - Buttons, Lists, Navigation Bars
+
+#### Material Design 3
+[Material Design 3 ナレッジ一覧](material-design-3/README.md)
+- [Philosophy](material-design-3/philosophy/) - Material You、コア原則
+- [Foundations](material-design-3/foundations/) - Color System, Typography, Elevation
+- [Design Tokens](material-design-3/design-tokens/) - デザイントークンの概念
+- [Customization](material-design-3/customization/) - Material Theme Builder、Dynamic Color
+- [Accessible Design](material-design-3/accessible-design/) - アクセシビリティ原則
+- [Components](material-design-3/components/) - ボタン、カード、ダイアログ等
 
 ### メタ情報
 - [Workflow](meta/workflow.md) - ナレッジ追加・更新の手順

@@ -1,15 +1,17 @@
 ---
-title: JavaScriptなしモーダル実装（2025年版）
+title: Dialog & Modal 実装（2025年版）
 category: css/components
-tags: [dialog, modal, command, commandfor, closedby, 2025]
-browser_support: Chrome 134+, Edge 134+
+tags: [dialog, modal, command, commandfor, closedby, 2025, a11y]
+browser_support: Safari 25.0+, Chrome 127+（機能により異なる）
 created: 2026-01-19
 updated: 2026-01-19
 ---
 
-# JavaScriptなしモーダル実装（2025年版）
+# Dialog & Modal 実装（2025年版）
 
-> 出典: https://www.tak-dcxi.com/article/modal-implementation-in-2025
+> 出典:
+> - https://speakerdeck.com/clockmaker/the-latest-css-for-ui-design-2025
+> - https://www.tak-dcxi.com/article/modal-implementation-in-2025
 > 執筆日: 2025年
 > 追加日: 2026-01-19
 
@@ -251,11 +253,13 @@ dialog[open] {
 
 ## ブラウザ対応
 
-| ブラウザ | `<dialog>` | `command` | `closedby` |
-|---------|-----------|-----------|-----------|
-| Chrome/Edge | 37+ | 135+ | 134+ |
-| Safari | 15.4+ | ✗ | ✗ |
-| Firefox | 98+ | ✗ | ✗ |
+| ブラウザ | `<dialog>` | `command/commandfor` | `closedby` |
+|---------|-----------|---------------------|-----------|
+| Chrome/Edge | 37+ | 132+ (2025/10) | 127+ (2025/03) |
+| Safari | 15.4+ | 26.0+ (2025/10) | 25.0+ (2025/03) |
+| Firefox | 98+ | ✗ | ✅ |
+
+**注**: `command`/`commandfor` 属性はスライド資料では Chrome 132+, Safari 26.0+ として記載されています。
 
 ### Polyfill
 
@@ -316,9 +320,11 @@ Firefoxでは`display`のトランジションがサポートされていませ�
 
 ## 関連ナレッジ
 
+- [2025年の最新CSS機能（UIデザイン向け）](../modern-css-2025.md)
 - [Popover API](./popover-api.md)
 - [Anchor Positioning と Popover API の統合](./anchor-positioning-popover.md)
 - [@starting-style](../animation/starting-style.md)
+- [interpolate-size（auto と固定値のトランジション）](../animation/interpolate-size.md)
 
 ## 参考リンク
 

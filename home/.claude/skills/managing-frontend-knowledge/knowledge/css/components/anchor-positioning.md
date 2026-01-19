@@ -113,13 +113,69 @@ tooltip.style.left = `${rect.left}px`;
 }
 ```
 
+## anchor-size() 関数
+
+> 出典: https://ics.media/entry/251215/
+> 執筆日: 2025年12月15日
+> 追加日: 2026-01-19
+
+**機能**: アンカー要素の寸法に基づいて相対的なサイズ指定を可能にします。
+
+```css
+.style {
+  position: absolute;
+  width: anchor-size(width);
+  height: anchor-size(height);
+}
+```
+
+**構文**:
+```css
+anchor-size(<size-reference>)
+```
+
+**指定可能な値**:
+- `width`: アンカー要素の幅
+- `height`: アンカー要素の高さ
+- `inline`: インライン方向のサイズ
+- `block`: ブロック方向のサイズ
+
+**実用例: スケーリングツールチップ**
+
+```css
+/* アンカー要素（アニメーションでスケールするアイコン） */
+.heart-icon {
+  position: absolute;
+  animation: pulse-heart 10s ease-in-out infinite;
+  anchor-name: --tooltip-anchor;
+}
+
+/* ツールチップ（アイコンのサイズに追従） */
+.tooltip {
+  position: absolute;
+  width: calc(anchor-size(width) * 4);
+  height: calc(anchor-size(width) * 2.5);
+  position-anchor: --tooltip-anchor;
+}
+```
+
+**ユースケース**:
+- アンカー要素に追従する装飾要素
+- リサイズやアニメーションの変化に自動対応するUI
+- JavaScript不要な自動サイズ同期
+
+**ブラウザサポート**:
+- Chrome/Edge: 125+（2024年5月）
+- Safari: 26.0+（2025年9月）
+- Firefox: 147+（2026年1月）
+
 ## ブラウザ対応
 
-| ブラウザ | バージョン |
-|----------|-----------|
-| Chrome/Edge | 125+ |
-| Firefox | フラグ付き |
-| Safari | 未対応 |
+| ブラウザ | バージョン | 備考 |
+|----------|-----------|------|
+| Chrome/Edge | 125+ | anchor-size() 対応 |
+| Firefox | 147+ | 2026年1月対応 |
+| Safari | 26.0+ | 2025年9月対応 |
 
 ## Polyfill
 

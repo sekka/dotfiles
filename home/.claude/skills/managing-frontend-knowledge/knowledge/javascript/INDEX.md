@@ -5,13 +5,13 @@ JavaScript に関するナレッジ一覧です。
 ## 📂 カテゴリ
 
 ### [DOM](dom/)
-DOM 操作、イベントハンドリング、Observer API など
+DOM 操作、イベントハンドリング、Observer API、Lenis スムーススクロール など
 
 ### [Animation](animation/)
-Web Animations API (WAAPI), requestAnimationFrame, Canvas アニメーション
+Web Animations API (WAAPI), requestAnimationFrame, Canvas アニメーション、GSAP、パーティクルエフェクト など
 
 ### [Patterns](patterns/)
-デザインパターン、実装パターン、ベストプラクティス
+デザインパターン、実装パターン、ベストプラクティス、命名規則 など
 
 ## 🏷️ タグ一覧
 

@@ -68,6 +68,66 @@ Grid, Flexbox, 配置、Container Queries に関するナレッジ集。
 
 **ブラウザ対応:** Chrome 117+, Firefox 71+, Safari 16+
 
+#### Subgrid でリンクの入れ子を実現
+
+> 出典: https://zenn.dev/ixkaito/articles/nested-links-using-subgrid
+> 執筆日: 2024年3月28日
+> 追加日: 2026-01-19
+
+カード全体をクリッカブルにしながら、内部のタグリンクも独立して機能させるパターン。
+
+```html
+<div class="card">
+  <a href="/article/1" class="link">
+    <h2>記事タイトル</h2>
+    <p>記事の説明文...</p>
+    <div class="tags">
+      <a href="/tag/css">CSS</a>
+      <a href="/tag/html">HTML</a>
+    </div>
+  </a>
+</div>
+```
+
+```css
+/* 親グリッド */
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+/* カード全体リンク */
+.link {
+  grid-row: 1 / 4; /* 全行を占有 */
+  display: grid;
+  grid-template-rows: subgrid; /* 親のグリッドトラックを継承 */
+  text-decoration: none;
+  color: inherit;
+}
+
+/* タグリンク領域 */
+.tags {
+  pointer-events: none; /* リンクの入れ子を無効化 */
+}
+
+.tags a {
+  pointer-events: auto; /* タグリンクのみ有効化 */
+}
+```
+
+**ポイント:**
+- `.link` が `grid-row: 1 / 4` で全体を覆う
+- `grid-template-rows: subgrid` で親のグリッド構造を継承
+- `pointer-events` でクリックイベントを制御
+
+**アクセシビリティ:**
+- セマンティックな HTML 構造を維持
+- Tab キーによるフォーカス移動が自然
+- スクリーンリーダーで正しく読み上げられる
+
 ### gap（Flexbox / Grid 共通）
 
 > 出典（追加情報）: https://zenn.dev/tonkotsuboy_com/articles/2021-css-new-features
@@ -188,6 +248,128 @@ Grid, Flexbox, 配置、Container Queries に関するナレッジ集。
   - Edge 84+
 
 **現在:** 全モダンブラウザで安心して使用可能
+
+### Flexbox/Grid の子要素オーバーフロー対策
+
+> 出典: https://qiita.com/hrel11/items/fe402e3a7ed63d8cbe58
+> 執筆日: 2025年11月10日
+> 追加日: 2026-01-19
+
+Flexbox や Grid の子要素が親からはみ出る問題の解決策。
+
+#### 問題の原因
+
+```css
+/* ❌ 子要素が親をはみ出す */
+.flex-container {
+  display: flex;
+}
+
+.flex-item {
+  /* min-width のデフォルト値は auto */
+  /* コンテンツ幅を基準にするため、親を超える */
+}
+```
+
+Flexbox/Grid の子要素は `min-width: auto`（デフォルト）により、コンテンツの最小幅を維持しようとする。そのため、長いテキストや画像が親をはみ出す。
+
+#### 解決策：3つのフェーズ
+
+**Phase 1: min-width: 0 を設定**
+
+```css
+/* ✅ 子要素が親に収まる */
+.flex-container {
+  display: flex;
+}
+
+.flex-item {
+  min-width: 0; /* または Tailwind: min-w-0 */
+}
+```
+
+**Phase 2: テキストの扱いを選択**
+
+```css
+/* テキストを折り返す */
+.flex-item {
+  min-width: 0;
+  overflow-wrap: break-word; /* または Tailwind: wrap-break-word */
+}
+
+/* スクロール可能にする */
+.flex-item {
+  min-width: 0;
+  overflow-x: scroll;
+}
+
+/* 省略記号で切り詰める */
+.flex-item {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* または Tailwind: truncate */
+}
+```
+
+**Phase 3: overflow 制御**
+
+```css
+/* 見切れた部分を非表示 */
+.flex-item {
+  min-width: 0;
+  overflow: hidden; /* または Tailwind: overflow-hidden */
+}
+```
+
+#### 実践例
+
+```html
+<div class="flex-container">
+  <div class="flex-item">
+    <p>とても長いテキストが入ります...</p>
+  </div>
+</div>
+```
+
+```css
+.flex-container {
+  display: flex;
+  width: 300px;
+}
+
+.flex-item {
+  min-width: 0; /* Step 1 */
+  overflow-wrap: break-word; /* Step 2 */
+  overflow: hidden; /* Step 3 */
+}
+```
+
+#### Grid でも同様
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-item {
+  min-width: 0; /* Grid でも必要 */
+}
+```
+
+#### Tailwind CSS での実装
+
+```html
+<!-- Tailwind の場合 -->
+<div class="flex">
+  <div class="min-w-0 overflow-hidden truncate">
+    長いテキスト...
+  </div>
+</div>
+```
+
+**注意**: `min-width: 0` を設定すると、子要素は親の幅を超えないが、コンテンツがはみ出る可能性がある。必ず Phase 2/3 の対処も併用すること。
 
 ### 中央配置パターン
 
