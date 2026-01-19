@@ -220,6 +220,11 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "iterm2"
 #cask "warp"
 
+# === gitクライアント ===
+#cask "sourcegit"
+#cask "sourcetree"
+#cask "tower"
+
 # === ウェブ開発 ===
 #cask "charles"
 #cask "contraste"
@@ -232,8 +237,6 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "jetbrains-toolbox"
 #cask "ksdiff"
 #cask "paw"
-#cask "sourcetree"
-#cask "tower"
 #cask "transmit"
 #cask "visual-studio-code"
 #cask "xbar"
