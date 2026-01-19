@@ -167,6 +167,7 @@ popover.addEventListener('toggle', (e) => {
 
 ## 関連ナレッジ
 
+- [Anchor Positioning と Popover API の統合](./anchor-positioning-popover.md) - 実践的な組み合わせパターン
 - [dialog 要素](./dialog-element.md)
 - [Anchor Positioning](./anchor-positioning.md)
 - [@starting-style](../animation/starting-style.md)

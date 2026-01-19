@@ -130,5 +130,6 @@ Anchor Positioning は Polyfill が提供されています:
 
 ## 関連ナレッジ
 
+- [Anchor Positioning と Popover API の統合](./anchor-positioning-popover.md) - 実践的な組み合わせパターン
 - [Popover API](./popover-api.md)
 - [Tooltip パターン](../../cross-cutting/design-patterns/tooltip.md)
