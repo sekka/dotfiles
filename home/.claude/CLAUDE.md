@@ -86,6 +86,11 @@ Web開発に関する質問があった場合、`managing-frontend-knowledge` �
 - ブラウザ互換性（Safari、iOS、回避策、workarounds）
 - レスポンシブデザイン、UX、デザインシステム
 
+**デザインガイドライン:**
+- Apple Style Guide（Apple製品名、UI用語、ライティング規約、表記ルール、包括的言語）
+- Human Interface Guidelines（HIG、Apple design、iOS、macOS、SwiftUI、UIKit、アプリデザイン、VoiceOver）
+- Material Design 3（Material You、Google design、Dynamic Color、デザインシステム、アクセシビリティ、デザイントークン）
+
 ### 参照方法
 
 1. **質問内容からキーワードを抽出**
