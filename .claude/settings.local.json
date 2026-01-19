@@ -90,7 +90,21 @@
       "WebFetch(domain:www.tak-dcxi.com)",
       "Bash(defaults read:*)",
       "Bash(dscl:*)",
-      "Bash(mise run:*)"
+      "Bash(mise run:*)",
+      "Skill(managing-frontend-knowledge)",
+      "WebFetch(domain:techblog.yahoo.co.jp)",
+      "WebFetch(domain:css-notes.com)",
+      "WebFetch(domain:speakerdeck.com)",
+      "WebFetch(domain:support.apple.com)",
+      "WebFetch(domain:modelessdesign.com)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:designsystems.surf)",
+      "WebFetch(domain:www.bitcot.com)",
+      "WebFetch(domain:m3.material.io)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:zoewave.medium.com)",
+      "Bash(for dir in /Users/kei/.claude/skills/managing-frontend-knowledge/knowledge/css/*/)",
+      "Bash(for dir in /Users/kei/.claude/skills/managing-frontend-knowledge/knowledge/javascript/*/)"
     ],
     "deny": [
       "Read(./.env.*)"
