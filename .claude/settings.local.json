@@ -90,6 +90,7 @@
       "WebFetch(domain:m3.material.io)",
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:modelessdesign.com)",
+      "WebFetch(domain:nerdpress.org)",
       "WebFetch(domain:note.com)",
       "WebFetch(domain:oraios.github.io)",
       "WebFetch(domain:qiita.com)",
@@ -99,14 +100,16 @@
       "WebFetch(domain:support.apple.com)",
       "WebFetch(domain:techblog.yahoo.co.jp)",
       "WebFetch(domain:www.bitcot.com)",
+      "WebFetch(domain:www.josean.com)",
+      "WebFetch(domain:www.markpitblado.me)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:www.tak-dcxi.com)",
+      "WebFetch(domain:yazi-rs.github.io)",
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebSearch",
-      "Write(*)",
-      "WebFetch(domain:yazi-rs.github.io)"
+      "Write(*)"
     ],
     "deny": [
       "Read(./.env.*)"
