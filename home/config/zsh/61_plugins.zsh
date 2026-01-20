@@ -16,18 +16,39 @@ else
 fi
 
 # ===========================================
+# zoxide - スマートディレクトリジャンプ
+# ===========================================
+# cd コマンドを zoxide で置き換え
+# 使用方法:
+#   cd         - インタラクティブに選択（tmux内ならpopup表示）
+#   cd foo     - "foo" を含むディレクトリにジャンプ
+#   cd foo bar - "foo" と "bar" を含むディレクトリにジャンプ
+#   cdi        - fzf でインタラクティブに選択
+if command -v zoxide >/dev/null 2>&1; then
+    # zoxide初期化（cd,cdiコマンド生成）
+    eval "$(zoxide init zsh --cmd cd)"
+
+    # tmux popup対応
+    if [[ -n "$TMUX" ]]; then
+        export _ZO_FZF_OPTS="--tmux 90%,90%"
+    fi
+
+    # 引数なしcdでインタラクティブ選択
+    function cd() {
+        if [[ $# -eq 0 ]]; then
+            __zoxide_zi
+        else
+            __zoxide_z "$@"
+        fi
+    }
+fi
+
+# ===========================================
 # プラグイン設定
 # ===========================================
 
 # プラグイン設定
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=0'
-
-# enhancd - cd拡張プラグイン（tmux内ならpopup表示）
-if [[ -n "$TMUX" ]]; then
-    export ENHANCD_FILTER="fzf-tmux -p 90%,90% --"
-else
-    export ENHANCD_FILTER="fzf"
-fi
 
 # emoji-cli - 絵文字選択（tmux内ならpopup表示）
 if [[ -n "$TMUX" ]]; then

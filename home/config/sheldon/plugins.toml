@@ -65,12 +65,6 @@ github = "mollifier/anyframe"
 [plugins.easy-oneliner]
 github = "b4b4r07/easy-oneliner"
 
-# enhancd - 拡張cd
-# ディレクトリ移動履歴をfzfで選択
-[plugins.enhancd]
-github = "b4b4r07/enhancd"
-use = ["init.sh"]
-
 # emoji-cli - 絵文字選択
 # 絵文字をfzfで検索・入力
 [plugins.emoji-cli]
