@@ -15,8 +15,8 @@ keymap = [
 
   # ディレクトリ移動
   { on = "h", run = "leave", desc = "Go to parent directory" },
-  { on = "l", run = "enter", desc = "Enter directory or open file" },
-  { on = "<Enter>", run = "enter", desc = "Enter directory or open file" },
+  { on = "l", run = "plugin smart-enter", desc = "Smart enter (auto-detect file/dir)" },
+  { on = "<Enter>", run = "plugin smart-enter", desc = "Smart enter (auto-detect file/dir)" },
   { on = "<Backspace>", run = "leave", desc = "Go to parent directory" },
   { on = "H", run = "back", desc = "Go to previous directory" },
   { on = "L", run = "forward", desc = "Go to next directory" },
@@ -88,6 +88,21 @@ keymap = [
   { on = "]", run = "tab_switch 1 --relative", desc = "Next tab" },
   { on = "{", run = "tab_swap -1", desc = "Swap with previous tab" },
   { on = "}", run = "tab_swap 1", desc = "Swap with next tab" },
+
+  # プラグイン機能
+  { on = "!", run = 'shell "$SHELL" --block --confirm', desc = "Open shell here" },
+  { on = "m", run = "plugin bookmarks --args=save", desc = "Bookmark current directory" },
+  { on = "'", run = "plugin bookmarks --args=jump", desc = "Jump to bookmark" },
+  { on = ["b", "d"], run = "plugin bookmarks --args=delete", desc = "Delete bookmark" },
+  { on = ["b", "D"], run = "plugin bookmarks --args=delete_all", desc = "Delete all bookmarks" },
+  { on = ["c", "m"], run = "plugin chmod", desc = "Chmod selected files" },
+
+  # カスタムディレクトリジャンプ
+  { on = ["g", "c"], run = "cd ~/.config", desc = "Go to config directory" },
+  { on = ["g", "d"], run = "cd ~/dotfiles", desc = "Go to dotfiles" },
+  { on = ["g", "p"], run = "cd ~/Projects", desc = "Go to projects" },
+  { on = ["g", "D"], run = "cd ~/Downloads", desc = "Go to downloads" },
+  { on = ["g", "h"], run = "cd ~", desc = "Go to home" },
 
   # ヘルプ・終了
   { on = "q", run = "quit", desc = "Quit" },

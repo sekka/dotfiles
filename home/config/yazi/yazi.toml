@@ -12,15 +12,21 @@ sort_dir_first = true
 show_hidden = true
 show_symlink = true
 linemode = "size"
+scrolloff = 5 # スクロールオフセット
 
 [preview]
 # プレビュー設定
-max_width = 1000
-max_height = 1000
+max_width = 1200
+max_height = 900
 cache_dir = ""
 
 # 画像プレビュー（Kitty/iTerm2/Ghostty対応）
 image_delay = 30
+image_quality = 80 # 画像品質（1-100）
+
+# パフォーマンス最適化（ネットワークドライブでは無効化推奨）
+tab_size = 2
+max_preview_size = 10485760 # 10MB
 
 [opener]
 # デフォルトオープナー設定
@@ -72,3 +78,9 @@ prepend_previewers = []
 append_previewers = []
 prepend_preloaders = []
 append_preloaders = []
+
+# Git統合
+prepend_fetchers = [
+  { id = "git", name = "*", run = "git" },
+  { id = "git", name = "*/", run = "git" },
+]
