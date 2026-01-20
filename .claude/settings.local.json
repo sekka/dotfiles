@@ -104,16 +104,13 @@
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:zoewave.medium.com)",
       "Bash(for dir in /Users/kei/.claude/skills/managing-frontend-knowledge/knowledge/css/*/)",
-      "Bash(for dir in /Users/kei/.claude/skills/managing-frontend-knowledge/knowledge/javascript/*/)"
+      "Bash(for dir in /Users/kei/.claude/skills/managing-frontend-knowledge/knowledge/javascript/*/)",
+      "Bash(brew bundle:*)",
+      "Bash(command brew bundle)",
+      "Bash(zoxide:*)"
     ],
-    "deny": [
-      "Read(./.env.*)"
-    ]
+    "deny": ["Read(./.env.*)"]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "context7",
-    "deepwiki",
-    "sequential-thinking"
-  ]
+  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
 }
