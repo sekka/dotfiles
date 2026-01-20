@@ -1,0 +1,152 @@
+# yazi キーマップ設定
+# https://yazi-rs.github.io/docs/configuration/keymap
+
+[manager]
+keymap = [
+  # ナビゲーション
+  { on = "k", run = "arrow -1", desc = "Move cursor up" },
+  { on = "j", run = "arrow 1", desc = "Move cursor down" },
+  { on = "K", run = "arrow -5", desc = "Move cursor up 5 lines" },
+  { on = "J", run = "arrow 5", desc = "Move cursor down 5 lines" },
+  { on = "<C-u>", run = "arrow -50%", desc = "Move cursor up half page" },
+  { on = "<C-d>", run = "arrow 50%", desc = "Move cursor down half page" },
+  { on = "g", run = "arrow -99999999", desc = "Move cursor to top" },
+  { on = "G", run = "arrow 99999999", desc = "Move cursor to bottom" },
+
+  # ディレクトリ移動
+  { on = "h", run = "leave", desc = "Go to parent directory" },
+  { on = "l", run = "enter", desc = "Enter directory or open file" },
+  { on = "<Enter>", run = "enter", desc = "Enter directory or open file" },
+  { on = "<Backspace>", run = "leave", desc = "Go to parent directory" },
+  { on = "H", run = "back", desc = "Go to previous directory" },
+  { on = "L", run = "forward", desc = "Go to next directory" },
+
+  # ホームとルート
+  { on = "~", run = "cd ~", desc = "Go to home directory" },
+  { on = "/", run = "cd /", desc = "Go to root directory" },
+
+  # 選択
+  { on = "<Space>", run = ["select --state=none", "arrow 1"], desc = "Toggle selection" },
+  { on = "v", run = "visual_mode", desc = "Enter visual mode" },
+  { on = "V", run = "visual_mode --unset", desc = "Enter visual mode (unset)" },
+  { on = "<C-a>", run = "select_all --state=true", desc = "Select all" },
+  { on = "<C-r>", run = "select_all --state=none", desc = "Invert selection" },
+
+  # ファイル操作
+  { on = "o", run = "open", desc = "Open file" },
+  { on = "O", run = "open --interactive", desc = "Open file interactively" },
+  { on = "y", run = "yank", desc = "Yank (copy)" },
+  { on = "x", run = "yank --cut", desc = "Cut" },
+  { on = "p", run = "paste", desc = "Paste" },
+  { on = "P", run = "paste --force", desc = "Paste (overwrite)" },
+  { on = "d", run = "remove", desc = "Move to trash" },
+  { on = "D", run = "remove --permanently", desc = "Delete permanently" },
+  { on = "a", run = "create", desc = "Create file/directory" },
+  { on = "r", run = "rename --cursor=before_ext", desc = "Rename" },
+
+  # コピー（パス）
+  { on = ["c", "c"], run = "copy path", desc = "Copy file path" },
+  { on = ["c", "d"], run = "copy dirname", desc = "Copy directory path" },
+  { on = ["c", "f"], run = "copy filename", desc = "Copy filename" },
+  { on = ["c", "n"], run = "copy name_without_ext", desc = "Copy filename without extension" },
+
+  # フィルター・検索
+  { on = "f", run = "filter --smart", desc = "Filter files" },
+  { on = "s", run = "search fd", desc = "Search files with fd" },
+  { on = "S", run = "search rg", desc = "Search content with ripgrep" },
+  { on = "<C-s>", run = "search none", desc = "Cancel search" },
+  { on = "z", run = "plugin fzf", desc = "Jump with fzf" },
+  { on = "Z", run = "plugin zoxide", desc = "Jump with zoxide" },
+
+  # 表示切り替え
+  { on = ".", run = "hidden toggle", desc = "Toggle hidden files" },
+  { on = ",", run = "linemode size", desc = "Show file sizes" },
+  { on = ";", run = "linemode mtime", desc = "Show modification time" },
+
+  # ソート
+  { on = ["=", "m"], run = "sort modified --reverse=no", desc = "Sort by modified time" },
+  { on = ["=", "M"], run = "sort modified --reverse", desc = "Sort by modified time (reverse)" },
+  { on = ["=", "c"], run = "sort created --reverse=no", desc = "Sort by created time" },
+  { on = ["=", "C"], run = "sort created --reverse", desc = "Sort by created time (reverse)" },
+  { on = ["=", "e"], run = "sort extension --reverse=no", desc = "Sort by extension" },
+  { on = ["=", "E"], run = "sort extension --reverse", desc = "Sort by extension (reverse)" },
+  { on = ["=", "a"], run = "sort alphabetical --reverse=no", desc = "Sort alphabetically" },
+  { on = ["=", "A"], run = "sort alphabetical --reverse", desc = "Sort alphabetically (reverse)" },
+  { on = ["=", "n"], run = "sort natural --reverse=no", desc = "Sort naturally" },
+  { on = ["=", "N"], run = "sort natural --reverse", desc = "Sort naturally (reverse)" },
+  { on = ["=", "s"], run = "sort size --reverse=no", desc = "Sort by size" },
+  { on = ["=", "S"], run = "sort size --reverse", desc = "Sort by size (reverse)" },
+  { on = ["=", "r"], run = "sort random", desc = "Sort randomly" },
+
+  # タブ
+  { on = "t", run = "tab_create --current", desc = "Create new tab" },
+  { on = "1", run = "tab_switch 0", desc = "Switch to tab 1" },
+  { on = "2", run = "tab_switch 1", desc = "Switch to tab 2" },
+  { on = "3", run = "tab_switch 2", desc = "Switch to tab 3" },
+  { on = "4", run = "tab_switch 3", desc = "Switch to tab 4" },
+  { on = "[", run = "tab_switch -1 --relative", desc = "Previous tab" },
+  { on = "]", run = "tab_switch 1 --relative", desc = "Next tab" },
+  { on = "{", run = "tab_swap -1", desc = "Swap with previous tab" },
+  { on = "}", run = "tab_swap 1", desc = "Swap with next tab" },
+
+  # ヘルプ・終了
+  { on = "q", run = "quit", desc = "Quit" },
+  { on = "Q", run = "quit --no-cwd-file", desc = "Quit without changing directory" },
+  { on = "<Esc>", run = "escape", desc = "Cancel/Escape" },
+  { on = "?", run = "help", desc = "Show help" },
+]
+
+[tasks]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Close task manager" },
+  { on = "q", run = "close", desc = "Close task manager" },
+  { on = "k", run = "arrow -1", desc = "Move cursor up" },
+  { on = "j", run = "arrow 1", desc = "Move cursor down" },
+  { on = "<Enter>", run = "inspect", desc = "Inspect task" },
+  { on = "x", run = "cancel", desc = "Cancel task" },
+]
+
+[select]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+  { on = "q", run = "close", desc = "Cancel" },
+  { on = "<Enter>", run = "close --submit", desc = "Submit" },
+  { on = "k", run = "arrow -1", desc = "Move cursor up" },
+  { on = "j", run = "arrow 1", desc = "Move cursor down" },
+]
+
+[input]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+  { on = "<Enter>", run = "close --submit", desc = "Submit" },
+
+  # カーソル移動
+  { on = "<Left>", run = "move -1", desc = "Move cursor left" },
+  { on = "<Right>", run = "move 1", desc = "Move cursor right" },
+  { on = "<C-a>", run = "move -999", desc = "Move to beginning" },
+  { on = "<C-e>", run = "move 999", desc = "Move to end" },
+
+  # 編集
+  { on = "<Backspace>", run = "backspace", desc = "Delete character before cursor" },
+  { on = "<Delete>", run = "delete", desc = "Delete character at cursor" },
+  { on = "<C-u>", run = "kill bol", desc = "Delete to beginning of line" },
+  { on = "<C-k>", run = "kill eol", desc = "Delete to end of line" },
+  { on = "<C-w>", run = "backward_kill_word", desc = "Delete word before cursor" },
+]
+
+[confirm]
+keymap = [
+  { on = "<Esc>", run = "close", desc = "Cancel" },
+  { on = "n", run = "close", desc = "Cancel" },
+  { on = "y", run = "close --submit", desc = "Submit" },
+  { on = "<Enter>", run = "close --submit", desc = "Submit" },
+]
+
+[help]
+keymap = [
+  { on = "<Esc>", run = "escape", desc = "Close" },
+  { on = "q", run = "close", desc = "Close" },
+  { on = "k", run = "arrow -1", desc = "Move cursor up" },
+  { on = "j", run = "arrow 1", desc = "Move cursor down" },
+  { on = "f", run = "filter", desc = "Filter" },
+]

@@ -1,0 +1,74 @@
+# yazi メイン設定
+# https://yazi-rs.github.io/docs/configuration/yazi
+
+[manager]
+# ソート設定
+sort_by = "natural"
+sort_sensitive = false
+sort_reverse = false
+sort_dir_first = true
+
+# 表示設定
+show_hidden = false
+show_symlink = true
+linemode = "size"
+
+[preview]
+# プレビュー設定
+max_width = 1000
+max_height = 1000
+cache_dir = ""
+
+# 画像プレビュー（Kitty/iTerm2/Ghostty対応）
+image_delay = 30
+
+[opener]
+# デフォルトオープナー設定
+edit = [
+  { run = 'nvim "$@"', block = true, for = "unix" },
+]
+open = [
+  { run = 'open "$@"', desc = "Open with default app", for = "macos" },
+]
+reveal = [
+  { run = 'open -R "$@"', desc = "Reveal in Finder", for = "macos" },
+]
+play = [
+  { run = 'mpv --force-window "$@"', orphan = true, for = "unix" },
+  { run = 'open "$@"', desc = "Open with default player", for = "macos" },
+]
+
+[open]
+rules = [
+  # フォルダ
+  { name = "*/", use = ["edit", "open", "reveal"] },
+
+  # テキストファイル
+  { mime = "text/*", use = ["edit", "reveal"] },
+  { mime = "application/json", use = ["edit", "reveal"] },
+  { mime = "*/javascript", use = ["edit", "reveal"] },
+
+  # 画像
+  { mime = "image/*", use = ["open", "reveal"] },
+
+  # 動画/音声
+  { mime = "{video,audio}/*", use = ["play", "reveal"] },
+
+  # その他
+  { name = "*", use = ["open", "reveal"] },
+]
+
+[tasks]
+# タスク設定
+micro_workers = 10
+macro_workers = 25
+bizarre_retry = 5
+image_alloc = 536870912 # 512MB
+image_bound = [0, 0]
+
+[plugin]
+# プラグインプリロード
+prepend_previewers = []
+append_previewers = []
+prepend_preloaders = []
+append_preloaders = []

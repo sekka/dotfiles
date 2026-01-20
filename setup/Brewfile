@@ -29,6 +29,7 @@ brew "starship"           # https://formulae.brew.sh/formula/starship         # 
 brew "tailspin"           # https://formulae.brew.sh/formula/tailspin         # 高性能tailコマンド
 brew "terminal-notifier"  # https://formulae.brew.sh/formula/terminal-notifier # macOS通知ツール
 brew "tree"               # https://formulae.brew.sh/formula/tree             # ディレクトリツリー表示
+brew "yazi"               # https://formulae.brew.sh/formula/yazi             # Rust製高速ファイルマネージャー
 brew "zoxide"             # https://formulae.brew.sh/formula/zoxide           # すごいcd（ディレクトリジャンプ）
 
 # === システムモニタ ===
@@ -106,6 +107,7 @@ brew "uv"                 # https://formulae.brew.sh/formula/uv               # 
 brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg           # 動画処理ツール
 brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli   # 画像最適化ツール
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick      # 画像処理ツール
+brew "poppler"            # https://formulae.brew.sh/formula/poppler          # PDFプレビュー（yazi用）
 brew "svgo"               # https://formulae.brew.sh/formula/svgo             # SVG最適化ツール
 brew "webp"               # https://formulae.brew.sh/formula/webp             # WebP画像処理ツール
 brew "libavif"            # https://formulae.brew.sh/formula/libavif          # AVIF画像処理ツール
@@ -120,6 +122,7 @@ brew "specify"            # https://formulae.brew.sh/formula/specify          # 
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
 brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DLツール
+brew "sevenzip"           # https://formulae.brew.sh/formula/sevenzip         # 7zアーカイブプレビュー（yazi用）
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
 brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # RAR解凍ツール
 

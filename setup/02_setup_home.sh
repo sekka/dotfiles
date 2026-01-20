@@ -138,6 +138,7 @@ CONFIG_DIRS=(
   lazygit
   mise
   sheldon
+  yazi
 )
 
 for dir in "${CONFIG_DIRS[@]}"; do

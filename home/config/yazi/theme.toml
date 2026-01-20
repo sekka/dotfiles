@@ -1,0 +1,48 @@
+# yazi テーマ設定
+# https://yazi-rs.github.io/docs/configuration/theme
+
+[manager]
+# カーソル
+cwd = { fg = "cyan" }
+hovered = { reversed = true }
+preview_hovered = { underline = true }
+
+# ファイルタイプ別色分け
+[filetype]
+rules = [
+  # 画像
+  { mime = "image/*", fg = "magenta" },
+
+  # 動画/音声
+  { mime = "{video,audio}/*", fg = "yellow" },
+
+  # アーカイブ
+  { mime = "application/{zip,x-tar,x-bzip*,x-7z*,x-rar,x-xz,gzip}", fg = "red" },
+
+  # ドキュメント
+  { mime = "application/pdf", fg = "green" },
+  { mime = "application/{msword,vnd.openxmlformats*}", fg = "green" },
+
+  # 実行可能
+  { mime = "application/x-executable", fg = "green", bold = true },
+  { mime = "text/x-shellscript", fg = "green", bold = true },
+
+  # その他
+  { name = "*", fg = "white" },
+  { name = "*/", fg = "blue", bold = true },
+]
+
+# アイコン設定
+[icon]
+rules = []
+prepend_rules = []
+append_rules = []
+
+[status]
+separator_open = ""
+separator_close = ""
+
+[mode]
+normal = { fg = "black", bg = "blue", bold = true }
+select = { fg = "black", bg = "green", bold = true }
+unset = { fg = "black", bg = "red", bold = true }
