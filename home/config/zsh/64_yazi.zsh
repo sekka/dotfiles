@@ -11,11 +11,11 @@
 if command -v yazi >/dev/null 2>&1; then
     # yazi終了時にカレントディレクトリを変更するラッパー関数
     function y() {
-        local tmp
-        tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
         yazi "$@" --cwd-file="$tmp"
-        if cwd="$(cat -- "$tmp")" && [[ -n "$cwd" ]] && [[ "$cwd" != "$PWD" ]]; then
-            builtin cd -- "$cwd"
+        local yazi_cwd="$(cat -- "$tmp" 2>/dev/null)"
+        if [[ -n "$yazi_cwd" ]] && [[ "$yazi_cwd" != "$PWD" ]]; then
+            builtin cd -- "$yazi_cwd"
         fi
         rm -f -- "$tmp"
     }
