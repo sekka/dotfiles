@@ -6,6 +6,11 @@ Brewfile.lock.json
 .claude/memory/
 .claude/state/
 .claude/stats-cache.json
+plans/
+
+# yazi プラグインとテーマ（package.tomlで管理）
+home/config/yazi/plugins/
+home/config/yazi/flavors/
 ### https://raw.github.com/github/gitignore//Swift.gitignore
 
 # Xcode
