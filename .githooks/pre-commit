@@ -4,6 +4,9 @@ set -euo pipefail
 # Git pre-commit hook
 # mise tasks でlint/formatを実行し、全て成功した場合のみcommitを許可
 
+# mise shims を$PATHに追加（oxlint、oxfmt等のツールにアクセス可能にする）
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
 # カラー定義
 RED='\033[0;31m'
 GREEN='\033[0;32m'
