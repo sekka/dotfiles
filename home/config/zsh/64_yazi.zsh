@@ -19,4 +19,9 @@ if command -v yazi >/dev/null 2>&1; then
         fi
         rm -f -- "$tmp"
     }
+
+    # エイリアス
+    alias yz='y'                      # y のショートカット
+    alias yy='yazi'                   # ディレクトリ移動なし
+    alias yn='yazi --no-preview'      # プレビューなし（軽量動作）
 fi
