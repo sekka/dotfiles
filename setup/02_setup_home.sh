@@ -219,15 +219,34 @@ link_file "$HOME/dotfiles/home/.claude-mem/settings.json" "$HOME/.claude-mem/set
 echo ""
 echo "🪝 Git hooks をセットアップ..."
 
-if command -v bun &>/dev/null; then
-  if bun "$HOME/dotfiles/scripts/setup/setup-git-hooks.ts"; then
-    echo -e "${GREEN}✅ Git hooks のセットアップが完了しました${NC}"
-  else
-    echo -e "${YELLOW}⚠️  Git hooks のセットアップに失敗しました${NC}"
-  fi
+DOTFILES_HOOKS_DIR="$HOME/dotfiles/.githooks"
+GIT_HOOKS_DIR="$HOME/dotfiles/.git/hooks"
+
+if [[ ! -d "$HOME/dotfiles/.git" ]]; then
+  echo -e "${YELLOW}⚠️  .gitディレクトリが見つかりません。Git hooksのセットアップをスキップします${NC}"
+elif [[ ! -d $DOTFILES_HOOKS_DIR ]]; then
+  echo -e "${YELLOW}⚠️  .githooksディレクトリが見つかりません。Git hooksのセットアップをスキップします${NC}"
 else
-  echo -e "${YELLOW}⚠️  bun が見つかりません。Git hooks のセットアップをスキップします${NC}"
-  echo -e "${YELLOW}   後で手動実行: bun ~/dotfiles/scripts/setup/setup-git-hooks.ts${NC}"
+  # .git/hooksディレクトリを作成
+  mkdir -p "$GIT_HOOKS_DIR"
+
+  # .githooks内の全ファイルをコピー
+  hook_count=0
+  for hook_file in "$DOTFILES_HOOKS_DIR"/*; do
+    if [[ -f $hook_file ]]; then
+      hook_name=$(basename "$hook_file")
+      cp "$hook_file" "$GIT_HOOKS_DIR/$hook_name"
+      chmod +x "$GIT_HOOKS_DIR/$hook_name"
+      echo -e "${GREEN}✅ コピー完了:${NC} $hook_name"
+      ((hook_count++))
+    fi
+  done
+
+  if [[ $hook_count -gt 0 ]]; then
+    echo -e "${GREEN}📊 Git hooks セットアップ完了: ${hook_count}個のhookがコピーされました${NC}"
+  else
+    echo -e "${YELLOW}⚠️  コピーするhookファイルが見つかりませんでした${NC}"
+  fi
 fi
 
 # ========================================
