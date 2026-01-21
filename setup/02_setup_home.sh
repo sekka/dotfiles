@@ -213,6 +213,24 @@ ensure_dir "$HOME/.claude-mem"
 link_file "$HOME/dotfiles/home/.claude-mem/settings.json" "$HOME/.claude-mem/settings.json" "settings.json"
 
 # ========================================
+# Git hooks セットアップ
+# ========================================
+
+echo ""
+echo "🪝 Git hooks をセットアップ..."
+
+if command -v bun &>/dev/null; then
+  if bun "$HOME/dotfiles/scripts/setup/setup-git-hooks.ts"; then
+    echo -e "${GREEN}✅ Git hooks のセットアップが完了しました${NC}"
+  else
+    echo -e "${YELLOW}⚠️  Git hooks のセットアップに失敗しました${NC}"
+  fi
+else
+  echo -e "${YELLOW}⚠️  bun が見つかりません。Git hooks のセットアップをスキップします${NC}"
+  echo -e "${YELLOW}   後で手動実行: bun ~/dotfiles/scripts/setup/setup-git-hooks.ts${NC}"
+fi
+
+# ========================================
 # サマリー表示
 # ========================================
 
@@ -224,10 +242,11 @@ echo "   ⏭️  スキップ: $skipped"
 echo ""
 echo "✨ dotfiles のセットアップが完了しました！"
 echo "   📄 ホームディレクトリ: zsh, git, vim等の設定"
-echo "   📁 .config/: ghostty, mise, sheldon, gwq, lazygit"
+echo "   📁 .config/: ghostty, mise, sheldon, gwq, lazygit, yazi"
 echo "   📖 navi/: コマンドチートシート"
 echo "   🤖 .claude/: AI開発支援ツール設定"
 echo "   🔧 .serena/: セマンティックコーディング設定"
 echo "   🧠 .claude-mem/: Claude メモリ設定"
+echo "   🪝 .git/hooks/: Git hooks (commit前のlintチェック)"
 echo ""
 echo "💡 今後の設定変更は dotfiles/ ディレクトリで行ってください"
