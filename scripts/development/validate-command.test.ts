@@ -20,7 +20,6 @@ describe("validateCommand", () => {
 			"wc file.txt",
 			"sort file.txt",
 			"cp file.txt /tmp/",
-			"mv file.txt /tmp/",
 			"mkdir -p /tmp/test",
 			"touch /tmp/file.txt",
 
@@ -70,6 +69,41 @@ describe("validateCommand", () => {
 				expect(result.violations).toHaveLength(0);
 			});
 		}
+	});
+
+	describe("確認必須コマンド（CONFIRM_REQUIRED）", () => {
+		const confirmRequiredCommands = [
+			// rm コマンド - 全て確認要求（rm -r/-rf は除く）
+			"rm file.txt",
+			"rm -f file.txt",
+			"rm *.log",
+			"rm -i test.txt",
+
+			// mv コマンド - 全て確認要求
+			"mv file1.txt file2.txt",
+			"mv /tmp/file1.txt /tmp/file2.txt",
+			"mv -f old.txt new.txt",
+		];
+
+		for (const command of confirmRequiredCommands) {
+			test(`確認要求: ${command}`, () => {
+				const result = validateCommand(command);
+				expect(result.isValid).toBe(false);
+				expect(result.severity).toBe("MEDIUM");
+				expect(result.violations[0]).toContain("requires confirmation");
+			});
+		}
+
+		// git サブコマンドは許可
+		test("git rm は許可（git がメインコマンド）", () => {
+			const result = validateCommand("git rm file.txt");
+			expect(result.isValid).toBe(true);
+		});
+
+		test("git mv は許可（git がメインコマンド）", () => {
+			const result = validateCommand("git mv old.txt new.txt");
+			expect(result.isValid).toBe(true);
+		});
 	});
 
 	describe("危険なコマンド（ブロック必須）", () => {
@@ -149,6 +183,12 @@ describe("validateCommand", () => {
 			"npx prisma migrate reset",
 			"npx prisma migrate reset --force",
 			"npx prisma db push --force-reset",
+
+			// パイプ経由の rm/mv
+			"find . -name '*.tmp' | rm",
+			"ls *.txt | xargs rm",
+			"find . -type f -name 'test*' -exec rm {} \\;",
+			"cat files.txt | mv",
 		];
 
 		for (const command of dangerousCommands) {

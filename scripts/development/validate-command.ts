@@ -89,6 +89,9 @@ const SYSTEM_COMMANDS = [
 	"swapoff",
 ];
 
+// 確認が必要なコマンド（破壊的だが条件次第では許可）
+const CONFIRM_REQUIRED_COMMANDS = ["rm", "mv"];
+
 const SAFE_COMMANDS = [
 	"ls",
 	"dir",
@@ -117,7 +120,6 @@ const SAFE_COMMANDS = [
 	"source",
 	"cd",
 	"cp",
-	"mv",
 	"mkdir",
 	"touch",
 	"ln",
@@ -215,6 +217,12 @@ const DANGEROUS_PATTERNS: RegExp[] = [
 
 	// Prisma 危険操作
 	/prisma\s+(migrate\s+reset|db\s+push\s+--force-reset)/i,
+
+	// パイプ経由の rm/mv
+	/\|\s*rm(\s|$)/i,
+	/xargs\s+.*\brm\b/i,
+	/find\s+.*-exec\s+rm/i,
+	/\|\s*mv(\s|$)/i,
 ];
 
 const PROTECTED_PATHS = [
@@ -379,6 +387,32 @@ function checkRmRfSafety(command: string): ValidationResult | null {
 }
 
 /**
+ * 確認が必要なコマンドのチェック
+ * rm, mv は全て実行前にユーザー確認を求める
+ * ただし rm -r/-rf で安全なパスの場合は checkRmRfSafety で既に判定済みのため除外
+ */
+function checkConfirmRequired(command: string, mainCmd: string): ValidationResult | null {
+	// git サブコマンドとしての rm/mv は git コマンドとして扱う
+	if (command.trim().startsWith("git ")) {
+		return null;
+	}
+
+	// rm -r または rm -rf パターンは checkRmRfSafety で既に処理されている
+	if (mainCmd === "rm" && /rm\s+.*-[rf]*r[rf]*/.test(command)) {
+		return null;
+	}
+
+	if (CONFIRM_REQUIRED_COMMANDS.includes(mainCmd)) {
+		return {
+			isValid: false,
+			severity: "MEDIUM",
+			violations: [`Destructive command requires confirmation: ${mainCmd}`],
+		};
+	}
+	return null;
+}
+
+/**
  * コマンドチェーン分割（&&, ||, ;）
  */
 function splitCommandChain(command: string): string[] {
@@ -441,9 +475,14 @@ export function validateCommand(command: string): ValidationResult {
 	const patternResult = checkDangerousPatterns(command);
 	if (patternResult) return patternResult;
 
-	// rm -rf 安全性
+	// 確認必須コマンド（rm -rf 安全性チェックの前に実行）
+	// ただし rm -rf は特別扱いするため、先に安全性をチェック
 	const rmResult = checkRmRfSafety(command);
 	if (rmResult) return rmResult;
+
+	// rm -rf 以外の rm/mv コマンドは確認必須
+	const confirmResult = checkConfirmRequired(command, mainCmd);
+	if (confirmResult) return confirmResult;
 
 	// コマンドチェーン検証（再帰的）
 	if (command.includes("&&") || command.includes("||") || command.includes(";")) {
@@ -471,6 +510,17 @@ export function validateCommand(command: string): ValidationResult {
 
 async function main() {
 	try {
+		// ログファイルへの出力（デバッグ用）
+		// 環境変数 VALIDATE_COMMAND_DEBUG=1 でログを有効化
+		const isDebugMode = process.env.VALIDATE_COMMAND_DEBUG === "1";
+		const logFile = join(homedir(), "dotfiles", "validate-command.log");
+		const log = (message: string) => {
+			if (!isDebugMode) return;
+			const fs = require("node:fs");
+			const timestamp = new Date().toISOString();
+			fs.appendFileSync(logFile, `[${timestamp}] ${message}\n`);
+		};
+
 		// stdin から JSON 読み取り
 		const chunks: Buffer[] = [];
 		for await (const chunk of process.stdin) {
@@ -506,15 +556,23 @@ async function main() {
 			process.exit(1);
 		}
 
+		// ログ出力
+		log(`Hook called for command: ${command}`);
+
 		// バリデーション実行
 		const result = validateCommand(command);
 
 		if (result.isValid) {
+			log(`Command allowed: ${command}`);
 			console.log("Command validation passed");
 			process.exit(0);
 		}
 
 		// 危険コマンド検出時：ユーザーに確認
+		log(
+			`Command requires confirmation: ${command}, Severity: ${result.severity}, Violations: ${result.violations.join(", ")}`,
+		);
+
 		const confirmationMessage = `⚠️  Potentially dangerous command detected!\n\nCommand: ${command}\nViolations: ${result.violations.join(", ")}\nSeverity: ${result.severity}\n\nDo you want to proceed with this command?`;
 
 		const hookOutput: HookOutput = {
