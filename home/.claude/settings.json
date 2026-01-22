@@ -8,7 +8,6 @@
   "permissions": {
     "defaultMode": "plan"
   },
-  "plansDirectory": "./plans",
   "model": "opusplan",
   "hooks": {
     "PreToolUse": [
@@ -22,13 +21,13 @@
         ]
       },
       {
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "ccm hook PreToolUse"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ],
     "PostToolUse": [
@@ -46,13 +45,13 @@
         ]
       },
       {
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "ccm hook PostToolUse"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ],
     "Stop": [
@@ -65,13 +64,13 @@
         ]
       },
       {
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "ccm hook Stop"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ],
     "PermissionRequest": [
@@ -106,13 +105,13 @@
         ]
       },
       {
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "ccm hook Notification"
           }
-        ],
-        "matcher": ""
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -167,8 +166,11 @@
     "ask-claude@hiropon-plugins": true,
     "ask-codex@hiropon-plugins": true,
     "ask-gemini@hiropon-plugins": true,
-    "peer@hiropon-plugins": true
+    "peer@hiropon-plugins": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
   },
   "language": "Japanese",
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "plansDirectory": "./plans"
 }
