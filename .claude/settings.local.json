@@ -109,7 +109,8 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebSearch",
-      "Write(*)"
+      "Write(*)",
+      "Skill(writing-documentation)"
     ],
     "deny": [
       "Read(./.env.*)"
