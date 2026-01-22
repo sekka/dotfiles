@@ -112,7 +112,9 @@
       "WebFetch(domain:zoewave.medium.com)",
       "WebSearch",
       "Write(*)",
-      "Bash(shellcheck:*)"
+      "Bash(shellcheck:*)",
+      "WebFetch(domain:newtown.tokyo)",
+      "WebFetch(domain:mont.jp)"
     ],
     "deny": [
       "Read(./.env.*)"
