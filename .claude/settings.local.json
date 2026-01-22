@@ -111,10 +111,17 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebSearch",
-      "Write(*)"
+      "Write(*)",
+      "Bash(shellcheck:*)"
     ],
-    "deny": ["Read(./.env.*)"]
+    "deny": [
+      "Read(./.env.*)"
+    ]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
+  "enabledMcpjsonServers": [
+    "context7",
+    "deepwiki",
+    "sequential-thinking"
+  ]
 }
