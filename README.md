@@ -16,6 +16,9 @@
 
 # 3. Homebrewアプリのインストール
 ./setup/10_homebrew.sh
+
+# 4. Claude Code公式版のインストール
+./setup/15_claude_code.sh
 ```
 
 ## ⚡ 自動機能
@@ -113,6 +116,15 @@ pdefを使用すると、`defaults write`コマンドが自動生成されます
 ## 🎯 Claude Code 設定
 
 この dotfiles は Claude Code の開発環境統合をサポートしています。
+
+### インストール
+
+Claude Code は公式推奨の方法でインストールされます：
+
+```bash
+# セットアップスクリプトで自動インストール
+./setup/15_claude_code.sh
+```
 
 ### 自動ホック機能
 

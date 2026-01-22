@@ -171,7 +171,6 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "athas"
 #cask "chatgpt"
 #cask "claude"
-#cask "claude-code"
 #cask "coderabbit"
 #cask "conductor"
 #cask "cursor"
