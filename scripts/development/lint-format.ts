@@ -229,6 +229,7 @@ async function runShfmt(files: string[], mode: Mode, verbose: boolean): Promise<
 /**
  * shellcheck でシェルスクリプトをチェック
  * 注: .zsh ファイルは shellcheck が zsh 構文を理解しないため除外
+ *     SC2016 (info) レベルのエラーは無視（変数展開の警告は言語的に許容）
  */
 async function runShellcheck(files: string[], verbose: boolean): Promise<LintResult> {
 	// .zsh ファイルを除外（shellcheck は zsh 構文を理解しない）
@@ -246,7 +247,8 @@ async function runShellcheck(files: string[], verbose: boolean): Promise<LintRes
 		};
 	}
 
-	const args = ["shellcheck", ...shFiles];
+	// SC2016 (info) を無視：シングルクォートの警告は手意的な場合があるため
+	const args = ["shellcheck", "--exclude=SC2016", ...shFiles];
 
 	if (verbose) {
 		console.log(`🔧 Running: ${args.join(" ")}`);

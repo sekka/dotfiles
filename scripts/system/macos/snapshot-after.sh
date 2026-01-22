@@ -45,7 +45,7 @@ if command -v pdef &>/dev/null; then
     cat "$DIFF_FILE"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
-    echo "💡 このスクリプトを setup/05_macos_defaults.sh に追加できます"
+    echo "💡 このスクリプトを setup/03_macos_defaults.sh に追加できます"
   else
     echo "ℹ️  変更は検出されませんでした"
     rm "$DIFF_FILE"

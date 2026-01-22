@@ -257,7 +257,7 @@ echo "✅ Setup complete!"
 [tasks.setup-home-symlink]
 alias = "sds"
 description = "homeのシンボリックリンクを作成"
-run = "bash ~/dotfiles/setup/02_setup_home.sh"
+run = "bash ~/dotfiles/setup/02_home.sh"
 
 # --------------------------------------
 # Docker/Container
@@ -351,7 +351,7 @@ run = "source ~/.zshrc && echo '✅ zsh設定を再読み込みしました'"
 [tasks.update-brew]
 alias = "ub"
 description = "Homebrew更新"
-run = "sh ~/dotfiles/setup/10_homebrew.sh && brew update && brew upgrade && brew cleanup"
+run = "sh ~/dotfiles/setup/04_homebrew.sh && brew update && brew upgrade && brew cleanup"
 
 # batでファイルプレビュー
 [tasks.util-bat]

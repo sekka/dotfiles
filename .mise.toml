@@ -6,8 +6,8 @@ description = "現在のmacOS設定がデフォルトから変更されている
 run = "scripts/system/macos/check-defaults.sh"
 
 [tasks."macos:apply"]
-description = "メジャーなmacOS設定を適用（setup/05_macos_defaults.sh）"
-run = "setup/05_macos_defaults.sh"
+description = "メジャーなmacOS設定を適用（setup/03_macos_defaults.sh）"
+run = "setup/03_macos_defaults.sh"
 
 [tasks."macos:snapshot-before"]
 description = "設定変更前のスナップショットを取得（pdef用）"
