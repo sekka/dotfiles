@@ -1,5 +1,8 @@
 #!/bin/bash
-# https://qiita.com/ko1nksm/items/e73e343f609c071e6a8c
+# macOS開発環境の基礎セットアップスクリプト
+# Xcode Command Line Tools、Homebrew、zshの初期導入を行います
+# 参考: https://qiita.com/ko1nksm/items/e73e343f609c071e6a8c
+
 # set -e
 cd ~ || exit
 

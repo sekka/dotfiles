@@ -1,5 +1,6 @@
 #!/bin/bash
-# Brewfileからパッケージをインストール
+# Homebrewパッケージ管理スクリプト
+# Brewfileを使用してパッケージのインストール・更新・クリーンアップを実行します
 
 brew --version                                # Homebrewのバージョンを表示
 brew bundle --file="$(dirname "$0")/Brewfile" # brew bundle --file=setup/Brewfile
