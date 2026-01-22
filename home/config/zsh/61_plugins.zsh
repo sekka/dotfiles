@@ -25,6 +25,9 @@ fi
 #   cd foo bar - "foo" と "bar" を含むディレクトリにジャンプ
 #   cdi        - fzf でインタラクティブに選択
 if command -v zoxide >/dev/null 2>&1; then
+    # 除外ディレクトリ設定（空=全てのディレクトリを追跡、$HOMEも含める）
+    export _ZO_EXCLUDE_DIRS=""
+
     # zoxide初期化（cd,cdiコマンド生成）
     eval "$(zoxide init zsh --cmd cd)"
 
