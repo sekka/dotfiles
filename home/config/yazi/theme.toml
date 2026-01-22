@@ -1,7 +1,11 @@
 # yazi テーマ設定
 # https://yazi-rs.github.io/docs/configuration/theme
 
-[manager]
+[mgr]
+# ボーダー設定（控えめなドット線）
+border_symbol = "┊" # 細い点線
+border_style = { fg = "#45475a" } # 暗めのグレー（catppuccin surface0）
+
 # カーソル
 cwd = { fg = "cyan" }
 hovered = { reversed = true }
@@ -46,3 +50,19 @@ separator_close = ""
 normal = { fg = "black", bg = "blue", bold = true }
 select = { fg = "black", bg = "green", bold = true }
 unset = { fg = "black", bg = "red", bold = true }
+
+# 各ダイアログのボーダーを控えめに
+[pick]
+border = { fg = "#45475a" }
+
+[input]
+border = { fg = "#45475a" }
+
+[cmp]
+border = { fg = "#45475a" }
+
+[tasks]
+border = { fg = "#45475a" }
+
+[spot]
+border = { fg = "#45475a" }
