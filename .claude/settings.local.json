@@ -54,6 +54,7 @@
       "Bash(tree:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
+      "Bash(yazi:*)",
       "Bash(zoxide:*)",
       "Edit(*)",
       "mcp__plugin_claude-mem_mem-search__*",
@@ -74,6 +75,7 @@
       "Skill(review-with-copilot)",
       "Skill(review-with-gemini)",
       "Skill(review-with-multi-ai)",
+      "Skill(writing-documentation)",
       "WebFetch(domain:azukiazusa.dev)",
       "WebFetch(domain:bundlephobia.com)",
       "WebFetch(domain:catnose.me)",
@@ -109,17 +111,10 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebSearch",
-      "Write(*)",
-      "Skill(writing-documentation)"
+      "Write(*)"
     ],
-    "deny": [
-      "Read(./.env.*)"
-    ]
+    "deny": ["Read(./.env.*)"]
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "context7",
-    "deepwiki",
-    "sequential-thinking"
-  ]
+  "enabledMcpjsonServers": ["context7", "deepwiki", "sequential-thinking"]
 }
