@@ -94,10 +94,6 @@ brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # 
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
-brew "firebase-cli"       # https://formulae.brew.sh/formula/firebase-cli     # Firebaseコマンドラインツール
-brew "heroku"             # https://formulae.brew.sh/formula/heroku           # Herokuコマンドラインツール
-brew "netlify-cli"        # https://formulae.brew.sh/formula/netlify-cli      # Netlifyコマンドラインツール
-brew "vercel-cli"         # https://formulae.brew.sh/formula/vercel-cli       # Vercelコマンドラインツール
 
 # === Python ===
 brew "uv"                 # https://formulae.brew.sh/formula/uv               # Python環境管理ツール
