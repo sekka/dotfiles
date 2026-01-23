@@ -1,6 +1,7 @@
 ---
 name: evaluating-tools
 description: 開発ツール、フレームワーク、ライブラリの評価と比較を支援します。PoC計画、複数候補の比較分析、意思決定フレームワークを提供します。技術選定、ツール導入の判断が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # ツール・技術評価

@@ -4,6 +4,8 @@ description: ドメイン固有の知識を持つ再利用可能なagent skills�
 extends: shared/template-generator
 template_type: agent-skill
 model: haiku
+allowed-tools: Task, Read, Glob, Write, Edit
+disable-model-invocation: true
 ---
 
 <objective>

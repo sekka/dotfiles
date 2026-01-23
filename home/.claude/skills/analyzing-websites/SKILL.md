@@ -1,6 +1,7 @@
 ---
 name: analyzing-websites
 description: 既存ウェブサイトを分析し、サイトマップとワイヤーフレームを作成します。URLを渡すとページ構造を解析し、指定形式で出力します。コンテンツ分析機能でページの目的やターゲットも要約できます。
+disable-model-invocation: false
 ---
 
 # ウェブサイト構造分析・ワイヤーフレーム作成

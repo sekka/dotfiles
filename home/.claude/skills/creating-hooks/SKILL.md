@@ -4,6 +4,8 @@ description: Claude Codeのイベント駆動型自動化とバリデーショ�
 extends: shared/template-generator
 template_type: hook
 model: haiku
+allowed-tools: Read, Write, Edit, Bash
+disable-model-invocation: false
 ---
 
 <objective>

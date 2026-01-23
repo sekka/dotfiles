@@ -1,6 +1,7 @@
 ---
 name: designing-databases
 description: データベーススキーマ設計と最適化を支援します。正規化戦略、インデックス設計、パフォーマンス最適化を提供します。データモデル設計、データベース構造の最適化が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # データベース設計と最適化

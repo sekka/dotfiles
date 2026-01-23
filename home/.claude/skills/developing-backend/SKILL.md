@@ -1,6 +1,7 @@
 ---
 name: developing-backend
 description: バックエンド API 実装、認証・認可、キャッシング戦略を支援します。セキュアな実装、パフォーマンス最適化、テスト戦略を提供します。API実装、バックエンドサービスの開発が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # バックエンド開発と信頼性エンジニアリング

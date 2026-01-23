@@ -1,6 +1,7 @@
 ---
 name: optimizing-seo
 description: オーガニック検索流入を高めるためのSEO施策を設計・実行します。キーワード戦略、オンページ最適化、構造化データ、内部リンク計画、テクニカルSEOを提供します。検索順位向上、サイトクローラビリティ改善が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # SEO最適化

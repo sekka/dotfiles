@@ -1,6 +1,7 @@
 ---
 name: generating-tests
 description: ユニットテスト、統合テスト、E2Eテストのコード生成を支援します。テスト設計、AAA パターン、テストシナリオを提供します。テストコード実装、テストカバレッジ拡大が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # テストコード生成

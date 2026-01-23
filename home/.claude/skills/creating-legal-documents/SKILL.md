@@ -1,6 +1,7 @@
 ---
 name: creating-legal-documents
 description: プライバシーポリシー、利用規約、その他の法的文書の作成と GDPR/CCPA 準拠を支援します。規制要件を満たす法的文書の生成と更新を提供します。法的コンプライアンス文書の作成、データ保護規制への対応が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # 法的文書作成とコンプライアンス

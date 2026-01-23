@@ -1,6 +1,8 @@
 ---
 name: setting-up-devops
 description: CI/CDパイプライン構築とデプロイ自動化を支援します。Infrastructure as Code、監視システム設計、デプロイメント戦略を提供します。DevOps基盤構築、運用自動化が必要な場合に使用してください。
+allowed-tools: Task, Bash, Read, Write, Edit
+disable-model-invocation: true
 ---
 
 # DevOps・SRE インフラ構築

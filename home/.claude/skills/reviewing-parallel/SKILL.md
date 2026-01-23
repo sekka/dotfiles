@@ -2,6 +2,7 @@
 name: reviewing-parallel
 description: 複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、結果を統合処理して単一のレポートを生成します。重複排除、優先度付け、カテゴリ分類を自動化します。包括的なコードレビュー、多角的な視点での品質評価、複数AIの強みを活かしたレビューが必要な場合に使用してください。
 allowed-tools: Task, Bash, Read, Grep, Glob
+disable-model-invocation: true
 ---
 
 # 並列AIレビュー実行スキル

@@ -1,7 +1,8 @@
 ---
 name: creating-changelogs
 description: Gitコミット履歴を分析し、ユーザーフレンドリーかつ技術的に詳細なリリースノートとチェンジログを作成します。リリースノート、CHANGELOG、変更履歴が必要なときに使用してください。
-allowed-tools: Read, Bash, Grep, Glob, Write
+allowed-tools: Read, Grep, Bash, Write
+disable-model-invocation: true
 ---
 
 # チェンジログ作成

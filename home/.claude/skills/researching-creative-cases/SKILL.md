@@ -1,6 +1,7 @@
 ---
 name: researching-creative-cases
 description: アワードやトレンドから日本の最新クリエイティブ事例（Web、広告、プロダクト、MV・映像、LP、タイポグラフィ、パッケージ、空間、UI/UX、展示会等）を調査し、厳選されたMarkdownレポートを生成します。隣接分野の提案機能付き。チームのインスピレーション、クライアント提案、デザイントレンド分析に活用できます。
+disable-model-invocation: false
 ---
 
 <objective>

@@ -1,6 +1,7 @@
 ---
 name: translating
 description: 日本語と英語の間で、文脈、ニュアンス、文化的適合性を考慮したプロフェッショナルな翻訳を行います。翻訳が必要なとき、translate、訳して、などのキーワードで使用してください。
+disable-model-invocation: false
 ---
 
 # 日英・英日翻訳

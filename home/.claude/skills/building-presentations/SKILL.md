@@ -1,6 +1,7 @@
 ---
 name: building-presentations
 description: プレゼン資料の構成やスライド原稿を作成します。ストーリーライン、章立て、見出し・本文・図解の原稿をまとめます。プレゼン、スライド、ピッチデッキが必要なときに使用してください。
+disable-model-invocation: false
 ---
 
 # プレゼンテーション作成

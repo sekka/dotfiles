@@ -4,6 +4,8 @@ description: カスタムClaude Codeスラッシュコマンド（/command-name�
 extends: shared/template-generator
 template_type: slash-command
 model: haiku
+allowed-tools: Task, Read, Glob, Write, Edit
+disable-model-invocation: true
 ---
 
 <objective>

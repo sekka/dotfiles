@@ -1,6 +1,7 @@
 ---
 name: managing-frontend-knowledge
 description: フロントエンド技術（CSS、JavaScript、HTML、パフォーマンス、アクセシビリティ）のナレッジベース管理。Web開発の実装タスクやコーディング作業時に自発的にナレッジベースを参照し、ベストプラクティスを適用することで作業の精度と速度を向上させる。URLや記事からの技術情報の要約・蓄積、質問への回答も行う。モダンCSS（Grid、Flexbox、@scope、View Transitions）、JavaScript パターン、Core Web Vitals、WCAG、ブラウザ互換性などに対応。
+disable-model-invocation: false
 ---
 
 # フロントエンドナレッジ管理

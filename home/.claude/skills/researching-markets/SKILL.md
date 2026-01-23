@@ -1,6 +1,7 @@
 ---
 name: researching-markets
 description: 市場調査とトレンド分析を支援します。ペルソナ定義、競合分析、市場規模推定、ニーズ分析を提供します。市場進出判定、顧客理解深化、競合対策が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # 市場調査とトレンド分析

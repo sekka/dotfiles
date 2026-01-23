@@ -1,6 +1,7 @@
 ---
 name: optimizing-performance
 description: Web/モバイル/バックエンド全体のパフォーマンス最適化を支援します。Core Web Vitals 改善、データベースクエリ最適化、インフラリソース最適化を提供します。パフォーマンス改善、ページ速度向上が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # パフォーマンス最適化

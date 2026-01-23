@@ -4,6 +4,7 @@ description: Claude間のパイプライン用に最適化されたメタプロ�
 extends: shared/template-generator
 template_type: meta-prompt
 model: opus
+disable-model-invocation: false
 ---
 
 <objective>

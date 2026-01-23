@@ -1,6 +1,7 @@
 ---
 name: designing-apis
 description: REST/GraphQL APIの設計と OpenAPI 仕様の作成を支援します。エンドポイント設計、エラー処理、セキュリティ対策を含む包括的なAPI仕様を提供します。新規API設計、API仕様の標準化、インターフェース設計が必要な場合に使用してください。
+disable-model-invocation: false
 ---
 
 # API設計とドキュメント

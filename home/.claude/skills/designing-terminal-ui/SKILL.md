@@ -1,6 +1,7 @@
 ---
 name: designing-terminal-ui
 description: Create distinctive, production-grade terminal user interfaces with high design quality. Use this skill when the user asks to build CLI tools, TUI applications, or terminal-based interfaces. Generates creative, polished code that avoids generic terminal aesthetics.
+disable-model-invocation: false
 ---
 
 Create distinctive, production-grade terminal user interfaces with high design quality. Use this skill when building CLI tools, TUI applications, or terminal-based interfaces. Generate creative, polished code that avoids generic terminal aesthetics.
