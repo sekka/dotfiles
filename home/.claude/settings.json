@@ -2,7 +2,18 @@
   "env": {},
   "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "plan",
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)"
+    ]
   },
   "model": "opusplan",
   "hooks": {
@@ -13,6 +24,24 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-files.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-read.sh"
           }
         ]
       },
