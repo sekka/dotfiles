@@ -170,7 +170,24 @@
       "WebFetch(domain:takepepe.com)",
       "WebFetch(domain:tomoyaokada.com)",
       "WebFetch(domain:taotajima.jp)",
-      "WebFetch(domain:kaitonote.com)"
+      "WebFetch(domain:kaitonote.com)",
+      "Skill(creating-hooks)",
+      "Bash(done)",
+      "Bash(for dir in /Users/kei/dotfiles/home/.claude/skills/*/)",
+      "Bash(do)",
+      "Bash(basename:*)",
+      "Bash(for skill in analyzing-websites auditing-accessibility auditing-security building-presentations creating-content creating-legal-documents creating-meta-prompts creating-proposals decomposing-tasks designing-analytics designing-apis designing-architecture designing-brand designing-databases designing-terminal-ui designing-ui developing-backend developing-frontend evaluating-tools generating-tests managing-frontend-knowledge memorizing optimizing-performance optimizing-seo planning-business researching-creative-cases researching-markets researching-ux reviewing-site-structures reviewing-with-claude tracking-experiments translating writing-documentation)",
+      "Bash(file=\"$skill/SKILL.md\")",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(if grep -q \"disable-model-invocation:\" \"$file\")",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(file=\"/Users/kei/dotfiles/home/.claude/skills/$skill/SKILL.md\")",
+      "mcp__deepwiki__ask_question",
+      "Bash(FILE_PATH=\"/tmp/test-protect-files/.env\" bash:*)",
+      "Bash(FILE_PATH=\"/tmp/test-protect-files/secrets/config.json\" bash /Users/kei/.claude/hooks/protect-files.sh)",
+      "Bash(FILE_PATH=\"/tmp/test-protect-files/normal.txt\" bash:*)"
     ],
     "deny": [
       "Read(./.env.*)"
