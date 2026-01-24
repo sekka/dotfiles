@@ -143,6 +143,7 @@ const data = JSON.parse(fs.readFileSync(path, 'utf8'));
 let sorted = false;
 if (data.permissions?.allow) { data.permissions.allow.sort((a, b) => a.localeCompare(b)); sorted = true; }
 if (data.permissions?.deny) { data.permissions.deny.sort((a, b) => a.localeCompare(b)); sorted = true; }
+if (data.permissions?.ask) { data.permissions.ask.sort((a, b) => a.localeCompare(b)); sorted = true; }
 if (sorted) {
   fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\\n');
   console.log('✅ Sorted permissions in', path);
