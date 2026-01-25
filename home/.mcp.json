@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "better-icons": {
+      "command": "npx",
+      "args": ["-y", "better-icons"]
+    },
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
@@ -9,12 +13,8 @@
       "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
     },
     "markitdown": {
-      "type": "stdio",
       "command": "uvx",
-      "args": [
-        "markitdown-mcp"
-      ],
-      "env": {}
+      "args": ["--python", "3.13", "markitdown-mcp"]
     },
     "sequential-thinking": {
       "command": "npx",

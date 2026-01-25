@@ -93,12 +93,13 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)"
+      "WebFetch(domain:zoewave.medium.com)",
+      "Bash(printenv:*)",
+      "WebFetch(domain:sharp.pixelplumbing.com)",
+      "WebFetch(domain:yoanbernabeu.github.io)"
     ],
-    "deny": [
-    ],
-    "ask": [
-    ]
+    "deny": [],
+    "ask": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
