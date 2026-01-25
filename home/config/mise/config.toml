@@ -15,6 +15,10 @@
 # ============================================
 # プロジェクト全体で使用される環境変数を定義
 [env]
+# Homebrew のバイナリを PATH に追加（node-gyp 等のネイティブビルドツール用）
+_.path = ["/opt/homebrew/bin"]
+# sharp がグローバルの libvips を無視し、prebuilt バイナリを使用するよう強制
+SHARP_IGNORE_GLOBAL_LIBVIPS = "true"
 
 # ============================================
 # Global Settings (グローバル設定)
@@ -383,50 +387,60 @@ fi
 # go = "1.22"            # Go 1.22
 # rust = "stable"        # Rust安定版
 
+# === JavaScript ランタイム ===
 node = ["lts", "latest", "25", "24", "23", "22", "21", "20", "19", "18"]
 deno = "latest"
 bun = "latest"
 # npm = "latest"
+
+# === パッケージマネージャー ===
 yarn = "latest"
 pnpm = "latest"
 
+# === ビルドツール ===
+"npm:node-gyp" = "latest"
+
+# === AI/LLM ツール ===
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@openai/codex" = "latest"
 # "npm:@byterover/cipher" = "latest"    # https://github.com/campfirein/cipher
 "npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
-"npm:@sasazame/ccresume" = "latest"   # https://zenn.dev/sasazame/articles/3634040f7fb4da
 # "npm:@letta-ai/letta-code" = "latest" # https://github.com/letta-ai/letta-code
 "npm:@playwright/mcp" = "latest"      # https://github.com/microsoft/playwright-mcp/releases/tag/v0.0.58
+"npm:@sasazame/ccresume" = "latest"   # https://zenn.dev/sasazame/articles/3634040f7fb4da
+"npm:cc-sdd" = "latest"               # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
+"npm:cc-wrapped" = "latest"           # https://github.com/numman-ali/cc-wrapped
 "npm:ccexp" = "latest"                # https://zenn.dev/nyatinte/articles/launch-ccexp
 "npm:ccmanager" = "latest"            # https://zenn.dev/kbwok/articles/33fad69555d005
 "npm:ccsearch" = "latest"             # https://zenn.dev/suthio/articles/126bc21f0741a6
 "npm:ccusage" = "latest"              # https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
-"npm:cc-sdd" = "latest"               # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
-"npm:cc-wrapped" = "latest"           # https://github.com/numman-ali/cc-wrapped
 "npm:claude-code-monitor" = "latest"  # https://github.com/onikan27/claude-code-monitor
+"npm:clawdbot" = "latest"             # https://clawd.bot/
 "npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
 "npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
-"npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
-"npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
-# "npm:clawdbot" = "latest"           # https://clawd.bot/
 
+# === デプロイ/クラウド ===
 "npm:firebase-tools" = "latest"
 "npm:heroku" = "latest"
 "npm:netlify-cli" = "latest"
 "npm:vercel" = "latest"
 
-"npm:caniuse-cmd" = "latest"
-"npm:fixpack" = "latest"
-"npm:git-cz" = "latest"
-"npm:git-diff-archive" = "latest"
-"npm:lighthouse" = "latest"
-"npm:npm-check" = "latest"
-"npm:npm-check-updates" = "latest"
-"npm:oxfmt" = "latest"
-"npm:oxlint" = "latest"
+# === 開発ツール ===
+"npm:caniuse-cmd" = "latest"          # ブラウザ互換性チェック
+"npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
+"npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
+"npm:fixpack" = "latest"              # package.json整理
+"npm:git-cz" = "latest"               # Git commit支援
+"npm:git-diff-archive" = "latest"     # Git差分アーカイブ
+"npm:lighthouse" = "latest"           # パフォーマンス測定
+"npm:npm-check" = "latest"            # npm依存関係チェック
+"npm:npm-check-updates" = "latest"    # npm更新チェック
+"npm:oxfmt" = "latest"                # Formatter
+"npm:oxlint" = "latest"               # Linter
 
+# === Rust ===
 rust = "stable"
 "cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
 "cargo:filetree" = "latest"     # https://crates.io/crates/filetree File explorer TUI interface
@@ -438,6 +452,7 @@ rust = "stable"
 # "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
+# === Go ===
 go = "latest"
 # "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"
 "go:github.com/d-kuro/gwq/cmd/gwq" = "latest" # Git worktree tool
