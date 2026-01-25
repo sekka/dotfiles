@@ -419,6 +419,7 @@ pnpm = "latest"
 "npm:clawdbot" = "latest"             # https://clawd.bot/
 "npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
 "npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
+"npm:ui-skills" = "latest"            # https://www.ui-skills.com/
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
 
 # === デプロイ/クラウド ===
