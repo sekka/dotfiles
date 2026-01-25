@@ -397,6 +397,7 @@ pnpm = "latest"
 "npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
 "npm:@sasazame/ccresume" = "latest"   # https://zenn.dev/sasazame/articles/3634040f7fb4da
 # "npm:@letta-ai/letta-code" = "latest" # https://github.com/letta-ai/letta-code
+"npm:@playwright/mcp" = "latest"      # https://github.com/microsoft/playwright-mcp/releases/tag/v0.0.58
 "npm:ccexp" = "latest"                # https://zenn.dev/nyatinte/articles/launch-ccexp
 "npm:ccmanager" = "latest"            # https://zenn.dev/kbwok/articles/33fad69555d005
 "npm:ccsearch" = "latest"             # https://zenn.dev/suthio/articles/126bc21f0741a6
@@ -408,6 +409,8 @@ pnpm = "latest"
 "npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
 "npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
+"npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
+# "npm:clawdbot" = "latest"           # https://clawd.bot/
 
 "npm:firebase-tools" = "latest"
 "npm:heroku" = "latest"
