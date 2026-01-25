@@ -62,22 +62,28 @@
 
 実装やデバッグ中のエラー・不明点は、以下の優先順位で自発的に調査すること:
 
-1. **公式ドキュメント優先**
+1. **ローカルコードベース検索**
+   - serena: シンボルレベル操作（リファクタリング、構造的検索）
+   - grepai: セマンティック検索（自然言語での概念検索、コールグラフ）
+   - Grep: 正確なテキスト検索
+   - Glob: ファイル名検索
+
+2. **公式ドキュメント優先**
    - Context7: ライブラリ公式ドキュメント、API 仕様、ベストプラクティス
    - Claude Code Guide: Claude Code 自身の機能・仕様調査
 
-2. **補足情報**
+3. **補足情報**
    - DeepWiki: CHANGELOG、既知の問題、内部実装
    - WebFetch: npm trends、Moiva.io（パッケージ比較）
 
-3. **複雑な比較**
+4. **複雑な比較**
    - 5つ以上のライブラリ比較 → `/evaluating-tools` スキル
 
 **セキュリティ原則**:
 - **IMPORTANT**: 環境変数、API キー、顧客データなどの機密情報を外部ツールに送信禁止
 - 公開情報のみを問い合わせ対象とする
 
-詳細: `@.claude/rules/tech-research.md`, `@.claude/rules/security.md`
+詳細: `@.claude/rules/semantic-search.md`, `@.claude/rules/tech-research.md`, `@.claude/rules/security.md`
 
 ### コード実装ワークフロー
 
@@ -162,6 +168,7 @@ Web 開発の質問では `managing-frontend-knowledge` スキルのナレッジ
 ## 参考資料
 
 - TDD ワークフロー: `@.claude/rules/tdd-workflow.md`
+- セマンティック検索: `@.claude/rules/semantic-search.md`
 - 技術調査ガイド: `@.claude/rules/tech-research.md`
 - レビューワークフロー: `@.claude/rules/code-review-workflow.md`
 - フロントエンドナレッジ: `@.claude/rules/frontend-knowledge.md`
