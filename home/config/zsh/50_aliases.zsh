@@ -36,6 +36,15 @@ alias agh="ag --hidden --smart-case --stats --pager \"less -F -R\""
 alias rg="rg --smart-case --stats --pretty"
 alias vp="vim +PlugInstall +qall"
 
+# ======================
+# Semantic Search (grepai)
+# ======================
+
+alias gai="grepai"
+alias gais="grepai search"
+alias gait="grepai trace"
+alias gaiw="grepai watch"
+
 # mise/npm/yarnスクリプト実行用関数
 # シェルインジェクションを防ぐため、関数として定義しクォート処理
 

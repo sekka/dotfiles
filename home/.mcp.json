@@ -12,6 +12,10 @@
       "command": "npx",
       "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
     },
+    "grepai": {
+      "command": "grepai",
+      "args": ["mcp-serve"]
+    },
     "markitdown": {
       "command": "uvx",
       "args": ["--python", "3.13", "markitdown-mcp"]
