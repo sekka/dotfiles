@@ -132,6 +132,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "appcleaner"
 #cask "app-tamer"
 #cask "bartender"
+#cask "betterdisplay"
 #cask "bettertouchtool"
 #cask "cursorsense"
 #cask "cleanmymac"
@@ -141,6 +142,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "google-drive"
 #cask "hiddenbar"
 #cask "hyperswitch"
+#cask "imhex"
 #cask "karabiner-elements"
 #cask "keyboard-maestro"
 #cask "lzt1008/tap/powerflow"
@@ -164,6 +166,7 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 
 # === ネットワーク ===
 #cask "cloudflare-warp"
+#cask "little-snitch"
 #cask "vpn-by-google-one"
 
 # === AI ===
@@ -255,7 +258,9 @@ brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # 
 #cask "svgcleaner"
 
 # === 音源処理 ===
+#cask "blackhole-2ch"
 #cask "blackhole-16ch"
+#cask "blackhole-64ch"
 #cask "eqMac"
 #cask "xld"
 
