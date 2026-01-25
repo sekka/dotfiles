@@ -137,6 +137,7 @@ CONFIG_DIRS=(
   gwq
   lazygit
   mise
+  nvim
   sheldon
   yazi
 )
@@ -261,7 +262,7 @@ echo "   スキップ: $skipped"
 echo ""
 echo "✅ dotfiles のセットアップが完了しました！"
 echo "   ホームディレクトリ: zsh, git, vim等の設定"
-echo "   .config/: ghostty, mise, sheldon, gwq, lazygit, yazi"
+echo "   .config/: ghostty, mise, nvim, sheldon, gwq, lazygit, yazi"
 echo "   navi/: コマンドチートシート"
 echo "   .claude/: AI開発支援ツール設定"
 echo "   .serena/: セマンティックコーディング設定"
