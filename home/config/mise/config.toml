@@ -401,6 +401,7 @@ pnpm = "latest"
 "npm:node-gyp" = "latest"
 
 # === AI/LLM ツール ===
+"npm:@antiwork/shortest" = "latest"   # https://github.com/antiwork/shortest
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@openai/codex" = "latest"
