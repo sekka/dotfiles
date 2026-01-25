@@ -1,5 +1,7 @@
 {
-  "env": {},
+  "env": {
+    "CLAUDE_CODE_ENABLE_TASKS": "true"
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "defaultMode": "plan",
