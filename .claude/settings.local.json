@@ -52,6 +52,7 @@
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:rhizomatiks.com)",
       "WebFetch(domain:rightdesigninc.com)",
+      "WebFetch(domain:sharp.pixelplumbing.com)",
       "WebFetch(domain:sheldon.cli.rs)",
       "WebFetch(domain:shhh.jp)",
       "WebFetch(domain:shimotsuki.wwwxyz.jp)",
@@ -89,14 +90,12 @@
       "WebFetch(domain:www.tak-dcxi.com)",
       "WebFetch(domain:www.takram.com)",
       "WebFetch(domain:yazi-rs.github.io)",
+      "WebFetch(domain:yoanbernabeu.github.io)",
       "WebFetch(domain:yugop.com)",
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)",
-      "Bash(printenv:*)",
-      "WebFetch(domain:sharp.pixelplumbing.com)",
-      "WebFetch(domain:yoanbernabeu.github.io)"
+      "WebFetch(domain:zoewave.medium.com)"
     ],
     "deny": [],
     "ask": []

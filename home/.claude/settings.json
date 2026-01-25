@@ -54,6 +54,7 @@
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
       "Bash(oxlint:*)",
+      "Bash(printenv:*)",
       "Bash(rg:*)",
       "Bash(shellcheck:*)",
       "Bash(sqlite3:*)",
