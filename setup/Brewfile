@@ -111,6 +111,7 @@ brew "libavif"            # https://formulae.brew.sh/formula/libavif          # 
 # === AI ===
 #tap "dagger/tap"
 #brew "dagger/tap/container-use"
+brew "ollama"             # https://formulae.brew.sh/formula/ollama           # ローカルLLMランタイム
 brew "specify"            # https://formulae.brew.sh/formula/specify          # Spec-Driven Developmentツール
 # brew "asheshgoplani/tap/agent-deck" # https://github.com/asheshgoplani/agent-deck  # マルチAIエージェント管理ツール
 
