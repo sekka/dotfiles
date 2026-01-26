@@ -89,6 +89,7 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:www.tak-dcxi.com)",
       "WebFetch(domain:www.takram.com)",
+      "WebFetch(domain:x.com)",
       "WebFetch(domain:yazi-rs.github.io)",
       "WebFetch(domain:yoanbernabeu.github.io)",
       "WebFetch(domain:yugop.com)",
@@ -96,7 +97,8 @@
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
-      "WebFetch(domain:x.com)"
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:twigl.app)"
     ],
     "deny": [],
     "ask": []
