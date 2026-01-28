@@ -4,7 +4,6 @@
   },
   "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "plan",
     "allow": [
       "Bash(basename:*)",
       "Bash(bash:*)",
@@ -138,7 +137,8 @@
       "Bash(git merge:*)",
       "Bash(rm:*)",
       "Bash(wget:*)"
-    ]
+    ],
+    "defaultMode": "plan"
   },
   "model": "opusplan",
   "hooks": {
@@ -302,14 +302,14 @@
     "serena@claude-plugins-official": true,
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
-    "claude-mem@thedotmack": false,
+    "claude-mem@thedotmack": true,
     "elevator-music@sevii-agent-marketplace": false,
-    "claude-mem-japanese@claude-mem-jp": false,
-    "claude-code-harness@claude-code-harness-marketplace": false,
+    "claude-mem-japanese@claude-mem-jp": true,
+    "claude-code-harness@claude-code-harness-marketplace": true,
     "Notion@claude-plugins-official": false,
     "typescript-lsp@claude-plugins-official": false,
     "feature-dev@claude-plugins-official": false,
-    "example-skills@anthropic-agent-skills": false,
+    "example-skills@anthropic-agent-skills": true,
     "greptile@claude-plugins-official": false,
     "document-skills@anthropic-agent-skills": false,
     "code-simplifier@claude-plugins-official": true,
@@ -318,7 +318,8 @@
     "ask-gemini@hiropon-plugins": true,
     "peer@hiropon-plugins": true,
     "claude-code-setup@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "mgrep@Mixedbread-Grep": true
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
