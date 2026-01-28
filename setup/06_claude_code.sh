@@ -45,18 +45,93 @@ if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
   echo ""
 fi
 
-echo ""
-echo "# ======================================================================================="
-echo "# インストール完了"
-echo "# ======================================================================================="
-echo ""
-echo "📝 次のステップ:"
-echo '   1. シェルを再起動: exec $SHELL -l'
-echo "   2. 動作確認: claude --version"
-echo "   3. セットアップ: claude doctor"
-echo ""
-echo "💡 公式版の利点:"
-echo "   - 自動更新機能が有効（バックグラウンドで最新版に自動更新）"
-echo "   - 公式サポート対象"
-echo "   - インストール先: ~/.local/bin/claude"
-echo ""
+# ======================
+# プラグイン管理
+# ======================
+
+# jq が利用可能か確認
+if ! command -v jq &>/dev/null; then
+  echo "⚠️  警告: jq がインストールされていません。プラグインの更新検出をスキップします。"
+  echo "   インストール方法: brew install jq"
+  JQ_AVAILABLE=false
+else
+  JQ_AVAILABLE=true
+fi
+
+# マーケットプレースが追加済みか確認
+is_marketplace_added() {
+  local name="$1"
+  local json_file="$HOME/.claude/plugins/known_marketplaces.json"
+
+  if [[ $JQ_AVAILABLE == "true" ]] && [[ -f $json_file ]]; then
+    jq -e ".[\"$name\"]" "$json_file" >/dev/null 2>&1
+    return $?
+  fi
+  return 1
+}
+
+# プラグインがインストール済みか確認
+is_plugin_installed() {
+  local plugin="$1" # 形式: plugin@marketplace
+  local json_file="$HOME/.claude/settings.json"
+
+  if [[ $JQ_AVAILABLE == "true" ]] && [[ -f $json_file ]]; then
+    jq -e ".enabledPlugins[\"$plugin\"]" "$json_file" >/dev/null 2>&1
+    return $?
+  fi
+  return 1
+}
+
+# マーケットプレースを追加または更新
+ensure_marketplace() {
+  local name="$1"   # マーケットプレース名（判定用）
+  local source="$2" # 追加時のソース（GitHub repo または URL）
+
+  if is_marketplace_added "$name"; then
+    echo "📦 Marketplace '$name' を更新中..."
+    claude plugin marketplace update "$name"
+  else
+    echo "📦 Marketplace '$source' を追加中..."
+    claude plugin marketplace add "$source"
+  fi
+}
+
+# プラグインをインストールまたは更新
+ensure_plugin() {
+  local plugin="$1" # 形式: plugin@marketplace
+
+  if is_plugin_installed "$plugin"; then
+    echo "🔌 Plugin '$plugin' を更新中..."
+    claude plugin update "$plugin"
+  else
+    echo "🔌 Plugin '$plugin' をインストール中..."
+    claude plugin install "$plugin"
+  fi
+}
+
+# skill-creator（スキル作成スキル）
+ensure_marketplace "anthropic-agent-skills" "anthropics/skills"
+ensure_plugin "example-skills@anthropic-agent-skills"
+
+# claude-mem（セッション間メモリ）
+ensure_marketplace "thedotmack" "thedotmack/claude-mem"
+ensure_plugin "claude-mem@thedotmack"
+
+# claude-mem-japanese（claude-mem日本語対応）
+ensure_marketplace "claude-mem-jp" "Chachamaru127/claude-mem-jp"
+ensure_plugin "claude-mem-japanese@claude-mem-jp"
+
+# claude-code-harness（コード管理ツール）
+ensure_marketplace "claude-code-harness-marketplace" "Chachamaru127/claude-code-harness"
+ensure_plugin "claude-code-harness@claude-code-harness-marketplace"
+
+# Asking（AI同士の相談）
+ensure_marketplace "hiropon-plugins" "hiroro-work/claude-plugins"
+ensure_plugin "ask-claude@hiropon-plugins"
+ensure_plugin "ask-codex@hiropon-plugins"
+ensure_plugin "ask-gemini@hiropon-plugins"
+ensure_plugin "peer@hiropon-plugins"
+
+# mgrep（高機能grep）
+ensure_marketplace "Mixedbread-Grep" "https://github.com/mixedbread-ai/mgrep"
+ensure_plugin "mgrep@Mixedbread-Grep"
