@@ -112,7 +112,9 @@
       "WebFetch(domain:www.webcreatorbox.com)",
       "WebFetch(domain:gihyo.jp)",
       "WebFetch(domain:developer.hatenastaff.com)",
-      "WebFetch(domain:css-tricks.com)"
+      "WebFetch(domain:css-tricks.com)",
+      "WebFetch(domain:www.m3tech.blog)",
+      "WebFetch(domain:www.qbook.jp)"
     ],
     "deny": [],
     "ask": []
