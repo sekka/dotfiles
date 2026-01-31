@@ -586,6 +586,443 @@ document.adoptedStyleSheets = [sheet];
 
 ---
 
+## 高階関数（Higher-Order Functions）
+
+> 出典: https://code.tutsplus.com/higher-order-functions-in-javascript--cms-107951t
+> 執筆日: 2023-11-22
+> 追加日: 2026-01-31
+
+別の関数を引数として受け取る、または関数を戻り値として返す関数。コードの再利用性と可読性を向上させる重要な概念。
+
+### なぜ高階関数が良いのか
+
+- **抽象化**: 共通ロジックを隠蔽し、変化する部分のみを関数として渡す
+- **再利用性**: 同じパターンを複数の場所で使い回せる
+- **可読性**: ループベースの実装より意図が明確
+- **関数型プログラミング**: 副作用を抑え、テストしやすいコードを書ける
+
+### 基本パターン1: 関数を引数として受け取る
+
+```javascript
+/**
+ * 汎用計算関数（高階関数）
+ */
+function calculate(a, b, operation) {
+  return operation(a, b);
+}
+
+// 操作関数
+function add(x, y) {
+  return x + y;
+}
+
+function subtract(x, y) {
+  return x - y;
+}
+
+function multiply(x, y) {
+  return x * y;
+}
+
+// 使用例
+console.log(calculate(10, 5, add));       // 15
+console.log(calculate(10, 5, subtract));  // 5
+console.log(calculate(10, 5, multiply));  // 50
+
+// アロー関数で簡潔に
+console.log(calculate(10, 5, (x, y) => x / y)); // 2
+```
+
+### 基本パターン2: 関数を返す
+
+```javascript
+/**
+ * 関数を生成する高階関数
+ */
+function createMultiplier(factor) {
+  return function(number) {
+    return number * factor;
+  };
+}
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+
+console.log(double(5));  // 10
+console.log(triple(5));  // 15
+
+// クロージャを活用したカウンター
+function createCounter() {
+  let count = 0;
+  return {
+    increment: () => ++count,
+    decrement: () => --count,
+    getCount: () => count
+  };
+}
+
+const counter = createCounter();
+counter.increment(); // 1
+counter.increment(); // 2
+console.log(counter.getCount()); // 2
+```
+
+### 配列メソッド: filter()
+
+条件に基づいて配列要素をフィルタリング。
+
+```javascript
+const employees = [
+  { name: 'Alice', salary: 50000 },
+  { name: 'Bob', salary: 75000 },
+  { name: 'Carol', salary: 60000 },
+  { name: 'Dave', salary: 80000 }
+];
+
+// 給与が70000以上の従業員
+const highEarners = employees.filter(emp => emp.salary >= 70000);
+console.log(highEarners);
+// [{ name: 'Bob', salary: 75000 }, { name: 'Dave', salary: 80000 }]
+
+// 複数条件
+const filtered = employees.filter(emp =>
+  emp.salary >= 60000 && emp.name.startsWith('C')
+);
+console.log(filtered);
+// [{ name: 'Carol', salary: 60000 }]
+```
+
+### 配列メソッド: map()
+
+配列の各要素に変換を適用し、新しい配列を生成。
+
+```javascript
+const students = [
+  { name: 'Alice', grade: 85 },
+  { name: 'Bob', grade: 92 },
+  { name: 'Carol', grade: 78 }
+];
+
+// 名前のみを抽出
+const names = students.map(student => student.name);
+console.log(names); // ['Alice', 'Bob', 'Carol']
+
+// グレードを10%増加
+const boosted = students.map(student => ({
+  ...student,
+  grade: Math.min(100, student.grade * 1.1) // 最大100点
+}));
+
+// オブジェクト変換
+const summary = students.map(s => ({
+  student: s.name,
+  passed: s.grade >= 80
+}));
+console.log(summary);
+// [
+//   { student: 'Alice', passed: true },
+//   { student: 'Bob', passed: true },
+//   { student: 'Carol', passed: false }
+// ]
+```
+
+### 配列メソッド: reduce()
+
+配列を単一値に縮約。
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+// 合計
+const sum = numbers.reduce((acc, num) => acc + num, 0);
+console.log(sum); // 15
+
+// 最大値
+const max = numbers.reduce((acc, num) => Math.max(acc, num), -Infinity);
+console.log(max); // 5
+
+// オブジェクトの集計
+const orders = [
+  { product: 'Laptop', price: 1200 },
+  { product: 'Mouse', price: 25 },
+  { product: 'Keyboard', price: 75 }
+];
+
+const totalPrice = orders.reduce((total, order) => total + order.price, 0);
+console.log(totalPrice); // 1300
+
+// グループ化
+const people = [
+  { name: 'Alice', age: 25 },
+  { name: 'Bob', age: 30 },
+  { name: 'Carol', age: 25 }
+];
+
+const groupedByAge = people.reduce((groups, person) => {
+  const age = person.age;
+  if (!groups[age]) {
+    groups[age] = [];
+  }
+  groups[age].push(person);
+  return groups;
+}, {});
+
+console.log(groupedByAge);
+// {
+//   25: [{ name: 'Alice', age: 25 }, { name: 'Carol', age: 25 }],
+//   30: [{ name: 'Bob', age: 30 }]
+// }
+```
+
+### メソッドチェーン
+
+高階関数を連鎖させて複雑な処理を表現。
+
+```javascript
+const products = [
+  { name: 'Laptop', price: 1200, category: 'Electronics' },
+  { name: 'Desk', price: 300, category: 'Furniture' },
+  { name: 'Mouse', price: 25, category: 'Electronics' },
+  { name: 'Chair', price: 150, category: 'Furniture' }
+];
+
+// エレクトロニクス製品の合計金額
+const electronicsTotal = products
+  .filter(p => p.category === 'Electronics')
+  .map(p => p.price)
+  .reduce((sum, price) => sum + price, 0);
+
+console.log(electronicsTotal); // 1225
+
+// 価格順にソート → 上位3件の名前を取得
+const top3Names = products
+  .sort((a, b) => b.price - a.price)
+  .slice(0, 3)
+  .map(p => p.name);
+
+console.log(top3Names); // ['Laptop', 'Desk', 'Chair']
+```
+
+### カスタム高階関数: retry()
+
+失敗時に再試行する関数ラッパー。
+
+```javascript
+/**
+ * 関数を再試行可能にする高階関数
+ */
+function retry(fn, maxAttempts = 3, delay = 1000) {
+  return async function(...args) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        return await fn(...args);
+      } catch (error) {
+        if (attempt === maxAttempts) {
+          throw new Error(`Failed after ${maxAttempts} attempts: ${error.message}`);
+        }
+        console.log(`Attempt ${attempt} failed, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  };
+}
+
+// 使用例
+async function fetchData(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error('Network error');
+  return response.json();
+}
+
+const fetchWithRetry = retry(fetchData, 3, 2000);
+
+try {
+  const data = await fetchWithRetry('https://api.example.com/data');
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+### カスタム高階関数: once()
+
+関数を一度だけ実行する。
+
+```javascript
+/**
+ * 関数を一度だけ実行可能にする高階関数
+ */
+function once(fn) {
+  let called = false;
+  let result;
+
+  return function(...args) {
+    if (!called) {
+      called = true;
+      result = fn(...args);
+    }
+    return result;
+  };
+}
+
+// 使用例: 初期化処理
+const initialize = once(() => {
+  console.log('Initializing application...');
+  return { status: 'initialized' };
+});
+
+console.log(initialize()); // "Initializing application..." + { status: 'initialized' }
+console.log(initialize()); // { status: 'initialized' }（再実行されない）
+```
+
+### カスタム高階関数: memoize()
+
+関数の結果をキャッシュする。
+
+```javascript
+/**
+ * 関数の結果をメモ化する高階関数
+ */
+function memoize(fn) {
+  const cache = new Map();
+
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log('Cache hit');
+      return cache.get(key);
+    }
+
+    console.log('Computing...');
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+// 使用例: 重い計算
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+const memoizedFib = memoize(fibonacci);
+
+console.log(memoizedFib(40)); // 遅い（初回）
+console.log(memoizedFib(40)); // 高速（キャッシュから）
+```
+
+### 関数合成（Function Composition）
+
+複数の関数を組み合わせて新しい関数を作成。
+
+```javascript
+/**
+ * 右から左に関数を合成
+ */
+function compose(...fns) {
+  return function(value) {
+    return fns.reduceRight((acc, fn) => fn(acc), value);
+  };
+}
+
+// 個別の関数
+const trim = str => str.trim();
+const toLowerCase = str => str.toLowerCase();
+const removeSpaces = str => str.replace(/\s+/g, '-');
+
+// 合成
+const slugify = compose(removeSpaces, toLowerCase, trim);
+
+console.log(slugify('  Hello World  ')); // 'hello-world'
+
+// パイプ（左から右）
+function pipe(...fns) {
+  return function(value) {
+    return fns.reduce((acc, fn) => fn(acc), value);
+  };
+}
+
+const slugifyPipe = pipe(trim, toLowerCase, removeSpaces);
+console.log(slugifyPipe('  Hello World  ')); // 'hello-world'
+```
+
+### ユースケース
+
+- **配列操作**: `filter`, `map`, `reduce` によるデータ変換
+- **イベントハンドラー**: 関数を引数として渡す
+- **非同期処理**: Promise チェーン、async/await
+- **関数ラッパー**: debounce, throttle, retry, memoize
+- **カリー化**: 引数の部分適用
+- **ミドルウェア**: Express.js のミドルウェアパターン
+
+### ループ vs 高階関数
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+// ❌ ループ（命令的）
+const evenNumbersLoop = [];
+for (let i = 0; i < numbers.length; i++) {
+  if (numbers[i] % 2 === 0) {
+    evenNumbersLoop.push(numbers[i] * 2);
+  }
+}
+
+// ✅ 高階関数（宣言的）
+const evenNumbers = numbers
+  .filter(n => n % 2 === 0)
+  .map(n => n * 2);
+
+console.log(evenNumbers); // [4, 8]
+```
+
+**高階関数のメリット:**
+- 意図が明確（「何を」するかが分かりやすい）
+- 副作用が少ない（元の配列を変更しない）
+- チェーン可能（複数の操作を連鎖）
+- テストしやすい
+
+### パフォーマンスの考慮
+
+```javascript
+// ❌ 非効率（複数回ループ）
+const result = numbers
+  .filter(n => n > 0)
+  .map(n => n * 2)
+  .filter(n => n < 100);
+
+// ✅ 効率的（1回のループ）
+const resultOptimized = numbers.reduce((acc, n) => {
+  if (n > 0) {
+    const doubled = n * 2;
+    if (doubled < 100) {
+      acc.push(doubled);
+    }
+  }
+  return acc;
+}, []);
+```
+
+**注意:**
+- 小さい配列（<1000要素）では可読性優先
+- 大きい配列ではパフォーマンス測定して判断
+- ホットパス（頻繁に実行される箇所）では最適化
+
+### 注意点
+
+- **不変性**: 元のデータを変更しない（`push` ではなく `concat`, スプレッド構文）
+- **純粋関数**: 同じ入力に対して常に同じ出力（副作用なし）
+- **過度な抽象化**: シンプルなケースでは直接書く方が分かりやすい
+- **パフォーマンス**: 大規模データでは計測して最適化
+
+### 関連ナレッジ
+
+- [debounce/throttle](./patterns.md#debounce（連続呼び出しの抑制）) - 高階関数の実用例
+- [async/await](./patterns.md#asyncawait-と-fetch) - 非同期の高階関数
+
+---
+
 ## 関連ナレッジ
 
 - [JavaScript アニメーション](../animation/animation.md) - 指数平滑法など

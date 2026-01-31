@@ -431,6 +431,25 @@ a, button, input[type="checkbox"], input[type="radio"] {
 }
 ```
 
+### 4. Tailwindの touch-hitbox ユーティリティ
+
+Tailwindには`touch-hitbox`というユーティリティクラスが用意されています。
+
+```html
+<!-- Tailwindの便利なユーティリティ -->
+<button class="icon-button touch-hitbox">
+  <svg class="icon"><!-- アイコン --></svg>
+</button>
+```
+
+**注意**: カスタムクラス名ではなく、Tailwindの正式なユーティリティです。
+
+## 関連記事
+
+> 出典: https://coliss.com/articles/build-websites/operation/css/easier-to-click-without-changing-the-layout.html
+> 執筆日: 2025-08-28
+> 追加日: 2026-01-31
+
 ## 関連ナレッジ
 
 - [visually-hidden](./visually-hidden.md)
