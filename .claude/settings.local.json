@@ -105,7 +105,14 @@
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "WebFetch(domain:blog.3qe.us)",
+      "WebFetch(domain:lealog.hateblo.jp)",
+      "WebFetch(domain:h-u-g.co.jp)",
+      "WebFetch(domain:www.webcreatorbox.com)",
+      "WebFetch(domain:gihyo.jp)",
+      "WebFetch(domain:developer.hatenastaff.com)",
+      "WebFetch(domain:css-tricks.com)"
     ],
     "deny": [],
     "ask": []
