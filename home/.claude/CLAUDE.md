@@ -165,6 +165,49 @@ Web 開発の質問では `managing-frontend-knowledge` スキルのナレッジ
 
 ---
 
+### モデル選択ガイドライン
+
+適切なモデルを選択し、コストと品質のバランスを最適化する。
+
+| モデル | 用途 | 特徴 |
+|--------|------|------|
+| **Haiku** | 反復タスク、明確な指示、ワーカー | 安くて速い |
+| **Sonnet** | 一般的なコーディング（90%） | バランス良い |
+| **Opus** | 設計、セキュリティ、アーキテクチャ | 高品質 |
+
+**Opusにアップグレード:**
+- 最初の試行が失敗
+- 5ファイル以上の変更
+- アーキテクチャの意思決定
+- セキュリティクリティカル
+
+**Haikuにダウングレード:**
+- 反復的なタスク
+- 指示が非常に明確
+- マルチエージェントのワーカー
+
+詳細: `@.claude/rules/failure-patterns.md`
+
+### 戦略的コンパクト化
+
+コンテキストウィンドウを効率的に管理し、長期セッションでも高品質を維持する。
+
+**手動コンパクトの4つのタイミング:**
+1. 探索フェーズ終了後
+2. マイルストーン完了後
+3. エラー解決後
+4. 60%を超えたら（`/context`で確認）
+
+**キッチンシンク回避:**
+- 無関係なタスク間で `/clear` を実行
+
+**繰り返し修正の回避:**
+- 2回失敗したら `/clear` して再スタート
+
+詳細: `@.claude/rules/context-management.md`, `@.claude/rules/failure-patterns.md`
+
+---
+
 ## 参考資料
 
 - TDD ワークフロー: `@.claude/rules/tdd-workflow.md`
@@ -173,3 +216,5 @@ Web 開発の質問では `managing-frontend-knowledge` スキルのナレッジ
 - レビューワークフロー: `@.claude/rules/code-review-workflow.md`
 - フロントエンドナレッジ: `@.claude/rules/frontend-knowledge.md`
 - セキュリティ原則: `@.claude/rules/security.md`
+- コンテキスト管理: `@.claude/rules/context-management.md`
+- 失敗パターンと対策: `@.claude/rules/failure-patterns.md`
