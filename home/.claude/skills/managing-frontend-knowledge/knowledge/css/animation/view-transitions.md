@@ -228,5 +228,7 @@ if (document.startViewTransition) {
 
 ## 関連ナレッジ
 
+- [Scoped View Transitions](./scoped-view-transitions.md) - 部分的なビュー遷移（Chrome 140+）
 - [Scroll-driven Animations](./scroll-driven-animations.md)
 - [CSS アニメーション基礎](./animation-basics.md)
+- [CSS 2025 インタラクション](./css-2025-interactions.md) - ネストされたビュー遷移グループ

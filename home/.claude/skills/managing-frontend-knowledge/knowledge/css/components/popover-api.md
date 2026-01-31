@@ -167,6 +167,7 @@ popover.addEventListener('toggle', (e) => {
 
 ## 関連ナレッジ
 
+- [CSS 2025 コンポーネント](./css-2025-components.md) - popover=hint、interestfor 属性
 - [Anchor Positioning と Popover API の統合](./anchor-positioning-popover.md) - 実践的な組み合わせパターン
 - [dialog 要素](./dialog-element.md)
 - [Anchor Positioning](./anchor-positioning.md)

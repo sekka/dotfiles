@@ -593,4 +593,10 @@ Container Query を使ってアニメーションパターンを切り替える�
 - [Can I use: CSS Container Queries](https://caniuse.com/css-container-queries)
 - [CSS Containment Module Level 3（仕様）](https://www.w3.org/TR/css-contain-3/)
 
+## 関連ナレッジ
+
+- [Chrome 142 の新機能](../modern/chrome-142-features.md) - コンテナクエリ範囲構文（比較演算子）
+- [CSS 2025 エルゴノミクス](../modern/css-2025-ergonomics.md) - if() 関数とスタイルクエリ
+- [Scroll State Queries](../selectors/scroll-state-queries.md) - スクロール状態検出
+
 ---
