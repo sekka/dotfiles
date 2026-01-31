@@ -9,6 +9,9 @@ const CLAUDE_ICON_PATHS = [
 	`${process.env.HOME}/dotfiles/assets/icons/claude.png`,
 ];
 
+// タイムアウト設定（ミリ秒）
+const STDIN_TIMEOUT_MS = 5000;
+
 // ============================================
 // 型定義
 // ============================================
@@ -19,6 +22,39 @@ interface HookInput {
 	tool_input?: Record<string, unknown>;
 	notification_type?: string;
 	message?: string;
+}
+
+// ============================================
+// バリデーション
+// ============================================
+
+/**
+ * HookInput データの検証
+ * @throws {Error} 検証失敗時
+ */
+function validateHookInput(data: unknown): asserts data is HookInput {
+	if (typeof data !== "object" || data === null) {
+		throw new Error("Invalid input: not an object");
+	}
+
+	const input = data as Record<string, unknown>;
+
+	if (typeof input.hook_event_name !== "string") {
+		throw new Error("Invalid input: missing or invalid hook_event_name");
+	}
+
+	// オプショナルフィールドの型チェック
+	if (input.tool_name !== undefined && typeof input.tool_name !== "string") {
+		throw new Error("Invalid input: tool_name must be string");
+	}
+
+	if (input.notification_type !== undefined && typeof input.notification_type !== "string") {
+		throw new Error("Invalid input: notification_type must be string");
+	}
+
+	if (input.message !== undefined && typeof input.message !== "string") {
+		throw new Error("Invalid input: message must be string");
+	}
 }
 
 // ============================================
@@ -54,28 +90,23 @@ async function showNotification(title: string, message: string): Promise<void> {
 // Hook ハンドラー
 // ============================================
 
+/**
+ * Hook イベントを処理して通知を表示
+ *
+ * settings.json の hooks 設定:
+ * - Stop: Claude Code の作業完了時
+ * - Notification: 各種通知イベント（matcher で条件指定）
+ *   - permission_prompt: 権限リクエスト時（PermissionRequest hook は使用しない）
+ *   - idle_prompt: アイドル状態時
+ *   - elicitation_dialog: ユーザー入力要求時
+ *   - auth_success: 認証成功時
+ *
+ * 注意: matcher は OR 条件（パイプ区切り）で、1イベントにつき1つのみ発火（相互排他的）
+ */
 async function handleHook(input: HookInput): Promise<void> {
 	switch (input.hook_event_name) {
 		case "Stop":
 			await showNotification("Claude Code", "作業が完了しました");
-			break;
-
-		case "PermissionRequest": {
-			const toolName = input.tool_name || "Unknown";
-			const command = input.tool_input?.command as string | undefined;
-
-			let message = `${toolName} ツールの使用許可が必要です`;
-			if (toolName === "Bash" && command) {
-				const shortCommand = command.length > 50 ? `${command.substring(0, 47)}...` : command;
-				message = `Bash: ${shortCommand}`;
-			}
-
-			await showNotification("Claude Code - 許可リクエスト", message);
-			break;
-		}
-
-		case "SubagentStop":
-			await showNotification("Claude Code", "サブタスクが完了しました");
 			break;
 
 		case "Notification": {
@@ -93,7 +124,50 @@ async function handleHook(input: HookInput): Promise<void> {
 			await showNotification(title, message);
 			break;
 		}
+
+		default:
+			// 未知のイベントはログに記録して無視
+			console.warn(`[claude-notify] Unknown hook event: ${input.hook_event_name}`);
+			break;
 	}
+}
+
+// ============================================
+// stdin 読み込み（タイムアウト付き）
+// ============================================
+
+/**
+ * stdin からデータを読み込む（タイムアウト付き）
+ * @returns {Promise<string>} 読み込んだデータ
+ * @throws {Error} タイムアウトまたは読み込みエラー時
+ */
+async function readStdinWithTimeout(): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const chunks: Buffer[] = [];
+		let timeoutId: Timer;
+
+		// タイムアウト設定
+		timeoutId = setTimeout(() => {
+			process.stdin.removeAllListeners();
+			reject(new Error(`stdin timeout after ${STDIN_TIMEOUT_MS}ms`));
+		}, STDIN_TIMEOUT_MS);
+
+		// データ読み込み
+		process.stdin.on("data", (chunk) => {
+			chunks.push(chunk);
+		});
+
+		process.stdin.on("end", () => {
+			clearTimeout(timeoutId);
+			const data = Buffer.concat(chunks).toString("utf-8");
+			resolve(data);
+		});
+
+		process.stdin.on("error", (error) => {
+			clearTimeout(timeoutId);
+			reject(error);
+		});
+	});
 }
 
 // ============================================
@@ -102,19 +176,48 @@ async function handleHook(input: HookInput): Promise<void> {
 
 async function main(): Promise<void> {
 	try {
-		const chunks: Buffer[] = [];
-		for await (const chunk of process.stdin) {
-			chunks.push(chunk);
-		}
-		const input = JSON.parse(Buffer.concat(chunks).toString("utf-8"));
-		await handleHook(input);
-		process.exit(0);
-	} catch (error) {
-		if (error instanceof SyntaxError) {
-			console.error(`JSON parse error: ${error.message}`);
+		// stdin からデータを読み込む（タイムアウト付き）
+		const rawInput = await readStdinWithTimeout();
+
+		// JSON解析
+		let parsedData: unknown;
+		try {
+			parsedData = JSON.parse(rawInput);
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				console.error(`[claude-notify] JSON parse error: ${error.message}`);
+				console.error(`[claude-notify] Raw input (first 200 chars): ${rawInput.slice(0, 200)}`);
+			} else {
+				console.error(`[claude-notify] Unexpected parse error:`, error);
+			}
 			process.exit(1);
 		}
+
+		// 型検証
+		try {
+			validateHookInput(parsedData);
+		} catch (error) {
+			if (error instanceof Error) {
+				console.error(`[claude-notify] Validation error: ${error.message}`);
+				console.error(`[claude-notify] Received data:`, parsedData);
+			}
+			process.exit(1);
+		}
+
+		// 通知処理
+		await handleHook(parsedData);
 		process.exit(0);
+	} catch (error) {
+		if (error instanceof Error) {
+			if (error.message.includes("timeout")) {
+				console.warn(`[claude-notify] stdin timeout - skipping notification`);
+			} else {
+				console.error(`[claude-notify] Unexpected error: ${error.message}`);
+			}
+		} else {
+			console.error(`[claude-notify] Unknown error:`, error);
+		}
+		process.exit(1);
 	}
 }
 
