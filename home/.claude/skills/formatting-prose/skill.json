@@ -1,0 +1,14 @@
+{
+  "name": "formatting-prose",
+  "version": "1.0.0",
+  "description": "過度にフォーマットされた Markdown を流れのある散文に変換する",
+  "author": "kei",
+  "tags": ["整形", "Markdown", "散文", "可読性", "文章"],
+  "triggers": [
+    "散文的に",
+    "箇条書きを減らして",
+    "読みやすく整形",
+    "リストを段落に"
+  ],
+  "disable-model-invocation": false
+}

@@ -1,0 +1,14 @@
+{
+  "name": "analyzing-animations",
+  "version": "1.0.0",
+  "description": "Web サイトのアニメーション・インタラクションを技術的に言語化・解析する",
+  "author": "kei",
+  "tags": ["アニメーション", "モーション", "UX", "技術解析", "GSAP", "Three.js"],
+  "triggers": [
+    "アニメーションを解析",
+    "どんな技術を使っている",
+    "動きを言語化",
+    "アニメーションを説明"
+  ],
+  "disable-model-invocation": false
+}
