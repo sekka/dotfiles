@@ -213,6 +213,29 @@ description = "システムモニタリング"
 run = "rtop"
 
 # --------------------------------------
+# パフォーマンス測定
+# --------------------------------------
+# Lighthouseでサイト全体をスキャン
+[tasks.perf-unlighthouse]
+alias = "ulh"
+description = "サイト全体のLighthouseスキャン（Unlighthouse）"
+run = """
+echo "使用方法: npx unlighthouse --site <URL>"
+echo "例: npx unlighthouse --site https://example.com"
+"""
+
+# Lighthouseでサイト全体をスキャン（CI用）
+[tasks.perf-unlighthouse-ci]
+description = "CI環境でUnlighthouseを実行"
+run = """
+if [ -z "$UNLIGHTHOUSE_SITE" ]; then
+  echo "❌ Error: UNLIGHTHOUSE_SITE 環境変数を設定してください"
+  exit 1
+fi
+npx unlighthouse --site "$UNLIGHTHOUSE_SITE" --build-static
+"""
+
+# --------------------------------------
 # Lint & Format (統合スクリプト経由)
 # --------------------------------------
 # 全ファイルチェック
@@ -438,6 +461,7 @@ pnpm = "latest"
 "npm:git-diff-archive" = "latest"     # Git差分アーカイブ
 "npm:http-server" = "latest"          # ローカル HTTP サーバー
 "npm:lighthouse" = "latest"           # パフォーマンス測定
+"npm:unlighthouse" = "latest"         # サイト全体のLighthouseスキャン
 "npm:markdownlint-cli" = "latest"     # Markdown リンター
 "npm:npm-check" = "latest"            # npm依存関係チェック
 "npm:npm-check-updates" = "latest"    # npm更新チェック
