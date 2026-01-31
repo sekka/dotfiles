@@ -98,7 +98,9 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:twigl.app)"
+      "WebFetch(domain:twigl.app)",
+      "WebFetch(domain:techblog.lycorp.co.jp)",
+      "WebFetch(domain:phpspot.org)"
     ],
     "deny": [],
     "ask": []
