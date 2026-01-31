@@ -158,6 +158,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-files.sh"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/check-design-before-write.ts"
           }
         ]
       },
@@ -182,6 +186,24 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/log-agent-calls.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-debug-on-failure.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -191,6 +213,10 @@
           {
             "type": "command",
             "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-review-after-changes.ts"
           }
         ]
       },
@@ -265,6 +291,14 @@
       }
     ],
     "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/agent-router.ts"
+          }
+        ]
+      },
       {
         "hooks": [
           {
