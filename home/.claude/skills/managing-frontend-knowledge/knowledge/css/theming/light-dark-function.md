@@ -156,5 +156,6 @@ body {
 
 ## 関連ナレッジ
 
+- [OKLCH カラー](./oklch-color.md) - 知覚的均一性を持つ色空間、ダークモード対応
 - [Dark Mode 実装](./dark-mode-implementation.md)
 - [color-scheme プロパティ](./color-scheme.md)

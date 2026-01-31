@@ -386,6 +386,7 @@ Lab/LCH/OKLCHで指定した色が、ディスプレイの色域外の場合、�
 
 ## 関連ナレッジ
 
+- [OKLCH カラー](../theming/oklch-color.md) - 知覚的均一性を持つ色空間
 - [CSS変数（カスタムプロパティ）](./css-custom-properties.md)
 - [カラーテーマ設計](../theming/color-scheme.md)
 - [light-dark() 関数](../theming/light-dark.md)

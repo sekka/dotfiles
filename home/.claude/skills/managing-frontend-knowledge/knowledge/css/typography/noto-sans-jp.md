@@ -108,5 +108,6 @@ body {
 
 ## 関連ナレッジ
 
+- [Google Fonts で Webフォント最適化](./webfont-optimization-google-fonts.md) - preconnect、font-display、Dynamic Subsetting
 - [Web フォント最適化](../../cross-cutting/performance/webfont-optimization.md)
 - [Typography ベストプラクティス](./typography-best-practices.md)
