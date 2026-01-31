@@ -1023,6 +1023,432 @@ const resultOptimized = numbers.reduce((acc, n) => {
 
 ---
 
+---
+
+## Next.js Navigation Guard（ページ遷移防止）
+
+> 出典: https://speakerdeck.com/ypresto/hack-to-prevent-page-navigation-in-next-js
+> 執筆日: 2024年
+> 追加日: 2026-01-31
+
+Next.jsでページ遷移をキャンセルする機能を実装する3つのハック。BtoB SaaSで「保存していない変更」ダイアログを実現するライブラリ。
+
+### なぜこの方法が必要なのか
+
+Next.jsの公式APIには**ページ遷移キャンセル機能がない**ため、以下のような課題があった：
+- フォーム編集中の誤った遷移を防げない
+- ブラウザの戻る/進むボタンに対応できない
+- App Router・Pages Routerの両方に対応する必要がある
+
+### 3つの実装テクニック
+
+#### Hack #1: Contextを介したRouterの差し替え
+
+Reactの「最も近い親のContext値が使われる」仕組みを活用。
+
+```javascript
+import { AppRouterContext } from 'next/dist/shared/lib/app-router-context';
+
+function NavigationGuardProvider({ children }) {
+  const router = useRouter();
+
+  // router.push() を監視可能なラッパーで包む
+  const wrappedRouter = useMemo(() => ({
+    ...router,
+    push: async (url) => {
+      // ガード処理
+      if (hasUnsavedChanges && !confirm('Changes will be lost')) {
+        return; // 遷移をキャンセル
+      }
+      return router.push(url);
+    }
+  }), [router]);
+
+  return (
+    <AppRouterContext.Provider value={wrappedRouter}>
+      {children}
+    </AppRouterContext.Provider>
+  );
+}
+```
+
+**ポイント:** Next.jsの内部Context（AppRouterContext）を上書きすることで、全てのコンポーネントが包装されたルーターを使用する。
+
+#### Hack #2: stopImmediatePropagation()でイベント制御
+
+ブラウザの戻る/進むボタン（popstate）を制御。
+
+```javascript
+useLayoutEffect(() => {
+  const handlePopState = (event) => {
+    if (hasUnsavedChanges && !confirm('Changes will be lost')) {
+      // Next.jsより先に登録することで、Next.jsのリスナーを阻止
+      event.stopImmediatePropagation();
+
+      // 履歴を元に戻す
+      window.history.pushState(null, '', window.location.href);
+    }
+  };
+
+  // useLayoutEffectで早期に登録（Next.jsより先）
+  window.addEventListener('popstate', handlePopState, { capture: true });
+
+  return () => {
+    window.removeEventListener('popstate', handlePopState, { capture: true });
+  };
+}, [hasUnsavedChanges]);
+```
+
+**ポイント:**
+- `useLayoutEffect` で同期的に登録（Next.jsより先に実行）
+- `stopImmediatePropagation()` で後続のリスナー（Next.js）を阻止
+- `capture: true` でキャプチャフェーズで処理
+
+#### Hack #3: history.pushState()をオーバーライド
+
+履歴の位置をトラッキングし、遷移をキャンセルした場合に復元。
+
+```javascript
+// stateにindexを自動付与
+const originalPushState = window.history.pushState.bind(window.history);
+const originalReplaceState = window.history.replaceState.bind(window.history);
+
+let historyIndex = 0;
+
+window.history.pushState = function(state, ...args) {
+  historyIndex++;
+  return originalPushState({ ...state, __index: historyIndex }, ...args);
+};
+
+window.history.replaceState = function(state, ...args) {
+  return originalReplaceState({ ...state, __index: historyIndex }, ...args);
+};
+
+// 遷移キャンセル時に履歴位置を復元
+function restoreHistoryPosition(targetIndex) {
+  const currentIndex = window.history.state?.__index || 0;
+  const delta = targetIndex - currentIndex;
+
+  if (delta !== 0) {
+    window.history.go(delta); // 差分を計算して移動
+  }
+}
+```
+
+**ポイント:** 履歴の各エントリにインデックスを付与し、`history.go(差分)` で正確に復元。
+
+### 使用方法
+
+```javascript
+import { NavigationGuardProvider, useNavigationGuard } from 'next-navigation-guard';
+
+function App({ Component, pageProps }) {
+  return (
+    <NavigationGuardProvider>
+      <Component {...pageProps} />
+    </NavigationGuardProvider>
+  );
+}
+
+function EditForm() {
+  const [formData, setFormData] = useState({});
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useNavigationGuard({
+    enabled: hasUnsavedChanges,
+    confirm: () => window.confirm('未保存の変更があります。ページを離れますか？'),
+    // または独自ダイアログ
+    confirmAsync: async () => {
+      return await showCustomDialog();
+    }
+  });
+
+  return <form>...</form>;
+}
+```
+
+### ユースケース
+
+- **フォーム編集画面**: 未保存の変更がある場合に警告
+- **BtoB SaaS**: ドキュメント編集、設定変更
+- **ECサイト**: カート編集中の離脱防止
+- **コンテンツ管理**: 記事編集、データ入力
+
+### 注意点
+
+- **Next.jsの内部APIを使用**: バージョンアップで破損する可能性
+- **App Router / Pages Router 両対応**: ライブラリが両方に対応
+- **外部遷移**: `beforeunload` イベントで別途対応が必要
+
+```javascript
+useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = ''; // ブラウザのデフォルトダイアログを表示
+    }
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+  return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+}, [hasUnsavedChanges]);
+```
+
+### ブラウザ対応
+
+- 全モダンブラウザ対応（Next.jsが動作する環境）
+- `stopImmediatePropagation()` はIE11でも対応
+
+### GitHub
+
+https://github.com/LayerXcom/next-navigation-guard
+
+---
+
+## ゼロランタイムCSS-in-JS（Linaria / Ecsstatic）
+
+> 出典: https://lealog.hateblo.jp/entry/2023/03/24/095644
+> 執筆日: 2023-03-24
+> 追加日: 2026-01-31
+
+ゼロランタイムオーバーヘッドを実現するCSS-in-JSライブラリの選定と実装パターン。
+
+### なぜゼロランタイムが必要なのか
+
+従来のCSS-in-JS（styled-components、Emotion等）の課題：
+- **ランタイムコスト**: JavaScriptでCSSを生成・挿入
+- **バンドルサイズ**: ライブラリのランタイムを含む
+- **パフォーマンス**: 初回レンダリングが遅い
+
+### 要件定義
+
+理想的なCSS-in-JS:
+1. **ゼロランタイム**: ビルド時にCSSファイルを生成
+2. **CSSセマンティクス保持**: 疑似クラス、メディアクエリ等が使える
+3. **コンポーネントコロケーション**: JSXと同じファイルに記述
+4. **非同期ロード**: 必要なCSSのみを読み込み
+5. **ツリーシェイキング**: 未使用スタイルを削除
+6. **DX**: エディタのサポート
+
+### 比較検討
+
+#### Tailwind CSS（❌不採用）
+
+```jsx
+// 冗長なクラス名
+<div className="flex items-center justify-between px-4 py-2 bg-blue-500 text-white rounded-lg">
+```
+
+**不採用理由:**
+- マークアップが冗長
+- MPAでの非同期ロードが困難
+- 設定のスケールが難しい
+
+#### CSS Modules（❌不採用）
+
+```jsx
+// 別ファイルが必要
+import styles from './Button.module.css';
+
+<button className={styles.button}>Click</button>
+```
+
+**不採用理由:**
+- コロケーション不可（別`.module.css`ファイル）
+- 未使用スタイルのツリーシェイキング不可
+
+#### Linaria / Ecsstatic（✅採用）
+
+```javascript
+import { css } from 'ecsstatic'; // または 'linaria'
+
+const buttonStyle = css`
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.375rem 0.75rem;
+  }
+`;
+
+function Button() {
+  return <button className={buttonStyle}>Click</button>;
+}
+```
+
+**ビルド後:**
+
+```css
+/* button.css（自動生成） */
+.button_abc123 {
+  padding: 0.5rem 1rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.5rem;
+}
+
+.button_abc123:hover {
+  background-color: #2563eb;
+}
+
+@media (max-width: 768px) {
+  .button_abc123 {
+    padding: 0.375rem 0.75rem;
+  }
+}
+```
+
+```javascript
+// button.js（自動生成）
+const buttonStyle = 'button_abc123';
+```
+
+### Linaria vs Ecsstatic
+
+| 特徴 | Linaria | Ecsstatic |
+|------|---------|-----------|
+| **認知度** | 高い | 低い |
+| **バンドラー対応** | Webpack, Vite, Rollup | Vite専用 |
+| **フットプリント** | やや大きい | 非常に小さい |
+| **開発状況** | 安定 | 新しい |
+
+**選定理由（Ecsstatic）:**
+- Viteプロジェクトで十分
+- 最小限のフットプリント
+- シンプルなAPI
+
+### 実装例
+
+#### 基本パターン
+
+```javascript
+import { css } from 'ecsstatic';
+
+const container = css`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+`;
+
+const title = css`
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1a202c;
+
+  & > span {
+    color: #3b82f6;
+  }
+`;
+
+function Page() {
+  return (
+    <div className={container}>
+      <h1 className={title}>
+        Welcome to <span>Ecsstatic</span>
+      </h1>
+    </div>
+  );
+}
+```
+
+#### 動的スタイル（CSS変数）
+
+```javascript
+import { css } from 'ecsstatic';
+
+const button = css`
+  background-color: var(--btn-bg);
+  color: var(--btn-color);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+`;
+
+function Button({ variant = 'primary' }) {
+  const colors = {
+    primary: { '--btn-bg': '#3b82f6', '--btn-color': 'white' },
+    secondary: { '--btn-bg': '#6b7280', '--btn-color': 'white' },
+  };
+
+  return (
+    <button className={button} style={colors[variant]}>
+      Click
+    </button>
+  );
+}
+```
+
+#### メディアクエリ
+
+```javascript
+const responsive = css`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+```
+
+### エディタサポート
+
+#### VSCode
+
+```json
+// settings.json
+{
+  "editor.quickSuggestions": {
+    "strings": true // テンプレートリテラル内で補完を有効化
+  }
+}
+```
+
+拡張機能: **vscode-styled-components** をインストール
+
+#### NeoVim
+
+TreeSitterで構文ハイライト + TypeScript LSP設定
+
+### トレードオフ
+
+**メリット:**
+- ゼロランタイムオーバーヘッド
+- CSSセマンティクス完全対応
+- コロケーション可能
+- ツリーシェイキング対応
+
+**デメリット:**
+- **型安全性なし**: テンプレートリテラル内は文字列（コンパイル時検証なし）
+- **エディタサポート**: オブジェクト形式（styled-componentsのcss prop）より劣る
+- **ビルド必須**: 開発時もビルドステップが必要
+
+### ユースケース
+
+- **パフォーマンス重視**: Core Web Vitalsを改善したい
+- **MPAアプリケーション**: ページごとにCSSを分割ロード
+- **ゼロJS環境**: JavaScriptなしでもスタイルを適用
+- **コンポーネントライブラリ**: 配布時にランタイムを含めたくない
+
+### 参考リンク
+
+- [Linaria](https://github.com/callstack/linaria)
+- [Ecsstatic](https://github.com/atlassian-labs/ecsstatic)
+- [CSS-in-JS パフォーマンス比較](https://pustelto.com/blog/css-vs-css-in-js-perf/)
+
+---
+
 ## 関連ナレッジ
 
 - [JavaScript アニメーション](../animation/animation.md) - 指数平滑法など

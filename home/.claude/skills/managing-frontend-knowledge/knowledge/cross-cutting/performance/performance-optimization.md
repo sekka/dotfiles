@@ -383,3 +383,369 @@ YouTube、Google Maps などの埋め込みは特に重い。
 - Chrome DevTools > Network タブ - 個別リソースの確認
 
 ---
+
+## Core Web Vitals の進化と新しいパフォーマンス技術（2022）
+
+> 出典: https://speakerdeck.com/narirou/webpahuomansugao-su-hua-tokorekaranoakitekutiya
+> 執筆日: 2022-12-02
+> 追加日: 2026-01-31
+
+Yahoo! JAPANのnarirou氏によるPWA Night 2022での講演。Core Web Vitalsの進化と最新のパフォーマンス技術を解説。
+
+### 新しい指標: INP (Interaction to Next Paint)
+
+**定義**: ユーザーの入力に対してアプリが適切に応答を返すまでの時間を表す指標。FIDより直感的にユーザー体験を反映。
+
+**評価基準**:
+- **良好**: 0-100ms（素早い応答と認識）
+- **改善が必要**: 100-1000ms（遅延が認識される）
+- **不良**: 1000ms以上（ユーザーが不満を感じるリスク）
+
+**FIDとの違い**:
+- FID: 最初の入力の遅延のみを測定
+- INP: ページ全体のインタラクション全てを評価
+
+### リソース取得の最適化
+
+#### 1. Priority Hints
+
+fetchやlink要素でリソースの優先度を明示的に指定。
+
+```html
+<!-- 重要な画像を優先読み込み -->
+<img src="hero.jpg" fetchpriority="high" alt="Hero image" />
+
+<!-- LCP対象画像のプリロード -->
+<link rel="preload" href="lcp-image.jpg" as="image" fetchpriority="high" />
+
+<!-- 優先度を下げる -->
+<script src="analytics.js" fetchpriority="low"></script>
+```
+
+**ブラウザサポート**: Chrome 101+, Edge 101+
+
+#### 2. Resource Hints
+
+```html
+<!-- DNS 解決を事前実行 -->
+<link rel="dns-prefetch" href="https://external-api.com" />
+
+<!-- 接続を事前確立 -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+
+<!-- 次ページのリソースを先読み -->
+<link rel="prefetch" href="next-page.js" />
+
+<!-- 重要リソースを先読み -->
+<link rel="preload" href="critical.css" as="style" />
+```
+
+#### 3. 103 Early Hints
+
+サーバーが最終応答（200 OK）を返す前に、先読みリソース情報（103 Early Hints）を送信する。
+
+**仕組み**:
+1. クライアントがリクエスト送信
+2. サーバーが `103 Early Hints` を返す（Link ヘッダーでpreload/preconnect情報）
+3. ブラウザがリソース取得を開始
+4. サーバーが `200 OK` と本体を返す
+
+**効果**: サーバー処理時間が長い場合、リソース取得を並列化して高速化。
+
+**対応サーバー**: Cloudflare, Fastly など
+
+### キャッシュ戦略
+
+#### 1. Edge Workers
+
+CDNエッジで動的処理を実行し、高速レスポンスを実現。
+
+**ユースケース**:
+- パーソナライゼーション
+- A/Bテスト
+- リダイレクト
+- HTML変換
+
+**主要サービス**:
+- Cloudflare Workers
+- Fastly Compute@Edge
+- Vercel Edge Functions
+
+#### 2. BFCache (Back/Forward Cache)
+
+**定義**: ブラウザバック時にページをメモリから復元し、再読み込みを省略する機能。
+
+**効果**:
+- ページ表示時間がほぼゼロ
+- サーバー負荷削減
+- ユーザー体験の大幅改善
+
+**BFCache を有効にする条件**:
+
+```javascript
+// ❌ BFCache 無効化の原因
+window.addEventListener('unload', () => {
+  // unload イベントは使用禁止
+});
+
+// ✅ 代替: pagehide イベント
+window.addEventListener('pagehide', (event) => {
+  if (event.persisted) {
+    // BFCache に保存される
+  }
+});
+
+// ✅ BFCache 復元時の処理
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    // BFCache から復元された場合の処理
+    updateDynamicContent();
+  }
+});
+```
+
+**BFCache 無効化の主な原因**:
+- `unload` イベントの使用
+- `Cache-Control: no-store` ヘッダー
+- 未完了の `fetch` や `XMLHttpRequest`
+
+**Yahoo! JAPAN の実装例**:
+- ユーザーの離脱時に戻るナビゲーションが約40%との調査結果から対応
+- `unload` イベント削除など、複雑な条件調整を進行中
+
+#### 3. Private Prefetch Proxy
+
+**定義**: Chrome独自の先読み機能。クロスオリジン間のページ遷移を高速化。
+
+**仕組み**:
+1. ユーザーがリンクをホバー
+2. Chrome が Google のプロキシ経由でページを先読み
+3. プライバシー保護のためIPアドレスを隠蔽
+4. クリック時に先読み結果を使用
+
+**注意**: Chrome専用、プライバシー配慮が必要
+
+### メインスレッドからの処理分離
+
+#### 1. Partytown
+
+Service Worker内でサードパーティスクリプトを実行し、メインスレッドをブロックしない。
+
+**対象スクリプト**:
+- Google Analytics
+- Google Tag Manager
+- Facebook Pixel
+- 広告タグ
+
+**導入例**:
+
+```html
+<script>
+  partytown = {
+    forward: ['dataLayer.push'],
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@builder.io/partytown/lib/partytown.js"></script>
+
+<!-- type="text/partytown" で Worker に移動 -->
+<script type="text/partytown" src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXX"></script>
+```
+
+#### 2. React 18 Server Components
+
+サーバーサイドで部分的にレンダリングし、クライアント側の JavaScript を削減。
+
+**メリット**:
+- バンドルサイズ削減
+- 初期表示の高速化
+- データ取得の最適化
+
+#### 3. Long Tasks の監視と分割 (Granular Chunking)
+
+**Long Task**: 50ms以上のメインスレッドブロック。
+
+**対策**:
+
+```javascript
+// ❌ 長いタスクがメインスレッドをブロック
+function processLargeData(data) {
+  for (let i = 0; i < 10000; i++) {
+    // 重い処理
+  }
+}
+
+// ✅ タスクを分割して実行
+async function processLargeDataChunked(data, chunkSize = 100) {
+  for (let i = 0; i < data.length; i += chunkSize) {
+    const chunk = data.slice(i, i + chunkSize);
+    await processChunk(chunk);
+
+    // メインスレッドに制御を戻す
+    await new Promise(resolve => setTimeout(resolve, 0));
+  }
+}
+```
+
+**監視**:
+
+```javascript
+// Performance Observer で Long Task を検出
+const observer = new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    if (entry.duration > 50) {
+      console.warn('Long Task detected:', entry.duration, 'ms');
+    }
+  }
+});
+
+observer.observe({ entryTypes: ['longtask'] });
+```
+
+### アーキテクチャの方向性
+
+**推奨される設計**:
+1. **ユーザー近傍でのキャッシュ優先戦略**: Edge Workers, BFCache
+2. **メインスレッド外での処理実行**: Partytown, Web Workers
+3. **段階的なデータ読み込み設定**: Lazy Load, Code Splitting
+4. **ブラウザライフサイクルを意識した設計**: pagehide/pageshow, BFCache対応
+
+---
+
+## 画像レイアウトシフトの回避方法
+
+> 出典: https://coliss.com/articles/build-websites/operation/work/avoiding-img-layout-shifts.html
+> 執筆日: 2022-07-21
+> 追加日: 2026-01-31
+
+画像読み込み時のレイアウトシフトを防ぐ2つの方法。CLS（Cumulative Layout Shift）改善に直結する重要な技術。
+
+### レイアウトシフトの問題
+
+**現象**: 画像ファイルをロードする前は画像のスペースがゼロで、読み込み後にレイアウトが下にずれる。
+
+**影響**:
+- ユーザーの視線やタップしている指からコンテンツが移動
+- ユーザーエクスペリエンスに大きなフラストレーション
+- CLS スコアの悪化
+
+### 解決方法1: CSS aspect-ratio プロパティ
+
+**用途**: 画像のレイアウトが特定のアスペクト比であることがデザイン上の要件である場合。
+
+```css
+img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
+}
+```
+
+**HTML**:
+
+```html
+<img src="hero.jpg" alt="Hero image" />
+```
+
+**ブラウザサポート**:
+- Chrome/Firefox: 2021年初頭
+- Safari: 2021年末
+
+**メリット**:
+- CSSで完結
+- レスポンシブに対応しやすい
+
+**デメリット**:
+- 実際の画像と異なるアスペクト比を指定するとクロップされる
+
+### 解決方法2: width/height 属性（推奨）
+
+**用途**: 記事に画像を使用する場合など、コンテンツとしての画像。
+
+```html
+<img
+  src="article-image.jpg"
+  alt="記事の画像"
+  width="1598"
+  height="899"
+/>
+```
+
+```css
+img {
+  width: 100%;
+  height: auto;
+}
+```
+
+**仕組み**:
+1. `width`/`height` 属性が内部的に `aspect-ratio: auto 1598 / 899` にマッピング
+2. 画像読み込み前はこのアスペクト比でスペース確保
+3. 実際の画像データ読み込み後、`auto` ルールにより正確なアスペクト比で修正
+
+**ブラウザサポート**:
+- Chrome/Firefox: 2019年
+- Safari: 2020年（Safari 14）
+
+**メリット**:
+- 実際の画像サイズを反映
+- HTMLで完結
+- レスポンシブ対応
+
+**デメリット**:
+- 画像ごとにサイズを指定する必要がある
+
+### 実装例: レスポンシブ画像
+
+```html
+<!-- srcset 使用時も width/height を指定 -->
+<img
+  srcset="small.jpg 640w, medium.jpg 1024w, large.jpg 1920w"
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 800px"
+  src="large.jpg"
+  alt="レスポンシブ画像"
+  width="1920"
+  height="1080"
+/>
+```
+
+```css
+img {
+  max-width: 100%;
+  height: auto;
+}
+```
+
+### picture タグでの実装
+
+```html
+<picture>
+  <source srcset="desktop.webp" media="(min-width: 768px)" type="image/webp" width="1920" height="1080" />
+  <source srcset="desktop.jpg" media="(min-width: 768px)" width="1920" height="1080" />
+  <source srcset="mobile.webp" type="image/webp" width="640" height="480" />
+  <img src="mobile.jpg" alt="レスポンシブ画像" width="640" height="480" />
+</picture>
+```
+
+### 既知のバグ
+
+**Firefox**: `<picture>`タグのレスポンシブ画像で、アスペクト比が正しくないとわかるとコンテンツが移動する場合がある。
+
+**対策**: すべての`<source>`と`<img>`に正しい`width`/`height`を指定。
+
+### 使い分けの指針
+
+| 状況 | 推奨方法 | 理由 |
+|------|---------|------|
+| **コンテンツ画像** | `width`/`height` 属性 | 実際のサイズを反映、誤りにくい |
+| **デザイン要素** | CSS `aspect-ratio` | 柔軟なレイアウト対応 |
+| **アート方向性重視** | `picture` + `width`/`height` | 画面サイズに応じた最適画像 |
+
+### チェックリスト
+
+- [ ] すべての`<img>`に`width`/`height`を指定したか
+- [ ] CSSで`height: auto`を指定したか
+- [ ] `srcset`使用時も`width`/`height`を指定したか
+- [ ] `<picture>`のすべての`<source>`に`width`/`height`を指定したか
+- [ ] Lighthouse でCLSスコアを確認したか
+
+---
