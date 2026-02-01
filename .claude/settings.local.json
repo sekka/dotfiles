@@ -114,7 +114,8 @@
       "WebFetch(domain:developer.hatenastaff.com)",
       "WebFetch(domain:css-tricks.com)",
       "WebFetch(domain:www.m3tech.blog)",
-      "WebFetch(domain:www.qbook.jp)"
+      "WebFetch(domain:www.qbook.jp)",
+      "WebFetch(domain:techracho.bpsinc.jp)"
     ],
     "deny": [],
     "ask": []
