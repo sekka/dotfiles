@@ -1,19 +1,20 @@
 ---
 title: dialog要素のcommand/commandfor属性
 category: html/modern
-tags: [dialog, command, commandfor, modal, popover, 2025]
+tags: [dialog, command, commandfor, modal, popover, closedby, autofocus, 2025]
 browser_support: Chrome 132+, Safari 18.2+, Firefox 135+
 created: 2026-01-31
-updated: 2026-01-31
+updated: 2026-02-01
 ---
 
 # dialog要素のcommand/commandfor属性
 
-> 出典: https://shimotsuki.wwwxyz.jp/20251227-2003
-> 執筆日: 2025年12月27日
+> 出典: https://shimotsuki.wwwxyz.jp/20251227-2003, https://ics.media/entry/250904/
+> 執筆日: 2025年12月27日, 2025年9月4日
 > 追加日: 2026-01-31
+> 更新日: 2026-02-01
 
-JavaScript不要でdialog要素を制御できる新機能。2025年に全モダンブラウザで対応。
+JavaScript不要でdialog要素を制御できる新機能。2025年に全モダンブラウザで対応。モーダルUIをシンプルに実装できる進化を続けるHTML要素。
 
 ## 概要
 
@@ -320,11 +321,30 @@ command/commandfor属性を使用する場合でも、適切なARIA属性を追�
 
 ## ブラウザ対応
 
-| ブラウザ | バージョン | 備考 |
-|----------|-----------|------|
-| Chrome/Edge | 132+ | 2025年12月対応 |
-| Firefox | 135+ | 2025年12月対応 |
-| Safari | 18.2+ | 2025年12月対応 |
+| 機能 | Chrome/Edge | Firefox | Safari | 備考 |
+|------|------------|---------|--------|------|
+| **command/commandfor属性** | 132+ | 135+ | 18.2+ | 2025年12月に全対応 |
+| **closedby属性** | 134+ | 141+ | 未対応 | light dismiss制御 |
+| **autofocus属性** | 79+ | 110+ | 15.4+ | 自動フォーカス |
+| **dialog要素自体** | 37+ | 98+ | 15.4+ | 2022年頃から全対応 |
+
+### 詳細なブラウザサポート
+
+**command属性**:
+- Chrome 135+
+- Safari 26.2+
+- Firefox 144+
+
+**closedby属性**:
+- Chrome 134+
+- Edge 134+
+- Firefox 141+
+- Safari: 未対応（2026年2月時点）
+
+**autofocus属性**:
+- Chrome 79+
+- Firefox 110+
+- Safari 15.4+
 
 **互換性の確保**:
 
@@ -385,9 +405,150 @@ document.getElementById('my-form').addEventListener('submit', (e) => {
 </script>
 ```
 
+## closedby属性による背景クリック対応
+
+> 出典: https://techracho.bpsinc.jp/hachi8833/2026_01_30/156001
+> 執筆日: 2026-01-30
+> 追加日: 2026-02-01
+
+`closedby` 属性でダイアログを背景クリックで閉じる動作を制御できます。
+
+```html
+<dialog id="confirmDialog" closedby="any">
+  <form method="dialog">
+    <h2>確認</h2>
+    <p>この操作を実行しますか?</p>
+    <button formmethod="dialog">キャンセル</button>
+    <button type="submit" autofocus>確認</button>
+  </form>
+</dialog>
+```
+
+**closedbyの値**:
+- `none`: 背景クリックで閉じない（デフォルト）
+- `any`: 背景クリックで閉じる（light dismiss）
+- `closerequest`: Escキーと明示的なclose要求のみ
+
+**ブラウザサポート**:
+- Chrome/Edge: 134+
+- Safari: 未サポート（2026年1月時点）
+- Firefox: 141+
+
+## アニメーション対応
+
+### @starting-styleによるエントリーアニメーション
+
+`@starting-style` ルールで、ダイアログ表示時のアニメーションを実装できます。
+
+```css
+dialog {
+  transition: opacity 0.3s, scale 0.3s;
+  opacity: 1;
+  scale: 1;
+}
+
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+dialog:not([open]) {
+  opacity: 0;
+  scale: 0.9;
+}
+```
+
+**ブラウザサポート**:
+- Chrome/Edge: 117+
+- Safari: 17.5+
+- Firefox: 129+
+
+### allow-discreteキーワード
+
+`display` や `overlay` などの離散プロパティをアニメーションするには `allow-discrete` キーワードが必要です。
+
+```css
+dialog {
+  transition:
+    opacity 0.3s,
+    display 0.3s allow-discrete,
+    overlay 0.3s allow-discrete;
+}
+```
+
+**ブラウザサポート**:
+- Chrome/Edge: 117+
+- Safari: 17.4+
+- Firefox: 129+
+
+### 非対称なエントリー/イグジットアニメーション
+
+エントリーとイグジットで異なるアニメーション時間を設定できます。
+
+```css
+/* エントリー: 速い */
+@starting-style {
+  dialog[open] {
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+}
+
+/* イグジット: ゆっくり */
+dialog:not([open]) {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+```
+
+### isolateプロパティでz-index競合を防止
+
+`isolate` プロパティで新しいスタッキングコンテキストを作成し、z-index競合を回避します。
+
+```css
+dialog {
+  isolate: isolate;
+}
+```
+
+## Tailwind CSS v4との統合
+
+Tailwind CSS v4の `@utility` ディレクティブでカスタムユーティリティを定義できます。
+
+```css
+@utility dialog-starting {
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      scale: 0.9;
+    }
+  }
+}
+
+@utility dialog-animated {
+  transition: opacity 0.3s, scale 0.3s allow-discrete;
+
+  &:not([open]) {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+```
+
+使用例:
+```html
+<dialog class="dialog-starting dialog-animated" closedby="any">
+  <!-- 内容 -->
+</dialog>
+```
+
 ## 関連ナレッジ
 
 - [dialog要素の基本](./dialog.md)
 - [Popover API](../css/components/popover-api.md)
 - [モーダルダイアログのアクセシビリティ](../cross-cutting/accessibility/modal-dialog.md)
 - [フォーカストラップ](../cross-cutting/accessibility/focus-trap.md)
+- [CSSアニメーション](../css/animation/)
+- [@starting-style](../css/animation/starting-style.md)
