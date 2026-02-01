@@ -115,7 +115,10 @@
       "WebFetch(domain:css-tricks.com)",
       "WebFetch(domain:www.m3tech.blog)",
       "WebFetch(domain:www.qbook.jp)",
-      "WebFetch(domain:techracho.bpsinc.jp)"
+      "WebFetch(domain:techracho.bpsinc.jp)",
+      "WebFetch(domain:kachibito.net)",
+      "WebFetch(domain:photoshopvip.net)",
+      "WebFetch(domain:gsap.com)"
     ],
     "deny": [],
     "ask": []

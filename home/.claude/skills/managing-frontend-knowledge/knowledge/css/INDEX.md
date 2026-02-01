@@ -18,14 +18,19 @@ Grid, Flexbox, Container Queries, Subgrid, overscroll-behavior など、レイ�
 Transitions, Keyframes, Scroll-Driven Animations, View Transitions, background-image アニメーション など
 - [CSS 2025 インタラクション機能](animation/css-2025-interactions.md) - scroll-state、sibling-index()、moveBefore()
 - [Scoped View Transitions](animation/scoped-view-transitions.md) - 部分的なビュー遷移
+- [View Transitions API](animation/view-transitions-api.md) - ページ遷移アニメーション、MPA/SPAサポート
+- [CSS offset プロパティ](animation/offset-path.md) - パスに沿ったアニメーション、SVGパス
+- [独立した transform プロパティ](animation/independent-transforms.md) - translate、rotate、scale の個別指定
 
 ### [Visual](visual/)
 Filter, Mask, Clip-path, Backdrop-filter, Mix-blend-mode など、視覚効果
+- [CSS 3D Transforms](visual/css-3d-transforms.md) - WebGLを使わない3D表現、perspective、parallax
 
 ### [Typography](typography/)
 Font, Text-box, Line-height, Font-feature-settings, 日本語テキスト折り返し など、タイポグラフィ
 - [Google Fonts で Webフォント最適化](typography/webfont-optimization-google-fonts.md) - preconnect、font-display、Dynamic Subsetting
 - [Fluid Type Scale](typography/fluid-type-scale.md) - clamp() によるレスポンシブタイポグラフィ
+- [CSS下線表現テクニック](typography/underline-techniques.md) - text-decoration、グラデーション下線、アニメーション
 
 ### [Selectors](selectors/)
 :has, :is, :where, :scope など、セレクタに関する情報
@@ -34,6 +39,7 @@ Font, Text-box, Line-height, Font-feature-settings, 日本語テキスト折り�
 ### [Values](values/)
 clamp, Viewport units (svh/dvh/lvh), currentColor, calc, 三角関数 (sin/cos) など
 - [100vw スクロールバー問題の解決](values/viewport-units-scrollbar-aware.md) - Chrome 145+ での自動認識
+- [CSS三角関数](values/trigonometry.md) - sin()、cos()、円形配置、波形アニメーション
 
 ### [Components](components/)
 Popover API, Dialog, Anchor Positioning (anchor-size() 含む) など、UI コンポーネント関連

@@ -20,7 +20,8 @@
 [JavaScript ナレッジ一覧](javascript/INDEX.md)
 - [DOM](javascript/dom/) - DOM 操作、イベント、Lenis スムーススクロール
 - [Animation](javascript/animation/) - WAAPI, requestAnimationFrame, GSAP, パーティクルエフェクト
-- [Patterns](javascript/patterns/) - デザインパターン、実装パターン、命名規則
+- [Patterns](javascript/patterns/) - デザインパターン、実装パターン、命名規則、ヘッドレスUI
+- [Web APIs](javascript/web-apis/) - IntersectionObserver など
 
 ### HTML
 [HTML ナレッジ一覧](html/INDEX.md)
@@ -28,9 +29,23 @@
 
 ### 技術横断的トピック
 [技術横断ナレッジ一覧](cross-cutting/INDEX.md)
-- [Performance](cross-cutting/performance/) - パフォーマンス最適化
+- [Performance](cross-cutting/performance/) - パフォーマンス最適化、画像読込高速化
 - [Accessibility](cross-cutting/accessibility/) - アクセシビリティ
 - [Browser Compatibility](cross-cutting/browser-compat/) - ブラウザ互換性、Workarounds
+- [Security](cross-cutting/security/) - セキュリティ
+- [Tooling](cross-cutting/tooling/) - 開発ツール
+- [UX](cross-cutting/ux/) - ユーザーエクスペリエンス
+
+### デザインリソース
+[デザインリソース一覧](design-resources/INDEX.md)
+- [Color Palettes](design-resources/color-palettes/) - CSS変数形式のカラーパレット（アースカラー、高級感、癒しグラデーション）
+- [Gradients](design-resources/gradients/) - モダンなグラデーション技法（メッシュグラデーション）
+- [UI Trends](design-resources/ui-trends/) - 最新UIトレンド（Liquid Glass UI）
+
+### ライブラリ・ツール
+[ライブラリ一覧](libraries/INDEX.md)
+- [Animation](libraries/animation/) - アニメーションライブラリ（GSAP）
+- [Snippets](libraries/snippets/) - 実用的なコードスニペット集（CSS/JS 2025）
 
 ### デザインシステム・ガイドライン
 
@@ -68,19 +83,28 @@
 #grid #flexbox #container-queries #layout #positioning
 
 ### アニメーション
-#animation #transitions #keyframes #scroll-driven #waapi
+#animation #transitions #keyframes #scroll-driven #waapi #3d-transforms #offset-path #view-transitions
 
 ### 視覚効果
-#filter #mask #clip-path #backdrop-filter #visual-effects
+#filter #mask #clip-path #backdrop-filter #visual-effects #glassmorphism #liquid-glass
 
 ### 新機能（2024-2025）
-#2024 #2025 #modern-css #modern-javascript
+#2024 #2025 #modern-css #modern-javascript #css-nesting #independent-transforms #trigonometry
 
 ### パフォーマンス
-#performance #optimization #loading #rendering
+#performance #optimization #loading #rendering #image-optimization #fetchpriority
 
 ### アクセシビリティ
-#a11y #accessibility #wcag #aria
+#a11y #accessibility #wcag #aria #inert #dialog #headless-ui
+
+### デザイン
+#color-palettes #gradients #ui-trends #earth-colors #luxury-colors
+
+### ライブラリ
+#gsap #animation-library #snippets #code-examples
+
+### 命名規則
+#naming #javascript-patterns #best-practices
 
 ## 📝 ナレッジの追加方法
 
