@@ -26,6 +26,9 @@ alias sudo="sudo "
 # Claude Code メモリプラグインのワーカーサービス起動
 alias claude-mem='bun "$HOME/.claude/plugins/marketplaces/thedotmack/plugin/scripts/worker-service.cjs"'
 
+# Xcode クリーンアップツール（clean-my-xcode）
+alias clean-xcode='bash <(curl -fsSL https://raw.githubusercontent.com/filsv/clean-my-xcode/main/clean-my-xcode.sh)'
+
 # ======================
 # Search
 # ======================
