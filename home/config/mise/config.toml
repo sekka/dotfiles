@@ -401,6 +401,16 @@ if [ -n "$file" ]; then
 fi
 '''
 
+# Xcodeクリーンアップ（対話型）
+[tasks.util-clean-xcode]
+description = "Xcodeのキャッシュをクリーンアップ（対話型、clean-my-xcode）"
+run = "bash <(curl -fsSL https://raw.githubusercontent.com/filsv/clean-my-xcode/main/clean-my-xcode.sh)"
+
+# Xcodeクリーンアップ（シンプル版）
+[tasks.util-clean-xcode-simple]
+description = "Xcodeのキャッシュをクリーンアップ（シンプル版、xcode-clean.sh）"
+run = "bash <(curl -fsSL https://raw.githubusercontent.com/niklasberglund/xcode-clean.sh/master/xcode-clean.sh) -A"
+
 [tools]
 # グローバルにインストールするツールを定義
 # 例:
