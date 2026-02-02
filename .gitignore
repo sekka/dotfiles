@@ -6,6 +6,8 @@ Brewfile.lock.json
 .claude/memory/
 .claude/state/
 .claude/stats-cache.json
+.claude/logs/
+.claude/sessions/
 plans/
 .playwright-mcp/
 
