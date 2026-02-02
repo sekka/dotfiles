@@ -82,7 +82,7 @@ brew "direnv"             # https://formulae.brew.sh/formula/direnv           # 
 brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # TUI macOSクリーナー
 brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
 tap "lajosdeme/utils"
-brew "xcclear"            # https://github.com/lajosdeme/xcclear              # Xcodeクリーンアップツール
+brew "lajosdeme/utils/xcclear"  # https://github.com/lajosdeme/xcclear        # Xcodeクリーンアップツール
 
 # === 開発ツール（Go製）===
 brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルフォーマッタ
@@ -106,7 +106,7 @@ brew "xh"                 # https://formulae.brew.sh/formula/xh               # 
 brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich        # ネットワークトラフィック監視
 brew "snitch"             # https://formulae.brew.sh/formula/snitch           # ネットワーク監視ツール
 tap "teamookla/speedtest"
-brew "speedtest"          # https://github.com/teamookla/homebrew-speedtest   # Ookla公式スピードテストCLI
+brew "teamookla/speedtest/speedtest"  # https://github.com/teamookla/homebrew-speedtest  # Ookla公式スピードテストCLI
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
