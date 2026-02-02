@@ -128,6 +128,7 @@ brew "specify"            # https://formulae.brew.sh/formula/specify          # 
 
 # === ユーティリティ ===
 brew "cabextract"         # https://formulae.brew.sh/formula/cabextract       # CABアーカイブ展開ツール
+brew "cdrtools"           # https://formulae.brew.sh/formula/cdrtools         # ISO作成ツール（mkisofs/genisoimage）
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
 brew "sevenzip"           # https://formulae.brew.sh/formula/sevenzip         # 7zアーカイブプレビュー（yazi用）
