@@ -50,6 +50,7 @@
       "WebFetch(domain:note.com)",
       "WebFetch(domain:oraios.github.io)",
       "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:rhizomatiks.com)",
       "WebFetch(domain:rightdesigninc.com)",
       "WebFetch(domain:sharp.pixelplumbing.com)",
@@ -70,6 +71,7 @@
       "WebFetch(domain:theguild.jp)",
       "WebFetch(domain:tomoyaokada.com)",
       "WebFetch(domain:tote.design)",
+      "WebFetch(domain:twigl.app)",
       "WebFetch(domain:type.kontrapunkt.com)",
       "WebFetch(domain:unshift.co.jp)",
       "WebFetch(domain:weekday.co.jp)",
@@ -96,9 +98,7 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:twigl.app)"
+      "WebFetch(domain:zoewave.medium.com)"
     ],
     "deny": [],
     "ask": []
