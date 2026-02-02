@@ -61,6 +61,7 @@
       "Bash(rg:*)",
       "Bash(shellcheck:*)",
       "Bash(sqlite3:*)",
+      "Bash(test:*)",
       "Bash(tmux:*)",
       "Bash(tree:*)",
       "Bash(wc:*)",
