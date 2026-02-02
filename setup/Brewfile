@@ -129,9 +129,11 @@ brew "specify"            # https://formulae.brew.sh/formula/specify          # 
 # brew "asheshgoplani/tap/agent-deck" # https://github.com/asheshgoplani/agent-deck  # マルチAIエージェント管理ツール
 
 # === ユーティリティ ===
+brew "cabextract"         # https://formulae.brew.sh/formula/cabextract       # CABアーカイブ展開ツール
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
 brew "sevenzip"           # https://formulae.brew.sh/formula/sevenzip         # 7zアーカイブプレビュー（yazi用）
+brew "wimlib"             # https://formulae.brew.sh/formula/wimlib           # WIMアーカイブ展開ツール
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
 tap "carlocab/personal"
 brew "unrar"              # https://formulae.brew.sh/formula/unrar            # RAR解凍ツール
