@@ -137,7 +137,7 @@ brew "sevenzip"           # https://formulae.brew.sh/formula/sevenzip         # 
 brew "wimlib"             # https://formulae.brew.sh/formula/wimlib           # WIMアーカイブ展開ツール
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
 tap "carlocab/personal"
-brew "unrar"              # https://formulae.brew.sh/formula/unrar            # RAR解凍ツール
+brew "carlocab/personal/unrar"  # https://formulae.brew.sh/formula/unrar      # RAR解凍ツール
 
 # === ユーティリティ ===
 #cask "1password"
