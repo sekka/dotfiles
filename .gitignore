@@ -9,6 +9,7 @@ Brewfile.lock.json
 .claude/logs/
 .claude/sessions/
 plans/
+reports/
 .playwright-mcp/
 
 # yazi プラグインとテーマ（package.tomlで管理）

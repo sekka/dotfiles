@@ -334,4 +334,9 @@ article p {
 - [Utopia: Fluid Responsive Design](https://utopia.fyi/)
 - [Modern Fluid Typography Using CSS Clamp](https://www.smashingmagazine.com/2022/01/modern-fluid-typography-css-clamp/)
 
+## 関連ナレッジ
+
+- [Fluid Type Scale](../typography/fluid-type-scale.md) - Size Matters ツールを使った詳細な実装
+- [レスポンシブデザイン](../../cross-cutting/responsive/README.md)
+
 ---

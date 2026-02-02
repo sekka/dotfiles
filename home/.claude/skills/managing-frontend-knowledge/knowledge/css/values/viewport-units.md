@@ -62,5 +62,6 @@ updated: 2025-01-16
 
 ## 関連ナレッジ
 
+- [100vw スクロールバー問題の解決](./viewport-units-scrollbar-aware.md) - Chrome 145+ での自動認識
 - [clamp()](./clamp.md)
 - [Responsive Design](../../cross-cutting/browser-compat/responsive.md)

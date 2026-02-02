@@ -213,6 +213,29 @@ description = "システムモニタリング"
 run = "rtop"
 
 # --------------------------------------
+# パフォーマンス測定
+# --------------------------------------
+# Lighthouseでサイト全体をスキャン
+[tasks.perf-unlighthouse]
+alias = "ulh"
+description = "サイト全体のLighthouseスキャン（Unlighthouse）"
+run = """
+echo "使用方法: npx unlighthouse --site <URL>"
+echo "例: npx unlighthouse --site https://example.com"
+"""
+
+# Lighthouseでサイト全体をスキャン（CI用）
+[tasks.perf-unlighthouse-ci]
+description = "CI環境でUnlighthouseを実行"
+run = """
+if [ -z "$UNLIGHTHOUSE_SITE" ]; then
+  echo "❌ Error: UNLIGHTHOUSE_SITE 環境変数を設定してください"
+  exit 1
+fi
+npx unlighthouse --site "$UNLIGHTHOUSE_SITE" --build-static
+"""
+
+# --------------------------------------
 # Lint & Format (統合スクリプト経由)
 # --------------------------------------
 # 全ファイルチェック
@@ -431,29 +454,50 @@ pnpm = "latest"
 # === 開発ツール ===
 "npm:caniuse-cmd" = "latest"          # ブラウザ互換性チェック
 "npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
+"npm:czg" = "latest"                  # コミットメッセージ支援（git-cz の後継）
 "npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
 "npm:fixpack" = "latest"              # package.json整理
 "npm:git-cz" = "latest"               # Git commit支援
 "npm:git-diff-archive" = "latest"     # Git差分アーカイブ
+"npm:http-server" = "latest"          # ローカル HTTP サーバー
 "npm:lighthouse" = "latest"           # パフォーマンス測定
+"npm:unlighthouse" = "latest"         # サイト全体のLighthouseスキャン
+"npm:markdownlint-cli" = "latest"     # Markdown リンター
 "npm:npm-check" = "latest"            # npm依存関係チェック
 "npm:npm-check-updates" = "latest"    # npm更新チェック
 "npm:oxfmt" = "latest"                # Formatter
 "npm:oxlint" = "latest"               # Linter
 
+# === 画像処理 ===
+"npm:imageoptim-cli" = "latest"       # 画像最適化
+"npm:svgo" = "latest"                 # SVG 最適化
+
+# === システムモニタ ===
+"npm:gtop" = "latest"                 # システムモニタ（htop/btop 代替）
+
 # === Rust ===
+# ※ bat、eza、fd、hexyl、hgrep、procs、ripgrep、sheldon、starship、tailspin、yazi、
+#    zoxide、dprint、gitui、git-delta、xh、uvは Homebrew で管理
 rust = "stable"
-"cargo:cargo-update" = "latest" # https://crates.io/crates/cargo-update
-"cargo:filetree" = "latest"     # https://crates.io/crates/filetree File explorer TUI interface
-"cargo:hx" = "latest"           # https://crates.io/crates/hx Hex Viewer
-"cargo:keifu" = "latest"        # https://crates.io/crates/keifu Git commit graphs
-"cargo:needle-cli" = "latest"   # https://crates.io/crates/needle-cli GitHub PRs レビュー支援
-"cargo:rtop" = "latest"         # https://crates.io/crates/rtop システムモニタリング
-"cargo:ruget" = "latest"        # https://crates.io/crates/ruget すごいwget
-# "cargo:zellij" = "latest"     # https://crates.io/crates/zellij すごいtmux
+
+# --- ファイル操作 ---
+"cargo:filetree" = "latest"     # ファイルツリーエクスプローラー（TUI）
+
+# --- Git関連 ---
+"cargo:keifu" = "latest"        # Git commit graphs
+"cargo:needle-cli" = "latest"   # GitHub PRs レビュー支援
 "cargo:https://github.com/anatawa12/git-vrc" = "latest"
 
+# --- 開発ツール ---
+"cargo:cargo-update" = "latest" # cargo パッケージ更新管理
+"cargo:hx" = "latest"           # Hex Viewer
+
+# --- ネットワーク/HTTP ---
+"cargo:ruget" = "latest"        # すごいwget
+
+# --- システムモニタ ---
+"cargo:rtop" = "latest"         # システムモニタリング
+
 # === Go ===
-go = "latest"
-# "go:github.com/JuanIrache/gopro-utils/bin/gopro2gpx" = "latest"
-"go:github.com/d-kuro/gwq/cmd/gwq" = "latest" # Git worktree tool
+# ※ fzf、gh、ghq、gibo、hub、lazygit、wtp、lazydocker、colima、dockmate、
+#    navi、pt、mactop、direnv、shfmt、dstp、pget、ollama は Homebrew で管理

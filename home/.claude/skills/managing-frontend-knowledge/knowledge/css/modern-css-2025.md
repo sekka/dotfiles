@@ -753,6 +753,12 @@ details summary {
 
 ## 関連ナレッジ
 
+- [CSS 2025 エルゴノミクス](modern/css-2025-ergonomics.md) - attr() 拡張、if()、@function
+- [CSS 2025 インタラクション](animation/css-2025-interactions.md) - scroll-state、sibling-index()、moveBefore()
+- [CSS 2025 コンポーネント](components/css-2025-components.md) - dialog + command、popover=hint
+- [Chrome 144 の新機能](modern/chrome-144-features.md) - ::search-text、@scroll-state
+- [Chrome 143 の新機能](modern/chrome-143-features.md) - @container anchored(fallback)
+- [Chrome 142 の新機能](modern/chrome-142-features.md) - :target-before/:target-after
 - [@scope によるスコープ付きCSS](css/selectors/scope.md)
 - [ハーフレディング除去](css/typography/half-leading-trim.md)
 - [スクロールヒントシャドウ](css/animation/scroll-hint-shadow.md)

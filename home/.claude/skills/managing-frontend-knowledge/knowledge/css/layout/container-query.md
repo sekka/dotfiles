@@ -587,10 +587,227 @@ Container Query を使ってアニメーションパターンを切り替える�
 
 **利点**: ブレークポイントなしで流動的にサイズが変化。
 
+## 高度なテクニック
+
+> 出典: https://ishadeed.com/article/css-container-query-guide/
+> 追加日: 2026-01-31
+
+### 自己参照クエリは不可能
+
+コンテナ自身に対するクエリは適用できない。クエリは常に子孫要素に適用される:
+
+```css
+/* ❌ 動作しない */
+.card-wrapper {
+  container-type: inline-size;
+}
+
+@container (min-width: 300px) {
+  .card-wrapper {
+    padding: 2rem; /* コンテナ自身には適用されない */
+  }
+}
+
+/* ✅ 正しい */
+@container card (min-width: 300px) {
+  .card-wrapper > .child {
+    padding: 2rem; /* 子要素には適用される */
+  }
+}
+```
+
+### コンテナサイズは明示的に設定
+
+コンテナサイズは `auto` ではなく、明示的に設定する必要がある:
+
+```css
+/* ❌ 動作しない */
+.container {
+  width: auto; /* コンテナメントには使えない */
+  container-type: inline-size;
+}
+
+/* ✅ 正しい */
+.container {
+  width: 100%;
+  container-type: inline-size;
+}
+```
+
+### ラッパー要素の追加
+
+柔軟性を高めるため、コンテナ用の要素とスタイリング対象の要素を分離:
+
+```html
+<div class="card-wrapper">
+  <!-- コンテナクエリ用 -->
+  <article class="card">
+    <!-- スタイリング対象 -->
+    コンテンツ
+  </article>
+</div>
+```
+
+### スタイルクエリ（Style Queries）
+
+カスタムプロパティの値を条件にスタイルを適用:
+
+```css
+.card-wrapper {
+  --context: sidebar;
+  container-type: inline-size;
+}
+
+@container style(--context: sidebar) {
+  .card {
+    display: flex;
+    flex-direction: row;
+    background: white;
+    border-radius: 8px;
+  }
+
+  .card-image {
+    flex: 0 0 120px;
+  }
+}
+
+/* メインコンテンツ用 */
+.main-wrapper {
+  --context: main;
+  container-type: inline-size;
+}
+
+@container style(--context: main) {
+  .card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+  }
+}
+```
+
+**ユースケース**: 同じコンポーネントを異なるコンテキスト（サイドバー vs メインコンテンツ）で異なるレイアウトにする。
+
+### 流動的なタイポグラフィ
+
+Container Query Units を使って、コンテナサイズに応じてフォントサイズを流動的に変更:
+
+```css
+.heading {
+  font-size: clamp(1.5rem, 1rem + 2cqw, 2.5rem);
+}
+```
+
+**利点**: ブレークポイントなしで、コンテナサイズに比例してスムーズにサイズが変化。
+
+## 実践的なユースケース（拡張）
+
+### カードコンポーネント
+
+```css
+.card-wrapper {
+  container-type: inline-size;
+}
+
+@container (min-width: 250px) {
+  .card {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .card-image {
+    flex: 0 0 120px;
+  }
+}
+
+@container (max-width: 150px) {
+  .card-image {
+    display: none; /* 狭い場所では画像を非表示 */
+  }
+}
+```
+
+### ナビゲーションシステム
+
+狭いスペースではラベルを非表示にし、アイコンのみ表示:
+
+```css
+.nav-wrapper {
+  container-type: inline-size;
+}
+
+@container (min-width: 420px) {
+  .nav-item {
+    flex-direction: row;
+  }
+
+  .nav-label {
+    display: inline-block;
+  }
+}
+
+@container (max-width: 420px) {
+  .nav-label {
+    display: none; /* ラベル非表示 */
+  }
+}
+```
+
+### ダイナミックダッシュボード
+
+グリッド配置に応じてウィジェットのレイアウトを調整:
+
+```css
+.widget-container {
+  container-type: inline-size;
+  container-name: widget;
+}
+
+@container widget (min-width: 500px) {
+  .widget-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@container widget (max-width: 300px) {
+  .widget-actions {
+    flex-direction: column;
+  }
+}
+```
+
+### フォームレイアウト
+
+```css
+.form-wrapper {
+  container-type: inline-size;
+}
+
+@container (min-width: 250px) {
+  .form-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .form-button {
+    position: absolute;
+    right: 4px;
+  }
+}
+```
+
 ## 参考リソース
 
 - [MDN: CSS Container Queries](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_container_queries)
 - [Can I use: CSS Container Queries](https://caniuse.com/css-container-queries)
 - [CSS Containment Module Level 3（仕様）](https://www.w3.org/TR/css-contain-3/)
+- [Ahmad Shadeed: CSS Container Query Guide](https://ishadeed.com/article/css-container-query-guide/) - 包括的ガイド
+
+## 関連ナレッジ
+
+- [Chrome 142 の新機能](../modern/chrome-142-features.md) - コンテナクエリ範囲構文（比較演算子）
+- [CSS 2025 エルゴノミクス](../modern/css-2025-ergonomics.md) - if() 関数とスタイルクエリ
+- [Scroll State Queries](../selectors/scroll-state-queries.md) - スクロール状態検出
+- [Tree View Indentation](./tree-view-indentation.md) - ネストされたUIのインデント実装
 
 ---

@@ -14,15 +14,12 @@ brew "bat"                # https://formulae.brew.sh/formula/bat              # 
 brew "eza"                # https://formulae.brew.sh/formula/eza              # すごいls
 brew "fd"                 # https://formulae.brew.sh/formula/fd               # すごいfind
 brew "fpp"                # https://formulae.brew.sh/formula/fpp              # パスピッカー
-brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
 brew "gawk"               # https://formulae.brew.sh/formula/gawk             # GNU Awk（macOS互換性）
 brew "hexyl"              # https://formulae.brew.sh/formula/hexyl            # すごいod
 brew "hgrep"              # https://formulae.brew.sh/formula/hgrep            # すごいgrep
-brew "navi"               # https://formulae.brew.sh/formula/navi             # コマンドラインチュートリアルツール
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
-brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
-brew "pt"                 # https://formulae.brew.sh/formula/the_platinum_searcher  # 超すごいgrep
 brew "procs"              # https://formulae.brew.sh/formula/procs            # すごいps
+brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
 brew "ripgrep"            # https://formulae.brew.sh/formula/ripgrep          # すごいgrep
 brew "sheldon"            # https://formulae.brew.sh/formula/sheldon          # 高速zshプラグイン管理（Rust製）
 brew "starship"           # https://formulae.brew.sh/formula/starship         # すごいプロンプト表示
@@ -34,53 +31,69 @@ brew "zoxide"             # https://formulae.brew.sh/formula/zoxide           # 
 
 # === システムモニタ ===
 brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ
-brew "gtop"               # https://formulae.brew.sh/formula/gtop             # プロセスビューワ
 brew "htop"               # https://formulae.brew.sh/formula/htop             # プロセスビューワ
-brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
 brew "zenith"             # https://formulae.brew.sh/formula/zenith           # ターミナルシステムモニタ
 
 # === 開発一般 ===
-brew "direnv"             # https://formulae.brew.sh/formula/direnv           # ディレクトリ毎環境変数管理ツール
 brew "mise"               # https://formulae.brew.sh/formula/mise             # タスクランナー
 brew "neovim"             # https://formulae.brew.sh/formula/neovim           # テキストエディタ
 brew "vim"                # https://formulae.brew.sh/formula/vim              # テキストエディタ
 brew "wget"               # https://formulae.brew.sh/formula/wget             # DLツール
 
 # === Docker ===
-brew "colima"             # https://formulae.brew.sh/formula/colima           # 軽量Dockerランタイム（Docker Desktop代替）
 brew "docker"             # https://formulae.brew.sh/formula/docker           # コンテナ管理CLI
 brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
-brew "lazydocker"         # https://formulae.brew.sh/formula/lazydocker       # コンテナ管理CLI
-brew "shubh-io/tap/dockmate" # https://github.com/shubh-io/dockmate           # Docker管理ツール
 
 # === formatter/linter ===
 brew "dprint"             # https://formulae.brew.sh/formula/dprint           # 汎用コードフォーマッタ
-brew "markdownlint-cli"   # https://formulae.brew.sh/formula/markdownlint-cli # Markdownリンター
 brew "pre-commit"         # https://formulae.brew.sh/formula/pre-commit       # Gitフック管理ツール
 brew "shellcheck"         # https://formulae.brew.sh/formula/shellcheck       # シェルスクリプトリンター
-brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルスクリプトフォーマッター
 brew "yamllint"           # https://formulae.brew.sh/formula/yamllint         # YAMLリンター
 
 # === gitクライアント ===
-brew "gitui"              # https://formulae.brew.sh/formula/gitui            # gitクライアント
 brew "git-delta"          # https://formulae.brew.sh/formula/git-delta        # gitクライアント
-brew "lazygit"            # https://formulae.brew.sh/formula/lazygit          # gitクライアント
+brew "gitui"              # https://formulae.brew.sh/formula/gitui            # gitクライアント
 brew "tig"                # https://formulae.brew.sh/formula/tig              # gitクライアント
 
 # === git補助ツール ===
-brew "czg"                # https://formulae.brew.sh/formula/czg              # コミットメッセージ支援ツール
 brew "diff-so-fancy"      # https://formulae.brew.sh/formula/diff-so-fancy    # git diff見やすくするツール
-brew "gh"                 # https://formulae.brew.sh/formula/gh               # GitHubコマンドラインツール
-brew "ghq"                # https://formulae.brew.sh/formula/ghq              # git clone便利ツール
-brew "gibo"               # https://formulae.brew.sh/formula/gibo             # gitignoreボイラープレート
 brew "git"                # https://formulae.brew.sh/formula/git              # git
-brew "git-delta"          # https://formulae.brew.sh/formula/git-delta        # git diff見やすくするツール
-brew "hub"                # https://formulae.brew.sh/formula/hub              # GitHubサポートツール
-brew "satococoa/tap/wtp"  # https://github.com/satococoa/wtp                  # GitHub Worktree Plus
+brew "fzf"                # https://formulae.brew.sh/formula/fzf              # ファジー検索
+brew "gh"                 # https://formulae.brew.sh/formula/gh               # GitHub CLI
+brew "ghq"                # https://formulae.brew.sh/formula/ghq              # git clone管理
+brew "gibo"               # https://formulae.brew.sh/formula/gibo             # gitignore生成
+brew "hub"                # https://formulae.brew.sh/formula/hub              # GitHub補助ツール
+brew "lazygit"            # https://formulae.brew.sh/formula/lazygit          # gitクライアント（TUI）
+tap "satococoa/tap"
+brew "wtp"                # https://formulae.brew.sh/formula/wtp              # Git Worktree Plus
+
+# === Docker管理 ===
+brew "colima"             # https://formulae.brew.sh/formula/colima           # Docker環境
+brew "lazydocker"         # https://formulae.brew.sh/formula/lazydocker       # Docker管理（TUI）
+tap "shubh-io/tap"
+brew "dockmate"           # https://formulae.brew.sh/formula/dockmate         # Docker管理
+
+# === 検索/ナビゲーション ===
+brew "navi"               # https://formulae.brew.sh/formula/navi             # コマンドチュートリアル
+brew "pt"                 # https://formulae.brew.sh/formula/pt               # すごいgrep
+
+# === システムツール ===
+brew "direnv"             # https://formulae.brew.sh/formula/direnv           # 環境変数管理
+brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # TUI macOSクリーナー
+brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
+
+# === 開発ツール（Go製）===
+brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルフォーマッタ
+
+# === ネットワーク（Go製）===
+brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
+brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DL
+
+# === AI/LLM ===
+brew "ollama"             # https://formulae.brew.sh/formula/ollama           # ローカルLLM
 
 # === ウェブ開発 ===
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat         # cURLの統計情報表示
-brew "http-server"        # https://formulae.brew.sh/formula/http-server      # ローカルサーバ
 brew "jq"                 # https://formulae.brew.sh/formula/jq               # json便利ツール
 brew "mycli"              # https://formulae.brew.sh/formula/mycli            # MySQL便利ツール
 brew "xh"                 # https://formulae.brew.sh/formula/xh               # HTTPクライアント
@@ -88,9 +101,9 @@ brew "xh"                 # https://formulae.brew.sh/formula/xh               # 
 
 # === ネットワーク管理 ===
 brew "bandwhich"          # https://formulae.brew.sh/formula/bandwhich        # ネットワークトラフィック監視
-brew "dstp"               # https://formulae.brew.sh/formula/dstp             # ネットワーク調査
 brew "snitch"             # https://formulae.brew.sh/formula/snitch           # ネットワーク監視ツール
-brew "speedtest-cli"      # https://formulae.brew.sh/formula/speedtest-cli    # スピードテストツール
+tap "teamookla/speedtest"
+brew "speedtest"          # https://github.com/teamookla/homebrew-speedtest   # Ookla公式スピードテストCLI
 
 # === Saas ===
 brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
@@ -101,27 +114,24 @@ brew "uv"                 # https://formulae.brew.sh/formula/uv               # 
 
 # === 画像処理 ===
 brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg           # 動画処理ツール
-brew "imageoptim-cli"     # https://formulae.brew.sh/formula/imageoptim-cli   # 画像最適化ツール
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick      # 画像処理ツール
 brew "poppler"            # https://formulae.brew.sh/formula/poppler          # PDFプレビュー（yazi用）
-brew "svgo"               # https://formulae.brew.sh/formula/svgo             # SVG最適化ツール
 brew "webp"               # https://formulae.brew.sh/formula/webp             # WebP画像処理ツール
 brew "libavif"            # https://formulae.brew.sh/formula/libavif          # AVIF画像処理ツール
 
 # === AI ===
 #tap "dagger/tap"
 #brew "dagger/tap/container-use"
-brew "ollama"             # https://formulae.brew.sh/formula/ollama           # ローカルLLMランタイム
 brew "specify"            # https://formulae.brew.sh/formula/specify          # Spec-Driven Developmentツール
 # brew "asheshgoplani/tap/agent-deck" # https://github.com/asheshgoplani/agent-deck  # マルチAIエージェント管理ツール
 
 # === ユーティリティ ===
 brew "emojify"            # https://formulae.brew.sh/formula/emojify          # 絵文字
 brew "gnupg2"             # https://formulae.brew.sh/formula/gnupg            # 署名ツール
-brew "pget"               # https://formulae.brew.sh/formula/pget             # 高速DLツール
 brew "sevenzip"           # https://formulae.brew.sh/formula/sevenzip         # 7zアーカイブプレビュー（yazi用）
 brew "yt-dlp"             # https://formulae.brew.sh/formula/yt-dlp           # YouTube動画DLツール
-brew "carlocab/personal/unrar" # https://formulae.brew.sh/formula/unrar       # RAR解凍ツール
+tap "carlocab/personal"
+brew "unrar"              # https://formulae.brew.sh/formula/unrar            # RAR解凍ツール
 
 # === ユーティリティ ===
 #cask "1password"

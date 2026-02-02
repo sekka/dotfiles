@@ -1,10 +1,10 @@
 ---
 title: WAI-ARIA の基礎
 category: cross-cutting/accessibility
-tags: [aria, accessibility, a11y, semantics, roles, states]
+tags: [aria, accessibility, a11y, semantics, roles, states, screen-reader]
 browser_support: 全モダンブラウザ対応
 created: 2025-01-16
-updated: 2025-01-16
+updated: 2026-02-01
 ---
 
 # WAI-ARIA の基礎
@@ -315,8 +315,201 @@ function toggleCheck() {
 - [ ] キーボード操作が可能
 - [ ] スクリーンリーダーでテスト済み
 
+## スクリーンリーダーでの読み上げ例
+
+> 出典: https://ics.media/entry/230821/
+> 執筆日: 2023-08-21
+> 追加日: 2026-02-01
+
+実際のスクリーンリーダーでARIA属性がどう読み上げられるかを確認。テスト環境: VoiceOver（macOS/iOS）、Narrator（Windows）、NVDA（Windows）、PC-Talker Neo Plus（Windows）。
+
+### aria-current
+
+**用途**: ナビゲーションで現在のページを示す
+
+```html
+<nav>
+  <a href="/html">HTML</a>
+  <a href="/css">CSS</a>
+  <a href="/javascript" aria-current="page">JavaScript</a>
+</nav>
+```
+
+**読み上げ**:
+
+| スクリーンリーダー | 読み上げ内容 |
+|------------------|-------------|
+| VoiceOver (macOS) | "JavaScript、現在のページ、リンク" |
+| Narrator (Windows) | "JavaScript、リンク、現在のページ" |
+| NVDA | "JavaScript、リンク、current page" |
+| PC-Talker | "JavaScript、リンク" |
+
+**注意**: PC-Talkerは `aria-current` を読み上げない場合があります。CSSで視覚的な区別も必須。
+
+### aria-label
+
+**用途**: アイコンのみのボタンに説明的なラベルを付与
+
+```html
+<!-- ページトップボタン -->
+<a href="#top" aria-label="ページの先頭へ戻る">
+  <svg><!-- 上矢印アイコン --></svg>
+</a>
+
+<!-- ハンバーガーメニュー -->
+<button aria-label="メニューを開く" aria-haspopup="true">
+  <span class="hamburger-icon"></span>
+</button>
+```
+
+**読み上げ**:
+
+| スクリーンリーダー | 読み上げ内容（ページトップ） |
+|------------------|---------------------------|
+| VoiceOver | "ページの先頭へ戻る、リンク" |
+| Narrator | "ページの先頭へ戻る、リンク" |
+| NVDA | "ページの先頭へ戻る、リンク" |
+| PC-Talker | "ページの先頭へ戻る、リンク" |
+
+**ベストプラクティス**:
+- アイコンのみのUI要素には必ず `aria-label` を付与
+- ラベルは動作を説明する（「クリック」は不要）
+- 簡潔でわかりやすい表現
+
+### aria-haspopup
+
+**用途**: サブメニューやポップアップの存在を示す
+
+```html
+<nav>
+  <ul>
+    <li>
+      <a href="#" aria-haspopup="true">製品</a>
+      <ul>
+        <li><a href="/product1">製品1</a></li>
+        <li><a href="/product2">製品2</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+```
+
+**読み上げ**:
+
+| スクリーンリーダー | 読み上げ内容 |
+|------------------|-------------|
+| VoiceOver | "製品、サブメニュー、リンク" |
+| Narrator | "製品、リンク、サブメニューあり" |
+| NVDA | "製品、リンク、has popup" |
+| PC-Talker | "製品、リンク、サブメニュー" |
+
+**aria-haspopupの値**:
+
+```html
+aria-haspopup="menu"      <!-- メニュー -->
+aria-haspopup="dialog"    <!-- ダイアログ -->
+aria-haspopup="listbox"   <!-- リストボックス -->
+aria-haspopup="tree"      <!-- ツリー -->
+aria-haspopup="grid"      <!-- グリッド -->
+aria-haspopup="true"      <!-- メニュー（デフォルト） -->
+```
+
+### aria-hidden
+
+**用途**: 装飾的要素をスクリーンリーダーから隠す
+
+```html
+<button>
+  <span aria-hidden="true">🔍</span>
+  検索
+</button>
+
+<p>
+  重要なお知らせ
+  <span class="icon" aria-hidden="true">⚠️</span>
+</p>
+```
+
+**読み上げ**:
+
+| 要素 | aria-hidden | 読み上げ |
+|------|------------|---------|
+| `<span>🔍</span> 検索` | なし | "虫眼鏡、検索、ボタン" |
+| `<span aria-hidden="true">🔍</span> 検索` | あり | "検索、ボタン" |
+
+**使用すべき場面**:
+- 装飾的な絵文字・アイコン
+- 視覚的な区切り線
+- 意味を持たないSVG要素
+- CSSで生成された装飾要素
+
+**注意**:
+- 重要な情報には使わない
+- `aria-hidden="true"` の子要素も全て隠される
+
+### aria-labelledby / aria-describedby
+
+**用途**: 要素に説明を関連付ける
+
+```html
+<dialog aria-labelledby="dialog-title" aria-describedby="dialog-description">
+  <h2 id="dialog-title">確認</h2>
+  <p id="dialog-description">この操作を実行してもよろしいですか?</p>
+  <button>実行</button>
+  <button>キャンセル</button>
+</dialog>
+```
+
+**読み上げ（ダイアログ表示時）**:
+
+| スクリーンリーダー | 読み上げ内容 |
+|------------------|-------------|
+| VoiceOver | "確認、ダイアログ。この操作を実行してもよろしいですか?" |
+| NVDA | "確認、ダイアログ、この操作を実行してもよろしいですか?" |
+
+**違い**:
+- `aria-labelledby`: 要素の「タイトル」を指定
+- `aria-describedby`: 要素の「説明」を指定
+
+## スクリーンリーダーテストのベストプラクティス
+
+### 1. 複数のスクリーンリーダーでテスト
+
+| スクリーンリーダー | プラットフォーム | 入手方法 |
+|------------------|---------------|---------|
+| VoiceOver | macOS/iOS | 標準搭載 |
+| Narrator | Windows | 標準搭載 |
+| NVDA | Windows | 無料ダウンロード |
+| JAWS | Windows | 有料（試用版あり） |
+| PC-Talker | Windows | 有料 |
+| TalkBack | Android | 標準搭載 |
+
+### 2. 基本的な操作を覚える
+
+**VoiceOver（Mac）**:
+- 起動: `Cmd + F5`
+- 次の要素: `Ctrl + Option + →`
+- 前の要素: `Ctrl + Option + ←`
+- クリック: `Ctrl + Option + Space`
+
+**NVDA（Windows）**:
+- 起動: インストール後、`Ctrl + Alt + N`
+- 次の要素: `↓`
+- 前の要素: `↑`
+- クリック: `Enter`
+
+### 3. チェックポイント
+
+- [ ] ページタイトルが読み上げられる
+- [ ] ナビゲーションで現在位置がわかる
+- [ ] ボタン・リンクの目的が理解できる
+- [ ] フォームのラベルが適切
+- [ ] エラーメッセージが伝わる
+- [ ] モーダル表示時にフォーカスが移動する
+
 ## 関連ナレッジ
 
-- [アクセシビリティの基本](./accessibility-basics.md)
+- [アクセシビリティの基本](./web-accessibility-basics-2024.md)
 - [キーボード操作](./keyboard-navigation.md)
 - [スクリーンリーダー対応](./screen-reader.md)
+- [強制カラーモード](./forced-colors-mode.md)

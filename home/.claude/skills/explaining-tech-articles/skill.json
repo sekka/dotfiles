@@ -1,0 +1,14 @@
+{
+  "name": "explaining-tech-articles",
+  "version": "1.0.0",
+  "description": "複雑な技術記事・論文を TL;DR、図解、キーワード解説でわかりやすく解説する",
+  "author": "kei",
+  "tags": ["説明", "図解", "技術記事", "論文", "教育"],
+  "triggers": [
+    "記事を解説",
+    "論文を要約",
+    "図解して",
+    "わかりやすく"
+  ],
+  "disable-model-invocation": false
+}

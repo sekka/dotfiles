@@ -1,0 +1,21 @@
+{
+  "name": "implement-with-review",
+  "version": "1.0.0",
+  "description": "実装とレビューを自動的に交互実行し、品質を安定させるスキル。実装 subagent とレビュー subagent を使用し、最大3回のループで修正を行う。",
+  "triggers": [
+    "implement-with-review",
+    "実装レビューループ",
+    "implement and review"
+  ],
+  "invokedByUser": true,
+  "categories": ["development", "quality-assurance"],
+  "author": "Kei",
+  "tags": [
+    "implementation",
+    "review",
+    "quality",
+    "automation",
+    "loop",
+    "subagent"
+  ]
+}

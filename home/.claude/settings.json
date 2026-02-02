@@ -160,6 +160,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-files.sh"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/check-design-before-write.ts"
           }
         ]
       },
@@ -184,6 +188,24 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/log-agent-calls.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-debug-on-failure.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -193,6 +215,10 @@
           {
             "type": "command",
             "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-review-after-changes.ts"
           }
         ]
       },
@@ -208,6 +234,7 @@
     ],
     "Stop": [
       {
+        "_comment": "Claude Code 作業完了時の通知",
         "hooks": [
           {
             "type": "command",
@@ -225,29 +252,11 @@
         ]
       }
     ],
-    "PermissionRequest": [
-      {
-        "matcher": "Bash|Task|Read|Write|Edit|WebFetch|WebSearch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-          }
-        ]
-      }
-    ],
+    "PermissionRequest": [],
+    "SubagentStop": [],
     "Notification": [
       {
+        "_comment": "各種イベント通知（permission_prompt: 権限リクエスト、idle_prompt: アイドル、elicitation_dialog: 入力要求、auth_success: 認証成功）。matcher は OR 条件で1イベント1通知",
         "matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
         "hooks": [
           {
@@ -271,7 +280,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+            "command": "bun $HOME/dotfiles/scripts/development/hooks/agent-router.ts"
           }
         ]
       },

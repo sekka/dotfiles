@@ -1,0 +1,21 @@
+{
+  "name": "worktree-manager",
+  "version": "1.0.0",
+  "description": "git worktree を管理し、複数タスクの並列開発を可能にするスキル。worktree の作成・削除・一覧表示・切り替えを提供。",
+  "triggers": [
+    "worktree-manager",
+    "worktree",
+    "並列開発",
+    "parallel-development"
+  ],
+  "invokedByUser": true,
+  "categories": ["git", "workflow"],
+  "author": "Kei",
+  "tags": [
+    "git",
+    "worktree",
+    "parallel",
+    "workflow",
+    "branch"
+  ]
+}

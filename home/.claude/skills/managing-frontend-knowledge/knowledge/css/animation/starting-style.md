@@ -156,6 +156,65 @@ dialog[open] {
 }
 ```
 
+## 歴史的経緯: @initial 提案（廃止）
+
+> 出典: https://coliss.com/articles/build-websites/operation/css/css-transition-display.html
+> 執筆日: 2023年
+> 追加日: 2026-01-31
+
+**注意:** かつて `@initial` というルールが提案されていましたが、**仕様から削除されました**。現在は `@starting-style` と `transition-behavior: allow-discrete` の組み合わせが標準です。
+
+### 廃止された @initial の例（参考）
+
+```css
+/* ❌ 廃止された構文（使用しないこと） */
+.display-on-check {
+  opacity: 0;
+  display: none;
+  transition: opacity 0.5s, display 0.5s;
+}
+
+:checked + .display-on-check {
+  opacity: 1;
+  display: block;
+}
+
+@initial {
+  :checked + .display-on-check {
+    opacity: 0;
+  }
+}
+```
+
+### 現在の標準的な実装
+
+```css
+/* ✅ 現在の標準（@starting-style） */
+.display-on-check {
+  opacity: 1;
+  display: block;
+  transition: opacity 0.5s, display 0.5s allow-discrete;
+}
+
+.display-on-check:not(:checked) {
+  opacity: 0;
+  display: none;
+}
+
+@starting-style {
+  .display-on-check {
+    opacity: 0;
+  }
+}
+```
+
+**主な違い:**
+- `@initial` → `@starting-style` に変更
+- `transition-behavior: allow-discrete` が必須
+- より明確なセマンティクス
+
+---
+
 ## 関連ナレッジ
 
 - [interpolate-size](./interpolate-size.md)

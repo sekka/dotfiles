@@ -1,10 +1,10 @@
 ---
-title: レスポンシブコーディング手法（TAKLOG方式）
+title: レスポンシブコーディング手法（TAKLOG方式 + 2025年トレンド）
 category: meta
 tags: [responsive, container-query, clamp, viewport, best-practices, 2025]
 browser_support: モダンブラウザ
 created: 2026-01-19
-updated: 2026-01-19
+updated: 2026-01-31
 ---
 
 # レスポンシブコーディング手法（TAKLOG方式）
@@ -405,3 +405,214 @@ p {
 - [MDN: clamp()](https://developer.mozilla.org/en-US/docs/Web/CSS/clamp)
 - [RespImageLint](https://ausi.github.io/respimagelint/)
 - [Container Query Units](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Container_Queries#container_query_length_units)
+
+---
+
+# 補足：2025年のレスポンシブコーディング最新トレンド
+
+> 出典: https://speakerdeck.com/tak_dcxi/an-liu-resuponsibukodeingu-2025
+> 発表日: 2025年11月30日（フロントエンドカンファレンス関西）
+> 追加日: 2026-01-31
+
+## 基本哲学の再確認
+
+### ピクセルパーフェクトの回避
+
+デバイス画面幅の無限性を認識し、全ての環境での完全な一致を目指さない設計思想。
+
+**重要な考え方:**
+- デザインツール（Figma等）での固定値は「参考値」として扱う
+- ブラウザに最終的な制御権を委譲する
+- ユーザーのフォントサイズ設定を尊重
+
+### ブラウザへの役割委譲
+
+CSS の最終的な制御権をエンドユーザーに提供するよう設計すべき。
+
+```css
+/* ❌ ブラウザの判断を奪う */
+@media (width: 768px) {
+  /* 正確に768pxでのみ動作 */
+}
+
+/* ✅ ブラウザに判断を委ねる */
+@media (width >= 768px) {
+  /* 768px以上ならブラウザが適切に判断 */
+}
+```
+
+## 最新のレイアウト設計アプローチ
+
+### auto-fit と auto-fill の使い分け
+
+**auto-fit**: アイテム数に関係なく、利用可能なスペースを埋める
+
+```css
+.grid-auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+```
+
+**使用例**: 3アイテムしかなくても、グリッド全体を埋める
+
+**auto-fill**: アイテム数に応じて、空のトラックを作成
+
+```css
+.grid-auto-fill {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+```
+
+**使用例**: 3アイテムなら3カラムのみ、残りは空白
+
+### padding-bottom のトリック回避
+
+固定サイズを避けるための工夫:
+
+```css
+/* ❌ 古い方法：アスペクト比のためのpadding-bottom */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+}
+
+/* ✅ 新しい方法：aspect-ratio */
+.video-wrapper {
+  aspect-ratio: 16 / 9;
+}
+```
+
+### min-width 指定時の注意
+
+オーバーフロー防止策:
+
+```css
+/* ❌ オーバーフローの原因 */
+.card {
+  min-width: 300px;
+}
+
+/* ✅ 柔軟性を持たせる */
+.card {
+  min-width: min(300px, 100%);
+}
+```
+
+## コンテナクエリの実践的な注意点
+
+### サイズ縮小による無限ループの防止
+
+```css
+/* ❌ 無限ループの危険 */
+.container {
+  container-type: inline-size;
+}
+
+@container (width >= 600px) {
+  .container {
+    width: 500px; /* コンテナ自身のサイズ変更 → ループ */
+  }
+}
+
+/* ✅ 子要素のみ変更 */
+@container (width >= 600px) {
+  .card {
+    flex-direction: row;
+  }
+}
+```
+
+### コンテナクエリの循環参照回避
+
+```css
+/* ❌ 循環参照 */
+.parent {
+  container-type: inline-size;
+}
+
+.child {
+  width: 50cqi; /* 親のサイズに依存 */
+}
+
+@container (width >= 600px) {
+  .child {
+    width: 100cqi; /* 親のサイズを変更 → 循環 */
+  }
+}
+
+/* ✅ 独立した値を使用 */
+@container (width >= 600px) {
+  .child {
+    width: 100%;
+  }
+}
+```
+
+### font-size 変更時のレイアウト変動
+
+```css
+/* font-sizeの変更がレイアウトに影響 */
+.card {
+  padding: 1em; /* font-sizeに依存 */
+}
+
+@container (width >= 600px) {
+  .card {
+    font-size: 1.25rem; /* paddingも自動拡大 */
+  }
+}
+```
+
+**対策**: 意図的な連動か確認し、必要なら固定値を使用
+
+## イントリンシック・デザインの活用
+
+内在的な（intrinsic）サイズに基づいた設計。
+
+```css
+/* コンテンツのサイズに応じた自動調整 */
+.auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min-content, 1fr));
+  gap: 1rem;
+}
+```
+
+## ブラウザ対応状況（2025年時点）
+
+| 機能 | Chrome | Firefox | Safari | 備考 |
+|------|--------|---------|--------|------|
+| コンテナクエリ | 105+ | 110+ | 16+ | Baseline Wide（2024年末） |
+| `aspect-ratio` | 88+ | 89+ | 15+ | 全ブラウザ対応 |
+| `min()` / `max()` / `clamp()` | 79+ | 75+ | 13.1+ | 全ブラウザ対応 |
+| `auto-fit` / `auto-fill` | 57+ | 52+ | 10.1+ | 全ブラウザ対応 |
+
+## position: fixed の注意点
+
+コンテナクエリを使用する要素内の `position: fixed` は、期待通り動作しない場合があります。
+
+```css
+.container {
+  container-type: inline-size;
+}
+
+.fixed-element {
+  position: fixed;
+  /* コンテナを基準に配置される可能性 */
+}
+```
+
+**回避策**: `position: fixed` が必要な要素は、コンテナクエリの外に配置する。
+
+## まとめ
+
+2025年のレスポンシブコーディングでは:
+- メディアクエリよりコンテナクエリを優先
+- ピクセルパーフェクトを追求しない
+- ブラウザに判断を委ねる設計
+- 無限ループや循環参照に注意
+- イントリンシック・デザインの活用

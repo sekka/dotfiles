@@ -1,0 +1,14 @@
+{
+  "name": "creating-github-issues",
+  "version": "1.0.0",
+  "description": "技術調査結果を構造化された GitHub/GitLab Issue に変換する",
+  "author": "kei",
+  "tags": ["GitHub", "Issue", "タスク管理", "チーム開発", "構造化"],
+  "triggers": [
+    "Issue を作成",
+    "タスクとして記録",
+    "GitHub Issue に",
+    "Issue にまとめて"
+  ],
+  "disable-model-invocation": false
+}

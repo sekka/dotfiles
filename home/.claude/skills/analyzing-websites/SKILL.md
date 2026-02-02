@@ -45,45 +45,19 @@ disable-model-invocation: false
 - **簡易分析**: ページ目的・ターゲット・主要メッセージ
 - **詳細分析**: セクション別の目的・要約・キーワード・改善提案
 
+### 6. デザイン分析（オプション）
+
+- **なし**: 抽出しない
+- **基本分析**: カラーパレット + タイポグラフィ
+- **詳細分析**: 基本 + スペーシング + サイズ + CSS変数出力
+
 ## 実行フロー
 
 ### Step 1: サイトクロール
 
-#### 方法A: 事前作成スクリプトを使用（推奨）
-
-**コンテキスト効率的**: 毎回コードを生成せず、既存スクリプトを読み込むだけ
-
-```typescript
-// 1. スクリプトを読み込む
-Read({
-  file_path: "~/.claude/skills/analyzing-websites/scripts/deep-crawl-template.js"
-});
-
-// 2. baseUrl と knownPages を編集
-
-// 3. 実行
-mcp__plugin_playwright_playwright__browser_run_code({
-  code: "... (編集したコード) ..."
-});
-```
-
-**スクリプトの場所**: `scripts/deep-crawl-template.js`
-
-**詳細**: `scripts/README.md` を参照
-
-#### 方法B: 手動クロール
-
 ```text
 mcp__plugin_playwright_playwright__browser_navigate
 ```
-
-**推奨設定**:
-
-- **headlessモード**: 必ず有効化（デフォルト）
-  - サーバー環境での実行に適している
-  - リソース消費を抑え、高速に動作する
-
-**クロール手順**:
 
 1. トップページにアクセス
 2. ページ内のリンクを抽出
@@ -212,7 +186,69 @@ URL: https://example.com/
 - ラベルで要素種別を明示
 - レスポンシブ対応（簡易版）
 
-### Step 5: コンテンツ分析（オプション）
+### Step 5: デザイン要素抽出（オプション）
+
+デザイン分析が選択された場合、`browser_evaluate` または `browser_run_code` でページの computed styles を取得：
+
+#### 抽出対象
+
+| カテゴリ | 取得項目 |
+|----------|----------|
+| **色** | background-color、color、border-color、主要アクセントカラー |
+| **フォント** | font-family、font-size、font-weight、line-height |
+| **間隔** | margin、padding（主要コンポーネント単位） |
+| **サイズ** | width、height（主要セクション、カード等） |
+
+#### 実装方法
+
+```javascript
+// 全要素の computed styles を取得
+const elements = document.querySelectorAll('*');
+const colors = new Set();
+const fonts = new Map();
+const spacing = new Set();
+
+elements.forEach(el => {
+  const styles = window.getComputedStyle(el);
+
+  // カラー抽出
+  const bgColor = styles.backgroundColor;
+  const textColor = styles.color;
+  const borderColor = styles.borderColor;
+  if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') colors.add(bgColor);
+  if (textColor) colors.add(textColor);
+  if (borderColor && borderColor !== 'rgb(0, 0, 0)') colors.add(borderColor);
+
+  // フォント抽出
+  const fontKey = `${styles.fontFamily}|${styles.fontSize}|${styles.fontWeight}`;
+  fonts.set(fontKey, {
+    family: styles.fontFamily,
+    size: styles.fontSize,
+    weight: styles.fontWeight,
+    lineHeight: styles.lineHeight
+  });
+
+  // スペーシング抽出
+  const margin = [styles.marginTop, styles.marginRight, styles.marginBottom, styles.marginLeft];
+  const padding = [styles.paddingTop, styles.paddingRight, styles.paddingBottom, styles.paddingLeft];
+  margin.forEach(val => { if (val !== '0px') spacing.add(val); });
+  padding.forEach(val => { if (val !== '0px') spacing.add(val); });
+});
+```
+
+#### 出力形式
+
+**基本分析**:
+- カラーパレット一覧（HEX/RGB形式）
+- タイポグラフィ一覧（フォントファミリーとサイズスケール）
+
+**詳細分析**:
+- 基本分析の内容
+- スペーシング一覧（使用されている間隔の値）
+- 主要要素のサイズ情報
+- CSS変数形式での出力（デザイントークン）
+
+### Step 6: コンテンツ分析（オプション）
 
 コンテンツ分析が選択された場合、以下を生成：
 
@@ -290,47 +326,6 @@ URL: https://example.com/
 6. **差別化**: 競合との違いが伝わるか
 7. **信頼性**: 数値・実績・第三者評価の有無
 
-### Step 6: 未探索ページ検証
-
-クロール完了後、以下を検証：
-
-#### 1. 未探索ページの特定
-
-- 全ページで発見したリンクを収集
-- 訪問済みURLと比較
-- 未訪問のURLをリストアップ
-
-**未探索ページ情報:**
-
-- targetUrl: 未訪問のURL
-- linkedFrom: どのページからリンクされているか
-- linkText: リンクのテキスト
-- wouldBeDepth: 訪問した場合の想定階層
-
-#### 2. 探索率の計算
-
-```
-探索率 = 訪問ページ数 / (訪問ページ数 + 未探索ページ数) × 100%
-```
-
-**階層別統計:**
-
-- 各階層の訪問ページ数
-- 各階層から発見されたリンク数
-- 各階層の内部リンク数
-
-#### 3. 階層検証
-
-- 実際の最深階層を特定
-- 指定された最大深度との比較
-- 第3階層以降が存在しない場合は明記
-
-**検証項目:**
-
-- ✅ 全階層を探索済み
-- ⚠️ 未探索ページあり（リンク数と理由を記載）
-- ⚠️ 指定深度に到達せず（実際の最深階層を記載）
-
 ### Step 7: 出力
 
 指定された形式でファイルを出力：
@@ -339,8 +334,6 @@ URL: https://example.com/
 output/
 ├── sitemap.md              # サイトマップ（Mermaid）
 ├── sitemap.json            # サイトマップ（JSON）
-├── coverage-report.md      # 探索率レポート（NEW）
-├── unexplored.md           # 未探索ページリスト（NEW）
 ├── wireframes/
 │   ├── index.md            # トップページ
 │   ├── about.md            # 会社概要
@@ -348,71 +341,17 @@ output/
 ├── wireframes-analyzed/    # 分析付き（詳細分析選択時）
 │   ├── index.md
 │   └── ...
-└── wireframes-html/        # HTML形式の場合
-    ├── index.html
-    └── ...
-```
-
-**coverage-report.md の内容例:**
-
-```markdown
-# 探索率レポート
-
-## サマリー
-
-- 訪問ページ数: 27
-- 発見した内部リンク: 33
-- 未探索ページ: 0
-- 探索率: **100%**
-
-## 階層別統計
-
-| 階層 | 訪問ページ数 | 内部リンク数 | 探索状況 |
-|------|--------------|--------------|----------|
-| 0    | 1            | 26           | ✅ 完了  |
-| 1    | 6            | 152          | ✅ 完了  |
-| 2    | 20           | 0            | ✅ 完了  |
-| 3    | 0            | 0            | - 存在せず |
-
-## 検証結果
-
-✅ 全ページ探索完了
-✅ 未探索ページなし
-✅ 実際の最深階層: 2階層
-```
-
-**unexplored.md の内容例:**
-
-```markdown
-# 未探索ページ
-
-## サマリー
-
-未探索ページ数: 5
-
-## 未探索ページリスト
-
-### 1. https://example.com/deep/page1
-
-- **想定階層**: 第4階層
-- **リンク元**:
-  - https://example.com/page2 (リンクテキスト: "詳細を見る")
-  - https://example.com/page3 (リンクテキスト: "もっと見る")
-
-### 2. https://example.com/deep/page2
-
-- **想定階層**: 第4階層
-- **リンク元**:
-  - https://example.com/page4 (リンクテキスト: "続きを読む")
+├── wireframes-html/        # HTML形式の場合
+│   ├── index.html
+│   └── ...
+└── design-analysis/        # デザイン分析（選択時）
+    ├── design-system.md    # 統合デザインレポート
+    └── design-tokens.css   # CSS変数（詳細分析時）
 ```
 
 ## 注意事項
 
 - **認証が必要なページ**: クロール不可。公開ページのみ対象
-- **403 Forbiddenエラー**:
-  - WebFetchで403が返された場合、Playwrightで再試行
-  - Playwrightでも403の場合、「アクセス不可」として記録
-  - サイトマップに含めず、補足情報として別途記載
 - **SPA（Single Page Application）**: 初期表示のみ取得可能
 - **動的コンテンツ**: スナップショット時点の状態を取得
 - **robots.txt**: 尊重し、disallowされているパスはスキップ
@@ -437,4 +376,5 @@ output/
 → 出力:
 - sitemap.md
 - wireframes/*.md（レイアウト + 分析付き）
+- design-analysis/design-system.md（デザイン要素レポート）
 ```

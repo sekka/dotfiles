@@ -320,6 +320,8 @@ Firefoxでは`display`のトランジションがサポートされていませ�
 
 ## 関連ナレッジ
 
+- [CSS 2025 コンポーネント](./css-2025-components.md) - commandfor/command 属性、closedby 属性
+- [スクロールチェイン回避](./overscroll-behavior-dialog.md) - overscroll-behavior でモーダル最適化
 - [2025年の最新CSS機能（UIデザイン向け）](../modern-css-2025.md)
 - [Popover API](./popover-api.md)
 - [Anchor Positioning と Popover API の統合](./anchor-positioning-popover.md)
