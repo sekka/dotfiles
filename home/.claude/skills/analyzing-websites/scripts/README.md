@@ -27,9 +27,62 @@
 2. ネットワークエラー時の自動リトライ
 3. 実際の階層情報を記録（URLパスの`/`の数ではなく、明示的なdepth指定）
 
+---
+
+### `deep-crawl-bfs.js` ⭐ NEW
+
+**用途**: BFS（幅優先探索）による効率的な階層的クローリング
+
+**AUXプロジェクトから得られた知見を統合**:
+- **BFS方式**: 階層ごとに処理し、次の階層に進む
+- **自動発見**: 開始URLから自動的にリンクを辿る（knownPagesの手動指定が不要）
+- **堅牢なURL正規化**: 重複訪問を確実に防止
+- **未探索ページの詳細追跡**: どのページからリンクされているか記録
+- **レート制限強化**: 1.5秒/ページでサーバー負荷を配慮
+
+**特徴**:
+- JavaScript SPAに対応
+- 自動リンク発見（開始URLのみ指定すればOK）
+- 階層別統計の強化（内部/外部リンク数も集計）
+- 特定ドメインへのリンク検索
+- リトライ機構（最大3回、2秒間隔）
+- 未探索ページをソート（深度順、最大100件）
+
+**使い分け**:
+- **既知のページリストがある場合**: `deep-crawl-template.js`
+- **トップページから自動的に辿りたい場合**: `deep-crawl-bfs.js` ⭐
+
+**追加パッケージ**: 不要（Playwright MCP のみ）
+
 ## 使用方法
 
-### 方法1: Claude Codeで直接実行
+### 方法1: BFS版を使う（推奨・シンプル） ⭐
+
+**トップページから自動的にリンクを辿る場合**:
+
+```typescript
+// 1. BFS版スクリプトを読み込む
+Read({
+  file_path: "~/.claude/skills/analyzing-websites/scripts/deep-crawl-bfs.js"
+});
+
+// 2. baseUrl と maxDepth を編集
+// 例: baseUrl = 'https://example.com', maxDepth = 3
+
+// 3. browser_run_code で実行
+mcp__plugin_playwright_playwright__browser_run_code({
+  code: "... (編集したコード) ..."
+});
+```
+
+**メリット**:
+- knownPagesの手動指定が不要
+- 階層ごとに処理され、進捗が分かりやすい
+- 自動的にリンクを発見
+
+---
+
+### 方法2: テンプレート版を使う（既知のページリストがある場合）
 
 ```
 1. Read でスクリプトを読み込む
@@ -45,7 +98,7 @@ Read({
   file_path: "~/.claude/skills/analyzing-websites/scripts/deep-crawl-template.js"
 });
 
-// 2. 内容を編集（baseUrl等）
+// 2. 内容を編集（baseUrl、knownPages等）
 
 // 3. browser_run_code で実行
 mcp__plugin_playwright_playwright__browser_run_code({
@@ -53,7 +106,13 @@ mcp__plugin_playwright_playwright__browser_run_code({
 });
 ```
 
-### 方法2: 既知のページリストから動的生成
+**メリット**:
+- 既知のページを優先的にクロール
+- 階層情報を手動で制御可能
+
+---
+
+### 方法3: 既知のページリストから動的生成
 
 ```typescript
 const knownPages = [
