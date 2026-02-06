@@ -119,7 +119,15 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)"
+      "WebFetch(domain:zoewave.medium.com)",
+      "Bash(ln:*)",
+      "WebFetch(domain:www.humanlayer.dev)",
+      "WebFetch(domain:arize.com)",
+      "WebFetch(domain:dometrain.com)",
+      "WebFetch(domain:claudefa.st)",
+      "WebFetch(domain:www-cdn.anthropic.com)",
+      "WebFetch(domain:codingscape.com)",
+      "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": [],
     "ask": []
