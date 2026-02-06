@@ -264,9 +264,9 @@ echo "✓ メニューバーアイテム間隔を8に設定"
 defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6
 echo "✓ メニューバーアイテム選択時内余白を6に設定"
 
-# 日付・時刻の表示形式（24時間表示、秒も表示）（現在は未設定）
-# defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE)  H:mm:ss"
-# echo "✓ メニューバー時計表示を設定"
+# 日付・時刻の表示形式（24時間表示、秒表示あり）
+defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE) H:mm:ss"
+echo "✓ メニューバー時計表示を設定（例：1月23日(木) 14:30:45）"
 
 # バッテリーの割合表示（ノートPCの場合）
 defaults write com.apple.menuextra.battery ShowPercent -bool true
