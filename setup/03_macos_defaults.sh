@@ -78,11 +78,11 @@ echo ""
 # =======================================================================================
 echo "## ディスクイメージ設定を適用中..."
 
-# DMGマウント時の検証をスキップ（高速化）
-defaults write com.apple.frameworks.diskimages skip-verify -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
-echo "✓ DMGファイルマウント時の検証をスキップ"
+# DMGマウント時の検証を有効化（セキュリティ優先）
+defaults write com.apple.frameworks.diskimages skip-verify -bool false
+defaults write com.apple.frameworks.diskimages skip-verify-locked -bool false
+defaults write com.apple.frameworks.diskimages skip-verify-remote -bool false
+echo "✓ DMGファイルマウント時の検証を有効化"
 
 echo ""
 
@@ -119,12 +119,12 @@ echo ""
 echo "## キーボード設定を適用中..."
 
 # キーリピート速度を高速化（最速は1、デフォルトは6）
-defaults write NSGlobalDomain KeyRepeat -int 2
-echo "✓ キーリピート速度を高速化（2）"
+defaults write NSGlobalDomain KeyRepeat -int 1
+echo "✓ キーリピート速度を高速化（1）"
 
 # リピート開始までの時間を短縮（最速は10、デフォルトは25）
-defaults write NSGlobalDomain InitialKeyRepeat -int 15
-echo "✓ リピート開始時間を短縮（15）"
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+echo "✓ リピート開始時間を短縮（10）"
 
 # スペルチェックの自動修正を無効化
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
@@ -134,13 +134,13 @@ echo "✓ スペルチェック自動修正を無効化"
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 echo "✓ 自動大文字変換を無効化"
 
-# ピリオド2回でのスマート引用符を無効化（現在は未設定）
-# defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
-# echo "✓ スマート引用符を無効化"
+# ピリオド2回でのスマート引用符を無効化
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+echo "✓ スマート引用符を無効化"
 
-# ダッシュのスマート変換を無効化（現在は未設定）
-# defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
-# echo "✓ スマートダッシュを無効化"
+# ダッシュのスマート変換を無効化
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+echo "✓ スマートダッシュを無効化"
 
 echo ""
 
@@ -206,15 +206,15 @@ defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
 echo "✓ 印刷ダイアログを展開表示"
 
-# クラッシュレポーターを無効化（現在は未設定）
-# defaults write com.apple.CrashReporter DialogType -string "none"
-# echo "✓ クラッシュレポーターを無効化"
+# クラッシュレポーターを無効化
+defaults write com.apple.CrashReporter DialogType -string "none"
+echo "✓ クラッシュレポーターを無効化"
 
 # 未確認のアプリケーション実行時の警告を無効化（セキュリティリスク注意）
 # defaults write com.apple.LaunchServices LSQuarantine -bool false
 # echo "✓ 未確認アプリの警告を無効化"
 
-# echo ""
+echo ""
 
 # =======================================================================================
 # アクセシビリティ設定
@@ -251,18 +251,28 @@ echo "✓ Safari完全URL表示を有効化"
 
 echo ""
 
-# === メニューバー・時計設定 ===
-# echo "## メニューバー設定を適用中..."
+# =======================================================================================
+# メニューバー設定
+# =======================================================================================
+echo "## メニューバー設定を適用中..."
+
+# ステータスアイテムの間隔を設定
+defaults -currentHost write -globalDomain NSStatusItemSpacing -int 8
+echo "✓ メニューバーアイテム間隔を8に設定"
+
+# ステータスアイテムの選択時内余白を設定
+defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6
+echo "✓ メニューバーアイテム選択時内余白を6に設定"
 
 # 日付・時刻の表示形式（24時間表示、秒も表示）（現在は未設定）
 # defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE)  H:mm:ss"
 # echo "✓ メニューバー時計表示を設定"
 
-# バッテリーの割合表示（ノートPCの場合）（現在は未設定）
-# defaults write com.apple.menuextra.battery ShowPercent -bool true
-# echo "✓ バッテリー割合表示を有効化"
+# バッテリーの割合表示（ノートPCの場合）
+defaults write com.apple.menuextra.battery ShowPercent -bool true
+echo "✓ バッテリー割合表示を有効化"
 
-# echo ""
+echo ""
 
 # === アクティビティモニタ設定 ===
 # echo "## アクティビティモニタ設定を適用中..."
