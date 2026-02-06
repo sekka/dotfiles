@@ -39,9 +39,9 @@ echo "✓ パスバーを表示"
 defaults write com.apple.finder ShowStatusBar -bool true
 echo "✓ ステータスバーを表示"
 
-# フォルダを最初にソート
-defaults write com.apple.finder _FXSortFoldersFirst -bool true
-echo "✓ フォルダを最初にソート"
+# フォルダを最初にソート（無効化：ファイルとフォルダを名前順で混在）
+defaults write com.apple.finder _FXSortFoldersFirst -bool false
+echo "✓ フォルダ優先ソートを無効化（ファイルとフォルダを名前順で混在）"
 
 # タイトルバーにフルパス表示
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
@@ -215,6 +215,17 @@ echo "✓ 印刷ダイアログを展開表示"
 # echo "✓ 未確認アプリの警告を無効化"
 
 # echo ""
+
+# =======================================================================================
+# アクセシビリティ設定
+# =======================================================================================
+echo "## アクセシビリティ設定を適用中..."
+
+# ウインドウタイトルにアイコンを表示
+defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true
+echo "✓ ウインドウタイトルにアイコンを表示"
+
+echo ""
 
 # =======================================================================================
 # Safari設定
