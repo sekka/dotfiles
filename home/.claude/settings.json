@@ -1,10 +1,11 @@
 {
   "env": {
-    "CLAUDE_CODE_ENABLE_TASKS": "true",
-    "CLAUDE_CODE_MONITOR_GHOSTTY_ASKED": "1",
     "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1"
   },
-  "includeCoAuthoredBy": false,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(basename:*)",
@@ -47,7 +48,6 @@
       "Bash(grep:*)",
       "Bash(head:*)",
       "Bash(ls:*)",
-      "Bash(ls -la:*)",
       "Bash(lsof:*)",
       "Bash(mdfind:*)",
       "Bash(mise:*)",
@@ -102,8 +102,6 @@
       "Bash(rm -rf ~)",
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf:*)",
-      "Bash(rm -rf:*)",
-      "Bash(sudo:*)",
       "Bash(sudo:*)",
       "Read(./.env.*)",
       "Read(.env.*)",
@@ -253,8 +251,6 @@
         ]
       }
     ],
-    "PermissionRequest": [],
-    "SubagentStop": [],
     "Notification": [
       {
         "_comment": "各種イベント通知（permission_prompt: 権限リクエスト、idle_prompt: アイドル、elicitation_dialog: 入力要求、auth_success: 認証成功）。matcher は OR 条件で1イベント1通知",
