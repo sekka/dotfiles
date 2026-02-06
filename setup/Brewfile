@@ -81,6 +81,7 @@ brew "pt"                 # https://formulae.brew.sh/formula/pt               # 
 brew "direnv"             # https://formulae.brew.sh/formula/direnv           # 環境変数管理
 brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # TUI macOSクリーナー
 brew "mactop"             # https://formulae.brew.sh/formula/mactop           # プロセスビューワ
+brew "mole"               # https://formulae.brew.sh/formula/mole             # macOSディープクリーン最適化ツール
 
 # === 開発ツール（Go製）===
 brew "shfmt"              # https://formulae.brew.sh/formula/shfmt            # シェルフォーマッタ

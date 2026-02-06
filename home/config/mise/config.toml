@@ -194,6 +194,12 @@ alias = "mu"
 description = "miseのアップグレード（ツールのインストール/更新を実行）"
 run = "mise upgrade"
 
+# mise prune
+[tasks.mise-prune]
+alias = "mp"
+description = "使われていないツールバージョンを削除"
+run = "mise prune"
+
 # --------------------------------------
 # Rust関連
 # --------------------------------------
@@ -486,8 +492,6 @@ pnpm = "latest"
 "npm:gtop" = "latest"                 # システムモニタ（htop/btop 代替）
 
 # === Rust ===
-# ※ bat、eza、fd、hexyl、hgrep、procs、ripgrep、sheldon、starship、tailspin、yazi、
-#    zoxide、dprint、gitui、git-delta、xh、uvは Homebrew で管理
 rust = "stable"
 
 # --- ファイル操作 ---
@@ -511,3 +515,5 @@ rust = "stable"
 # === Go ===
 # ※ fzf、gh、ghq、gibo、hub、lazygit、wtp、lazydocker、colima、dockmate、
 #    navi、pt、mactop、direnv、shfmt、dstp、pget、ollama は Homebrew で管理
+go = "latest"  # Go本体
+"go:github.com/d-kuro/gwq/cmd/gwq" = "latest"  # Git worktree管理
