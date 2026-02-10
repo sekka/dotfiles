@@ -4,13 +4,27 @@
       "command": "npx",
       "args": ["-y", "better-icons"]
     },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "brave-search-mcp"],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    },
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
     },
     "deepwiki": {
+      "type": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "filesystem": {
       "command": "npx",
-      "args": ["mcp-remote", "https://mcp.deepwiki.com/sse"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+      "env": {
+        "ALLOWED_DIRECTORIES": "${HOME}/dotfiles:${HOME}/src:${HOME}/pjm"
+      }
     },
     "grepai": {
       "command": "grepai",
