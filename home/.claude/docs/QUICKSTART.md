@@ -25,7 +25,6 @@ claude
 以下のスキルが表示されることを確認：
 
 - `implement-with-review` - 実装レビューループ
-- `enforce-standards` - コーディング規約強制
 - `worktree-manager` - git worktree 管理
 
 ---
@@ -67,43 +66,7 @@ claude
 
 ---
 
-## Step 3: コーディング規約チェックを試す（1分）
-
-### 既存のファイルをチェック
-
-```bash
-# チェックのみ（修正しない）
-/enforce-standards --check-only .
-```
-
-### 何が起こるか
-
-1. 未使用コードを検出
-2. 後方互換コードを検出
-3. console.log を検出
-4. フォーマット違反を検出
-5. 型安全性の問題を検出
-
-**期待される結果:**
-
-```markdown
-# コーディング規約チェック完了
-
-## 検出結果
-
-✅ 問題なし: 20ファイル
-⚠️ 要確認: 3ファイル
-
-## 詳細
-
-### src/example.ts
-- [Warning] console.log を検出: 行34
-- [Warning] 未使用 import: 行2
-```
-
----
-
-## Step 4: worktree を試す（1分）
+## Step 3: worktree を試す（1分）
 
 ### worktree の一覧を確認
 
@@ -158,10 +121,7 @@ claude
 # Step 3: 実装レビューループで実装
 /implement-with-review "ユーザー認証機能を実装する。JWT を使用。"
 
-# Step 4: コーディング規約チェック
-/enforce-standards --fix
-
-# Step 5: コミット
+# Step 4: コミット
 git add .
 git commit -m "feat: ユーザー認証機能を実装"
 ```
@@ -172,10 +132,7 @@ git commit -m "feat: ユーザー認証機能を実装"
 # Step 1: 実装レビューループで修正
 /implement-with-review "ログイン時にセッションが切れるバグを修正する。"
 
-# Step 2: コーディング規約チェック
-/enforce-standards --fix
-
-# Step 3: コミット
+# Step 2: コミット
 git add .
 git commit -m "fix: セッション切れバグを修正"
 ```
@@ -183,37 +140,12 @@ git commit -m "fix: セッション切れバグを修正"
 ### ケース3: リファクタリングする
 
 ```bash
-# Step 1: コーディング規約チェック（現状把握）
-/enforce-standards --check-only src/
-
-# Step 2: 実装レビューループでリファクタリング
+# Step 1: 実装レビューループでリファクタリング
 /implement-with-review "UserService クラスをリファクタリングし、可読性を向上させる。"
 
-# Step 3: コーディング規約チェック（再確認）
-/enforce-standards --fix
-
-# Step 4: コミット
+# Step 2: コミット
 git add .
 git commit -m "refactor: UserService の可読性向上"
-```
-
----
-
-## 設定のカスタマイズ
-
-### コミット前の自動規約チェック
-
-`~/.claude/hooks/enforce-standards-on-commit.ts` を作成：
-
-```typescript
-export default {
-  onBeforeCommit: async () => {
-    return {
-      message: "コーディング規約チェックを実行中...",
-      autoRunSkill: "enforce-standards --fix"
-    };
-  }
-};
 ```
 
 ---
@@ -224,8 +156,7 @@ export default {
 
 - **全体概要:** `AI_CODING_WORKFLOW.md`
 - **Phase 1:** `skills/implement-with-review/README.md`
-- **Phase 2:** `skills/enforce-standards/README.md`
-- **Phase 3:** `skills/worktree-manager/README.md`
+- **Phase 2:** `skills/worktree-manager/README.md`
 
 ### ベストプラクティスを学ぶ
 
@@ -265,7 +196,6 @@ git worktree list
 ```bash
 # スキル
 /implement-with-review "<タスク内容>"
-/enforce-standards [--check-only|--fix|--interactive] [<path>]
 /worktree-manager [create|list|switch|delete|status] [<args>]
 
 # 既存スキル
@@ -282,7 +212,6 @@ git worktree list
 
 # 各スキルの README を参照
 cat ~/.claude/skills/implement-with-review/README.md
-cat ~/.claude/skills/enforce-standards/README.md
 cat ~/.claude/skills/worktree-manager/README.md
 ```
 

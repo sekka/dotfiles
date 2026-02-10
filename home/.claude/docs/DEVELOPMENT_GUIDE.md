@@ -16,8 +16,6 @@
 | **新機能を実装したい** | `/implement-with-review "..."` | 実装とレビューを自動ループ |
 | **バグを修正したい** | `/implement-with-review "..."` | 同上 |
 | **コードをリファクタリングしたい** | `/implement-with-review "..."` | 同上 |
-| **コードの品質をチェックしたい** | `/enforce-standards --check-only` | チェックのみ（修正しない） |
-| **コーディング規約違反を修正したい** | `/enforce-standards --fix` | 自動修正 |
 | **複数タスクを並列で進めたい** | `/worktree-manager create <branch>` | worktree 作成 |
 | **クイックレビューしたい** | `/reviewing-with-claude` | 軽量レビュー |
 | **包括的レビューしたい** | `/reviewing-parallel` | 複数AIで並列レビュー |
@@ -73,10 +71,6 @@
   YES → /reviewing-parallel で包括レビュー
   NO  → /reviewing-with-claude で軽量レビュー
   ↓
-コーディング規約違反がある？
-  YES → /enforce-standards --fix で修正
-  NO  → 次へ
-  ↓
 コミット作成
   ↓
 /commit
@@ -120,17 +114,14 @@ claude
 #### 確認
 
 ```bash
-# Step 2: コーディング規約チェック
-/enforce-standards --fix
-
-# Step 3: 実環境で動作確認
+# Step 2: 実環境で動作確認
 # （実際に決済処理を試す）
 ```
 
 #### コミット
 
 ```bash
-# Step 4: コミット作成
+# Step 3: コミット作成
 /commit
 
 # → コミットメッセージが自動生成される
@@ -160,20 +151,17 @@ claude
 #### 確認
 
 ```bash
-# Step 3: コーディング規約チェック
-/enforce-standards --fix
-
-# Step 4: 実環境で動作確認
+# Step 3: 実環境で動作確認
 # （実際にログインを試す）
 
-# Step 5: テストの追加確認
+# Step 4: テストの追加確認
 # → エッジケースのテストが追加されているか確認
 ```
 
 #### コミット
 
 ```bash
-# Step 6: コミット作成
+# Step 5: コミット作成
 /commit
 
 # 例: "fix: セッション切れバグを修正"
@@ -183,19 +171,10 @@ claude
 
 ### ケース3: リファクタリングする
 
-#### 現状把握
-
-```bash
-# Step 1: コーディング規約チェック（現状把握）
-/enforce-standards --check-only src/services/
-
-# → どこに問題があるか把握
-```
-
 #### リファクタリング
 
 ```bash
-# Step 2: 実装レビューループでリファクタリング
+# Step 1: 実装レビューループでリファクタリング
 /implement-with-review "UserService クラスをリファクタリングする。以下を改善：
 - 関数の分割（1関数50行以内）
 - DRY原則の適用（重複コード削除）
@@ -207,20 +186,17 @@ claude
 #### 確認
 
 ```bash
-# Step 3: コーディング規約チェック（再確認）
-/enforce-standards --fix
-
-# Step 4: テストが全て通ることを確認
+# Step 2: テストが全て通ることを確認
 npm test
 
-# Step 5: 実環境で動作確認
+# Step 3: 実環境で動作確認
 # → 既存機能が壊れていないか確認
 ```
 
 #### コミット
 
 ```bash
-# Step 6: コミット作成
+# Step 4: コミット作成
 /commit
 
 # 例: "refactor: UserService の可読性と保守性を向上"
@@ -287,7 +263,6 @@ claude
 ### 実装完了後
 
 - [ ] 包括的レビューを実施したか？（重要な変更の場合）
-- [ ] コーディング規約違反を修正したか？（/enforce-standards）
 - [ ] CLAUDE.md を更新したか？
 - [ ] コミットメッセージは適切か？
 - [ ] 実環境で最終確認したか？
@@ -362,39 +337,6 @@ claude
 **オプション:**
 
 - なし（タスク内容のみ指定）
-
----
-
-### /enforce-standards
-
-**用途:** コーディング規約のチェック・修正
-
-**構文:**
-
-```bash
-/enforce-standards [--check-only|--fix|--interactive] [<path>]
-```
-
-**例:**
-
-```bash
-# チェックのみ
-/enforce-standards --check-only
-
-# 自動修正
-/enforce-standards --fix src/
-
-# インタラクティブ
-/enforce-standards --interactive
-```
-
-**チェック項目:**
-
-1. 未使用コード
-2. 後方互換コード
-3. console.log
-4. フォーマット
-5. 型安全性
 
 ---
 

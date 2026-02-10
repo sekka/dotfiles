@@ -3,11 +3,11 @@
 ## 概要
 
 このドキュメントは、Claude Code を中心とした実践的な AI コーディング管理手法をまとめたものです。
-松尾研究所の実践的なノウハウ（[出典](https://zenn.dev/mkj/articles/868e0723efa060)）を参考に、以下の3つの柱で構成されています。
+松尾研究所の実践的なノウハウ（[出典](https://zenn.dev/mkj/articles/868e0723efa060)）を参考に、以下の2つの柱で構成されています。
 
 ---
 
-## 3つの柱
+## 2つの柱
 
 ### 1. 実装レビューループ（Phase 1）
 
@@ -51,61 +51,7 @@
 
 ---
 
-### 2. コーディング規約強制（Phase 2）
-
-**目的:** コーディング規約を自動的にチェック・修正し、一貫性と品質を保つ
-
-**スキル:** `/enforce-standards`
-
-**特徴:**
-- 5つのルールで包括的にチェック
-- 自動修正とユーザー確認の使い分け
-- カスタマイズ可能な設定
-
-**5つのチェック項目:**
-
-1. **未使用コードの削除**: 変数、import、関数、型定義
-2. **後方互換コードの削除**: コメントアウト、`_variable`、削除マーカー
-3. **console.log の削除**: デバッグログを削除（エラー・警告は除く）
-4. **フォーマット統一**: Prettier準拠（インデント、セミコロン等）
-5. **型安全性チェック**: `any`型、型注釈欠落、`@ts-ignore`
-
-**使い方:**
-
-```bash
-# カレントディレクトリ全体をチェック
-/enforce-standards
-
-# 特定のファイル
-/enforce-standards src/auth/login.ts
-
-# チェックのみ（修正しない）
-/enforce-standards --check-only
-
-# 自動修正モード
-/enforce-standards --fix
-
-# インタラクティブモード
-/enforce-standards --interactive
-```
-
-**コミット前の自動実行:**
-
-```typescript
-// hooks/enforce-standards-on-commit.ts
-
-export default {
-  onBeforeCommit: async () => {
-    return { autoRunSkill: "enforce-standards --fix" };
-  }
-};
-```
-
-**詳細:** `skills/enforce-standards/README.md`
-
----
-
-### 3. git worktree サポート（Phase 3）
+### 2. git worktree サポート（Phase 2）
 
 **目的:** 複数タスクの並列開発を可能にし、コンテキストを完全に分離する
 
@@ -185,10 +131,7 @@ claude
 # （自動ループ）
 # 実装 → レビュー → 修正 → 再レビュー
 
-# Step 3: コーディング規約チェック
-/enforce-standards --fix
-
-# Step 4: コミット
+# Step 3: コミット
 git add .
 git commit -m "feat: 決済機能を実装"
 ```
@@ -280,8 +223,8 @@ git commit -m "feat: 決済機能を実装"
 **Good:**
 
 ```bash
-# コーディング規約チェックで自動削除
-/enforce-standards --fix
+# lint-format.ts hook が自動実行（PostToolUse）
+# フォーマットとリント修正を自動適用
 ```
 
 ### 3. ブランチ切り替えによる作業状態の喪失
@@ -323,7 +266,6 @@ ls ~/.claude/hooks/
 # 以下を確認
 
 ls ~/.claude/skills/implement-with-review/
-ls ~/.claude/skills/enforce-standards/
 ls ~/.claude/skills/worktree-manager/
 
 ls ~/.claude/hooks/auto-detect-worktree.ts
@@ -340,7 +282,6 @@ claude
 
 # 各スキルを試す
 /implement-with-review "簡単なテスト実装"
-/enforce-standards --check-only
 /worktree-manager list
 ```
 
@@ -411,12 +352,10 @@ git worktree list
 
 ## まとめ
 
-3つの柱を組み合わせることで、以下を実現：
+2つの柱を組み合わせることで、以下を実現：
 
 1. **品質の安定化**: 実装レビューループで一貫した品質
-2. **仕様の鮮度維持**: CLAUDE.md 自動同期でドキュメント更新
-3. **規約の徹底**: コーディング規約強制で一貫性向上
-4. **効率化**: git worktree で並列開発
+2. **効率化**: git worktree で並列開発
 
 これらは松尾研究所の実践的なノウハウを参考に、Claude Code 向けに最適化したワークフローです。
 

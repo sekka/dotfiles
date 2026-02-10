@@ -8,8 +8,6 @@
  * チェーン内の危険パターンのみに焦点を当てる。
  */
 
-import { homedir } from "node:os";
-
 interface HookInput {
 	tool_name: string;
 	tool_input: {
@@ -31,7 +29,7 @@ const DANGEROUS_CHAINS = [
 	// パイプで危険なコマンドに渡す
 	/\|\s*(rm|sudo|dd|shred|mkfs)\s+/,
 	// xargs で危険なコマンドを実行
-	/xargs\s+(?:-[^\s]*\s+)*(rm|sudo|dd|shred)\s+/,
+	/xargs\s+(?:-[^\s]*\s+)*(rm|sudo|dd|shred)(?:\s+|$)/,
 	// サブシェルでの危険な操作
 	/\$\([^)]*(?:rm -rf|sudo|dd|shred)[^)]*\)/,
 	// バッククォートでの危険な操作
@@ -47,11 +45,11 @@ const DANGEROUS_CHAINS = [
 // 絶対ブロックすべきパターン（システム破壊リスク）
 const CRITICAL_PATTERNS = [
 	/rm\s+-[rRf]*\s+\/(?!\S)/, // rm -rf /
-	/rm\s+-[rRf]*\s+~\/\*\s*$/, // rm -rf ~/*
+	/rm\s+-[rRf]*\s+~\/+\*\s*$/, // rm -rf ~/* (or ~//* etc.)
 	/dd\s+if=[^\s]+\s+of=\/dev\/[sh]d[a-z]/, // dd to physical disk
 ];
 
-function validateCommand(command: string): {
+export function validateCommand(command: string): {
 	isValid: boolean;
 	reason: string;
 } {
@@ -135,4 +133,7 @@ function main() {
 	}
 }
 
-main();
+// スクリプトが直接実行された場合のみ main() を呼び出す
+if (import.meta.main) {
+	main();
+}

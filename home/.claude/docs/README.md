@@ -75,22 +75,7 @@ DEVELOPMENT_GUIDE.md（「今、何をすべきか」をチェック）
 
 ---
 
-### Phase 2: コーディング規約強制
-
-- **スキル:** `enforce-standards`
-- **ドキュメント:** `../skills/enforce-standards/README.md`
-- **目的:** コーディング規約を自動的にチェック・修正し、一貫性と品質を保つ
-
-**ルール詳細:**
-- `../skills/enforce-standards/rules/unused-code.md`
-- `../skills/enforce-standards/rules/backward-compat.md`
-- `../skills/enforce-standards/rules/console-log.md`
-- `../skills/enforce-standards/rules/formatting.md`
-- `../skills/enforce-standards/rules/type-safety.md`
-
----
-
-### Phase 3: git worktree サポート
+### Phase 2: git worktree サポート
 
 - **スキル:** `worktree-manager`
 - **ドキュメント:** `../skills/worktree-manager/README.md`
@@ -117,22 +102,12 @@ home/.claude/
 │   │   │   ├── implementer.md
 │   │   │   └── reviewer.md
 │   │   └── README.md
-│   ├── enforce-standards/             # Phase 2
-│   │   ├── skill.json
-│   │   ├── prompt.md
-│   │   ├── rules/
-│   │   │   ├── unused-code.md
-│   │   │   ├── backward-compat.md
-│   │   │   ├── console-log.md
-│   │   │   ├── formatting.md
-│   │   │   └── type-safety.md
-│   │   └── README.md
-│   └── worktree-manager/              # Phase 3
+│   └── worktree-manager/              # Phase 2
 │       ├── skill.json
 │       ├── prompt.md
 │       └── README.md
 └── hooks/
-    ├── auto-detect-worktree.ts        # Phase 3
+    ├── auto-detect-worktree.ts        # Phase 2
     └── auto-detect-worktree.md
 ```
 
@@ -148,7 +123,6 @@ home/.claude/
 | **全体を理解したい** | [AI_CODING_WORKFLOW.md](./AI_CODING_WORKFLOW.md) |
 | **開発中に迷った** | [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) |
 | **実装レビューループを知りたい** | [../skills/implement-with-review/README.md](../skills/implement-with-review/README.md) |
-| **コーディング規約を知りたい** | [../skills/enforce-standards/README.md](../skills/enforce-standards/README.md) |
 | **worktree を使いたい** | [../skills/worktree-manager/README.md](../skills/worktree-manager/README.md) |
 
 ---
