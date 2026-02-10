@@ -126,6 +126,28 @@ Claude Code は公式推奨の方法でインストールされます：
 ./setup/06_claude_code.sh
 ```
 
+### 環境変数の設定
+
+Claude Code プラグインやMCPサーバーで使用するAPIキーを設定します：
+
+```bash
+# 1. サンプルファイルをコピー
+cp home/.env_sample ~/.env
+
+# 2. 必要なAPIキーを設定
+# ANTHROPIC_API_KEY: claude-mem プラグインで必須
+# CONTEXT7_API_KEY: Context7 ドキュメント検索（オプション）
+# GITHUB_TOKEN: GitHub 連携（オプション）
+# BRAVE_API_KEY: Brave Search MCP サーバー（オプション）
+# GREPTILE_API_KEY: Greptile AI コード検索・分析（オプション）
+# CLAUDE_MEM_GEMINI_API_KEY: claude-mem の Gemini LLM バックエンド（オプション）
+# CLAUDE_MEM_OPENROUTER_API_KEY: claude-mem の OpenRouter LLM バックエンド（オプション）
+
+vi ~/.env
+```
+
+**重要:** `.env` ファイルは機密情報を含むため、絶対にバージョン管理に含めないでください。
+
 ### 自動ホック機能
 
 Claude Code は以下のファイル編集時に自動でツールを実行します：
