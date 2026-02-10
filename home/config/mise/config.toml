@@ -473,6 +473,7 @@ pnpm = "latest"
 "npm:@antiwork/shortest" = "latest"   # https://github.com/antiwork/shortest
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"
+"npm:@mixedbread/mgrep" = "latest"    # Semantic search tool for Claude Code
 "npm:@openai/codex" = "latest"
 # "npm:@byterover/cipher" = "latest"    # https://github.com/campfirein/cipher
 "npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
