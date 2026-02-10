@@ -142,7 +142,6 @@
       "WebFetch(domain:zoewave.medium.com)",
       "WebFetch(domain:agentnativedev.medium.com)",
       "WebFetch(domain:deepwiki.com)",
-      "Bash(timeout 120 npx:*)",
       "WebFetch(domain:brave.com)",
       "WebFetch(domain:registry.npmjs.org)"
     ],
@@ -151,22 +150,15 @@
   },
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": [
+    "better-icons",
     "brave-search",
     "chrome-devtools",
     "context7",
     "deepwiki",
-    "docker",
     "filesystem",
-    "git",
     "grepai",
     "markitdown",
     "sequential-thinking",
     "vibe_kanban"
-  ],
-  "disabledMcpjsonServers": [
-    "better-icons",
-    "playwright",
-    "sqlite",
-    "web-search"
   ]
 }

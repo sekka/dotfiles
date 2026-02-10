@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": [
+    "better-icons",
+    "brave-search",
+    "chrome-devtools",
+    "context7",
+    "deepwiki",
+    "filesystem",
+    "grepai",
+    "markitdown",
+    "sequential-thinking",
+    "vibe_kanban"
+  ]
+}
