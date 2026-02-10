@@ -53,7 +53,7 @@ describe("SessionMetricsBuilder", () => {
 	it("should build when showElapsedTime is true", () => {
 		const config: StatuslineConfig = {
 			...mockConfig,
-			session: { ...mockConfig.session, showElapsedTime: true },
+			session: { ...mockConfig.session, showElapsedTime: true, showInFirstLine: false },
 		};
 		expect(builder.shouldBuild(config)).toBe(true);
 	});
@@ -61,7 +61,7 @@ describe("SessionMetricsBuilder", () => {
 	it("should return null when sessionTimeDisplay is empty", async () => {
 		const config: StatuslineConfig = {
 			...mockConfig,
-			session: { ...mockConfig.session, showElapsedTime: true },
+			session: { ...mockConfig.session, showElapsedTime: true, showInFirstLine: false },
 		};
 		const data = { ...mockMetricsData, sessionTimeDisplay: "" };
 		const result = await builder.build(config, data);

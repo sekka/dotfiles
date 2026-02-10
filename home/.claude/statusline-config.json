@@ -24,6 +24,7 @@
 		"showInFirstLine": true
 	},
 	"display": {
-		"showSeparators": false
+		"showSeparators": false,
+		"lineBreakBefore": ["W"]
 	}
 }

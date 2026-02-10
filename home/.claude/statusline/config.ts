@@ -41,6 +41,7 @@ export interface StatuslineConfig {
 	};
 	display: {
 		showSeparators: boolean;
+		lineBreakBefore?: string[];
 	};
 }
 
@@ -79,6 +80,7 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 	},
 	display: {
 		showSeparators: false,
+		lineBreakBefore: [],
 	},
 };
 

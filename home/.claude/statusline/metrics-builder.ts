@@ -19,6 +19,12 @@ import { getPeriodCost } from "./cache.ts";
  */
 export interface MetricsBuilder {
 	/**
+	 * メトリクスの識別ラベル（例: "S", "T", "L", "D", "W", "WS"）
+	 * lineBreakBefore 設定でこのメトリクスの前に改行を挿入する際に使用する
+	 */
+	label: string;
+
+	/**
 	 * 現在の設定に基づいて、このメトリクスを表示すべきかどうかを判定する
 	 *
 	 * @param {StatuslineConfig} config - ステータスライン設定
@@ -73,6 +79,8 @@ export interface MetricsData {
  * 出力形式: `S: 2m 30s $0.15`
  */
 export class SessionMetricsBuilder implements MetricsBuilder {
+	label = "S";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		// S を第1行に表示する場合はメトリクス行に表示しない
 		if (config.session.showInFirstLine && config.session.showElapsedTime) {
@@ -105,12 +113,14 @@ export class SessionMetricsBuilder implements MetricsBuilder {
  * トークン使用率のメトリクスビルダー
  */
 export class TokenMetricsBuilder implements MetricsBuilder {
+	label = "T";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.tokens.showContextUsage;
 	}
 
 	async build(_: StatuslineConfig, data: MetricsData): Promise<string | null> {
-		const bar = formatBrailleProgressBar(data.contextPercentage, 6);
+		const bar = formatBrailleProgressBar(data.contextPercentage, 5);
 		const contextTokenStr = (data.contextTokens / 1000).toFixed(1);
 		const contextSizeStr = (data.contextWindowSize / 1000).toFixed(1);
 
@@ -126,6 +136,8 @@ export class TokenMetricsBuilder implements MetricsBuilder {
  * 5時間レート制限のメトリクスビルダー
  */
 export class LimitMetricsBuilder implements MetricsBuilder {
+	label = "L";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showFiveHour;
 	}
@@ -155,7 +167,7 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 		// Add cost display if >= $0.01 (respects showPeriodCost config)
 		const costDisplayFiveHour =
 			config.rateLimits.showPeriodCost && periodCost >= 0.01
-				? `${colors.gray("$")}${colors.dimWhite(periodCost.toFixed(2))} `
+				? `${colors.gray("$")}${colors.white(periodCost.toFixed(2))} `
 				: "";
 
 		let limitsPart = `${colors.gray("L:")} ${costDisplayFiveHour}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
@@ -178,6 +190,8 @@ export class LimitMetricsBuilder implements MetricsBuilder {
  * 日次コストのメトリクスビルダー
  */
 export class CostMetricsBuilder implements MetricsBuilder {
+	label = "D";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.costs.showDailyCost;
 	}
@@ -199,6 +213,8 @@ export class CostMetricsBuilder implements MetricsBuilder {
  * 週間レート制限のメトリクスビルダー
  */
 export class WeeklyMetricsBuilder implements MetricsBuilder {
+	label = "W";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showWeekly;
 	}
@@ -231,6 +247,8 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
  * 他のモデル（OpusやHaikuなど）と区別されたSonnetの使用量を表示する
  */
 export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
+	label = "WS";
+
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showSonnetWeekly;
 	}
@@ -320,7 +338,12 @@ export class MetricsLineBuilder {
 				try {
 					const part = await builder.build(config, data);
 					if (part) {
-						parts.push(part);
+						// lineBreakBefore 設定に基づいて改行挿入
+						if (config.display.lineBreakBefore?.includes(builder.label) && parts.length > 0) {
+							parts.push('\n' + part);
+						} else {
+							parts.push(part);
+						}
 					}
 				} catch (error) {
 					debug(
@@ -337,13 +360,23 @@ export class MetricsLineBuilder {
 			return "";
 		}
 
-		let metricsLine = parts[0]; // First section
-		if (parts.length > 1) {
-			const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
-			metricsLine += separator + parts.slice(1).join(separator);
+		// セパレータの挿入処理
+		const result: string[] = [];
+		for (let i = 0; i < parts.length; i++) {
+			const part = parts[i];
+			if (i === 0) {
+				result.push(part);
+			} else if (part.startsWith('\n')) {
+				// 改行で始まる場合はセパレータなし
+				result.push(part);
+			} else {
+				// 通常のセパレータを挿入
+				const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
+				result.push(separator + part);
+			}
 		}
 
-		return metricsLine;
+		return result.join('');
 	}
 }
 
