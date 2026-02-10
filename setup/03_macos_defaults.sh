@@ -237,17 +237,26 @@ echo ""
 echo "## Safari設定を適用中..."
 
 # 開発メニューを有効化
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-echo "✓ Safari開発メニューを有効化"
+if defaults write com.apple.Safari IncludeDevelopMenu -bool true 2>/dev/null; then
+  echo "✓ Safari開発メニューを有効化"
+else
+  echo "⚠ Safari開発メニューの設定はスキップ（権限不足またはSafariサンドボックス）"
+fi
 
 # Webインスペクタを有効化
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
-echo "✓ Safari Webインスペクタを有効化"
+if defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true 2>/dev/null &&
+  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null; then
+  echo "✓ Safari Webインスペクタを有効化"
+else
+  echo "⚠ Safari Webインスペクタの設定はスキップ（権限不足またはSafariサンドボックス）"
+fi
 
 # アドレスバーに完全なURLを表示
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-echo "✓ Safari完全URL表示を有効化"
+if defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true 2>/dev/null; then
+  echo "✓ Safari完全URL表示を有効化"
+else
+  echo "⚠ Safari完全URL表示の設定はスキップ（権限不足またはSafariサンドボックス）"
+fi
 
 # 新規タブを空白ページで開く（現在は未設定）
 # defaults write com.apple.Safari NewTabBehavior -int 1
@@ -261,20 +270,32 @@ echo ""
 echo "## メニューバー設定を適用中..."
 
 # ステータスアイテムの間隔を設定
-defaults -currentHost write -globalDomain NSStatusItemSpacing -int 8
-echo "✓ メニューバーアイテム間隔を8に設定"
+if defaults -currentHost write -globalDomain NSStatusItemSpacing -int 8 2>/dev/null; then
+  echo "✓ メニューバーアイテム間隔を8に設定"
+else
+  echo "⚠ メニューバーアイテム間隔の設定はスキップ（権限不足）"
+fi
 
 # ステータスアイテムの選択時内余白を設定
-defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6
-echo "✓ メニューバーアイテム選択時内余白を6に設定"
+if defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6 2>/dev/null; then
+  echo "✓ メニューバーアイテム選択時内余白を6に設定"
+else
+  echo "⚠ メニューバーアイテム選択時内余白の設定はスキップ（権限不足）"
+fi
 
 # 日付・時刻の表示形式（24時間表示、秒表示あり）
-defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE) H:mm:ss"
-echo "✓ メニューバー時計表示を設定（例：1月23日(木) 14:30:45）"
+if defaults write com.apple.menuextra.clock DateFormat -string "M\u6708d\u65e5(EEE) H:mm:ss" 2>/dev/null; then
+  echo "✓ メニューバー時計表示を設定（例：1月23日(木) 14:30:45）"
+else
+  echo "⚠ メニューバー時計表示の設定はスキップ（権限不足）"
+fi
 
 # バッテリーの割合表示（ノートPCの場合）
-defaults write com.apple.menuextra.battery ShowPercent -bool true
-echo "✓ バッテリー割合表示を有効化"
+if defaults write com.apple.menuextra.battery ShowPercent -bool true 2>/dev/null; then
+  echo "✓ バッテリー割合表示を有効化"
+else
+  echo "⚠ バッテリー割合表示の設定はスキップ（権限不足）"
+fi
 
 echo ""
 
@@ -297,13 +318,19 @@ echo ""
 echo "## テキストエディット設定を適用中..."
 
 # プレーンテキストをデフォルトで使用
-defaults write com.apple.TextEdit RichText -int 0
-echo "✓ テキストエディットでプレーンテキストをデフォルトに設定"
+if defaults write com.apple.TextEdit RichText -int 0 2>/dev/null; then
+  echo "✓ テキストエディットでプレーンテキストをデフォルトに設定"
+else
+  echo "⚠ テキストエディットのプレーンテキスト設定はスキップ（権限不足）"
+fi
 
 # 開くとき・保存するときはUTF-8を使用
-defaults write com.apple.TextEdit PlainTextEncoding -int 4
-defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
-echo "✓ テキストエディットでUTF-8をデフォルトに設定"
+if defaults write com.apple.TextEdit PlainTextEncoding -int 4 2>/dev/null &&
+  defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4 2>/dev/null; then
+  echo "✓ テキストエディットでUTF-8をデフォルトに設定"
+else
+  echo "⚠ テキストエディットのUTF-8設定はスキップ（権限不足）"
+fi
 
 echo ""
 
