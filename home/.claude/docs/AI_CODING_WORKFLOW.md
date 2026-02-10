@@ -3,11 +3,11 @@
 ## 概要
 
 このドキュメントは、Claude Code を中心とした実践的な AI コーディング管理手法をまとめたものです。
-松尾研究所の実践的なノウハウ（[出典](https://zenn.dev/mkj/articles/868e0723efa060)）を参考に、以下の4つの柱で構成されています。
+松尾研究所の実践的なノウハウ（[出典](https://zenn.dev/mkj/articles/868e0723efa060)）を参考に、以下の3つの柱で構成されています。
 
 ---
 
-## 4つの柱
+## 3つの柱
 
 ### 1. 実装レビューループ（Phase 1）
 
@@ -51,51 +51,7 @@
 
 ---
 
-### 2. CLAUDE.md 自動同期更新（Phase 2）
-
-**目的:** コード変更時にドキュメントを自動更新し、仕様の鮮度を維持する
-
-**Hook:** `auto-sync-claude-md.ts`
-
-**特徴:**
-- 重要ファイルの変更を自動検出
-- CLAUDE.md 更新の自動提案
-- デバウンス機能で通知頻度を抑制
-
-**監視対象ファイル:**
-- Claude Code 設定（settings.json、keybindings.json）
-- ルールファイル（.claude/rules/**/*.md）
-- スキル（.claude/skills/**/）
-- Hooks（.claude/hooks/**/）
-- プロジェクト設定（package.json、tsconfig.json等）
-
-**動作:**
-
-```
-重要ファイルが変更される
-  ↓
-hook が検出
-  ↓
-5秒以内の変更は1つにまとめる（デバウンス）
-  ↓
-CLAUDE.md 更新を提案（または自動実行）
-```
-
-**設定:**
-
-```typescript
-const CONFIG = {
-  autoSync: false,      // true で自動実行
-  debounceMs: 5000,     // デバウンス時間
-  maxChanges: 10,       // 最大保持数
-};
-```
-
-**詳細:** `hooks/auto-sync-claude-md.md`
-
----
-
-### 3. コーディング規約強制（Phase 3）
+### 2. コーディング規約強制（Phase 2）
 
 **目的:** コーディング規約を自動的にチェック・修正し、一貫性と品質を保つ
 
@@ -149,7 +105,7 @@ export default {
 
 ---
 
-### 4. git worktree サポート（Phase 4）
+### 3. git worktree サポート（Phase 3）
 
 **目的:** 複数タスクの並列開発を可能にし、コンテキストを完全に分離する
 
@@ -202,8 +158,7 @@ claude
   "purpose": "新機能の実装",
   "created": "2026-01-31T12:00:00Z",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }
 ```
@@ -214,7 +169,7 @@ claude
 
 ## 統合ワークフロー
 
-4つの柱を組み合わせた理想的なワークフロー：
+3つの柱を組み合わせた理想的なワークフロー：
 
 ### シナリオ: 新機能の実装
 
@@ -233,13 +188,7 @@ claude
 # Step 3: コーディング規約チェック
 /enforce-standards --fix
 
-# Step 4: CLAUDE.md 自動更新（hook が提案）
-# 📝 CLAUDE.md 更新の提案
-# 3件の重要なファイル変更を検出しました...
-
-/claude-md-management:revise-claude-md
-
-# Step 5: コミット
+# Step 4: コミット
 git add .
 git commit -m "feat: 決済機能を実装"
 ```
@@ -298,16 +247,6 @@ git commit -m "feat: 決済機能を実装"
 # 各ターミナルで独立して作業
 ```
 
-### 5. ドキュメントとコードの同期
-
-**原則:** コード変更時に必ずドキュメントも更新
-
-```bash
-# auto-sync-claude-md.ts が自動で提案
-# → 手動で実行
-/claude-md-management:revise-claude-md
-```
-
 ---
 
 ## アンチパターン
@@ -345,24 +284,7 @@ git commit -m "feat: 決済機能を実装"
 /enforce-standards --fix
 ```
 
-### 3. ドキュメントの更新忘れ
-
-**Bad:**
-
-```bash
-# コードだけ変更してコミット
-# → CLAUDE.md が古いまま
-```
-
-**Good:**
-
-```bash
-# hook が自動で提案
-# 📝 CLAUDE.md 更新の提案
-/claude-md-management:revise-claude-md
-```
-
-### 4. ブランチ切り替えによる作業状態の喪失
+### 3. ブランチ切り替えによる作業状態の喪失
 
 **Bad:**
 
@@ -404,7 +326,6 @@ ls ~/.claude/skills/implement-with-review/
 ls ~/.claude/skills/enforce-standards/
 ls ~/.claude/skills/worktree-manager/
 
-ls ~/.claude/hooks/auto-sync-claude-md.ts
 ls ~/.claude/hooks/auto-detect-worktree.ts
 ```
 
@@ -428,10 +349,6 @@ claude
 ```bash
 # セッション開始時のメッセージを確認
 # （worktree の場合は自動検出メッセージが表示される）
-
-# 重要ファイルを変更して auto-sync-claude-md を確認
-echo "# test" >> ~/.claude/rules/test.md
-# → 📝 CLAUDE.md 更新の提案
 ```
 
 ---
@@ -449,17 +366,7 @@ ls ~/.claude/skills/implement-with-review/skill.json
 # Claude Code を再起動
 ```
 
-### Q2: hook が動作しない
-
-**A:** TypeScript ファイルの構文エラーを確認
-
-```bash
-# TypeScript のチェック
-cd ~/.claude/hooks/
-tsc --noEmit auto-sync-claude-md.ts
-```
-
-### Q3: worktree が作成できない
+### Q2: worktree が作成できない
 
 **A:** git のバージョンを確認
 
@@ -471,7 +378,7 @@ git --version
 git worktree list
 ```
 
-### Q4: レビューが厳しすぎる
+### Q3: レビューが厳しすぎる
 
 **A:** レビュー基準を調整
 
@@ -504,7 +411,7 @@ git worktree list
 
 ## まとめ
 
-4つの柱を組み合わせることで、以下を実現：
+3つの柱を組み合わせることで、以下を実現：
 
 1. **品質の安定化**: 実装レビューループで一貫した品質
 2. **仕様の鮮度維持**: CLAUDE.md 自動同期でドキュメント更新

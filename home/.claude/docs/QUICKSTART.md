@@ -201,18 +201,6 @@ git commit -m "refactor: UserService の可読性向上"
 
 ## 設定のカスタマイズ
 
-### CLAUDE.md 自動同期の有効化
-
-`~/.claude/hooks/auto-sync-claude-md.ts` を編集：
-
-```typescript
-const CONFIG = {
-  autoSync: true,  // ← false から true に変更
-  debounceMs: 5000,
-  maxChanges: 10,
-};
-```
-
 ### コミット前の自動規約チェック
 
 `~/.claude/hooks/enforce-standards-on-commit.ts` を作成：
@@ -236,9 +224,8 @@ export default {
 
 - **全体概要:** `AI_CODING_WORKFLOW.md`
 - **Phase 1:** `skills/implement-with-review/README.md`
-- **Phase 2:** `hooks/auto-sync-claude-md.md`
-- **Phase 3:** `skills/enforce-standards/README.md`
-- **Phase 4:** `skills/worktree-manager/README.md`
+- **Phase 2:** `skills/enforce-standards/README.md`
+- **Phase 3:** `skills/worktree-manager/README.md`
 
 ### ベストプラクティスを学ぶ
 
@@ -255,16 +242,6 @@ export default {
 ```bash
 # スキルのディレクトリ構造を確認
 ls ~/.claude/skills/implement-with-review/skill.json
-
-# Claude Code を再起動
-```
-
-### hook が動作しない
-
-```bash
-# TypeScript の構文エラーを確認
-cd ~/.claude/hooks/
-tsc --noEmit auto-sync-claude-md.ts
 
 # Claude Code を再起動
 ```

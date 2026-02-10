@@ -19,7 +19,6 @@
 | **コードの品質をチェックしたい** | `/enforce-standards --check-only` | チェックのみ（修正しない） |
 | **コーディング規約違反を修正したい** | `/enforce-standards --fix` | 自動修正 |
 | **複数タスクを並列で進めたい** | `/worktree-manager create <branch>` | worktree 作成 |
-| **CLAUDE.md を更新したい** | `/claude-md-management:revise-claude-md` | ドキュメント更新 |
 | **クイックレビューしたい** | `/reviewing-with-claude` | 軽量レビュー |
 | **包括的レビューしたい** | `/reviewing-parallel` | 複数AIで並列レビュー |
 | **コミットを作成したい** | `/commit` | 変更をまとめてコミット |
@@ -78,10 +77,6 @@
   YES → /enforce-standards --fix で修正
   NO  → 次へ
   ↓
-CLAUDE.md の更新が必要？
-  YES → /claude-md-management:revise-claude-md
-  NO  → 次へ
-  ↓
 コミット作成
   ↓
 /commit
@@ -130,15 +125,12 @@ claude
 
 # Step 3: 実環境で動作確認
 # （実際に決済処理を試す）
-
-# Step 4: CLAUDE.md 更新（hook が提案）
-/claude-md-management:revise-claude-md
 ```
 
 #### コミット
 
 ```bash
-# Step 5: コミット作成
+# Step 4: コミット作成
 /commit
 
 # → コミットメッセージが自動生成される
@@ -335,16 +327,7 @@ claude
 原因: URLエンコードの不備"
 ```
 
-### Q4: CLAUDE.md の更新を忘れたらどうする？
-
-**A:** いつでも更新可能。
-
-```bash
-# hook が提案していなくても手動実行可能
-/claude-md-management:revise-claude-md
-```
-
-### Q5: worktree を削除し忘れたらどうする？
+### Q4: worktree を削除し忘れたらどうする？
 
 **A:** いつでも削除可能。
 
@@ -511,20 +494,6 @@ claude
 ```bash
 # スキルのディレクトリを確認
 ls ~/.claude/skills/implement-with-review/skill.json
-
-# Claude Code を再起動
-```
-
----
-
-### 問題: hook が動作しない
-
-**解決策:**
-
-```bash
-# TypeScript の構文エラーを確認
-cd ~/.claude/hooks/
-tsc --noEmit auto-sync-claude-md.ts
 
 # Claude Code を再起動
 ```

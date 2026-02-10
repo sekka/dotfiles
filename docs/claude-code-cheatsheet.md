@@ -267,11 +267,6 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 **用途**: コードベース分析してClaude Code自動化推奨
 **使用場面**: 初回セットアップ、hooks/subagents/skills/plugins/MCPサーバーの推奨取得
 
-### `/claude-md-management:claude-md-improver`
-
-**用途**: CLAUDE.mdファイルの監査と改善
-**使用場面**: 品質レポート出力、テンプレート対照評価、ターゲット更新
-
 ---
 
 ## 📊 ビジネス & 企画
