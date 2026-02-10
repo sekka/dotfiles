@@ -201,7 +201,7 @@ export class CostMetricsBuilder implements MetricsBuilder {
 			return null;
 		}
 
-		return `${colors.gray("D:")} ${colors.gray("$")}${colors.dimWhite(data.todayCost.toFixed(1))}`;
+		return `${colors.gray("D:")} ${colors.gray("$")}${colors.white(data.todayCost.toFixed(1))}`;
 	}
 }
 

@@ -276,7 +276,7 @@ describe("MetricsLineBuilder", () => {
 	it("should build metrics line with all components enabled", async () => {
 		const config: StatuslineConfig = {
 			...mockConfig,
-			session: { ...mockConfig.session, showElapsedTime: true },
+			session: { ...mockConfig.session, showElapsedTime: true, showInFirstLine: false },
 			tokens: { showContextUsage: true },
 			rateLimits: { ...mockConfig.rateLimits, showFiveHour: true, showWeekly: true },
 			costs: { ...mockConfig.costs, showDailyCost: true },

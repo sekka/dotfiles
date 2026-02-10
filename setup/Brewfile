@@ -93,6 +93,8 @@ brew "aria2"              # https://formulae.brew.sh/formula/aria2            # 
 
 # === AI/LLM ===
 brew "ollama"             # https://formulae.brew.sh/formula/ollama           # ローカルLLM
+tap "yoanbernabeu/tap"
+brew "yoanbernabeu/tap/grepai"  # https://github.com/yoanbernabeu/grepai  # セマンティックコード検索ツール
 
 # === ウェブ開発 ===
 brew "httpstat"           # https://formulae.brew.sh/formula/httpstat         # cURLの統計情報表示

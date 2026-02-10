@@ -58,30 +58,36 @@ set -euo pipefail
 
 echo "=== AI Tools Setup ==="
 
+# Ollama LaunchAgent をロード
+if [[ -f "$HOME/Library/LaunchAgents/com.ollama.serve.plist" ]]; then
+  launchctl load "$HOME/Library/LaunchAgents/com.ollama.serve.plist" 2>/dev/null || true
+  echo "✓ Ollama LaunchAgent loaded"
+  sleep 2 # Ollama 起動待ち
+else
+  echo "⚠ Ollama LaunchAgent not found. Run setup/02_home.sh first."
+fi
+
 # Ollama モデルのセットアップ
 if command -v ollama >/dev/null 2>&1; then
   echo "Setting up Ollama embedding model..."
   ollama pull nomic-embed-text
   echo "✓ Ollama model ready"
 else
-  echo "⚠ Ollama not found. Run 'brew bundle' first."
+  echo "⚠ Ollama not found. Run 'brew bundle --file=setup/Brewfile' first."
 fi
 
-# grepai のインストール
-if ! command -v grepai >/dev/null 2>&1; then
-  echo "Installing grepai..."
-  curl -sSL https://raw.githubusercontent.com/yoanbernabeu/grepai/main/install.sh | sh
-  echo "✓ grepai installed"
+# grepai（Brewfile でインストール済み前提）
+if command -v grepai >/dev/null 2>&1; then
+  echo "✓ grepai ready"
 else
-  echo "grepai already installed. Checking for updates..."
-  grepai update 2>/dev/null || echo "✓ grepai is up to date"
+  echo "⚠ grepai not found. Run 'brew bundle --file=setup/Brewfile' first."
 fi
 
 echo ""
 echo "=== AI Tools Setup Complete ==="
 echo ""
 echo "Next steps:"
-echo "  1. Start Ollama: ollama serve &"
+echo "  1. Ollama is running in background via LaunchAgent"
 echo "  2. Initialize in project: cd /path/to/project && grepai init && grepai watch"
 echo '  3. Search: grepai search "your query"'
 echo ""
