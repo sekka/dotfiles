@@ -222,8 +222,12 @@ echo ""
 echo "## アクセシビリティ設定を適用中..."
 
 # ウインドウタイトルにアイコンを表示
-defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true
-echo "✓ ウインドウタイトルにアイコンを表示"
+if defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true 2>/dev/null; then
+  echo "✓ ウインドウタイトルにアイコンを表示"
+else
+  echo "⚠ ウインドウタイトルアイコンの設定はスキップ（権限不足）"
+  echo "  → システム設定 > アクセシビリティ > ディスプレイ から手動で設定してください"
+fi
 
 echo ""
 

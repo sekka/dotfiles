@@ -213,6 +213,22 @@ fi
 
 echo ""
 
+# === アクセシビリティ設定 ===
+echo "## アクセシビリティ設定"
+
+# ウインドウタイトルアイコン
+window_titlebar_icons=$(defaults read com.apple.universalaccess showWindowTitlebarIcons 2>/dev/null || echo "")
+if [ "$window_titlebar_icons" = "1" ]; then
+  echo "✓ ウインドウタイトルにアイコンを表示: ON (デフォルト: OFF)"
+  echo "  defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true"
+  has_customization=true
+elif [ -z "$window_titlebar_icons" ]; then
+  echo "⚠ ウインドウタイトルアイコン設定: 読み取り不可（macOS Sequoia以降は権限制限あり）"
+  echo "  → システム設定 > アクセシビリティ > ディスプレイ で手動確認してください"
+fi
+
+echo ""
+
 # === Safari設定 ===
 echo "## Safari設定"
 

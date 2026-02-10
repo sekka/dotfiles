@@ -117,10 +117,6 @@ ensure_plugin "example-skills@anthropic-agent-skills"
 ensure_marketplace "thedotmack" "thedotmack/claude-mem"
 ensure_plugin "claude-mem@thedotmack"
 
-# claude-mem-japanese（claude-mem日本語対応）
-ensure_marketplace "claude-mem-jp" "Chachamaru127/claude-mem-jp"
-ensure_plugin "claude-mem-japanese@claude-mem-jp"
-
 # claude-code-harness（コード管理ツール）
 ensure_marketplace "claude-code-harness-marketplace" "Chachamaru127/claude-code-harness"
 ensure_plugin "claude-code-harness@claude-code-harness-marketplace"
