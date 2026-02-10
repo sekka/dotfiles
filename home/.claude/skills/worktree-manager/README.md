@@ -272,8 +272,7 @@ claude
   "purpose": "ユーザー認証機能の実装",
   "created": "2026-01-31T12:00:00Z",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }
 ```

@@ -34,8 +34,7 @@ worktree ごとに異なる Claude Code 設定を適用できるようにする�
   "purpose": "ユーザー認証機能の実装",
   "created": "2026-01-31T12:00:00Z",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }
 ```
@@ -53,7 +52,6 @@ worktree 検出時にウェルカムメッセージを表示。
 目的: ユーザー認証機能の実装
 作成日: 2026/01/31
   - モデル: sonnet
-  - 自動同期: ON
 ```
 
 ## 設定ファイル: .worktree-config.json
@@ -67,7 +65,6 @@ worktree 検出時にウェルカムメッセージを表示。
   "created": "作成日時（ISO 8601形式）",
   "claudeConfig": {
     "model": "sonnet | opus | haiku",
-    "autoSync": true | false,
     "カスタム設定": "..."
   }
 }
@@ -81,8 +78,7 @@ worktree 検出時にウェルカムメッセージを表示。
   "purpose": "決済機能の実装",
   "created": "2026-01-31T12:00:00Z",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }
 ```
@@ -95,8 +91,7 @@ worktree 検出時にウェルカムメッセージを表示。
   "purpose": "ログイン時のセッション切れバグ修正",
   "created": "2026-01-31T14:00:00Z",
   "claudeConfig": {
-    "model": "haiku",
-    "autoSync": false
+    "model": "haiku"
   }
 }
 ```
@@ -109,8 +104,7 @@ worktree 検出時にウェルカムメッセージを表示。
   "purpose": "GraphQL 導入の技術調査",
   "created": "2026-01-31T16:00:00Z",
   "claudeConfig": {
-    "model": "opus",
-    "autoSync": false
+    "model": "opus"
   }
 }
 ```
@@ -142,15 +136,6 @@ if (config.claudeConfig?.model) {
 }
 ```
 
-### autoSync の適用
-
-```typescript
-if (config.claudeConfig?.autoSync !== undefined) {
-  // CLAUDE.md 自動同期の有効/無効を切り替え
-  // （auto-sync-claude-md.ts の CONFIG と連携）
-}
-```
-
 ## 使用例
 
 ### 例1: worktree 作成時に設定ファイルも作成
@@ -169,8 +154,7 @@ cat > .worktree-config.json << EOF
   "purpose": "ユーザー認証機能の実装",
   "created": "$(date -Iseconds)",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }
 EOF
@@ -193,8 +177,7 @@ echo '{
   "purpose": "決済機能の実装",
   "created": "2026-01-31T12:00:00Z",
   "claudeConfig": {
-    "model": "sonnet",
-    "autoSync": true
+    "model": "sonnet"
   }
 }' > .worktree-config.json
 

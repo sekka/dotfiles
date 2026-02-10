@@ -325,7 +325,6 @@
     "ask-gemini@hiropon-plugins": false,
     "peer@hiropon-plugins": true,
     "claude-code-setup@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": true,
     "mgrep@Mixedbread-Grep": true
   },
   "language": "Japanese",

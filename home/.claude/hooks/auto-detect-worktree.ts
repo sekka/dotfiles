@@ -32,7 +32,6 @@ interface WorktreeConfig {
   created: string;
   claudeConfig?: {
     model?: 'sonnet' | 'opus' | 'haiku';
-    autoSync?: boolean;
     [key: string]: any;
   };
 }
@@ -118,10 +117,6 @@ function applyWorktreeConfig(config: WorktreeConfig): HookResponse {
   if (config.claudeConfig) {
     if (config.claudeConfig.model) {
       messages.push(`モデル: ${config.claudeConfig.model}`);
-    }
-
-    if (config.claudeConfig.autoSync !== undefined) {
-      messages.push(`自動同期: ${config.claudeConfig.autoSync ? 'ON' : 'OFF'}`);
     }
   }
 
