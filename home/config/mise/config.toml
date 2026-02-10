@@ -200,6 +200,26 @@ alias = "mp"
 description = "使われていないツールバージョンを削除"
 run = "mise prune"
 
+# mise キャッシュクリーンアップ
+[tasks.mise-clean]
+alias = "mc"
+description = "miseのキャッシュとダウンロードをクリーンアップ"
+run = """
+echo "🧹 miseキャッシュをクリーンアップ中..."
+rm -rf ~/.cache/mise/
+rm -rf ~/.local/share/mise/downloads/*
+mise prune -y
+echo "✅ クリーンアップ完了"
+"""
+
+# 週次メンテナンス
+[tasks.mise-weekly-clean]
+description = "週次メンテナンス: キャッシュクリア + prune + doctor"
+run = """
+mise run mise-clean
+mise doctor
+"""
+
 # --------------------------------------
 # Rust関連
 # --------------------------------------
