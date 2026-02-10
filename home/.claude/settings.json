@@ -1,6 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1"
+    "CLAUDE_CODE_DISABLE_TERMINAL_TITLE": "1",
+    "ENABLE_TOOL_SEARCH": "auto:5",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
   },
   "attribution": {
     "commit": "",
@@ -104,33 +107,15 @@
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf:*)",
       "Bash(sudo:*)",
-      "Read(./.env.*)",
-      "Read(.env.*)",
-      "Read(.env.development)",
-      "Read(.env.local)",
-      "Read(.env.production)",
-      "Read(.env)",
-      "Read(**/.env.*)",
-      "Read(**/.env.development)",
-      "Read(**/.env.local)",
-      "Read(**/.env.production)",
-      "Read(**/.env)",
+      "Read(**/.env*)",
       "Read(**/*.key)",
       "Read(**/*.pem)",
       "Read(**/*key*)",
       "Read(**/*secret*)",
       "Read(**/*token*)",
       "Read(**/secrets/**)",
-      "Read(id_ed25519)",
-      "Read(id_rsa)",
-      "Write(.env.development)",
-      "Write(.env.local)",
-      "Write(.env.production)",
-      "Write(.env)",
-      "Write(**/.env.development)",
-      "Write(**/.env.local)",
-      "Write(**/.env.production)",
-      "Write(**/.env)",
+      "Read(~/.ssh/*)",
+      "Write(**/.env*)",
       "Write(**/*secret*)"
     ],
     "ask": [
@@ -160,10 +145,6 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-files.sh"
-          },
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/hooks/check-design-before-write.ts"
           }
         ]
       },
@@ -188,24 +169,6 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/hooks/log-agent-calls.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-debug-on-failure.ts"
-          }
-        ]
-      },
-      {
         "matcher": "Edit|Write",
         "hooks": [
           {
@@ -215,10 +178,6 @@
           {
             "type": "command",
             "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
-          },
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/hooks/suggest-review-after-changes.ts"
           }
         ]
       },
@@ -272,14 +231,6 @@
       }
     ],
     "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/hooks/agent-router.ts"
-          }
-        ]
-      },
       {
         "hooks": [
           {

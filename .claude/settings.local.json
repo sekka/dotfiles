@@ -131,7 +131,8 @@
       "WebFetch(domain:gist.github.com)",
       "WebFetch(domain:claudelog.com)",
       "WebFetch(domain:alexop.dev)",
-      "WebFetch(domain:www.theaistack.dev)"
+      "WebFetch(domain:www.theaistack.dev)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []
