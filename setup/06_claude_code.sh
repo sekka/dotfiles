@@ -35,13 +35,13 @@ else
   fi
 fi
 
-# PATHの設定を確認
-if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+# PATHの設定を確認（コマンド実行可能性で判定）
+if ! command -v claude &>/dev/null; then
   echo ""
-  echo "⚠️  警告: ~/.local/bin がPATHに含まれていません"
-  echo "   シェル設定ファイル（~/.zshrc など）に以下を追加してください:"
+  echo "⚠️  警告: claude コマンドがPATHに見つかりません"
+  echo "   新しいシェルセッションを開くか、以下を実行してPATHを再読み込みしてください:"
   echo ""
-  echo '   export PATH="$HOME/.local/bin:$PATH"'
+  echo "   source ~/.zshrc"
   echo ""
 fi
 
@@ -73,13 +73,10 @@ is_marketplace_added() {
 # プラグインがインストール済みか確認
 is_plugin_installed() {
   local plugin="$1" # 形式: plugin@marketplace
-  local json_file="$HOME/.claude/settings.json"
-
-  if [[ $JQ_AVAILABLE == "true" ]] && [[ -f $json_file ]]; then
-    jq -e ".enabledPlugins[\"$plugin\"]" "$json_file" >/dev/null 2>&1
-    return $?
-  fi
-  return 1
+  # claude plugin list の出力から、プラグイン名を検索
+  # "❯ " プレフィックスを含めることで、誤マッチを防ぐ
+  claude plugin list 2>/dev/null | grep -qF "❯ $plugin"
+  return $?
 }
 
 # マーケットプレースを追加または更新
@@ -102,10 +99,18 @@ ensure_plugin() {
 
   if is_plugin_installed "$plugin"; then
     echo "🔌 Plugin '$plugin' を更新中..."
-    claude plugin update "$plugin"
+    if ! claude plugin update "$plugin" 2>/dev/null; then
+      echo "   ⚠️  プラグインの更新に失敗しました（続行します）"
+    else
+      echo "   ✅ プラグインを更新しました"
+    fi
   else
     echo "🔌 Plugin '$plugin' をインストール中..."
-    claude plugin install "$plugin"
+    if ! claude plugin install "$plugin" 2>/dev/null; then
+      echo "   ⚠️  プラグインのインストールに失敗しました（続行します）"
+    else
+      echo "   ✅ プラグインをインストールしました"
+    fi
   fi
 }
 
