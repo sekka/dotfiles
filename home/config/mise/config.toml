@@ -387,6 +387,36 @@ alias = "ub"
 description = "Homebrew更新"
 run = "sh ~/dotfiles/setup/04_homebrew.sh && brew update && brew upgrade && brew cleanup"
 
+# Homebrew明示的インストールパッケージ一覧
+[tasks.brew-leaves]
+alias = "blv"
+description = "明示的にインストールしたHomebrewパッケージとバージョンを表示"
+run = "brew leaves | xargs brew list --versions"
+
+# Brewfileとの照合
+[tasks.brew-check]
+alias = "bc"
+description = "Brewfileで管理されていないパッケージを検出"
+run = '''
+bash -c '
+brewfile_packages=$(grep "^brew \"" ~/dotfiles/setup/Brewfile | sed "s/^brew \"\([^\"]*\)\".*/\1/" | sort)
+installed_packages=$(brew leaves | sort)
+unmanaged=$(comm -13 <(echo "$brewfile_packages") <(echo "$installed_packages"))
+
+if [ -z "$unmanaged" ]; then
+  echo "✅ すべてのパッケージがBrewfileで管理されています"
+else
+  echo "⚠️  Brewfileで管理されていないパッケージ:"
+  echo ""
+  echo "$unmanaged" | while read -r pkg; do
+    echo "  - $pkg"
+  done
+  echo ""
+  echo "💡 これらをBrewfileに追加することを検討してください"
+fi
+'
+'''
+
 # batでファイルプレビュー
 [tasks.util-bat]
 description = "fzfでファイルを選択してbatで表示"
