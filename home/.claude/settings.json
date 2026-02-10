@@ -83,6 +83,7 @@
       "Skill(agent-memory)",
       "Skill(asking-peer)",
       "Skill(commit)",
+      "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(managing-frontend-knowledge)",
       "Skill(memorizing)",

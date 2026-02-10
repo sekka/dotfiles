@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "WebFetch(domain:agentnativedev.medium.com)",
       "WebFetch(domain:alceo.simplex.inc)",
       "WebFetch(domain:alexop.dev)",
       "WebFetch(domain:anywhere.goodpatch.com)",
@@ -13,6 +14,7 @@
       "WebFetch(domain:blog.3qe.us)",
       "WebFetch(domain:blog.modelcontextprotocol.io)",
       "WebFetch(domain:bokoko33.me)",
+      "WebFetch(domain:brave.com)",
       "WebFetch(domain:btrax.com)",
       "WebFetch(domain:bundlephobia.com)",
       "WebFetch(domain:campinc.tokyo)",
@@ -27,6 +29,7 @@
       "WebFetch(domain:communities.apple.com)",
       "WebFetch(domain:css-notes.com)",
       "WebFetch(domain:css-tricks.com)",
+      "WebFetch(domain:deepwiki.com)",
       "WebFetch(domain:designsystems.surf)",
       "WebFetch(domain:dev.to)",
       "WebFetch(domain:devdev.jp)",
@@ -81,6 +84,7 @@
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:registry.npmjs.org)",
       "WebFetch(domain:rhizomatiks.com)",
       "WebFetch(domain:rightdesigninc.com)",
       "WebFetch(domain:sharp.pixelplumbing.com)",
@@ -139,12 +143,7 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)",
-      "WebFetch(domain:agentnativedev.medium.com)",
-      "WebFetch(domain:deepwiki.com)",
-      "WebFetch(domain:brave.com)",
-      "WebFetch(domain:registry.npmjs.org)",
-      "Skill(commit-commands:commit)"
+      "WebFetch(domain:zoewave.medium.com)"
     ],
     "deny": [],
     "ask": []
