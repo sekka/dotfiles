@@ -33,6 +33,8 @@ export interface StatuslineConfig {
 	};
 	tokens: {
 		showContextUsage: boolean;
+		showInputOutput: boolean;
+		showCompactCount: boolean;
 	};
 	session: {
 		showSessionId: boolean;
@@ -72,6 +74,8 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 	},
 	tokens: {
 		showContextUsage: true,
+		showInputOutput: true,
+		showCompactCount: true,
 	},
 	session: {
 		showSessionId: true,

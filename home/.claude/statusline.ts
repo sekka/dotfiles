@@ -28,7 +28,7 @@ import { debug } from "./statusline/logging.ts";
 import { getGitStatus } from "./statusline/git.ts";
 
 // Token calculations and formatting
-import { getContextTokens, formatElapsedTime, getSessionElapsedTime } from "./statusline/tokens.ts";
+import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount } from "./statusline/context.ts";
 
 // Caching and cost tracking
 import {
@@ -88,9 +88,31 @@ function buildFirstLine(
 	sessionId: string,
 	sessionTimeDisplay: string,
 	costDisplay: string,
+	inputTokens: number,
+	outputTokens: number,
+	compactCount: number,
 	config: StatuslineConfig,
 ): string {
-	let result = `${colors.cyan(model)} 📁 ${colors.gray(dirName)}${gitPart ? ` 🌿 ${gitPart}` : ""}`;
+	let result = `${colors.cyan(model)} P: ${colors.gray(dirName)}${gitPart ? ` B: ${gitPart}` : ""}`;
+
+	// Add IO info (input/output tokens and compact count)
+	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
+		const ioParts: string[] = [];
+
+		if (config.tokens.showInputOutput) {
+			const inStr = (inputTokens / 1000).toFixed(1);
+			const outStr = (outputTokens / 1000).toFixed(1);
+			ioParts.push(`${colors.gray("I:")}${colors.white(inStr)}${colors.gray("K")} ${colors.gray("O:")}${colors.white(outStr)}${colors.gray("K")}`);
+		}
+
+		if (config.tokens.showCompactCount) {
+			ioParts.push(`${colors.gray("C:")}${colors.white(compactCount.toString())}`);
+		}
+
+		if (ioParts.length > 0) {
+			result += ` ${colors.gray("IO:")} ${ioParts.join(" ")}`;
+		}
+	}
 
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
@@ -145,6 +167,9 @@ async function buildMetricsLine(
 	todayCost: number,
 	sessionTimeDisplay: string,
 	costDisplay: string,
+	inputTokens: number,
+	outputTokens: number,
+	compactCount: number,
 	data: HookInput,
 ): Promise<string> {
 	// Prepare data for metrics builders
@@ -156,6 +181,9 @@ async function buildMetricsLine(
 		contextWindowSize: data.context_window?.context_window_size || 200000,
 		sessionTimeDisplay,
 		costDisplay,
+		inputTokens,
+		outputTokens,
+		compactCount,
 	};
 
 	// Use strategy pattern builder to construct metrics line
@@ -209,7 +237,7 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		getTodayCost(),
 	]);
 
-	const { tokens: contextTokens, percentage } = contextInfo;
+	const { tokens: contextTokens, percentage, inputTokens, outputTokens } = contextInfo;
 
 	// Build git part with config
 	let gitPart = "";
@@ -249,6 +277,9 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		sessionTimeDisplay = await getSessionElapsedTime(data.transcript_path);
 	}
 
+	// Get compact count
+	const compactCount = data.session_id ? getCompactCount(data.session_id) : 0;
+
 	debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
 
 	// Build status lines
@@ -259,6 +290,9 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		data.session_id,
 		sessionTimeDisplay,
 		costDisplay,
+		inputTokens,
+		outputTokens,
+		compactCount,
 		config,
 	);
 	const metricsLine = await buildMetricsLine(
@@ -269,6 +303,9 @@ async function buildStatusline(data: HookInput): Promise<string> {
 		todayCost,
 		sessionTimeDisplay,
 		costDisplay,
+		inputTokens,
+		outputTokens,
+		compactCount,
 		data,
 	);
 
