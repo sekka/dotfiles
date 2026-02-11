@@ -240,6 +240,16 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/compact-counter.ts"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

@@ -16,10 +16,12 @@
 		"showSessionCost": true
 	},
 	"tokens": {
-		"showContextUsage": true
+		"showContextUsage": true,
+		"showInputOutput": true,
+		"showCompactCount": true
 	},
 	"session": {
-		"showSessionId": true,
+		"showSessionId": false,
 		"showElapsedTime": true,
 		"showInFirstLine": true
 	},

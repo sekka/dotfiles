@@ -143,7 +143,10 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)"
+      "WebFetch(domain:zoewave.medium.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:dev.classmethod.jp)",
+      "WebFetch(domain:yag.xyz)"
     ],
     "deny": [],
     "ask": []
@@ -156,6 +159,7 @@
     "context7",
     "deepwiki",
     "filesystem",
+    "fossil",
     "grepai",
     "markitdown",
     "sequential-thinking",
