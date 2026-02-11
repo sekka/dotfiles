@@ -146,7 +146,13 @@
       "WebFetch(domain:zoewave.medium.com)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:dev.classmethod.jp)",
-      "WebFetch(domain:yag.xyz)"
+      "WebFetch(domain:yag.xyz)",
+      "WebFetch(domain:blog.nishimu.land)",
+      "WebFetch(domain:www.techno-edge.net)",
+      "WebFetch(domain:testdino.com)",
+      "WebFetch(domain:developer.microsoft.com)",
+      "Bash(playwright-cli:*)",
+      "WebFetch(domain:tmuxai.dev)"
     ],
     "deny": [],
     "ask": []

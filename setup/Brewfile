@@ -118,6 +118,7 @@ brew "uv"                 # https://formulae.brew.sh/formula/uv               # 
 
 # === 画像処理 ===
 brew "ffmpeg"             # https://formulae.brew.sh/formula/ffmpeg           # 動画処理ツール
+# brew "gifski"            # https://formulae.brew.sh/formula/gifski           # 高品質GIFエンコーダ（pngquant準拠）
 brew "ImageMagick"        # https://formulae.brew.sh/formula/ImageMagick      # 画像処理ツール
 brew "poppler"            # https://formulae.brew.sh/formula/poppler          # PDFプレビュー（yazi用）
 brew "webp"               # https://formulae.brew.sh/formula/webp             # WebP画像処理ツール
