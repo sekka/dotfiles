@@ -6,7 +6,7 @@ import type { StatuslineConfig } from "./config.ts";
 import type { UsageLimits } from "./utils.ts";
 import { colors } from "./colors.ts";
 import { debug } from "./logging.ts";
-import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly } from "./tokens.ts";
+import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly } from "./context.ts";
 import { getPeriodCost } from "./cache.ts";
 
 /**
@@ -63,6 +63,12 @@ export interface MetricsData {
 	sessionTimeDisplay: string;
 	/** 現在のセッションコスト表示文字列（例：「$0.15」） */
 	costDisplay: string;
+	/** 入力トークン数 */
+	inputTokens: number;
+	/** 出力トークン数 */
+	outputTokens: number;
+	/** コンパクト実行回数 */
+	compactCount: number;
 }
 
 // ============================================================================
@@ -125,6 +131,47 @@ export class TokenMetricsBuilder implements MetricsBuilder {
 		const contextSizeStr = (data.contextWindowSize / 1000).toFixed(1);
 
 		return `${colors.gray("T:")} ${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
+	}
+}
+
+// ============================================================================
+// I/O Metrics Builder (IO)
+// ============================================================================
+
+/**
+ * 入力/出力トークンと圧縮回数のメトリクスビルダー
+ *
+ * ステータスラインの "IO: I:72.4K O:24.2K C:3" セクションを担当する。
+ * 累積入力トークン、累積出力トークン、圧縮実行回数を表示する。
+ * 設定により、I/Oのみ、圧縮回数のみ、または両方を表示できる。
+ *
+ * 出力形式: `IO: I:72.4K O:24.2K C:3`
+ */
+export class IOMetricsBuilder implements MetricsBuilder {
+	label = "IO";
+
+	shouldBuild(config: StatuslineConfig): boolean {
+		// IO を第1行に表示する場合はメトリクス行に表示しない
+		if (config.session.showInFirstLine && (config.tokens.showInputOutput || config.tokens.showCompactCount)) {
+			return false;
+		}
+		return config.tokens.showInputOutput || config.tokens.showCompactCount;
+	}
+
+	async build(config: StatuslineConfig, data: MetricsData): Promise<string | null> {
+		const parts: string[] = [];
+
+		if (config.tokens.showInputOutput) {
+			const inStr = (data.inputTokens / 1000).toFixed(1);
+			const outStr = (data.outputTokens / 1000).toFixed(1);
+			parts.push(`${colors.gray("I:")}${colors.white(inStr)}${colors.gray("K")} ${colors.gray("O:")}${colors.white(outStr)}${colors.gray("K")}`);
+		}
+
+		if (config.tokens.showCompactCount) {
+			parts.push(`${colors.gray("C:")}${colors.white(data.compactCount.toString())}`);
+		}
+
+		return parts.length > 0 ? `${colors.gray("IO:")} ${parts.join(" ")}` : null;
 	}
 }
 
@@ -294,6 +341,7 @@ export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
  */
 export class MetricsLineBuilder {
 	private builders: MetricsBuilder[] = [
+		new IOMetricsBuilder(),
 		new SessionMetricsBuilder(),
 		new TokenMetricsBuilder(),
 		new LimitMetricsBuilder(),

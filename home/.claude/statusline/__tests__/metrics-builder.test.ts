@@ -9,6 +9,7 @@ import {
 	LimitMetricsBuilder,
 	CostMetricsBuilder,
 	WeeklyMetricsBuilder,
+	IOMetricsBuilder,
 	MetricsLineBuilder,
 	type MetricsData,
 	getMetricsLineBuilder,
@@ -33,6 +34,9 @@ const mockMetricsData: MetricsData = {
 	contextWindowSize: 200000,
 	sessionTimeDisplay: "2m 30s",
 	costDisplay: "$0.15",
+	inputTokens: 72400,
+	outputTokens: 24200,
+	compactCount: 3,
 };
 
 // ============================================================================
@@ -337,6 +341,114 @@ describe("MetricsLineBuilder", () => {
 
 		const result = await builder.build(mockConfig, mockMetricsData);
 		expect(result).toBe("CUSTOM");
+	});
+});
+
+// ============================================================================
+// IOMetricsBuilder Tests
+// ============================================================================
+
+describe("IOMetricsBuilder", () => {
+	const builder = new IOMetricsBuilder();
+
+	it("should not build when both showInputOutput and showCompactCount are false", () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: false, showCompactCount: false },
+		};
+		expect(builder.shouldBuild(config)).toBe(false);
+	});
+
+	it("should build when showInputOutput is true and not in first line", () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: true, showCompactCount: false },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		expect(builder.shouldBuild(config)).toBe(true);
+	});
+
+	it("should build when showCompactCount is true and not in first line", () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: false, showCompactCount: true },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		expect(builder.shouldBuild(config)).toBe(true);
+	});
+
+	it("should build when both showInputOutput and showCompactCount are true and not in first line", () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: true, showCompactCount: true },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		expect(builder.shouldBuild(config)).toBe(true);
+	});
+
+	it("should not build when in first line", () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: true, showCompactCount: true },
+			session: { ...mockConfig.session, showInFirstLine: true },
+		};
+		expect(builder.shouldBuild(config)).toBe(false);
+	});
+
+	it("should show only I/O when showCompactCount is false", async () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: true, showCompactCount: false },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		const result = await builder.build(config, mockMetricsData);
+		expect(result).toContain("IO:");
+		expect(result).toContain("I:");
+		expect(result).toContain("72.4");
+		expect(result).toContain("O:");
+		expect(result).toContain("24.2");
+		expect(!result.includes("C:")).toBe(true);
+	});
+
+	it("should show only compact count when showInputOutput is false", async () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: false, showCompactCount: true },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		const result = await builder.build(config, mockMetricsData);
+		expect(result).toContain("IO:");
+		expect(result).toContain("C:");
+		expect(result).toContain("3");
+		// Check that input/output tokens are not shown (by checking for absence of numbers like "72.4" and "24.2")
+		expect(!result.includes("72.4")).toBe(true);
+		expect(!result.includes("24.2")).toBe(true);
+	});
+
+	it("should show both I/O and compact count when both are enabled", async () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: true, showCompactCount: true },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		const result = await builder.build(config, mockMetricsData);
+		expect(result).toContain("IO:");
+		expect(result).toContain("I:");
+		expect(result).toContain("72.4");
+		expect(result).toContain("O:");
+		expect(result).toContain("24.2");
+		expect(result).toContain("C:");
+		expect(result).toContain("3");
+	});
+
+	it("should return null when both options are disabled", async () => {
+		const config: StatuslineConfig = {
+			...mockConfig,
+			tokens: { ...mockConfig.tokens, showInputOutput: false, showCompactCount: false },
+			session: { ...mockConfig.session, showInFirstLine: false },
+		};
+		const result = await builder.build(config, mockMetricsData);
+		expect(result).toBe(null);
 	});
 });
 
