@@ -7,39 +7,56 @@ import { colors } from "./colors.ts";
 // ============================================================================
 
 /**
- * トランスクリプトファイルから最後のトークン使用量を計算
- * ファイルの最後のアシスタント応答を検索して、使用トークンを合計します。
+ * トランスクリプトファイルから会話全体のトークン使用量を計算
+ * ファイル内のすべてのアシスタント応答を検索して、使用トークンを合計します。
  * 入力トークン、出力トークン、キャッシュ作成トークン、キャッシュ読み込みトークンを含みます。
  *
  * @async
  * @param {string} transcriptPath - トランスクリプトファイルのパス
- * @returns {Promise<number>} 合計トークン数（ファイルが見つからない場合は 0）
+ * @returns {Promise<{totalTokens: number, inputTokens: number, outputTokens: number}>} 合計トークン数と入出力の内訳（ファイルが見つからない場合は全て 0）
  *
  * @remarks
  * - 各行は JSON 形式のトランスクリプトエントリ
- * - type が "assistant" で、message.usage が存在するエントリを検索
- * - 最後の assistant エントリのトークン数を返す（複数の assistant エントリがある場合）
+ * - type が "assistant" で、message.usage が存在するすべてのエントリを集計
+ * - 会話全体（/clear 後）のトークン数を返す
  * - JSON パースエラーは無視（破損した行をスキップ）
- * - ファイル読み取りエラーまたはトークン情報がない場合は 0 を返す
+ * - ファイル読み取りエラーまたはトークン情報がない場合は {totalTokens: 0, inputTokens: 0, outputTokens: 0} を返す
+ * - inputTokens = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
+ * - outputTokens = output_tokens
  *
  * @example
- * const tokens = await calculateTokensFromTranscript("/path/to/transcript.jsonl");
- * // returns 5000 (合計トークン数)
+ * const {totalTokens, inputTokens, outputTokens} = await calculateTokensFromTranscript("/path/to/transcript.jsonl");
+ * // returns {totalTokens: 5000, inputTokens: 3000, outputTokens: 2000}
  */
-async function calculateTokensFromTranscript(transcriptPath: string): Promise<number> {
+async function calculateTokensFromTranscript(transcriptPath: string): Promise<{
+	totalTokens: number;
+	inputTokens: number;
+	outputTokens: number;
+}> {
 	try {
 		const file = Bun.file(transcriptPath);
 		const content = await file.text();
 		const lines = content.trim().split("\n");
 
-		let lastUsage: TranscriptEntry["message"]["usage"] | null = null;
+		let totalTokens = 0;
+		let inputTokens = 0;
+		let outputTokens = 0;
 
 		for (const line of lines) {
 			try {
 				const entry: TranscriptEntry = JSON.parse(line);
 
 				if (entry.type === "assistant" && entry.message?.usage) {
-					lastUsage = entry.message.usage;
+					const usage = entry.message.usage;
+					const entryInputTokens =
+						(usage.input_tokens || 0) +
+						(usage.cache_creation_input_tokens || 0) +
+						(usage.cache_read_input_tokens || 0);
+					const entryOutputTokens = usage.output_tokens || 0;
+
+					inputTokens += entryInputTokens;
+					outputTokens += entryOutputTokens;
+					totalTokens += entryInputTokens + entryOutputTokens;
 				}
 			} catch (error) {
 				// Skip invalid JSON lines - log at debug level for troubleshooting
@@ -50,80 +67,140 @@ async function calculateTokensFromTranscript(transcriptPath: string): Promise<nu
 			}
 		}
 
-		if (!lastUsage) {
-			return 0;
-		}
-
-		const totalTokens =
-			(lastUsage.input_tokens || 0) +
-			(lastUsage.output_tokens || 0) +
-			(lastUsage.cache_creation_input_tokens || 0) +
-			(lastUsage.cache_read_input_tokens || 0);
-
-		return totalTokens;
+		return { totalTokens, inputTokens, outputTokens };
 	} catch {
-		return 0;
+		return { totalTokens: 0, inputTokens: 0, outputTokens: 0 };
 	}
 }
 
 /**
  * 現在のコンテキストウィンドウ使用量を取得
- * HookInput から tokens と percentage を計算します。
- * current_usage が利用可能な場合はそれを使用し、利用不可の場合はトランスクリプトからの計算にフォールバックします。
+ * HookInput から tokens、percentage、inputTokens、outputTokens を計算します。
+ *
+ * デュアルソース戦略:
+ * - T: 表示（コンテキスト使用率）: current_usage を優先（/clear 後のリセットを反映）
+ * - IO: 表示（入出力累積）: transcript を優先（セッション全体の累積値）
+ *
+ * current_usage が利用可能な場合、T: は current_usage から計算され、
+ * IO: は transcript から取得されます（transcript がない場合は current_usage を使用）。
+ * これにより、tokens !== inputTokens + outputTokens となる場合があります。
  *
  * @async
  * @param {HookInput} data - ホック入力データ（context_window、transcript_path を含む）
- * @returns {Promise<{tokens: number, percentage: number}>} 使用トークン数と使用率パーセンテージ
+ * @returns {Promise<{tokens: number, percentage: number, inputTokens: number, outputTokens: number}>} 使用トークン数、使用率、累積入出力トークン
  *
- * @property {number} tokens - 使用されたトークンの合計数（0-contextWindowSize）
+ * @property {number} tokens - コンテキストで使用されているトークン数（T: 表示用、current_usage ベース）
  * @property {number} percentage - コンテキストウィンドウの使用率（0-100）。100を超える場合は 100 に制限
+ * @property {number} inputTokens - セッション累積入力トークン数（IO: 表示用、transcript ベース）
+ * @property {number} outputTokens - セッション累積出力トークン数（IO: 表示用、transcript ベース）
  *
  * @remarks
- * - 優先順序：current_usage > トランスクリプト > デフォルト（0,0）
+ * - 優先順序（T: 表示）: current_usage > transcript > total_input_tokens/total_output_tokens > デフォルト（0,0,0,0）
+ * - 優先順序（IO: 表示）: transcript > current_usage > total_input_tokens/total_output_tokens > デフォルト（0,0,0,0）
+ * - current_usage の output_tokens は次ターンのコンテキストに含まれるため、T: の forward-looking 推定値として含む
  * - contextWindowSize のデフォルト値：200000 トークン
  * - percentage は Math.min(100, ...) で 100 以下に制限
  * - 入力トークン＋出力トークン＋キャッシュ作成トークン＋キャッシュ読み込みトークンを合算
- * - current_usage の方がより正確（リアルタイム）なので優先使用
  *
  * @example
- * const { tokens, percentage } = await getContextTokens(hookInput);
- * console.log(`Using ${tokens} tokens (${percentage}%)`);
- *
- * @example
- * // current_usage が null の場合、トランスクリプトから計算
- * const { tokens, percentage } = await getContextTokens({
- *   ...hookInput,
- *   context_window: { ...hookInput.context_window, current_usage: null }
- * });
+ * const { tokens, percentage, inputTokens, outputTokens } = await getContextTokens(hookInput);
+ * console.log(`T: ${tokens} (${percentage}%) - IO: ${inputTokens}/${outputTokens}`);
+ * // Note: tokens may not equal inputTokens + outputTokens due to dual-source strategy
  */
 export async function getContextTokens(
 	data: HookInput,
-): Promise<{ tokens: number; percentage: number }> {
+): Promise<{ tokens: number; percentage: number; inputTokens: number; outputTokens: number }> {
 	const contextWindowSize = data.context_window?.context_window_size || 200000;
 
-	// Try current_usage first (more accurate)
+	// Primary: current_usage for context fullness (T: display)
 	if (data.context_window?.current_usage) {
-		const usage = data.context_window.current_usage;
-		const totalTokens =
-			(usage.input_tokens || 0) +
-			(usage.output_tokens || 0) +
-			(usage.cache_creation_input_tokens || 0) +
-			(usage.cache_read_input_tokens || 0);
+		const cu = data.context_window.current_usage;
+		const cuInput = (cu.input_tokens || 0) + (cu.cache_creation_input_tokens || 0) + (cu.cache_read_input_tokens || 0);
+		const cuOutput = cu.output_tokens || 0;
+		// Note: output_tokens は次ターンで input に含まれるため、
+		// context fullness の forward-looking 推定値として含む
+		const contextTokens = cuInput + cuOutput;
+		const percentage = Math.min(100, Math.round((contextTokens / contextWindowSize) * 100));
 
+		// IO: from transcript if available, else from current_usage
+		let ioInput = cuInput;
+		let ioOutput = cuOutput;
+		if (data.session_id && data.transcript_path) {
+			const t = await calculateTokensFromTranscript(data.transcript_path);
+			if (t.totalTokens > 0) {
+				ioInput = t.inputTokens;
+				ioOutput = t.outputTokens;
+			}
+		}
+
+		return { tokens: contextTokens, percentage, inputTokens: ioInput, outputTokens: ioOutput };
+	}
+
+	// /clear 後: context_window は存在するが current_usage が明示的に null
+	// → コンテキストがクリアされた状態。T: は 0、IO: は transcript 累積を維持
+	if (data.context_window && data.context_window.current_usage === null) {
+		let ioInput = 0;
+		let ioOutput = 0;
+		if (data.session_id && data.transcript_path) {
+			const t = await calculateTokensFromTranscript(data.transcript_path);
+			if (t.totalTokens > 0) {
+				ioInput = t.inputTokens;
+				ioOutput = t.outputTokens;
+			}
+		}
+		return { tokens: 0, percentage: 0, inputTokens: ioInput, outputTokens: ioOutput };
+	}
+
+	// Fallback: transcript for both T: and IO:
+	if (data.session_id && data.transcript_path) {
+		const { totalTokens, inputTokens, outputTokens } = await calculateTokensFromTranscript(data.transcript_path);
+		if (totalTokens > 0) {
+			const percentage = Math.min(100, Math.round((totalTokens / contextWindowSize) * 100));
+			return { tokens: totalTokens, percentage, inputTokens, outputTokens };
+		}
+	}
+
+	// Fallback: total_input_tokens/total_output_tokens (session cumulative)
+	if (data.context_window?.total_input_tokens !== undefined && data.context_window?.total_output_tokens !== undefined) {
+		const inputTokens = data.context_window.total_input_tokens || 0;
+		const outputTokens = data.context_window.total_output_tokens || 0;
+		const totalTokens = inputTokens + outputTokens;
 		const percentage = Math.min(100, Math.round((totalTokens / contextWindowSize) * 100));
 
-		return { tokens: totalTokens, percentage };
+		return { tokens: totalTokens, percentage, inputTokens, outputTokens };
 	}
 
-	// Fallback: calculate from transcript
-	if (data.session_id && data.transcript_path) {
-		const tokens = await calculateTokensFromTranscript(data.transcript_path);
-		const percentage = Math.min(100, Math.round((tokens / contextWindowSize) * 100));
+	return { tokens: 0, percentage: 0, inputTokens: 0, outputTokens: 0 };
+}
 
-		return { tokens, percentage };
+/**
+ * セッションの圧縮実行回数を取得
+ * ~/.claude/data/compact-counts.json から該当セッションの圧縮回数を読み取ります。
+ *
+ * @param {string} sessionId - セッションID
+ * @returns {number} 圧縮実行回数（ファイルが存在しない、またはセッションIDが見つからない場合は 0）
+ *
+ * @remarks
+ * - ファイルが存在しない場合は 0 を返す
+ * - JSON パースエラーは 0 を返す
+ * - セッションIDが見つからない場合は 0 を返す
+ *
+ * @example
+ * const count = getCompactCount("abc123");
+ * console.log(`Compact count: ${count}`);
+ */
+export function getCompactCount(sessionId: string): number {
+	try {
+		const { homedir } = require("os");
+		const { join } = require("path");
+		const { readFileSync } = require("fs");
+
+		const countsPath = join(homedir(), ".claude", "data", "compact-counts.json");
+		const data = JSON.parse(readFileSync(countsPath, "utf-8"));
+		return data[sessionId] || 0;
+	} catch {
+		return 0;
 	}
-
-	return { tokens: 0, percentage: 0 };
 }
 
 // ============================================================================
