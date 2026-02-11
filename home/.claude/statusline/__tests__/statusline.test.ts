@@ -233,7 +233,7 @@ describe("Utility Functions", () => {
 // Test path traversal protection logic
 describe("Security - Path Traversal Protection", () => {
 	it("should reject paths that escape cwd", () => {
-		const cwd = "/Users/kei/project";
+		const cwd = "/home/user/project";
 		const maliciousPaths = ["../../../etc/passwd", "../../.ssh/id_rsa", "/../../../secret"];
 
 		for (const path of maliciousPaths) {
@@ -243,7 +243,7 @@ describe("Security - Path Traversal Protection", () => {
 	});
 
 	it("should accept legitimate relative paths", () => {
-		const cwd = "/Users/kei/project";
+		const cwd = "/home/user/project";
 		const legitimatePaths = ["src/main.ts", "package.json", "docs/README.md"];
 
 		for (const path of legitimatePaths) {

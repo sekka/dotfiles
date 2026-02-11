@@ -25,7 +25,7 @@ ls -la ~/.config/nvim
 **期待される結果**:
 
 ```
-lrwxr-xr-x  nvim -> /Users/kei/dotfiles/home/config/nvim
+lrwxr-xr-x  nvim -> ~/dotfiles/home/config/nvim
 ```
 
 ---

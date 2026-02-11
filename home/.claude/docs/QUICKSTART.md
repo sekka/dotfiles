@@ -79,7 +79,7 @@ claude
 ```
 📁 git worktree 一覧
 
-/Users/kei/dotfiles    29a3f9f [master]
+~/dotfiles    29a3f9f [master]
 
 合計: 1 worktree
 ```
@@ -95,12 +95,12 @@ claude
 ```
 ✅ worktree を作成しました
 
-パス: /Users/kei/dotfiles-test-feature
+パス: ~/dotfiles-test-feature
 ブランチ: test-feature
 
 次のステップ:
 1. 新しいターミナルウィンドウを開く
-2. cd /Users/kei/dotfiles-test-feature
+2. cd ~/dotfiles-test-feature
 3. claude
 ```
 

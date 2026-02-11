@@ -54,9 +54,9 @@ git worktree を管理し、複数タスクの並列開発を可能にする。
 ```
 📁 git worktree 一覧
 
-/Users/kei/dotfiles                 29a3f9f [master]
-/Users/kei/dotfiles-feature-a       abc1234 [feature-a]
-/Users/kei/dotfiles-feature-b       def5678 [feature-b]
+~/dotfiles                 29a3f9f [master]
+~/dotfiles-feature-a       abc1234 [feature-a]
+~/dotfiles-feature-b       def5678 [feature-b]
 
 合計: 3 worktrees
 ```
@@ -113,7 +113,7 @@ git worktree を管理し、複数タスクの並列開発を可能にする。
 ```
 📊 現在の worktree 状態
 
-パス: /Users/kei/dotfiles-feature-a
+パス: ~/dotfiles-feature-a
 ブランチ: feature-a
 コミット: abc1234 "feat: 新機能を追加"
 
@@ -122,8 +122,8 @@ git worktree を管理し、複数タスクの並列開発を可能にする。
 未ステージ: 2
 
 次の worktree:
-- /Users/kei/dotfiles (master)
-- /Users/kei/dotfiles-feature-b (feature-b)
+- ~/dotfiles (master)
+- ~/dotfiles-feature-b (feature-b)
 ```
 
 ---
@@ -183,13 +183,13 @@ git status
 ```markdown
 ✅ worktree を作成しました
 
-パス: /Users/kei/dotfiles-feature-a
+パス: ~/dotfiles-feature-a
 ブランチ: feature-a
 
 次のステップ:
 1. 新しいターミナルウィンドウを開く
 2. 以下のコマンドで移動:
-   cd /Users/kei/dotfiles-feature-a
+   cd ~/dotfiles-feature-a
 3. Claude Code を起動:
    claude
 ```
