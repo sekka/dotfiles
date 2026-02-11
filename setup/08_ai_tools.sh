@@ -6,6 +6,7 @@
 # このスクリプトは以下のAIツールをセットアップします：
 #   - Ollama: ローカルLLMランタイム
 #   - grepai: セマンティックコード検索ツール
+#   - fossil-mcp: 静的解析ツール（デッドコード・重複コード検出）
 #
 # =============================================================================
 # 使い方
@@ -81,6 +82,42 @@ if command -v grepai >/dev/null 2>&1; then
   echo "✓ grepai ready"
 else
   echo "⚠ grepai not found. Run 'brew bundle --file=setup/Brewfile' first."
+fi
+
+# fossil-mcp（静的解析 MCP サーバー: デッドコード・重複コード検出）
+if command -v fossil-mcp >/dev/null 2>&1; then
+  echo "✓ fossil-mcp ready ($(fossil-mcp --version 2>/dev/null || echo 'version unknown'))"
+else
+  echo "📥 Installing fossil-mcp..."
+  FOSSIL_DIR="$HOME/.local/bin"
+  mkdir -p "$FOSSIL_DIR"
+
+  # OS とアーキテクチャ検出（公式スクリプトと同じロジック）
+  OS_NAME="macos" # macOS 専用（Darwin）
+  ARCH=$(uname -m)
+  case "$ARCH" in
+  arm64 | aarch64) ARCH_NAME="aarch64" ;;
+  x86_64 | amd64) ARCH_NAME="x86_64" ;;
+  *)
+    echo "⚠ Unsupported architecture: $ARCH"
+    ARCH_NAME=""
+    ;;
+  esac
+
+  if [[ -n ${ARCH_NAME} ]]; then
+    ASSET="fossil-mcp-${OS_NAME}-${ARCH_NAME}.tar.gz"
+    DOWNLOAD_URL="https://github.com/yfedoseev/fossil-mcp/releases/latest/download/${ASSET}"
+
+    # ダウンロードと展開
+    curl -fsSL "$DOWNLOAD_URL" | tar -xz -C "$FOSSIL_DIR"
+
+    if [[ -f "$FOSSIL_DIR/fossil-mcp" ]]; then
+      chmod +x "$FOSSIL_DIR/fossil-mcp"
+      echo "✓ fossil-mcp installed"
+    else
+      echo "⚠ Installation failed: binary not found after extraction"
+    fi
+  fi
 fi
 
 echo ""

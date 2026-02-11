@@ -193,7 +193,9 @@ brew "carlocab/personal/unrar"  # https://formulae.brew.sh/formula/unrar      # 
 #cask "antigravity"
 #cask "athas"
 #cask "chatgpt"
+#cask "chatgpt-atlas"
 #cask "claude"
+#cask "codex-app"
 #cask "coderabbit"
 #cask "conductor"
 #cask "cursor"
@@ -215,7 +217,6 @@ brew "carlocab/personal/unrar"  # https://formulae.brew.sh/formula/unrar      # 
 # === ブラウザ ===
 #cask "arc"
 #cask "brave-browser"
-#cask "chatgpt-atlas"
 #cask "firefox"
 #cask "firefox-developer-edition"
 #cask "firefox-nightly"

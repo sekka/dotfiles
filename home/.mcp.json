@@ -26,6 +26,10 @@
         "ALLOWED_DIRECTORIES": "${HOME}/dotfiles:${HOME}/src:${HOME}/pjm"
       }
     },
+    "fossil": {
+      "command": "fossil-mcp",
+      "args": ["mcp"]
+    },
     "grepai": {
       "command": "grepai",
       "args": ["mcp-serve"]
