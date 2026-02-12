@@ -1,5 +1,5 @@
-import { HookInput, TranscriptEntry } from "./utils.ts";
-import { debug } from "./logging.ts";
+import { type HookInput, type TranscriptEntry } from "./config.ts";
+import { debug, errorMessage } from "./logging.ts";
 import { colors } from "./colors.ts";
 import { loadSessionTokens } from "./cache.ts";
 
@@ -267,26 +267,12 @@ export function getCompactCount(sessionId: string): number {
 // ============================================================================
 
 /**
- * トークン数を人間が読みやすい形式にフォーマット
- * 1,000,000 以上は M（百万）、1,000 以上は K（千）で表現、
- * 1,000 未満は数値のまま返します。
- *
- * @param {number} tokens - フォーマットするトークン数
- * @returns {string} フォーマット済みトークン数（例："1.5M"、"250K"、"500"）
- *
- * @example
- * formatTokenCount(5000000);    // returns "5.0M"
- * formatTokenCount(250000);     // returns "250.0K"
- * formatTokenCount(999);        // returns "999"
+ * トークン数をK（千）単位で小数点1桁にフォーマット
+ * @param tokens - トークン数
+ * @returns フォーマットされた文字列（例: 1500 → "1.5"）
  */
-export function formatTokenCount(tokens: number): string {
-	if (tokens >= 1000000) {
-		return `${(tokens / 1000000).toFixed(1)}M`;
-	}
-	if (tokens >= 1000) {
-		return `${(tokens / 1000).toFixed(1)}K`;
-	}
-	return tokens.toString();
+export function formatTokensK(tokens: number): string {
+	return (tokens / 1000).toFixed(1);
 }
 
 /**
@@ -402,7 +388,7 @@ export async function getSessionElapsedTime(transcriptPath: string): Promise<str
 		const elapsed = Date.now() - stats.birthtimeMs;
 		return formatElapsedTime(elapsed);
 	} catch (e) {
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Failed to get session elapsed time: ${errorMsg}`, "verbose");
 		return "";
 	}
