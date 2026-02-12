@@ -162,6 +162,7 @@ HOME_CLAUDE_DIR="$HOME/.claude"
 CLAUDE_FILES=(
   CLAUDE.md
   settings.json
+  settings.local.json
   statusline.ts
   statusline-config.json
 )
