@@ -132,7 +132,7 @@ export class TokenMetricsBuilder implements MetricsBuilder {
 		const contextTokenStr = (data.contextTokens / 1000).toFixed(1);
 		const contextSizeStr = (data.contextWindowSize / 1000).toFixed(1);
 
-		return `${label("TOK")}${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
+		return `${label("TK")}${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
 	}
 }
 
