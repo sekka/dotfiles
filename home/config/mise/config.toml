@@ -477,7 +477,7 @@ run = 'curl -fsSL https://raw.githubusercontent.com/niklasberglund/xcode-clean.s
 # rust = "stable"        # Rust安定版
 
 # === JavaScript ランタイム ===
-node = ["lts", "latest", "25", "24", "23", "22", "21", "20", "19", "18"]
+node = ["latest", "lts", "23", "22", "21", "20", "19", "18"]
 deno = "latest"
 bun = "latest"
 # npm = "latest"
