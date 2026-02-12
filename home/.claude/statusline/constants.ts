@@ -1,34 +1,3 @@
-import type { StatuslineConfig } from "./types.ts";
-
-// Configuration
-export const DEFAULT_CONFIG: StatuslineConfig = {
-	git: {
-		showBranch: true,
-		showAheadBehind: true,
-		showDiffStats: true,
-		alwaysShowMain: false,
-	},
-	rateLimits: {
-		showFiveHour: true,
-		showWeekly: true,
-		showPeriodCost: true,
-	},
-	costs: {
-		showDailyCost: true,
-		showSessionCost: true,
-	},
-	tokens: {
-		showContextUsage: true,
-	},
-	session: {
-		showSessionId: true,
-		showElapsedTime: false,
-	},
-	display: {
-		showSeparators: false,
-	},
-};
-
 // Cache TTL constants
 export const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 export const CONFIG_CACHE_TTL = 60 * 1000; // 1 minute
