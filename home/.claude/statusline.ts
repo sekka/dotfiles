@@ -93,7 +93,7 @@ function buildFirstLine(
 	compactCount: number,
 	config: StatuslineConfig,
 ): string {
-	let result = `${colors.cyan(model)} P: ${colors.gray(dirName)}${gitPart ? ` B: ${gitPart}` : ""}`;
+	let result = `${colors.cyan(model)} ${colors.gray("P:")} ${colors.gray(dirName)}${gitPart ? ` ${colors.gray("B:")} ${gitPart}` : ""}`;
 
 	// Add IO info (input/output tokens and compact count)
 	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {

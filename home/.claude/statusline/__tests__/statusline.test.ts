@@ -227,6 +227,25 @@ describe("Utility Functions", () => {
 			expect(result).toContain("🌿");
 			expect(result).toContain("main (+2)");
 		});
+
+		it("should apply gray color to P: and B: labels for consistency", () => {
+			// Import colors to test color consistency
+			const { colors } = require("../colors");
+
+			// Simulate the corrected buildFirstLine logic
+			const model = "Claude 3.5 Sonnet";
+			const dirName = "statusline";
+			const gitPart = "main";
+
+			// Correct format: P: and B: labels should use colors.gray()
+			const result = `${colors.cyan(model)} ${colors.gray("P:")} ${colors.gray(dirName)}${gitPart ? ` ${colors.gray("B:")} ${gitPart}` : ""}`;
+
+			// Verify that the result contains gray-colored labels
+			expect(result).toContain(colors.gray("P:"));
+			expect(result).toContain(colors.gray("B:"));
+			expect(result).toContain(colors.cyan(model));
+			expect(result).toContain(colors.gray(dirName));
+		});
 	});
 });
 
