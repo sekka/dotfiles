@@ -95,7 +95,7 @@ function buildFirstLine(
 	compactCount: number,
 	config: StatuslineConfig,
 ): string {
-	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.gray(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
+	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.white(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
 
 	// Add IO info (input/output tokens and compact count)
 	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
@@ -248,7 +248,7 @@ async function buildStatusline(
 	// Build git part with config
 	let gitPart = "";
 	if (config.git.showBranch && gitStatus.branch) {
-		gitPart = colors.gray(gitStatus.branch);
+		gitPart = colors.white(gitStatus.branch);
 
 		if (gitStatus.hasChanges) {
 			const changes: string[] = [];
