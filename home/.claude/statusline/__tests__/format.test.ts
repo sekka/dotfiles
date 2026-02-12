@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { colors, resetChalkCache } from "../colors.ts";
+import { colors, resetChalkCache, formatCostValue } from "../format.ts";
 
 describe("Color Output", () => {
 	// 環境変数のバックアップと復元
@@ -199,5 +199,30 @@ describe("Color Output", () => {
 			const result = colors.cyan("test");
 			expect(result).toBe("test"); // 新しい色レベルが反映されている
 		});
+	});
+});
+
+// ============================================================================
+// formatCostValue Tests (moved from context.test.ts in Phase B3)
+// ============================================================================
+
+describe("formatCostValue", () => {
+	it("should format costs >= $1.00 with 2 decimals", () => {
+		expect(formatCostValue(99.6)).toBe("99.60");
+		expect(formatCostValue(1.0)).toBe("1.00");
+	});
+
+	it("should format costs $0.01-$0.99 with 2 decimals", () => {
+		expect(formatCostValue(0.16)).toBe("0.16");
+		expect(formatCostValue(0.01)).toBe("0.01");
+	});
+
+	it("should format tiny costs < $0.01 with 3 decimals", () => {
+		expect(formatCostValue(0.005)).toBe("0.005");
+		expect(formatCostValue(0.001)).toBe("0.001");
+	});
+
+	it("should format zero cost", () => {
+		expect(formatCostValue(0)).toBe("0.00");
 	});
 });

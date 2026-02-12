@@ -1,11 +1,39 @@
 #!/usr/bin/env bun
 
-// Phase 3.3: Simplified tests for cache.ts module
+// Phase B2: Tests for api.ts module (config + cache + API logic)
 import { describe, it, expect, afterEach } from "bun:test";
 import { unlink } from "fs/promises";
 import { homedir } from "os";
 
-import { loadConfigCached, saveSessionTokens, loadSessionTokens } from "../cache.ts";
+import { loadConfigCached, DEFAULT_CONFIG } from "../api.ts";
+import { saveSessionTokens, loadSessionTokens } from "../tokens.ts";
+
+// ============================================================================
+// Config Defaults Tests
+// ============================================================================
+
+describe("DEFAULT_CONFIG", () => {
+	it("should have all required sections", () => {
+		expect(DEFAULT_CONFIG.git).toBeDefined();
+		expect(DEFAULT_CONFIG.rateLimits).toBeDefined();
+		expect(DEFAULT_CONFIG.costs).toBeDefined();
+		expect(DEFAULT_CONFIG.tokens).toBeDefined();
+		expect(DEFAULT_CONFIG.session).toBeDefined();
+		expect(DEFAULT_CONFIG.display).toBeDefined();
+	});
+
+	it("should have boolean values for all git settings", () => {
+		expect(typeof DEFAULT_CONFIG.git.showBranch).toBe("boolean");
+		expect(typeof DEFAULT_CONFIG.git.showAheadBehind).toBe("boolean");
+		expect(typeof DEFAULT_CONFIG.git.showDiffStats).toBe("boolean");
+		expect(typeof DEFAULT_CONFIG.git.alwaysShowMain).toBe("boolean");
+	});
+
+	it("should have display section with correct types", () => {
+		expect(typeof DEFAULT_CONFIG.display.showSeparators).toBe("boolean");
+		expect(Array.isArray(DEFAULT_CONFIG.display.lineBreakBefore)).toBe(true);
+	});
+});
 
 // ============================================================================
 // Config Caching Tests

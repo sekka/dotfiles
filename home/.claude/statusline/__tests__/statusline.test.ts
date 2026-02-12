@@ -171,8 +171,8 @@ describe("Utility Functions", () => {
 
 		it("should apply gray color to PRJ: and BR: labels for consistency", () => {
 			// Import colors and label to test color consistency
-			const { colors } = require("../colors");
-			const { label } = require("../labels");
+			const { colors } = require("../format");
+			const { label } = require("../format");
 
 			// Simulate the corrected buildFirstLine logic
 			const model = "Claude 3.5 Sonnet";
@@ -255,5 +255,45 @@ describe("Numeric Validations", () => {
 			const isValid = cost >= 0;
 			expect(isValid).toBe(true);
 		}
+	});
+});
+
+// Test error handling
+describe("Error Handling", () => {
+	it("should handle invalid git output", () => {
+		// Test git output validation logic
+		const invalidOutputs = [null, undefined, "", 123, {}];
+
+		for (const output of invalidOutputs) {
+			const isInvalid = !output || typeof output !== 'string';
+			expect(isInvalid).toBe(true);
+		}
+	});
+
+	it("should validate string type for git output", () => {
+		const validOutput = "main";
+		const isValid = validOutput && typeof validOutput === 'string';
+		expect(isValid).toBe(true);
+	});
+
+	it("should handle buildMinimalStatusline fallback", () => {
+		// Simulate minimal statusline structure
+		const mockData = {
+			model: { display_name: "Claude 3.5 Sonnet" },
+		};
+
+		const model = mockData.model?.display_name || "Claude";
+		expect(model).toBe("Claude 3.5 Sonnet");
+
+		// Simulate minimal output
+		const minimal = `${model} error`;
+		expect(minimal).toContain("Claude 3.5 Sonnet");
+		expect(minimal).toContain("error");
+	});
+
+	it("should handle missing model name in minimal statusline", () => {
+		const mockData = {};
+		const model = mockData.model?.display_name || "Claude";
+		expect(model).toBe("Claude");
 	});
 });

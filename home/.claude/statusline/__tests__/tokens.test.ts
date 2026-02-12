@@ -1,14 +1,10 @@
 #!/usr/bin/env bun
 
-// Tests for context.ts - Token calculation and context functions
+// Tests for tokens.ts - Token calculation functions
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
 import { writeFileSync, unlinkSync, mkdtempSync } from "fs";
 import { join } from "path";
 import { tmpdir } from "os";
-
-// Import the functions we want to test
-// Note: getContextTokens is exported, but calculateTokensFromTranscript is private
-// We'll test it through getContextTokens
 
 // Mock data types
 interface TranscriptEntry {
@@ -39,13 +35,12 @@ interface HookInput {
 	};
 }
 
-// We need to dynamically import the module to test it
-let contextModule: any;
+// We need to dynamically import the modules to test them
+let tokensModule: any;
 
 beforeEach(async () => {
 	// Dynamic import to get fresh module state
-	const modulePath = "../context.ts";
-	contextModule = await import(modulePath);
+	tokensModule = await import("../tokens.ts");
 });
 
 // ============================================================================
@@ -96,7 +91,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Expected: 1000 + 500 + 100 + 200 = 1800
 		expect(result.tokens).toBe(1800);
@@ -135,7 +130,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Expected: (1000 + 500) + (2000 + 800) = 4300
 		expect(result.tokens).toBe(4300);
@@ -177,7 +172,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Expected: (1000 + 500 + 100) + (800 + 400 + 300) = 3100
 		expect(result.tokens).toBe(3100);
@@ -192,7 +187,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		expect(result.tokens).toBe(0);
 	});
@@ -208,7 +203,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		expect(result.tokens).toBe(0);
 	});
@@ -235,7 +230,7 @@ describe("calculateTokensFromTranscript (conversation-based)", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should skip invalid line and sum valid entries
 		expect(result.tokens).toBe(4300);
@@ -289,7 +284,7 @@ describe("getContextTokens priority order", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should use transcript (1500), not total tokens (80000)
 		expect(result.tokens).toBe(1500);
@@ -308,7 +303,7 @@ describe("getContextTokens priority order", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should use current_usage: 1000 + 500 + 100 + 200 = 1800
 		expect(result.tokens).toBe(1800);
@@ -323,7 +318,7 @@ describe("getContextTokens priority order", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should use total tokens: 50000 + 30000 = 80000
 		expect(result.tokens).toBe(80000);
@@ -382,7 +377,7 @@ describe("getContextTokens current_usage priority for T: display", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// T: should use current_usage: (1000 + 100 + 200) + 500 = 1800
 		// Note: output_tokens included as forward-looking estimate for next turn's context
@@ -422,7 +417,7 @@ describe("getContextTokens current_usage priority for T: display", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// IO: should use transcript cumulative values
 		// inputTokens: 5000 + 500 = 5500
@@ -444,7 +439,7 @@ describe("getContextTokens current_usage priority for T: display", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// T: from current_usage
 		expect(result.tokens).toBe(1800); // (1000 + 100 + 200) + 500
@@ -476,37 +471,12 @@ describe("getContextTokens current_usage priority for T: display", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should fall back to transcript for all values
 		expect(result.tokens).toBe(1500);
 		expect(result.inputTokens).toBe(1000);
 		expect(result.outputTokens).toBe(500);
-	});
-});
-
-// ============================================================================
-// formatCostValue Tests
-// ============================================================================
-
-describe("formatCostValue", () => {
-	it("should format costs >= $1.00 with 2 decimals", () => {
-		expect(contextModule.formatCostValue(99.6)).toBe("99.60");
-		expect(contextModule.formatCostValue(1.0)).toBe("1.00");
-	});
-
-	it("should format costs $0.01-$0.99 with 2 decimals", () => {
-		expect(contextModule.formatCostValue(0.16)).toBe("0.16");
-		expect(contextModule.formatCostValue(0.01)).toBe("0.01");
-	});
-
-	it("should format tiny costs < $0.01 with 3 decimals", () => {
-		expect(contextModule.formatCostValue(0.005)).toBe("0.005");
-		expect(contextModule.formatCostValue(0.001)).toBe("0.001");
-	});
-
-	it("should format zero cost", () => {
-		expect(contextModule.formatCostValue(0)).toBe("0.00");
 	});
 });
 
@@ -555,7 +525,7 @@ describe("getContextTokens I/O tokens", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Input tokens: input_tokens + cache_creation_input_tokens + cache_read_input_tokens
 		// 1000 + 100 + 200 = 1300
@@ -600,7 +570,7 @@ describe("getContextTokens I/O tokens", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Turn 1 input: 1000 + 100 = 1100
 		// Turn 2 input: 2000 + 300 = 2300
@@ -623,7 +593,7 @@ describe("getContextTokens I/O tokens", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		expect(result.inputTokens).toBe(50000);
 		expect(result.outputTokens).toBe(30000);
@@ -679,7 +649,7 @@ describe("getContextTokens /clear behavior", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// T: should be reset to 0 after /clear
 		expect(result.tokens).toBe(0);
@@ -705,7 +675,7 @@ describe("getContextTokens /clear behavior", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// All values should be 0
 		expect(result.tokens).toBe(0);
@@ -737,7 +707,7 @@ describe("getContextTokens /clear behavior", () => {
 			// No context_window field at all
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should fall back to transcript for all values
 		expect(result.tokens).toBe(1500);
@@ -769,7 +739,7 @@ describe("getContextTokens /clear behavior", () => {
 			context_window: { context_window_size: 200000 },
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should fall back to transcript for all values
 		expect(result.tokens).toBe(1500);
@@ -788,7 +758,7 @@ describe("getContextTokens /clear behavior", () => {
 			},
 		};
 
-		const result = await contextModule.getContextTokens(hookInput);
+		const result = await tokensModule.getContextTokens(hookInput);
 
 		// Should return zeros when transcript cannot be read
 		expect(result.tokens).toBe(0);

@@ -1,19 +1,89 @@
+// ============================================================================
+// API, Configuration, and Cache Management
+// ============================================================================
+// Phase B2: Merged config.ts + cache.ts into unified api.ts
+
 import { chmod } from "fs/promises";
 import { homedir } from "os";
 
-import { type StatuslineConfig, DEFAULT_CONFIG } from "./config.ts";
-import { debug, errorMessage } from "./logging.ts";
-import { API_CALL_TIMEOUT_MS, CACHE_TTL_MS, CONFIG_CACHE_TTL } from "./constants.ts";
+import { debug, errorMessage, LABEL_KEYS, type LabelKey } from "./format.ts";
 
-// Minimal type guards (validation logic removed)
-function isValidStatuslineConfig(data: unknown): data is StatuslineConfig {
-	return typeof data === 'object' && data !== null;
-}
-function isValidUsageLimits(data: unknown): boolean {
-	return typeof data === 'object' && data !== null;
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+/** Claude Code ステータスライン表示フックの入力データ型 */
+export interface HookInput {
+	model: { display_name: string };
+	workspace: { current_dir: string };
+	cwd?: string;
+	session_id: string;
+	cost: {
+		total_cost_usd: number;
+		total_duration_ms: number;
+	};
+	context_window?: {
+		context_window_size: number;
+		total_input_tokens?: number;
+		total_output_tokens?: number;
+		current_usage: {
+			input_tokens: number;
+			output_tokens: number;
+			cache_creation_input_tokens: number;
+			cache_read_input_tokens: number;
+		} | null;
+	};
+	transcript_path?: string;
 }
 
-// Type definitions previously in utils.ts
+/** トランスクリプト JSON エントリの型定義 */
+export interface TranscriptEntry {
+	type?: string;
+	message?: {
+		usage?: {
+			input_tokens?: number;
+			output_tokens?: number;
+			cache_creation_input_tokens?: number;
+			cache_read_input_tokens?: number;
+		};
+	};
+	timestamp?: string;
+}
+
+/** ステータスライン表示設定 */
+export interface StatuslineConfig {
+	git: {
+		showBranch: boolean;
+		showAheadBehind: boolean;
+		showDiffStats: boolean;
+		alwaysShowMain: boolean;
+	};
+	rateLimits: {
+		showFiveHour: boolean;
+		showWeekly: boolean;
+		showSonnetWeekly: boolean;
+		showPeriodCost: boolean;
+	};
+	costs: {
+		showDailyCost: boolean;
+		showSessionCost: boolean;
+	};
+	tokens: {
+		showContextUsage: boolean;
+		showInputOutput: boolean;
+		showCompactCount: boolean;
+	};
+	session: {
+		showSessionId: boolean;
+		showElapsedTime: boolean;
+		showInFirstLine: boolean;
+	};
+	display: {
+		showSeparators: boolean;
+		lineBreakBefore?: string[];
+	};
+}
+
 export interface UsageLimits {
 	five_hour: { utilization: number; resets_at: string | null } | null;
 	seven_day: { utilization: number; resets_at: string | null } | null;
@@ -27,7 +97,149 @@ export interface CachedUsageLimits {
 }
 
 // ============================================================================
-// Rate Limit Features (Phase 2)
+// Default Configuration
+// ============================================================================
+
+/** デフォルトステータスライン設定 */
+export const DEFAULT_CONFIG: StatuslineConfig = {
+	git: {
+		showBranch: true,
+		showAheadBehind: true,
+		showDiffStats: true,
+		alwaysShowMain: false,
+	},
+	rateLimits: {
+		showFiveHour: true,
+		showWeekly: true,
+		showSonnetWeekly: true,
+		showPeriodCost: true,
+	},
+	costs: {
+		showDailyCost: true,
+		showSessionCost: true,
+	},
+	tokens: {
+		showContextUsage: true,
+		showInputOutput: true,
+		showCompactCount: true,
+	},
+	session: {
+		showSessionId: true,
+		showElapsedTime: false,
+		showInFirstLine: true,
+	},
+	display: {
+		showSeparators: false,
+		lineBreakBefore: [],
+	},
+};
+
+// ============================================================================
+// Cache TTL Constants
+// ============================================================================
+
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CONFIG_CACHE_TTL = 60 * 1000; // 1 minute
+const API_CALL_TIMEOUT_MS = 5000; // 5 seconds for API calls
+
+// ============================================================================
+// Type Guards (minimal validation)
+// ============================================================================
+
+function isValidStatuslineConfig(data: unknown): data is StatuslineConfig {
+	return typeof data === 'object' && data !== null;
+}
+
+function isValidUsageLimits(data: unknown): boolean {
+	return typeof data === 'object' && data !== null;
+}
+
+// ============================================================================
+// Configuration Loading
+// ============================================================================
+
+const HOME = homedir();
+
+async function loadConfig(): Promise<StatuslineConfig> {
+	// Try to load user override config
+	const localConfigFile = `${HOME}/.claude/statusline-config.json`;
+	let validatedConfig: Partial<StatuslineConfig> | null = null;
+
+	try {
+		const rawConfig = await Bun.file(localConfigFile).json();
+		debug(`Loaded user config from ${localConfigFile}`, "verbose");
+
+		if (isValidStatuslineConfig(rawConfig)) {
+			validatedConfig = rawConfig;
+			debug(`Config validated successfully from ${localConfigFile}`, "verbose");
+		} else {
+			debug(`Config validation failed from ${localConfigFile}`, "warning");
+		}
+	} catch {
+		debug(`User config not found at ${localConfigFile}`, "verbose");
+	}
+
+	// Try to load dotfiles config (fallback if no user override)
+	if (!validatedConfig) {
+		const dotfilesConfigFile = `${HOME}/dotfiles/home/.claude/statusline-config.json`;
+		try {
+			const rawConfig = await Bun.file(dotfilesConfigFile).json();
+			debug(`Loaded dotfiles config from ${dotfilesConfigFile}`, "verbose");
+
+			if (isValidStatuslineConfig(rawConfig)) {
+				validatedConfig = rawConfig;
+				debug(`Config validated successfully from ${dotfilesConfigFile}`, "verbose");
+			} else {
+				debug(`Config validation failed from ${dotfilesConfigFile}`, "warning");
+			}
+		} catch {
+			debug(`Dotfiles config not found at ${dotfilesConfigFile}`, "verbose");
+		}
+	}
+
+	// Return merged config
+	if (validatedConfig) {
+		return {
+			git: { ...DEFAULT_CONFIG.git, ...(validatedConfig.git || {}) },
+			rateLimits: { ...DEFAULT_CONFIG.rateLimits, ...(validatedConfig.rateLimits || {}) },
+			costs: { ...DEFAULT_CONFIG.costs, ...(validatedConfig.costs || {}) },
+			tokens: { ...DEFAULT_CONFIG.tokens, ...(validatedConfig.tokens || {}) },
+			session: { ...DEFAULT_CONFIG.session, ...(validatedConfig.session || {}) },
+			display: { ...DEFAULT_CONFIG.display, ...(validatedConfig.display || {}) },
+		};
+	}
+
+	// Return default if no config found
+	debug(`No config found, using DEFAULT_CONFIG`, "verbose");
+	return DEFAULT_CONFIG;
+}
+
+// ============================================================================
+// Configuration Caching
+// ============================================================================
+
+let cachedConfig: StatuslineConfig | null = null;
+let configCacheTime = 0;
+
+/** Config をキャッシュして複数回の読み込みを回避 */
+export async function loadConfigCached(): Promise<StatuslineConfig> {
+	const now = Date.now();
+
+	// キャッシュが有効な場合は返す
+	if (cachedConfig && now - configCacheTime < CONFIG_CACHE_TTL) {
+		debug("Using cached config", "verbose");
+		return cachedConfig;
+	}
+
+	// キャッシュが無効な場合は再読み込み
+	debug("Loading fresh config", "basic");
+	cachedConfig = await loadConfig();
+	configCacheTime = now;
+	return cachedConfig;
+}
+
+// ============================================================================
+// API Token Retrieval (from macOS Keychain)
 // ============================================================================
 
 interface Credentials {
@@ -100,6 +312,10 @@ async function getClaudeApiToken(): Promise<string | null> {
 		return null;
 	}
 }
+
+// ============================================================================
+// Rate Limiting and API Fetching
+// ============================================================================
 
 // Rate limiting state to prevent overwhelming the API
 let lastApiCallTime = 0;
@@ -178,92 +394,9 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 	}
 }
 
-async function loadConfig(): Promise<StatuslineConfig> {
-	const HOME = homedir();
-
-	// Try to load user override config
-	const localConfigFile = `${HOME}/.claude/statusline-config.json`;
-	let validatedConfig: Partial<StatuslineConfig> | null = null;
-
-	try {
-		const rawConfig = await Bun.file(localConfigFile).json();
-		debug(`Loaded user config from ${localConfigFile}`, "verbose");
-
-		// カスタム検証関数で検証
-		if (isValidStatuslineConfig(rawConfig)) {
-			validatedConfig = rawConfig;
-			debug(`Config validated successfully from ${localConfigFile}`, "verbose");
-		} else {
-			debug(`Config validation failed from ${localConfigFile}`, "warning");
-		}
-	} catch {
-		debug(`User config not found at ${localConfigFile}`, "verbose");
-	}
-
-	// Try to load dotfiles config (fallback if no user override)
-	if (!validatedConfig) {
-		const dotfilesConfigFile = `${HOME}/dotfiles/home/.claude/statusline-config.json`;
-		try {
-			const rawConfig = await Bun.file(dotfilesConfigFile).json();
-			debug(`Loaded dotfiles config from ${dotfilesConfigFile}`, "verbose");
-
-			// カスタム検証関数で検証
-			if (isValidStatuslineConfig(rawConfig)) {
-				validatedConfig = rawConfig;
-				debug(`Config validated successfully from ${dotfilesConfigFile}`, "verbose");
-			} else {
-				debug(`Config validation failed from ${dotfilesConfigFile}`, "warning");
-			}
-		} catch {
-			debug(`Dotfiles config not found at ${dotfilesConfigFile}`, "verbose");
-		}
-	}
-
-	// Return merged config
-	if (validatedConfig) {
-		return {
-			git: { ...DEFAULT_CONFIG.git, ...(validatedConfig.git || {}) },
-			rateLimits: { ...DEFAULT_CONFIG.rateLimits, ...(validatedConfig.rateLimits || {}) },
-			costs: { ...DEFAULT_CONFIG.costs, ...(validatedConfig.costs || {}) },
-			tokens: { ...DEFAULT_CONFIG.tokens, ...(validatedConfig.tokens || {}) },
-			session: { ...DEFAULT_CONFIG.session, ...(validatedConfig.session || {}) },
-			display: { ...DEFAULT_CONFIG.display, ...(validatedConfig.display || {}) },
-		};
-	}
-
-	// Return default if no config found
-	debug(`No config found, using DEFAULT_CONFIG`, "verbose");
-	return DEFAULT_CONFIG;
-}
-
-const HOME = homedir();
-
 // ============================================================================
-// Phase 4.3: Configuration Caching
+// Usage Limits Caching
 // ============================================================================
-
-let cachedConfig: StatuslineConfig | null = null;
-let configCacheTime = 0;
-
-/**
- * Phase 4.3: Config をキャッシュする
- * loadConfig() の実行結果をメモリにキャッシュして、複数回の読み込みを避ける
- */
-export async function loadConfigCached(): Promise<StatuslineConfig> {
-	const now = Date.now();
-
-	// キャッシュが有効な場合は返す
-	if (cachedConfig && now - configCacheTime < CONFIG_CACHE_TTL) {
-		debug("Using cached config", "verbose");
-		return cachedConfig;
-	}
-
-	// キャッシュが無効な場合は再読み込み
-	debug("Loading fresh config", "basic");
-	cachedConfig = await loadConfig();
-	configCacheTime = now;
-	return cachedConfig;
-}
 
 export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
@@ -329,7 +462,7 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 
 			debug(`Cache file written securely: ${cacheFile}`, "verbose");
 		} catch (e) {
-			// Phase 1.6: Enhanced error handling for cache write
+			// Enhanced error handling for cache write
 			const errorMsg = errorMessage(e);
 			if (errorMsg.includes("EACCES")) {
 				debug(`Permission denied writing cache: ${errorMsg}`, "error");
@@ -345,25 +478,13 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 }
 
 // ============================================================================
-// Daily Cost Tracking (Phase 3)
+// Daily Cost Tracking
 // ============================================================================
 
 interface SessionCostStore {
 	[sessionId: string]: {
 		date: string;
 		cost: number;
-		updated: number;
-	};
-}
-
-// ============================================================================
-// Session IO Tokens Tracking (for /clear persistence)
-// ============================================================================
-
-interface SessionTokensStore {
-	[sessionId: string]: {
-		inputTokens: number;
-		outputTokens: number;
 		updated: number;
 	};
 }
@@ -466,103 +587,3 @@ export async function getTodayCost(): Promise<number> {
 		return 0;
 	}
 }
-
-/**
- * セッションの累積 I/O トークンを保存
- * /clear 後も累積値を保持するために使用
- */
-export async function saveSessionTokens(
-	sessionId: string,
-	inputTokens: number,
-	outputTokens: number,
-): Promise<void> {
-	debug(`[saveSessionTokens] Called with sessionId=${sessionId}, input=${inputTokens}, output=${outputTokens}`, "basic");
-	const storeFile = `${HOME}/.claude/data/session-io-tokens.json`;
-
-	let store: SessionTokensStore = {};
-
-	try {
-		store = await Bun.file(storeFile).json();
-		debug(`[saveSessionTokens] Loaded existing store with ${Object.keys(store).length} sessions`, "basic");
-	} catch {
-		debug(`[saveSessionTokens] Creating new store file`, "basic");
-		// File doesn't exist or is invalid, create new
-	}
-
-	// Update session tokens
-	store[sessionId] = {
-		inputTokens,
-		outputTokens,
-		updated: Date.now(),
-	};
-
-	// Clean up entries older than 7 days (sessions are typically shorter)
-	const cutoffMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
-
-	for (const [sid, data] of Object.entries(store)) {
-		if (data.updated < cutoffMs) {
-			delete store[sid];
-		}
-	}
-
-	try {
-		await Bun.write(storeFile, JSON.stringify(store, null, 2));
-		await chmod(storeFile, 0o600);
-		debug(`[saveSessionTokens] Successfully saved to ${storeFile}`, "basic");
-	} catch (error) {
-		debug(
-			`[saveSessionTokens] Failed to save session tokens: ${error instanceof Error ? error.message : String(error)}`,
-			"warning",
-		);
-	}
-}
-
-/**
- * セッションの累積 I/O トークンを読み込み
- * /clear 後に transcript から取得できない場合に使用
- */
-export async function loadSessionTokens(sessionId: string): Promise<{
-	inputTokens: number;
-	outputTokens: number;
-} | null> {
-	debug(`[loadSessionTokens] Called with sessionId=${sessionId}`, "basic");
-	const storeFile = `${HOME}/.claude/data/session-io-tokens.json`;
-
-	// Check if file exists
-	try {
-		const file = Bun.file(storeFile);
-		const exists = await file.exists();
-		debug(`[loadSessionTokens] Cache file exists: ${exists}`, "basic");
-
-		if (!exists) {
-			debug(`[loadSessionTokens] Cache file not found: ${storeFile}`, "basic");
-			return null;
-		}
-	} catch (e) {
-		debug(`[loadSessionTokens] Error checking file existence: ${errorMessage(e)}`, "basic");
-		return null;
-	}
-
-	try {
-		const store: SessionTokensStore = await Bun.file(storeFile).json();
-		debug(`[loadSessionTokens] Loaded store with ${Object.keys(store).length} sessions`, "basic");
-		debug(`[loadSessionTokens] Available session IDs: ${Object.keys(store).join(", ")}`, "basic");
-		const data = store[sessionId];
-
-		if (!data) {
-			debug(`[loadSessionTokens] No data found for session ${sessionId}`, "basic");
-			return null;
-		}
-
-		debug(`[loadSessionTokens] Found cached tokens: input=${data.inputTokens}, output=${data.outputTokens}`, "basic");
-		// Return cached tokens if found
-		return {
-			inputTokens: data.inputTokens,
-			outputTokens: data.outputTokens,
-		};
-	} catch (error) {
-		debug(`[loadSessionTokens] Failed to load: ${error instanceof Error ? error.message : String(error)}`, "basic");
-		return null;
-	}
-}
-

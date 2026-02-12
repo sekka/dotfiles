@@ -20,32 +20,36 @@
  */
 
 // Utilities
-import { type HookInput, type StatuslineConfig } from "./statusline/config.ts";
-import { type UsageLimits } from "./statusline/cache.ts";
-import { colors } from "./statusline/colors.ts";
-import { debug } from "./statusline/logging.ts";
-import { label } from "./statusline/labels.ts";
+import { type HookInput, type StatuslineConfig, type UsageLimits, getPeriodCost } from "./statusline/api.ts";
+import {
+	colors,
+	debug,
+	label,
+	renderIO,
+	renderSession,
+	renderToken,
+	renderDailyCost,
+	renderRateLimit,
+	joinWithSeparators,
+	formatElapsedTime,
+	formatCostValue,
+	formatTokensK,
+	errorMessage,
+} from "./statusline/format.ts";
 
 // Git operations
 import { getGitStatus } from "./statusline/git.ts";
 
 // Token calculations and formatting
-import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount, formatCostValue, formatTokensK } from "./statusline/context.ts";
+import { getContextTokens, getSessionElapsedTime, getCompactCount, saveSessionTokens } from "./statusline/tokens.ts";
 
-// Caching and cost tracking
+// API, config, and cost tracking
 import {
 	loadConfigCached,
 	getCachedUsageLimits,
 	getTodayCost,
 	saveSessionCost,
-	saveSessionTokens,
-} from "./statusline/cache.ts";
-
-// Metrics builder strategy pattern
-import {
-	MetricsLineBuilder,
-	type MetricsData,
-} from "./statusline/metrics-builder.ts";
+} from "./statusline/api.ts";
 
 // ============================================================================
 // Main Statusline Builder
@@ -97,28 +101,23 @@ function buildFirstLine(
 ): string {
 	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.white(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
 
-	// Add IO info (input/output tokens and compact count)
+	// Add IO info (input/output tokens and compact count) using common render function
 	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
-		const ioParts: string[] = [];
-
-		if (config.tokens.showInputOutput) {
-			const inStr = formatTokensK(inputTokens);
-			const outStr = formatTokensK(outputTokens);
-			ioParts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
-		}
-
-		if (config.tokens.showCompactCount) {
-			ioParts.push(`${label("CMP")}${colors.white(compactCount.toString())}`);
-		}
-
-		if (ioParts.length > 0) {
-			result += ` ${ioParts.join(" ")}`;
+		const ioText = renderIO(
+			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
+			{ inputTokens, outputTokens, compactCount },
+		);
+		if (ioText) {
+			result += ` ${ioText}`;
 		}
 	}
 
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
-		result += ` ${label("SES")}${colors.white(sessionTimeDisplay)} ${costDisplay}`;
+		const sessionText = renderSession({ sessionTimeDisplay, costDisplay });
+		if (sessionText) {
+			result += ` ${sessionText}`;
+		}
 	}
 
 	if (config.session.showSessionId) {
@@ -128,9 +127,9 @@ function buildFirstLine(
 }
 
 /**
- * ステータスラインのメトリクス行を構築（ストラテジーパターン実装）
+ * ステータスラインのメトリクス行を構築（インライン関数実装）
  * トークン、コスト、レート制限などのメトリクスを構築します。
- * 実際の構築は MetricsLineBuilder（ストラテジーパターン）に委譲します。
+ * 共通描画関数を直接呼び出してメトリクスを構築します。
  *
  * @async
  * @param {StatuslineConfig} config - ステータスライン設定（どのメトリクスを表示するか）
@@ -144,10 +143,9 @@ function buildFirstLine(
  * @returns {Promise<string>} フォーマット済みのメトリクス行（ANSI カラー付き）
  *
  * @remarks
- * - MetricsLineBuilder は依存性注入パターンで提供
- * - 複数のメトリクスビルダーが存在し、builder.build() が適切なものを選択
+ * - 共通描画関数を直接呼び出してメトリクスを構築
  * - 設定に応じて表示するメトリクスを動的に選択
- * - メトリクスの順序：S（セッション） T（トークン） L（レート） D（日次） W（週間）
+ * - メトリクスの順序：IO → S（セッション） → T（トークン） → L（レート） → D（日次） → W（週間）
  *
  * @example
  * const metricsLine = await buildMetricsLine(
@@ -174,23 +172,103 @@ async function buildMetricsLine(
 	compactCount: number,
 	data: HookInput,
 ): Promise<string> {
-	// Prepare data for metrics builders
-	const metricsData: MetricsData = {
-		usageLimits,
-		todayCost,
-		contextTokens,
-		contextPercentage,
-		contextWindowSize: data.context_window?.context_window_size || 200000,
-		sessionTimeDisplay,
-		costDisplay,
-		inputTokens,
-		outputTokens,
-		compactCount,
-	};
+	const parts: Array<{ label: string; text: string }> = [];
 
-	// Use strategy pattern builder to construct metrics line
-	const builder = new MetricsLineBuilder();
-	return builder.build(config, metricsData);
+	// IO metrics (if not shown in first line)
+	if (!config.session.showInFirstLine && (config.tokens.showInputOutput || config.tokens.showCompactCount)) {
+		const ioText = renderIO(
+			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
+			{ inputTokens, outputTokens, compactCount },
+		);
+		if (ioText) {
+			parts.push({ label: "io", text: ioText });
+		}
+	}
+
+	// Session metrics (if not shown in first line)
+	if (!config.session.showInFirstLine && config.session.showElapsedTime) {
+		const sessionText = renderSession({ sessionTimeDisplay, costDisplay });
+		if (sessionText) {
+			parts.push({ label: "session", text: sessionText });
+		}
+	}
+
+	// Token metrics
+	if (config.tokens.showContextUsage) {
+		const tokenText = renderToken({
+			contextPercentage,
+			contextTokens,
+			contextWindowSize: data.context_window?.context_window_size || 200000,
+		});
+		parts.push({ label: "token", text: tokenText });
+	}
+
+	// 5-hour rate limit
+	if (config.rateLimits.showFiveHour && usageLimits?.five_hour) {
+		try {
+			const periodCost = usageLimits.five_hour.resets_at
+				? await getPeriodCost(usageLimits.five_hour.resets_at)
+				: 0;
+			const limitText = renderRateLimit("LMT", usageLimits.five_hour, periodCost, config);
+			if (limitText) {
+				parts.push({ label: "limit", text: limitText });
+			}
+		} catch (error) {
+			debug(`Failed to fetch period cost: ${error instanceof Error ? error.message : String(error)}`, "error");
+			// Fallback: render without period cost
+			const limitText = renderRateLimit("LMT", usageLimits.five_hour, null, config);
+			if (limitText) {
+				parts.push({ label: "limit", text: limitText });
+			}
+		}
+	}
+
+	// Daily cost
+	if (config.costs.showDailyCost) {
+		const dailyText = renderDailyCost({ todayCost });
+		if (dailyText) {
+			parts.push({ label: "daily", text: dailyText });
+		}
+	}
+
+	// Weekly rate limit
+	if (config.rateLimits.showWeekly && usageLimits?.seven_day) {
+		const weeklyText = renderRateLimit("WK", usageLimits.seven_day, null, config);
+		if (weeklyText) {
+			parts.push({ label: "weekly", text: weeklyText });
+		}
+	}
+
+	// Sonnet weekly rate limit
+	if (config.rateLimits.showSonnetWeekly && usageLimits?.seven_day_sonnet) {
+		const weeklyText = renderRateLimit("WKS", usageLimits.seven_day_sonnet, null, config);
+		if (weeklyText) {
+			parts.push({ label: "weekly_sonnet", text: weeklyText });
+		}
+	}
+
+	return joinWithSeparators(parts, config);
+}
+
+/**
+ * 最小限のステータスラインを返す（エラー時のフォールバック）
+ * エラー発生時も基本情報を表示し、ユーザーに何か問題があることを伝えます。
+ *
+ * @param {HookInput} data - CLI から提供されるホック入力データ
+ * @returns {string} 最小限のステータスライン（モデル名とエラー表示）
+ *
+ * @remarks
+ * - モデル名が取得できる場合は表示
+ * - エラー表示を含む
+ * - 色情報は最小限（安全性を優先）
+ *
+ * @example
+ * const minimal = buildMinimalStatusline(data);
+ * // returns: "Claude 3.5 Sonnet error"
+ */
+function buildMinimalStatusline(data: HookInput): string {
+	const model = data.model?.display_name || "Claude";
+	return `${colors.cyan(model)} ${colors.gray("error")}`;
 }
 
 /**
@@ -216,6 +294,7 @@ async function buildMetricsLine(
  * 6. セッション経過時間取得（利用可能な場合）
  * 7. 第1行とメトリクス行を構築
  * 8. 複数行を結合して返却
+ * 9. エラー発生時は最小限のステータスラインを返却（フォールバック）
  *
  * @example
  * const statusline = await buildStatusline(hookInput);
@@ -227,90 +306,96 @@ async function buildStatusline(
 	data: HookInput,
 	contextInfo?: { tokens: number; percentage: number; inputTokens: number; outputTokens: number },
 ): Promise<string> {
-	// Phase 4.3: Load configuration (with caching)
-	const config = await loadConfigCached();
+	try {
+		// Phase 4.3: Load configuration (with caching)
+		const config = await loadConfigCached();
 
-	const model = data.model?.display_name || "Unknown";
-	const currentDir = data.workspace?.current_dir || data.cwd || ".";
-	const dirName = currentDir.split("/").pop() || currentDir;
+		const model = data.model?.display_name || "Unknown";
+		const currentDir = data.workspace?.current_dir || data.cwd || ".";
+		const dirName = currentDir.split("/").pop() || currentDir;
 
-	// Phase 1.1: Parallel execution of independent async operations
-	// If contextInfo is provided, skip getContextTokens call
-	const [gitStatus, contextInfoResult, usageLimits, todayCost] = await Promise.all([
-		getGitStatus(currentDir, config),
-		contextInfo ?? getContextTokens(data),
-		getCachedUsageLimits(),
-		getTodayCost(),
-	]);
+		// Phase 1.1: Parallel execution of independent async operations
+		// If contextInfo is provided, skip getContextTokens call
+		const [gitStatus, contextInfoResult, usageLimits, todayCost] = await Promise.all([
+			getGitStatus(currentDir, config),
+			contextInfo ?? getContextTokens(data),
+			getCachedUsageLimits(),
+			getTodayCost(),
+		]);
 
-	const { tokens: contextTokens, percentage, inputTokens, outputTokens } = contextInfoResult;
+		const { tokens: contextTokens, percentage, inputTokens, outputTokens } = contextInfoResult;
 
-	// Build git part with config
-	let gitPart = "";
-	if (config.git.showBranch && gitStatus.branch) {
-		gitPart = colors.white(gitStatus.branch);
+		// Build git part with config
+		let gitPart = "";
+		if (config.git.showBranch && gitStatus.branch) {
+			gitPart = colors.white(gitStatus.branch);
 
-		if (gitStatus.hasChanges) {
-			const changes: string[] = [];
+			if (gitStatus.hasChanges) {
+				const changes: string[] = [];
 
-			if (config.git.showAheadBehind && gitStatus.aheadBehind) {
-				changes.push(gitStatus.aheadBehind);
-			}
+				if (config.git.showAheadBehind && gitStatus.aheadBehind) {
+					changes.push(gitStatus.aheadBehind);
+				}
 
-			if (config.git.showDiffStats && gitStatus.diffStats) {
-				changes.push(gitStatus.diffStats);
-			}
+				if (config.git.showDiffStats && gitStatus.diffStats) {
+					changes.push(gitStatus.diffStats);
+				}
 
-			if (changes.length > 0) {
-				gitPart += " " + changes.join(" ");
+				if (changes.length > 0) {
+					gitPart += " " + changes.join(" ");
+				}
 			}
 		}
+
+		// Get cost and duration
+		const costNum = formatCostValue(data.cost.total_cost_usd);
+		const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
+		const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
+
+		// Get session time if available
+		let sessionTimeDisplay = "";
+		if (data.session_id && data.transcript_path) {
+			sessionTimeDisplay = await getSessionElapsedTime(data.transcript_path);
+		}
+
+		// Get compact count
+		const compactCount = data.session_id ? await getCompactCount(data.session_id) : 0;
+
+		debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
+
+		// Build status lines
+		const firstLine = buildFirstLine(
+			model,
+			dirName,
+			gitPart,
+			data.session_id,
+			sessionTimeDisplay,
+			costDisplay,
+			inputTokens,
+			outputTokens,
+			compactCount,
+			config,
+		);
+		const metricsLine = await buildMetricsLine(
+			config,
+			contextTokens,
+			percentage,
+			usageLimits,
+			todayCost,
+			sessionTimeDisplay,
+			costDisplay,
+			inputTokens,
+			outputTokens,
+			compactCount,
+			data,
+		);
+
+		return metricsLine ? `${firstLine}\n${metricsLine}` : firstLine;
+	} catch (error) {
+		// Error boundary: Log error and return minimal statusline
+		debug(`statusline build error: ${errorMessage(error)}`, "error");
+		return buildMinimalStatusline(data);
 	}
-
-	// Get cost and duration
-	const costNum = formatCostValue(data.cost.total_cost_usd);
-	const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
-	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
-
-	// Get session time if available
-	let sessionTimeDisplay = "";
-	if (data.session_id && data.transcript_path) {
-		sessionTimeDisplay = await getSessionElapsedTime(data.transcript_path);
-	}
-
-	// Get compact count
-	const compactCount = data.session_id ? getCompactCount(data.session_id) : 0;
-
-	debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
-
-	// Build status lines
-	const firstLine = buildFirstLine(
-		model,
-		dirName,
-		gitPart,
-		data.session_id,
-		sessionTimeDisplay,
-		costDisplay,
-		inputTokens,
-		outputTokens,
-		compactCount,
-		config,
-	);
-	const metricsLine = await buildMetricsLine(
-		config,
-		contextTokens,
-		percentage,
-		usageLimits,
-		todayCost,
-		sessionTimeDisplay,
-		costDisplay,
-		inputTokens,
-		outputTokens,
-		compactCount,
-		data,
-	);
-
-	return metricsLine ? `${firstLine}\n${metricsLine}` : firstLine;
 }
 
 // ============================================================================
