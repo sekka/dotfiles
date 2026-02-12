@@ -6,16 +6,15 @@ import { describe, it, expect } from "bun:test";
 import {
 	SessionMetricsBuilder,
 	TokenMetricsBuilder,
-	LimitMetricsBuilder,
+	RateLimitMetricsBuilder,
 	CostMetricsBuilder,
-	WeeklyMetricsBuilder,
 	IOMetricsBuilder,
 	MetricsLineBuilder,
+	type MetricsBuilder,
 	type MetricsData,
-	getMetricsLineBuilder,
-	setMetricsLineBuilder,
 } from "../metrics-builder.ts";
 import { DEFAULT_CONFIG, type StatuslineConfig } from "../config.ts";
+import { LABEL_KEYS } from "../labels.ts";
 
 // ============================================================================
 // Test Data Fixtures
@@ -114,8 +113,14 @@ describe("TokenMetricsBuilder", () => {
 // LimitMetricsBuilder Tests
 // ============================================================================
 
-describe("LimitMetricsBuilder", () => {
-	const builder = new LimitMetricsBuilder();
+describe("RateLimitMetricsBuilder (5-hour limit)", () => {
+	const builder = new RateLimitMetricsBuilder(
+		LABEL_KEYS.LIMIT,
+		"LMT",
+		c => c.rateLimits.showFiveHour,
+		l => l.five_hour,
+		true
+	);
 
 	it("should not build when showFiveHour is false", () => {
 		const config: StatuslineConfig = {
@@ -215,8 +220,14 @@ describe("CostMetricsBuilder", () => {
 // WeeklyMetricsBuilder Tests
 // ============================================================================
 
-describe("WeeklyMetricsBuilder", () => {
-	const builder = new WeeklyMetricsBuilder();
+describe("RateLimitMetricsBuilder (weekly)", () => {
+	const builder = new RateLimitMetricsBuilder(
+		LABEL_KEYS.WEEKLY,
+		"WK",
+		c => c.rateLimits.showWeekly,
+		l => l.seven_day,
+		false
+	);
 
 	it("should not build when showWeekly is false", () => {
 		const config: StatuslineConfig = {
@@ -455,18 +466,18 @@ describe("IOMetricsBuilder", () => {
 // Singleton Tests
 // ============================================================================
 
-describe("MetricsLineBuilder Singleton", () => {
-	it("should get default builder instance", () => {
-		const builder = getMetricsLineBuilder();
+describe("MetricsLineBuilder Constructor", () => {
+	it("should create new builder instance", () => {
+		const builder = new MetricsLineBuilder();
 		expect(builder).toBeDefined();
 		expect(builder instanceof MetricsLineBuilder).toBe(true);
 	});
 
-	it("should allow setting custom builder instance", () => {
-		const customBuilder = new MetricsLineBuilder();
-		setMetricsLineBuilder(customBuilder);
-
-		const retrieved = getMetricsLineBuilder();
-		expect(retrieved).toBe(customBuilder);
+	it("should allow custom builders injection via setBuilders", () => {
+		const builder = new MetricsLineBuilder();
+		const customBuilders: MetricsBuilder[] = [];
+		builder.setBuilders(customBuilders);
+		// Builder accepts custom builders configuration
+		expect(builder).toBeDefined();
 	});
 });

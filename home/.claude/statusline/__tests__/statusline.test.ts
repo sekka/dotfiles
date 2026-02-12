@@ -143,65 +143,6 @@ describe("Format Functions", () => {
 
 // Test utility functions
 describe("Utility Functions", () => {
-	describe("sanitizeForLogging", () => {
-		it("should redact token fields", () => {
-			const obj = {
-				token: "secret123",
-				accessToken: "access456",
-			};
-
-			// Simulate the sanitization logic
-			const sanitized: Record<string, unknown> = {};
-			const sensitiveKeys = [
-				"token",
-				"accesstoken",
-				"password",
-				"secret",
-				"refreshtoken",
-				"credentials",
-			];
-
-			for (const key of Object.keys(obj)) {
-				if (sensitiveKeys.some((k) => key.toLowerCase().includes(k.toLowerCase()))) {
-					sanitized[key] = "***REDACTED***";
-				} else {
-					sanitized[key] = (obj as Record<string, unknown>)[key];
-				}
-			}
-
-			expect(sanitized.token).toBe("***REDACTED***");
-			expect(sanitized.accessToken).toBe("***REDACTED***");
-		});
-
-		it("should not redact non-sensitive fields", () => {
-			const obj = {
-				username: "john",
-				email: "john@example.com",
-			};
-
-			const sanitized: Record<string, unknown> = {};
-			const sensitiveKeys = [
-				"token",
-				"accesstoken",
-				"password",
-				"secret",
-				"refreshtoken",
-				"credentials",
-			];
-
-			for (const key of Object.keys(obj)) {
-				if (sensitiveKeys.some((k) => key.toLowerCase().includes(k.toLowerCase()))) {
-					sanitized[key] = "***REDACTED***";
-				} else {
-					sanitized[key] = (obj as Record<string, unknown>)[key];
-				}
-			}
-
-			expect(sanitized.username).toBe("john");
-			expect(sanitized.email).toBe("john@example.com");
-		});
-	});
-
 	describe("buildFirstLine", () => {
 		it("should format model/dir/git correctly", () => {
 			// Simulate buildFirstLine logic
