@@ -213,19 +213,22 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 			}
 		}
 
-		// Add cost display if >= $0.01 (respects showPeriodCost config)
+		// Build cost display string if >= $0.01 (respects showPeriodCost config)
 		const costDisplayFiveHour =
 			config.rateLimits.showPeriodCost && periodCost >= 0.01
-				? `${colors.gray("$")}${colors.white(periodCost.toFixed(2))} `
+				? ` ${colors.gray("$")}${colors.white(periodCost.toFixed(2))}`
 				: "";
 
-		let limitsPart = `${label("LMT")}${costDisplayFiveHour}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
+		let limitsPart = `${label("LMT")}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
 
 		if (fiveHour.resets_at) {
 			const resetDate = formatResetDateOnly(fiveHour.resets_at);
 			const timeLeft = formatResetTime(fiveHour.resets_at);
 			limitsPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
 		}
+
+		// Add cost at the end
+		limitsPart += costDisplayFiveHour;
 
 		return limitsPart;
 	}
