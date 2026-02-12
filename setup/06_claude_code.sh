@@ -114,25 +114,50 @@ ensure_plugin() {
   fi
 }
 
-# skill-creator（スキル作成スキル）
-ensure_marketplace "anthropic-agent-skills" "anthropics/skills"
-ensure_plugin "example-skills@anthropic-agent-skills"
+# settings.json のパス
+SETTINGS_FILE="$HOME/dotfiles/home/.claude/settings.json"
 
-# claude-mem（セッション間メモリ）
-ensure_marketplace "thedotmack" "thedotmack/claude-mem"
-ensure_plugin "claude-mem@thedotmack"
+if [[ ! -f $SETTINGS_FILE ]]; then
+  echo "❌ エラー: settings.json が見つかりません: $SETTINGS_FILE"
+  exit 1
+fi
 
-# claude-code-harness（コード管理ツール）
-ensure_marketplace "claude-code-harness-marketplace" "Chachamaru127/claude-code-harness"
-ensure_plugin "claude-code-harness@claude-code-harness-marketplace"
+echo ""
+echo "# ======================================================================================="
+echo "# マーケットプレースとプラグインの自動セットアップ"
+echo "# ======================================================================================="
 
-# Asking（AI同士の相談）
-ensure_marketplace "hiropon-plugins" "hiroro-work/claude-plugins"
-ensure_plugin "ask-claude@hiropon-plugins"
-ensure_plugin "ask-codex@hiropon-plugins"
-ensure_plugin "ask-gemini@hiropon-plugins"
-ensure_plugin "peer@hiropon-plugins"
+# カウンタ
+marketplace_count=0
+plugin_count=0
 
-# mgrep（高機能grep）
-ensure_marketplace "Mixedbread-Grep" "https://github.com/mixedbread-ai/mgrep"
-ensure_plugin "mgrep@Mixedbread-Grep"
+# extraKnownMarketplaces から自動取得してセットアップ
+echo ""
+echo "📦 マーケットプレースをセットアップ中..."
+while IFS=$'\t' read -r name repo url; do
+  # repo または url のいずれかが設定されている
+  source="${repo:-$url}"
+  if [[ -n $source ]]; then
+    ensure_marketplace "$name" "$source"
+    ((marketplace_count++))
+  fi
+done < <(jq -r '.extraKnownMarketplaces | to_entries[] | "\(.key)\t\(.value.source.repo // "")\t\(.value.source.url // "")"' "$SETTINGS_FILE")
+
+# enabledPlugins から true のもの全てをインストール
+echo ""
+echo "🔌 有効化されたプラグインをインストール中..."
+while read -r plugin; do
+  if [[ -n $plugin ]]; then
+    ensure_plugin "$plugin"
+    ((plugin_count++))
+  fi
+done < <(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' "$SETTINGS_FILE")
+
+echo ""
+echo "# ======================================================================================="
+echo "# セットアップ完了サマリー"
+echo "# ======================================================================================="
+echo "   📦 マーケットプレース: $marketplace_count 個"
+echo "   🔌 プラグイン: $plugin_count 個"
+echo ""
+echo "✅ すべてのプラグインとマーケットプレースのセットアップが完了しました"
