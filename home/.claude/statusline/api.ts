@@ -398,6 +398,9 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 // Usage Limits Caching
 // ============================================================================
 
+// Promise cache to prevent concurrent API calls
+let usageLimitsPromise: Promise<UsageLimits | null> | null = null;
+
 export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
 	debug(`Checking cache file: ${cacheFile}`, "verbose");
@@ -417,64 +420,79 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 		debug(`Cache not found or invalid`, "verbose");
 	}
 
-	// Fetch from API
-	debug(`Fetching from API...`, "verbose");
-	const token = await getClaudeApiToken();
-	if (!token) {
-		debug(`No API token found`, "verbose");
-		return null;
+	// Prevent multiple concurrent API calls
+	if (usageLimitsPromise) {
+		debug(`Returning in-flight usage limits request`, "verbose");
+		return usageLimitsPromise;
 	}
 
-	debug(`API token found, fetching limits...`, "verbose");
-	const limits = await fetchUsageLimits(token);
-	debug(`API response: ${JSON.stringify(limits)}`, "verbose");
-	if (limits) {
+	// Create new promise
+	usageLimitsPromise = (async () => {
 		try {
-			// Security: Create file with secure permissions (0o600) from the start
-			// to prevent race condition where file is readable before chmod() is called
-			const cacheDir = `${HOME}/.claude/data`;
-
-			// Ensure cache directory exists with secure permissions
-			try {
-				await Bun.file(cacheDir).isDirectory();
-			} catch {
-				// Directory doesn't exist, create it with secure permissions
-				const { mkdir } = await import("fs/promises");
-				await mkdir(cacheDir, { recursive: true, mode: 0o700 });
+			// Fetch from API
+			debug(`Fetching from API...`, "verbose");
+			const token = await getClaudeApiToken();
+			if (!token) {
+				debug(`No API token found`, "verbose");
+				return null;
 			}
 
-			// Write file with secure permissions from creation
-			const cacheContent = JSON.stringify(
-				{
-					data: limits,
-					timestamp: Date.now(),
-				},
-				null,
-				2,
-			);
+			debug(`API token found, fetching limits...`, "verbose");
+			const limits = await fetchUsageLimits(token);
+			debug(`API response: ${JSON.stringify(limits)}`, "verbose");
+			if (limits) {
+				try {
+					// Security: Create file with secure permissions (0o600) from the start
+					// to prevent race condition where file is readable before chmod() is called
+					const cacheDir = `${HOME}/.claude/data`;
 
-			// Use Bun.write to create file, then immediately set permissions
-			// Note: Bun.write uses default permissions, so we secure immediately after
-			await Bun.write(cacheFile, cacheContent);
+					// Ensure cache directory exists with secure permissions
+					try {
+						await Bun.file(cacheDir).isDirectory();
+					} catch {
+						// Directory doesn't exist, create it with secure permissions
+						const { mkdir } = await import("fs/promises");
+						await mkdir(cacheDir, { recursive: true, mode: 0o700 });
+					}
 
-			// Immediately set permissions before anything else can read
-			await chmod(cacheFile, 0o600);
+					// Write file with secure permissions from creation
+					const cacheContent = JSON.stringify(
+						{
+							data: limits,
+							timestamp: Date.now(),
+						},
+						null,
+						2,
+					);
 
-			debug(`Cache file written securely: ${cacheFile}`, "verbose");
-		} catch (e) {
-			// Enhanced error handling for cache write
-			const errorMsg = errorMessage(e);
-			if (errorMsg.includes("EACCES")) {
-				debug(`Permission denied writing cache: ${errorMsg}`, "error");
-			} else if (errorMsg.includes("ENOENT")) {
-				debug(`Cache directory does not exist: ${errorMsg}`, "error");
-			} else {
-				debug(`Failed to write cache file: ${errorMsg}`, "error");
+					// Use Bun.write to create file, then immediately set permissions
+					// Note: Bun.write uses default permissions, so we secure immediately after
+					await Bun.write(cacheFile, cacheContent);
+
+					// Immediately set permissions before anything else can read
+					await chmod(cacheFile, 0o600);
+
+					debug(`Cache file written securely: ${cacheFile}`, "verbose");
+				} catch (e) {
+					// Enhanced error handling for cache write
+					const errorMsg = errorMessage(e);
+					if (errorMsg.includes("EACCES")) {
+						debug(`Permission denied writing cache: ${errorMsg}`, "error");
+					} else if (errorMsg.includes("ENOENT")) {
+						debug(`Cache directory does not exist: ${errorMsg}`, "error");
+					} else {
+						debug(`Failed to write cache file: ${errorMsg}`, "error");
+					}
+				}
 			}
+
+			return limits;
+		} finally {
+			usageLimitsPromise = null;
 		}
-	}
+	})();
 
-	return limits;
+	return usageLimitsPromise;
 }
 
 // ============================================================================

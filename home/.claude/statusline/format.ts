@@ -294,18 +294,7 @@ export function formatResetDateOnly(resetsAt: string): string {
 // Phase C: Common Rendering Functions (moved from metrics-builder.ts)
 // ============================================================================
 
-/**
- * StatuslineConfig インターフェース（api.ts からのインポート回避のため前方宣言）
- */
-interface StatuslineConfig {
-	display: {
-		showSeparators: boolean;
-		lineBreakBefore?: string[];
-	};
-	rateLimits: {
-		showPeriodCost: boolean;
-	};
-}
+import type { StatuslineConfig } from "./api.js";
 
 /** I/O メトリクス（入力/出力トークン・圧縮回数）を描画 */
 export function renderIO(

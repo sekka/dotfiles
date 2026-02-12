@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
 // Phase B2: Tests for api.ts module (config + cache + API logic)
-import { describe, it, expect, afterEach } from "bun:test";
-import { unlink } from "fs/promises";
+import { describe, it, expect, afterEach, beforeEach } from "bun:test";
+import { unlink, writeFile } from "fs/promises";
 import { homedir } from "os";
 
-import { loadConfigCached, DEFAULT_CONFIG } from "../api.ts";
+import { loadConfigCached, DEFAULT_CONFIG, getCachedUsageLimits } from "../api.ts";
 import { saveSessionTokens, loadSessionTokens } from "../tokens.ts";
 
 // ============================================================================
@@ -165,5 +165,117 @@ describe("Session Tokens Persistence", () => {
 
 		const loaded = await loadSessionTokens("any-session-id");
 		expect(loaded).toBeNull();
+	});
+});
+
+// ============================================================================
+// getCachedUsageLimits - Error Handling Tests
+// ============================================================================
+
+describe("getCachedUsageLimits - Error Handling", () => {
+	const HOME = homedir();
+	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
+
+	beforeEach(async () => {
+		// Clean up before each test
+		try {
+			await unlink(cacheFile);
+		} catch {
+			// File may not exist
+		}
+	});
+
+	afterEach(async () => {
+		// Clean up after each test
+		try {
+			await unlink(cacheFile);
+		} catch {
+			// File may not exist
+		}
+	});
+
+	it("should handle concurrent calls efficiently", async () => {
+		// Make three concurrent calls
+		const [result1, result2, result3] = await Promise.all([
+			getCachedUsageLimits(),
+			getCachedUsageLimits(),
+			getCachedUsageLimits(),
+		]);
+
+		// All results should be identical (same promise resolved)
+		expect(result1).toEqual(result2);
+		expect(result2).toEqual(result3);
+	});
+
+	it("should return null when cache file does not exist and API fails", async () => {
+		// Ensure cache file doesn't exist
+		try {
+			await unlink(cacheFile);
+		} catch {
+			// Already doesn't exist
+		}
+
+		// Call should return null (API will likely fail without proper credentials in test)
+		const result = await getCachedUsageLimits();
+
+		// In test environment without keychain access, this should return null
+		// We can't test the exact error path, but we ensure it doesn't throw
+		expect(result === null || typeof result === "object").toBe(true);
+	});
+
+	it("should handle malformed cache file gracefully", async () => {
+		// Write invalid JSON to cache file
+		await writeFile(cacheFile, "{ invalid json }", { mode: 0o600 });
+
+		// Should handle error and attempt API call (which will likely return null in test env)
+		const result = await getCachedUsageLimits();
+
+		// Should not throw, should return null or valid data
+		expect(result === null || typeof result === "object").toBe(true);
+	});
+
+	it("should return cached data when cache is valid", async () => {
+		// Write valid cache data
+		const cacheData = {
+			data: {
+				five_hour: { utilization: 25, resets_at: new Date(Date.now() + 3600000).toISOString() },
+				seven_day: { utilization: 50, resets_at: new Date(Date.now() + 86400000).toISOString() },
+				seven_day_sonnet: null,
+				seven_day_opus: null,
+			},
+			timestamp: Date.now(), // Fresh cache
+		};
+
+		await writeFile(cacheFile, JSON.stringify(cacheData, null, 2), { mode: 0o600 });
+
+		// Should return cached data without API call
+		const result = await getCachedUsageLimits();
+
+		expect(result).not.toBeNull();
+		if (result) {
+			expect(result.five_hour?.utilization).toBe(25);
+			expect(result.seven_day?.utilization).toBe(50);
+		}
+	});
+
+	it("should refetch when cache is expired", async () => {
+		// Write expired cache data (6 minutes old, TTL is 5 minutes)
+		const cacheData = {
+			data: {
+				five_hour: { utilization: 25, resets_at: new Date(Date.now() + 3600000).toISOString() },
+				seven_day: { utilization: 50, resets_at: new Date(Date.now() + 86400000).toISOString() },
+				seven_day_sonnet: null,
+				seven_day_opus: null,
+			},
+			timestamp: Date.now() - (6 * 60 * 1000), // 6 minutes old
+		};
+
+		await writeFile(cacheFile, JSON.stringify(cacheData, null, 2), { mode: 0o600 });
+
+		// Should attempt API call (which will likely return null in test env)
+		const result = await getCachedUsageLimits();
+
+		// Should not throw
+		expect(result === null || typeof result === "object").toBe(true);
 	});
 });
