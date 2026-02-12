@@ -104,7 +104,7 @@ describe("TokenMetricsBuilder", () => {
 	it("should build token metrics with percentage and counts", async () => {
 		const config: StatuslineConfig = { ...mockConfig, tokens: { showContextUsage: true } };
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("TOK:");
+		expect(result).toContain("TK:");
 		expect(result).toContain("22"); // percentage
 		expect(result).toContain("45"); // token count (45K)
 	});
@@ -291,7 +291,7 @@ describe("MetricsLineBuilder", () => {
 		const result = await builder.build(config, mockMetricsData);
 
 		expect(result).toContain("SES:");
-		expect(result).toContain("TOK:");
+		expect(result).toContain("TK:");
 		expect(result).toContain("LMT:");
 		expect(result).toContain("DAY:");
 		expect(result).toContain("WK:");
