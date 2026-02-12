@@ -3,11 +3,11 @@
 // ============================================================================
 
 import type { StatuslineConfig } from "./config.ts";
-import type { UsageLimits } from "./utils.ts";
+import type { UsageLimits } from "./cache.ts";
 import { colors } from "./colors.ts";
 import { label, LABEL_KEYS, type LabelKey } from "./labels.ts";
 import { debug } from "./logging.ts";
-import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly, formatCostValue } from "./context.ts";
+import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly, formatCostValue, formatTokensK } from "./context.ts";
 import { getPeriodCost } from "./cache.ts";
 
 /**
@@ -129,8 +129,8 @@ export class TokenMetricsBuilder implements MetricsBuilder {
 
 	async build(_: StatuslineConfig, data: MetricsData): Promise<string | null> {
 		const bar = formatBrailleProgressBar(data.contextPercentage, 5);
-		const contextTokenStr = (data.contextTokens / 1000).toFixed(1);
-		const contextSizeStr = (data.contextWindowSize / 1000).toFixed(1);
+		const contextTokenStr = formatTokensK(data.contextTokens);
+		const contextSizeStr = formatTokensK(data.contextWindowSize);
 
 		return `${label("TK")}${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
 	}
@@ -164,8 +164,8 @@ export class IOMetricsBuilder implements MetricsBuilder {
 		const parts: string[] = [];
 
 		if (config.tokens.showInputOutput) {
-			const inStr = (data.inputTokens / 1000).toFixed(1);
-			const outStr = (data.outputTokens / 1000).toFixed(1);
+			const inStr = formatTokensK(data.inputTokens);
+			const outStr = formatTokensK(data.outputTokens);
 			parts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
 		}
 
@@ -178,59 +178,70 @@ export class IOMetricsBuilder implements MetricsBuilder {
 }
 
 // ============================================================================
-// 5-Hour Rate Limit Builder (L)
+// Unified Rate Limit Builder
 // ============================================================================
 
+type RateLimitData = { utilization: number; resets_at: string | null };
+
 /**
- * 5時間レート制限のメトリクスビルダー
+ * レート制限メトリクスビルダー（パラメータ化版）
+ * 5時間制限、週間制限、Sonnet週間制限を統一的に扱う
  */
-export class LimitMetricsBuilder implements MetricsBuilder {
-	label = LABEL_KEYS.LIMIT;
+export class RateLimitMetricsBuilder implements MetricsBuilder {
+	label: LabelKey;
+
+	constructor(
+		label: LabelKey,
+		private labelDisplay: string,
+		private configCheck: (config: StatuslineConfig) => boolean,
+		private dataExtract: (limits: UsageLimits) => RateLimitData | null,
+		private showCost: boolean = false,
+	) {
+		this.label = label;
+	}
 
 	shouldBuild(config: StatuslineConfig): boolean {
-		return config.rateLimits.showFiveHour;
+		return this.configCheck(config);
 	}
 
 	async build(config: StatuslineConfig, data: MetricsData): Promise<string | null> {
-		if (!data.usageLimits?.five_hour) {
+		if (!data.usageLimits) {
 			return null;
 		}
 
-		const fiveHour = data.usageLimits.five_hour;
-		const bar = formatBrailleProgressBar(fiveHour.utilization, 5);
+		const limitData = this.dataExtract(data.usageLimits);
+		if (!limitData) {
+			return null;
+		}
 
-		// Get period cost with error handling
-		let periodCost = 0;
-		if (fiveHour.resets_at) {
+		const bar = formatBrailleProgressBar(limitData.utilization, 5);
+		let result = `${label(this.labelDisplay)}${bar} ${colors.lightGray(limitData.utilization.toString())}${colors.gray("%")}`;
+
+		if (limitData.resets_at) {
+			const resetDate = formatResetDateOnly(limitData.resets_at);
+			const timeLeft = formatResetTime(limitData.resets_at);
+			result += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
+		}
+
+		// Add period cost if enabled (only for 5-hour limit)
+		if (this.showCost && limitData.resets_at) {
+			let periodCost = 0;
 			try {
-				periodCost = await getPeriodCost(fiveHour.resets_at);
+				periodCost = await getPeriodCost(limitData.resets_at);
 			} catch (error) {
 				debug(
 					`Failed to fetch period cost: ${error instanceof Error ? error.message : String(error)}`,
 					"error",
 				);
-				periodCost = 0; // Default to 0 on error
+				periodCost = 0;
+			}
+
+			if (config.rateLimits.showPeriodCost && periodCost >= 0.01) {
+				result += ` ${colors.gray("$")}${colors.white(formatCostValue(periodCost))}`;
 			}
 		}
 
-		// Build cost display string if >= $0.01 (respects showPeriodCost config)
-		const costDisplayFiveHour =
-			config.rateLimits.showPeriodCost && periodCost >= 0.01
-				? ` ${colors.gray("$")}${colors.white(formatCostValue(periodCost))}`
-				: "";
-
-		let limitsPart = `${label("LMT")}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
-
-		if (fiveHour.resets_at) {
-			const resetDate = formatResetDateOnly(fiveHour.resets_at);
-			const timeLeft = formatResetTime(fiveHour.resets_at);
-			limitsPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
-		}
-
-		// Add cost at the end
-		limitsPart += costDisplayFiveHour;
-
-		return limitsPart;
+		return result;
 	}
 }
 
@@ -257,72 +268,6 @@ export class CostMetricsBuilder implements MetricsBuilder {
 	}
 }
 
-// ============================================================================
-// Weekly Rate Limit Builder (W)
-// ============================================================================
-
-/**
- * 週間レート制限のメトリクスビルダー
- */
-export class WeeklyMetricsBuilder implements MetricsBuilder {
-	label = LABEL_KEYS.WEEKLY;
-
-	shouldBuild(config: StatuslineConfig): boolean {
-		return config.rateLimits.showWeekly;
-	}
-
-	async build(_: StatuslineConfig, data: MetricsData): Promise<string | null> {
-		if (!data.usageLimits?.seven_day) {
-			return null;
-		}
-
-		const sevenDay = data.usageLimits.seven_day;
-		const bar = formatBrailleProgressBar(sevenDay.utilization, 5);
-		let weeklyPart = `${label("WK")}${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
-
-		if (sevenDay.resets_at) {
-			const resetDate = formatResetDateOnly(sevenDay.resets_at);
-			const timeLeft = formatResetTime(sevenDay.resets_at);
-			weeklyPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
-		}
-
-		return weeklyPart;
-	}
-}
-
-// ============================================================================
-// Sonnet Weekly Rate Limit Builder (WS)
-// ============================================================================
-
-/**
- * Sonnet専用の週間レート制限メトリクスビルダー
- * 他のモデル（OpusやHaikuなど）と区別されたSonnetの使用量を表示する
- */
-export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
-	label = LABEL_KEYS.WEEKLY_SONNET;
-
-	shouldBuild(config: StatuslineConfig): boolean {
-		return config.rateLimits.showSonnetWeekly;
-	}
-
-	async build(_: StatuslineConfig, data: MetricsData): Promise<string | null> {
-		if (!data.usageLimits?.seven_day_sonnet) {
-			return null;
-		}
-
-		const sevenDaySonnet = data.usageLimits.seven_day_sonnet;
-		const bar = formatBrailleProgressBar(sevenDaySonnet.utilization, 5);
-		let sonnetWeeklyPart = `${label("WKS")}${bar} ${colors.lightGray(sevenDaySonnet.utilization.toString())}${colors.gray("%")}`;
-
-		if (sevenDaySonnet.resets_at) {
-			const resetDate = formatResetDateOnly(sevenDaySonnet.resets_at);
-			const timeLeft = formatResetTime(sevenDaySonnet.resets_at);
-			sonnetWeeklyPart += ` ${colors.gray(`(${resetDate}|${timeLeft})`)}`;
-		}
-
-		return sonnetWeeklyPart;
-	}
-}
 
 // ============================================================================
 // Metrics Line Builder (Orchestrator)
@@ -349,10 +294,28 @@ export class MetricsLineBuilder {
 		new IOMetricsBuilder(),
 		new SessionMetricsBuilder(),
 		new TokenMetricsBuilder(),
-		new LimitMetricsBuilder(),
+		new RateLimitMetricsBuilder(
+			LABEL_KEYS.LIMIT,
+			"LMT",
+			c => c.rateLimits.showFiveHour,
+			l => l.five_hour,
+			true  // showCost
+		),
 		new CostMetricsBuilder(),
-		new WeeklyMetricsBuilder(),
-		new SonnetWeeklyMetricsBuilder(),
+		new RateLimitMetricsBuilder(
+			LABEL_KEYS.WEEKLY,
+			"WK",
+			c => c.rateLimits.showWeekly,
+			l => l.seven_day,
+			false
+		),
+		new RateLimitMetricsBuilder(
+			LABEL_KEYS.WEEKLY_SONNET,
+			"WKS",
+			c => c.rateLimits.showSonnetWeekly,
+			l => l.seven_day_sonnet,
+			false
+		),
 	];
 
 	/**
@@ -433,49 +396,3 @@ export class MetricsLineBuilder {
 	}
 }
 
-/**
- * グローバルに共有される MetricsLineBuilder インスタンス
- *
- * @type {MetricsLineBuilder}
- * @private
- */
-let defaultMetricsLineBuilder = new MetricsLineBuilder();
-
-/**
- * 現在の MetricsLineBuilder インスタンスを取得する
- *
- * シングルトンパターンを使用して、アプリケーション全体で
- * 同一の MetricsLineBuilder インスタンスを共有する。
- * テスト時には `setMetricsLineBuilder()` で置き換え可能。
- *
- * @returns {MetricsLineBuilder} 現在のMetricsLineBuilderインスタンス
- *
- * @example
- * const builder = getMetricsLineBuilder();
- * const metricsLine = await builder.build(config, data);
- */
-export function getMetricsLineBuilder(): MetricsLineBuilder {
-	return defaultMetricsLineBuilder;
-}
-
-/**
- * MetricsLineBuilder インスタンスを置き換える（主にテスト用）
- *
- * テスト時にカスタムビルダーを注入する際に使用。
- * 正常系テストではデフォルトビルダーを復元する必要がある。
- *
- * @param {MetricsLineBuilder} builder - 新しいMetricsLineBuilderインスタンス
- *
- * @example
- * const mockBuilder = new MetricsLineBuilder();
- * mockBuilder.setBuilders([new MockBuilder()]);
- * setMetricsLineBuilder(mockBuilder);
- *
- * // テスト実行...
- *
- * // デフォルトに復元
- * setMetricsLineBuilder(new MetricsLineBuilder());
- */
-export function setMetricsLineBuilder(builder: MetricsLineBuilder): void {
-	defaultMetricsLineBuilder = builder;
-}

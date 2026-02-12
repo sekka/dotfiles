@@ -20,7 +20,8 @@
  */
 
 // Utilities
-import { HookInput, type StatuslineConfig, type UsageLimits } from "./statusline/utils.ts";
+import { type HookInput, type StatuslineConfig } from "./statusline/config.ts";
+import { type UsageLimits } from "./statusline/cache.ts";
 import { colors } from "./statusline/colors.ts";
 import { debug } from "./statusline/logging.ts";
 import { label } from "./statusline/labels.ts";
@@ -29,7 +30,7 @@ import { label } from "./statusline/labels.ts";
 import { getGitStatus } from "./statusline/git.ts";
 
 // Token calculations and formatting
-import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount, formatCostValue } from "./statusline/context.ts";
+import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount, formatCostValue, formatTokensK } from "./statusline/context.ts";
 
 // Caching and cost tracking
 import {
@@ -44,7 +45,6 @@ import {
 import {
 	MetricsLineBuilder,
 	type MetricsData,
-	getMetricsLineBuilder,
 } from "./statusline/metrics-builder.ts";
 
 // ============================================================================
@@ -102,8 +102,8 @@ function buildFirstLine(
 		const ioParts: string[] = [];
 
 		if (config.tokens.showInputOutput) {
-			const inStr = (inputTokens / 1000).toFixed(1);
-			const outStr = (outputTokens / 1000).toFixed(1);
+			const inStr = formatTokensK(inputTokens);
+			const outStr = formatTokensK(outputTokens);
 			ioParts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
 		}
 
@@ -189,7 +189,7 @@ async function buildMetricsLine(
 	};
 
 	// Use strategy pattern builder to construct metrics line
-	const builder = getMetricsLineBuilder();
+	const builder = new MetricsLineBuilder();
 	return builder.build(config, metricsData);
 }
 

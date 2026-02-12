@@ -1,10 +1,24 @@
 import { existsSync } from "fs";
 import { realpath } from "fs/promises";
 
-import { type GitStatus, type StatuslineConfig } from "./utils.ts";
-import { debug } from "./logging.ts";
+import { type StatuslineConfig } from "./config.ts";
+import { debug, errorMessage } from "./logging.ts";
 import { GIT_COMMAND_TIMEOUT_MS } from "./constants.ts";
 import { colors } from "./colors.ts";
+
+// ============================================================================
+// 型定義
+// ============================================================================
+
+/**
+ * Git リポジトリの現在のステータス情報
+ */
+export interface GitStatus {
+	branch: string;
+	hasChanges: boolean;
+	aheadBehind: string | null;
+	diffStats: string | null;
+}
 
 // ============================================================================
 // Git Operations
@@ -134,7 +148,7 @@ export async function getGitStatus(
 		};
 	} catch (e) {
 		// Phase 2.5: Enhanced error messages
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Git status error: ${errorMsg}`, "verbose");
 
 		return {
@@ -206,7 +220,7 @@ async function determineParentBranch(cwd: string): Promise<string | null> {
 
 		return null;
 	} catch (e) {
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Failed to determine parent branch: ${errorMsg}`, "verbose");
 		return null;
 	}
@@ -285,7 +299,7 @@ async function getAheadBehind(cwd: string): Promise<string | null> {
 		return null;
 	} catch (e) {
 		// Phase 2.5: Enhanced error messages
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Failed to get ahead/behind count: ${errorMsg}`, "verbose");
 		return null;
 	}
@@ -327,7 +341,7 @@ async function readUntrackedFileStats(
 	try {
 		resolvedCwd = await realpath(cwd);
 	} catch (e) {
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Cannot resolve working directory ${cwd}: ${errorMsg}`, "verbose");
 		return { added: 0, skipped: files.length }; // 全てをスキップ扱い
 	}
@@ -357,7 +371,7 @@ async function readUntrackedFileStats(
 			const fileContent = await fileObj.text();
 			return fileContent.split("\n").length;
 		} catch (e) {
-			const errorMsg = e instanceof Error ? e.message : String(e);
+			const errorMsg = errorMessage(e);
 			debug(`Failed to read untracked file ${file}: ${errorMsg}`, "verbose");
 			return 0;
 		}
@@ -459,7 +473,7 @@ export async function getDiffStats(cwd: string): Promise<string | null> {
 		return null;
 	} catch (e) {
 		// Phase 2.5: Enhanced error messages
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 		debug(`Failed to get diff stats: ${errorMsg}`, "verbose");
 		return null;
 	}

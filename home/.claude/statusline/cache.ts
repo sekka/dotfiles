@@ -2,10 +2,29 @@ import { chmod } from "fs/promises";
 import { homedir } from "os";
 
 import { type StatuslineConfig, DEFAULT_CONFIG } from "./config.ts";
-import { type UsageLimits, type CachedUsageLimits } from "./utils.ts";
-import { isValidStatuslineConfig, isValidUsageLimits, sanitizeForLogging } from "./validation.ts";
-import { debug } from "./logging.ts";
-import { API_CALL_TIMEOUT_MS } from "./constants.ts";
+import { debug, errorMessage } from "./logging.ts";
+import { API_CALL_TIMEOUT_MS, CACHE_TTL_MS, CONFIG_CACHE_TTL } from "./constants.ts";
+
+// Minimal type guards (validation logic removed)
+function isValidStatuslineConfig(data: unknown): data is StatuslineConfig {
+	return typeof data === 'object' && data !== null;
+}
+function isValidUsageLimits(data: unknown): boolean {
+	return typeof data === 'object' && data !== null;
+}
+
+// Type definitions previously in utils.ts
+export interface UsageLimits {
+	five_hour: { utilization: number; resets_at: string | null } | null;
+	seven_day: { utilization: number; resets_at: string | null } | null;
+	seven_day_sonnet: { utilization: number; resets_at: string | null } | null;
+	seven_day_opus: { utilization: number; resets_at: string | null } | null;
+}
+
+export interface CachedUsageLimits {
+	data: UsageLimits;
+	timestamp: number;
+}
 
 // ============================================================================
 // Rate Limit Features (Phase 2)
@@ -42,7 +61,7 @@ async function getClaudeApiToken(): Promise<string | null> {
 		try {
 			credentials = JSON.parse(trimmedOutput);
 		} catch (e) {
-			const errorMsg = e instanceof Error ? e.message : String(e);
+			const errorMsg = errorMessage(e);
 			debug(`Failed to parse credentials: ${errorMsg}`, "error");
 			return null;
 		}
@@ -69,7 +88,7 @@ async function getClaudeApiToken(): Promise<string | null> {
 
 		return token;
 	} catch (e) {
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 
 		if (errorMsg.includes("ENOENT")) {
 			debug(`Credentials not found in Keychain`, "error");
@@ -144,7 +163,7 @@ async function fetchUsageLimits(token: string): Promise<UsageLimits | null> {
 		return data;
 	} catch (e) {
 		// Enhanced error handling
-		const errorMsg = e instanceof Error ? e.message : String(e);
+		const errorMsg = errorMessage(e);
 
 		if (errorMsg.includes("timeout") || errorMsg.includes("TimeoutError")) {
 			debug(`API request timeout`, "error");
@@ -218,8 +237,6 @@ async function loadConfig(): Promise<StatuslineConfig> {
 }
 
 const HOME = homedir();
-// Phase 1.5: Cache TTL extension (60s → 5 minutes)
-const CACHE_TTL_MS = 5 * 60 * 1000;
 
 // ============================================================================
 // Phase 4.3: Configuration Caching
@@ -227,7 +244,6 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 let cachedConfig: StatuslineConfig | null = null;
 let configCacheTime = 0;
-const CONFIG_CACHE_TTL = 60 * 1000; // 1分
 
 /**
  * Phase 4.3: Config をキャッシュする
@@ -263,9 +279,9 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 			return cache.data;
 		}
 		debug(`Cache expired`, "verbose");
-	} catch (e) {
+	} catch {
 		// Cache doesn't exist or is invalid
-		debug(`Cache error: ${e instanceof Error ? e.message : String(e)}`, "verbose");
+		debug(`Cache not found or invalid`, "verbose");
 	}
 
 	// Fetch from API
@@ -314,7 +330,7 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 			debug(`Cache file written securely: ${cacheFile}`, "verbose");
 		} catch (e) {
 			// Phase 1.6: Enhanced error handling for cache write
-			const errorMsg = e instanceof Error ? e.message : String(e);
+			const errorMsg = errorMessage(e);
 			if (errorMsg.includes("EACCES")) {
 				debug(`Permission denied writing cache: ${errorMsg}`, "error");
 			} else if (errorMsg.includes("ENOENT")) {
@@ -523,7 +539,7 @@ export async function loadSessionTokens(sessionId: string): Promise<{
 			return null;
 		}
 	} catch (e) {
-		debug(`[loadSessionTokens] Error checking file existence: ${e instanceof Error ? e.message : String(e)}`, "basic");
+		debug(`[loadSessionTokens] Error checking file existence: ${errorMessage(e)}`, "basic");
 		return null;
 	}
 
@@ -550,72 +566,3 @@ export async function loadSessionTokens(sessionId: string): Promise<{
 	}
 }
 
-// ============================================================================
-// Phase 3.3: シンプルなキャッシュ実装
-// ============================================================================
-
-/**
- * TTLベースのシンプルなキャッシュ
- * @template T キャッシュする値の型
- */
-interface CacheEntry<T> {
-	value: T;
-	timestamp: number;
-}
-
-/**
- * TTL付きのシンプルなキャッシュ
- * @example
- * const cache = new SimpleCache<number>({ ttl: 3600000 });
- * cache.set('key1', 100);
- * console.log(cache.get('key1')); // 100
- */
-export class SimpleCache<T> {
-	private cache: Map<string, CacheEntry<T>> = new Map();
-	private readonly ttl: number;
-
-	constructor(options: { ttl?: number } = {}) {
-		this.ttl = options.ttl ?? 3600000; // 1時間デフォルト
-	}
-
-	get(key: string): T | null {
-		const entry = this.cache.get(key);
-		if (!entry) return null;
-
-		if (Date.now() - entry.timestamp > this.ttl) {
-			this.cache.delete(key);
-			return null;
-		}
-
-		return entry.value;
-	}
-
-	set(key: string, value: T): void {
-		this.cache.set(key, { value, timestamp: Date.now() });
-	}
-
-	has(key: string): boolean {
-		const entry = this.cache.get(key);
-		if (!entry) return false;
-		if (Date.now() - entry.timestamp > this.ttl) {
-			this.cache.delete(key);
-			return false;
-		}
-		return true;
-	}
-
-	clear(): void {
-		this.cache.clear();
-	}
-
-	size(): number {
-		return this.cache.size;
-	}
-
-	keys(): string[] {
-		return Array.from(this.cache.keys());
-	}
-}
-
-// 後方互換性のためのエイリアス
-export class LRUCache<T> extends SimpleCache<T> {}

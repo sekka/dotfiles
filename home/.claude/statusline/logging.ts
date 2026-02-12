@@ -91,3 +91,12 @@ export function validateDebugLevel(value: string | undefined): DebugLevel {
  * @deprecated logger.level を直接参照してください
  */
 export const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
+
+/**
+ * エラーオブジェクトから文字列メッセージを抽出
+ * @param e - Error オブジェクトまたは任意の値
+ * @returns エラーメッセージ文字列
+ */
+export function errorMessage(e: unknown): string {
+	return e instanceof Error ? e.message : String(e);
+}
