@@ -139,7 +139,7 @@ while IFS=$'\t' read -r name repo url; do
   source="${repo:-$url}"
   if [[ -n $source ]]; then
     ensure_marketplace "$name" "$source"
-    ((marketplace_count++))
+    ((marketplace_count++)) || true
   fi
 done < <(jq -r '.extraKnownMarketplaces | to_entries[] | "\(.key)\t\(.value.source.repo // "")\t\(.value.source.url // "")"' "$SETTINGS_FILE")
 
@@ -149,7 +149,7 @@ echo "🔌 有効化されたプラグインをインストール中..."
 while read -r plugin; do
   if [[ -n $plugin ]]; then
     ensure_plugin "$plugin"
-    ((plugin_count++))
+    ((plugin_count++)) || true
   fi
 done < <(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' "$SETTINGS_FILE")
 
