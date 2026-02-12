@@ -5,6 +5,7 @@
 import type { StatuslineConfig } from "./config.ts";
 import type { UsageLimits } from "./utils.ts";
 import { colors } from "./colors.ts";
+import { label, LABEL_KEYS, type LabelKey } from "./labels.ts";
 import { debug } from "./logging.ts";
 import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly } from "./context.ts";
 import { getPeriodCost } from "./cache.ts";
@@ -19,10 +20,11 @@ import { getPeriodCost } from "./cache.ts";
  */
 export interface MetricsBuilder {
 	/**
-	 * メトリクスの識別ラベル（例: "S", "T", "L", "D", "W", "WS"）
+	 * メトリクスの内部ID（例: "session", "token", "limit", "daily", "weekly", "weekly_sonnet"）
 	 * lineBreakBefore 設定でこのメトリクスの前に改行を挿入する際に使用する
+	 * 表示ラベルが変更されても、この内部IDは変更されないため、設定の互換性が保たれる
 	 */
-	label: string;
+	label: LabelKey;
 
 	/**
 	 * 現在の設定に基づいて、このメトリクスを表示すべきかどうかを判定する
@@ -85,7 +87,7 @@ export interface MetricsData {
  * 出力形式: `S: 2m 30s $0.15`
  */
 export class SessionMetricsBuilder implements MetricsBuilder {
-	label = "S";
+	label = LABEL_KEYS.SESSION;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		// S を第1行に表示する場合はメトリクス行に表示しない
@@ -107,7 +109,7 @@ export class SessionMetricsBuilder implements MetricsBuilder {
 			return null;
 		}
 
-		return `${colors.gray("S:")} ${data.sessionTimeDisplay} ${data.costDisplay}`;
+		return `${label("SES")}${colors.white(data.sessionTimeDisplay)} ${data.costDisplay}`;
 	}
 }
 
@@ -119,7 +121,7 @@ export class SessionMetricsBuilder implements MetricsBuilder {
  * トークン使用率のメトリクスビルダー
  */
 export class TokenMetricsBuilder implements MetricsBuilder {
-	label = "T";
+	label = LABEL_KEYS.TOKEN;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.tokens.showContextUsage;
@@ -130,7 +132,7 @@ export class TokenMetricsBuilder implements MetricsBuilder {
 		const contextTokenStr = (data.contextTokens / 1000).toFixed(1);
 		const contextSizeStr = (data.contextWindowSize / 1000).toFixed(1);
 
-		return `${colors.gray("T:")} ${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
+		return `${label("TOK")}${bar} ${colors.white(data.contextPercentage.toString())}${colors.gray("%")} ${colors.white(contextTokenStr)}${colors.gray("K")}${colors.gray("/")}${colors.gray(contextSizeStr)}${colors.gray("K")}`;
 	}
 }
 
@@ -148,7 +150,7 @@ export class TokenMetricsBuilder implements MetricsBuilder {
  * 出力形式: `IO: I:72.4K O:24.2K C:3`
  */
 export class IOMetricsBuilder implements MetricsBuilder {
-	label = "IO";
+	label = LABEL_KEYS.IO;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		// IO を第1行に表示する場合はメトリクス行に表示しない
@@ -164,14 +166,14 @@ export class IOMetricsBuilder implements MetricsBuilder {
 		if (config.tokens.showInputOutput) {
 			const inStr = (data.inputTokens / 1000).toFixed(1);
 			const outStr = (data.outputTokens / 1000).toFixed(1);
-			parts.push(`${colors.gray("I:")}${colors.white(inStr)}${colors.gray("K")} ${colors.gray("O:")}${colors.white(outStr)}${colors.gray("K")}`);
+			parts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
 		}
 
 		if (config.tokens.showCompactCount) {
-			parts.push(`${colors.gray("C:")}${colors.white(data.compactCount.toString())}`);
+			parts.push(`${label("CMP")}${colors.white(data.compactCount.toString())}`);
 		}
 
-		return parts.length > 0 ? `${colors.gray("IO:")} ${parts.join(" ")}` : null;
+		return parts.length > 0 ? parts.join(" ") : null;
 	}
 }
 
@@ -183,7 +185,7 @@ export class IOMetricsBuilder implements MetricsBuilder {
  * 5時間レート制限のメトリクスビルダー
  */
 export class LimitMetricsBuilder implements MetricsBuilder {
-	label = "L";
+	label = LABEL_KEYS.LIMIT;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showFiveHour;
@@ -217,7 +219,7 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 				? `${colors.gray("$")}${colors.white(periodCost.toFixed(2))} `
 				: "";
 
-		let limitsPart = `${colors.gray("L:")} ${costDisplayFiveHour}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
+		let limitsPart = `${label("LMT")}${costDisplayFiveHour}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
 
 		if (fiveHour.resets_at) {
 			const resetDate = formatResetDateOnly(fiveHour.resets_at);
@@ -237,7 +239,7 @@ export class LimitMetricsBuilder implements MetricsBuilder {
  * 日次コストのメトリクスビルダー
  */
 export class CostMetricsBuilder implements MetricsBuilder {
-	label = "D";
+	label = LABEL_KEYS.DAILY;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.costs.showDailyCost;
@@ -248,7 +250,7 @@ export class CostMetricsBuilder implements MetricsBuilder {
 			return null;
 		}
 
-		return `${colors.gray("D:")} ${colors.gray("$")}${colors.white(data.todayCost.toFixed(1))}`;
+		return `${label("DAY")}${colors.gray("$")}${colors.white(data.todayCost.toFixed(1))}`;
 	}
 }
 
@@ -260,7 +262,7 @@ export class CostMetricsBuilder implements MetricsBuilder {
  * 週間レート制限のメトリクスビルダー
  */
 export class WeeklyMetricsBuilder implements MetricsBuilder {
-	label = "W";
+	label = LABEL_KEYS.WEEKLY;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showWeekly;
@@ -273,7 +275,7 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
 
 		const sevenDay = data.usageLimits.seven_day;
 		const bar = formatBrailleProgressBar(sevenDay.utilization, 5);
-		let weeklyPart = `${colors.gray("W:")} ${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
+		let weeklyPart = `${label("WK")}${bar} ${colors.lightGray(sevenDay.utilization.toString())}${colors.gray("%")}`;
 
 		if (sevenDay.resets_at) {
 			const resetDate = formatResetDateOnly(sevenDay.resets_at);
@@ -294,7 +296,7 @@ export class WeeklyMetricsBuilder implements MetricsBuilder {
  * 他のモデル（OpusやHaikuなど）と区別されたSonnetの使用量を表示する
  */
 export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
-	label = "WS";
+	label = LABEL_KEYS.WEEKLY_SONNET;
 
 	shouldBuild(config: StatuslineConfig): boolean {
 		return config.rateLimits.showSonnetWeekly;
@@ -307,7 +309,7 @@ export class SonnetWeeklyMetricsBuilder implements MetricsBuilder {
 
 		const sevenDaySonnet = data.usageLimits.seven_day_sonnet;
 		const bar = formatBrailleProgressBar(sevenDaySonnet.utilization, 5);
-		let sonnetWeeklyPart = `${colors.gray("WS:")} ${bar} ${colors.lightGray(sevenDaySonnet.utilization.toString())}${colors.gray("%")}`;
+		let sonnetWeeklyPart = `${label("WKS")}${bar} ${colors.lightGray(sevenDaySonnet.utilization.toString())}${colors.gray("%")}`;
 
 		if (sevenDaySonnet.resets_at) {
 			const resetDate = formatResetDateOnly(sevenDaySonnet.resets_at);

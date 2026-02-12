@@ -5,6 +5,7 @@
 import { cosmiconfig } from "cosmiconfig";
 import type { CosmiconfigResult } from "cosmiconfig";
 import merge from "deepmerge";
+import { LABEL_KEYS, type LabelKey } from "./labels.ts";
 
 // ============================================================================
 // 型定義
@@ -89,6 +90,64 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 };
 
 // ============================================================================
+// 後方互換性マッピング
+// ============================================================================
+
+/**
+ * 旧ラベル名 → 内部IDのマッピング
+ *
+ * ラベル形式が変更されても、既存の設定ファイルが壊れないように、
+ * 旧ラベル名を自動的に内部IDに変換します。
+ */
+const LEGACY_LABEL_MAP: Record<string, LabelKey> = {
+	"P": LABEL_KEYS.PROJECT,
+	"B": LABEL_KEYS.BRANCH,
+	"S": LABEL_KEYS.SESSION,
+	"T": LABEL_KEYS.TOKEN,
+	"I": LABEL_KEYS.INPUT,
+	"O": LABEL_KEYS.OUTPUT,
+	"C": LABEL_KEYS.COMPACT,
+	"IO": LABEL_KEYS.IO,
+	"L": LABEL_KEYS.LIMIT,
+	"D": LABEL_KEYS.DAILY,
+	"W": LABEL_KEYS.WEEKLY,
+	"WS": LABEL_KEYS.WEEKLY_SONNET,
+	// 新しい表示ラベル（PRJ, BR, SES など）も受け付ける
+	"PRJ": LABEL_KEYS.PROJECT,
+	"BR": LABEL_KEYS.BRANCH,
+	"SES": LABEL_KEYS.SESSION,
+	"TOK": LABEL_KEYS.TOKEN,
+	"IN": LABEL_KEYS.INPUT,
+	"OUT": LABEL_KEYS.OUTPUT,
+	"CMP": LABEL_KEYS.COMPACT,
+	"LMT": LABEL_KEYS.LIMIT,
+	"DAY": LABEL_KEYS.DAILY,
+	"WK": LABEL_KEYS.WEEKLY,
+	"WKS": LABEL_KEYS.WEEKLY_SONNET,
+};
+
+/**
+ * lineBreakBefore 配列の各要素を内部IDに正規化する
+ *
+ * @param labels - 設定ファイルから読み込んだラベル配列
+ * @returns 内部IDに変換された配列
+ */
+function normalizeLabelKeys(labels: string[] | undefined): string[] {
+	if (!labels) {
+		return [];
+	}
+
+	return labels.map(label => {
+		// 既に内部IDの場合はそのまま返す
+		if (Object.values(LABEL_KEYS).includes(label as LabelKey)) {
+			return label;
+		}
+		// 旧ラベルまたは表示ラベルの場合は内部IDに変換
+		return LEGACY_LABEL_MAP[label] || label;
+	});
+}
+
+// ============================================================================
 // 設定の読み込みと統合
 // ============================================================================
 
@@ -110,7 +169,14 @@ async function loadConfig(): Promise<StatuslineConfig> {
 		}
 
 		// ファイルベースの設定とDEFAULT_CONFIGを再帰的にマージ
-		return merge(DEFAULT_CONFIG, result.config) as StatuslineConfig;
+		const mergedConfig = merge(DEFAULT_CONFIG, result.config) as StatuslineConfig;
+
+		// lineBreakBefore の値を内部IDに正規化（後方互換性のため）
+		if (mergedConfig.display.lineBreakBefore) {
+			mergedConfig.display.lineBreakBefore = normalizeLabelKeys(mergedConfig.display.lineBreakBefore);
+		}
+
+		return mergedConfig;
 	} catch {
 		// ファイル読み込み失敗時はデフォルト設定を返す
 		return DEFAULT_CONFIG;

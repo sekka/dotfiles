@@ -27,6 +27,6 @@
 	},
 	"display": {
 		"showSeparators": false,
-		"lineBreakBefore": ["W"]
+		"lineBreakBefore": ["weekly"]
 	}
 }

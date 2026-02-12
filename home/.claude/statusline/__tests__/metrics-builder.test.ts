@@ -78,7 +78,7 @@ describe("SessionMetricsBuilder", () => {
 			session: { ...mockConfig.session, showElapsedTime: true },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("S:");
+		expect(result).toContain("SES:");
 		expect(result).toContain("2m 30s");
 		expect(result).toContain("$0.15");
 	});
@@ -104,7 +104,7 @@ describe("TokenMetricsBuilder", () => {
 	it("should build token metrics with percentage and counts", async () => {
 		const config: StatuslineConfig = { ...mockConfig, tokens: { showContextUsage: true } };
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("T:");
+		expect(result).toContain("TOK:");
 		expect(result).toContain("22"); // percentage
 		expect(result).toContain("45"); // token count (45K)
 	});
@@ -152,7 +152,7 @@ describe("LimitMetricsBuilder", () => {
 			rateLimits: { ...mockConfig.rateLimits, showFiveHour: true },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("L:");
+		expect(result).toContain("LMT:");
 		expect(result).toContain("45"); // utilization percentage
 	});
 
@@ -206,7 +206,7 @@ describe("CostMetricsBuilder", () => {
 			costs: { ...mockConfig.costs, showDailyCost: true },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("D:");
+		expect(result).toContain("DAY:");
 		expect(result).toContain("1.3"); // cost display (1.25 rounded to 1 decimal place)
 	});
 });
@@ -253,7 +253,7 @@ describe("WeeklyMetricsBuilder", () => {
 			rateLimits: { ...mockConfig.rateLimits, showWeekly: true },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("W:");
+		expect(result).toContain("WK:");
 		expect(result).toContain("60"); // utilization percentage
 	});
 });
@@ -290,11 +290,11 @@ describe("MetricsLineBuilder", () => {
 		const builder = new MetricsLineBuilder();
 		const result = await builder.build(config, mockMetricsData);
 
-		expect(result).toContain("S:");
-		expect(result).toContain("T:");
-		expect(result).toContain("L:");
-		expect(result).toContain("D:");
-		expect(result).toContain("W:");
+		expect(result).toContain("SES:");
+		expect(result).toContain("TOK:");
+		expect(result).toContain("LMT:");
+		expect(result).toContain("DAY:");
+		expect(result).toContain("WK:");
 	});
 
 	it("should use separator when showSeparators is true", async () => {
@@ -402,12 +402,11 @@ describe("IOMetricsBuilder", () => {
 			session: { ...mockConfig.session, showInFirstLine: false },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("IO:");
-		expect(result).toContain("I:");
+		expect(result).toContain("IN:");
 		expect(result).toContain("72.4");
-		expect(result).toContain("O:");
+		expect(result).toContain("OUT:");
 		expect(result).toContain("24.2");
-		expect(!result.includes("C:")).toBe(true);
+		expect(!result.includes("CMP:")).toBe(true);
 	});
 
 	it("should show only compact count when showInputOutput is false", async () => {
@@ -417,12 +416,13 @@ describe("IOMetricsBuilder", () => {
 			session: { ...mockConfig.session, showInFirstLine: false },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("IO:");
-		expect(result).toContain("C:");
+		expect(result).toContain("CMP:");
 		expect(result).toContain("3");
 		// Check that input/output tokens are not shown (by checking for absence of numbers like "72.4" and "24.2")
 		expect(!result.includes("72.4")).toBe(true);
 		expect(!result.includes("24.2")).toBe(true);
+		expect(!result.includes("IN:")).toBe(true);
+		expect(!result.includes("OUT:")).toBe(true);
 	});
 
 	it("should show both I/O and compact count when both are enabled", async () => {
@@ -432,12 +432,11 @@ describe("IOMetricsBuilder", () => {
 			session: { ...mockConfig.session, showInFirstLine: false },
 		};
 		const result = await builder.build(config, mockMetricsData);
-		expect(result).toContain("IO:");
-		expect(result).toContain("I:");
+		expect(result).toContain("IN:");
 		expect(result).toContain("72.4");
-		expect(result).toContain("O:");
+		expect(result).toContain("OUT:");
 		expect(result).toContain("24.2");
-		expect(result).toContain("C:");
+		expect(result).toContain("CMP:");
 		expect(result).toContain("3");
 	});
 

@@ -23,6 +23,7 @@
 import { HookInput, type StatuslineConfig, type UsageLimits } from "./statusline/utils.ts";
 import { colors } from "./statusline/colors.ts";
 import { debug } from "./statusline/logging.ts";
+import { label } from "./statusline/labels.ts";
 
 // Git operations
 import { getGitStatus } from "./statusline/git.ts";
@@ -93,7 +94,7 @@ function buildFirstLine(
 	compactCount: number,
 	config: StatuslineConfig,
 ): string {
-	let result = `${colors.cyan(model)} ${colors.gray("P:")} ${colors.gray(dirName)}${gitPart ? ` ${colors.gray("B:")} ${gitPart}` : ""}`;
+	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.gray(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
 
 	// Add IO info (input/output tokens and compact count)
 	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
@@ -102,21 +103,21 @@ function buildFirstLine(
 		if (config.tokens.showInputOutput) {
 			const inStr = (inputTokens / 1000).toFixed(1);
 			const outStr = (outputTokens / 1000).toFixed(1);
-			ioParts.push(`${colors.gray("I:")}${colors.white(inStr)}${colors.gray("K")} ${colors.gray("O:")}${colors.white(outStr)}${colors.gray("K")}`);
+			ioParts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
 		}
 
 		if (config.tokens.showCompactCount) {
-			ioParts.push(`${colors.gray("C:")}${colors.white(compactCount.toString())}`);
+			ioParts.push(`${label("CMP")}${colors.white(compactCount.toString())}`);
 		}
 
 		if (ioParts.length > 0) {
-			result += ` ${colors.gray("IO:")} ${ioParts.join(" ")}`;
+			result += ` ${ioParts.join(" ")}`;
 		}
 	}
 
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
-		result += ` ${colors.gray("S:")} ${colors.white(sessionTimeDisplay)} ${costDisplay}`;
+		result += ` ${label("SES")}${colors.white(sessionTimeDisplay)} ${costDisplay}`;
 	}
 
 	if (config.session.showSessionId) {
