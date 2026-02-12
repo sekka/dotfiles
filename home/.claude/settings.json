@@ -250,6 +250,16 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -271,7 +281,6 @@
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
     "claude-mem@thedotmack": true,
-    "elevator-music@sevii-agent-marketplace": false,
     "claude-code-harness@claude-code-harness-marketplace": true,
     "Notion@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
@@ -293,5 +302,25 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
-  "plansDirectory": "./plans"
+  "plansDirectory": "./plans",
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": { "source": "github", "repo": "anthropics/skills" }
+    },
+    "thedotmack": {
+      "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+    },
+    "claude-code-harness-marketplace": {
+      "source": { "source": "github", "repo": "Chachamaru127/claude-code-harness" }
+    },
+    "hiropon-plugins": {
+      "source": { "source": "github", "repo": "hiroro-work/claude-plugins" }
+    },
+    "Mixedbread-Grep": {
+      "source": { "source": "git", "url": "https://github.com/mixedbread-ai/mgrep.git" }
+    },
+    "claude-mem-jp": {
+      "source": { "source": "github", "repo": "Chachamaru127/claude-mem-jp" }
+    }
+  }
 }
