@@ -1,6 +1,7 @@
 import { HookInput, TranscriptEntry } from "./utils.ts";
 import { debug } from "./logging.ts";
 import { colors } from "./colors.ts";
+import { loadSessionTokens } from "./cache.ts";
 
 // ============================================================================
 // Token Calculation
@@ -33,20 +34,32 @@ async function calculateTokensFromTranscript(transcriptPath: string): Promise<{
 	inputTokens: number;
 	outputTokens: number;
 }> {
+	debug(`[calculateTokensFromTranscript] Reading transcript from: ${transcriptPath}`, "basic");
 	try {
 		const file = Bun.file(transcriptPath);
+		const exists = await file.exists();
+		debug(`[calculateTokensFromTranscript] Transcript file exists: ${exists}`, "basic");
+
+		if (!exists) {
+			debug(`[calculateTokensFromTranscript] Transcript file not found`, "basic");
+			return { totalTokens: 0, inputTokens: 0, outputTokens: 0 };
+		}
+
 		const content = await file.text();
 		const lines = content.trim().split("\n");
+		debug(`[calculateTokensFromTranscript] Read ${lines.length} lines from transcript`, "basic");
 
 		let totalTokens = 0;
 		let inputTokens = 0;
 		let outputTokens = 0;
+		let assistantEntries = 0;
 
 		for (const line of lines) {
 			try {
 				const entry: TranscriptEntry = JSON.parse(line);
 
 				if (entry.type === "assistant" && entry.message?.usage) {
+					assistantEntries++;
 					const usage = entry.message.usage;
 					const entryInputTokens =
 						(usage.input_tokens || 0) +
@@ -67,8 +80,10 @@ async function calculateTokensFromTranscript(transcriptPath: string): Promise<{
 			}
 		}
 
+		debug(`[calculateTokensFromTranscript] Processed ${assistantEntries} assistant entries, total=${totalTokens}, input=${inputTokens}, output=${outputTokens}`, "basic");
 		return { totalTokens, inputTokens, outputTokens };
-	} catch {
+	} catch (error) {
+		debug(`[calculateTokensFromTranscript] Error reading transcript: ${error instanceof Error ? error.message : String(error)}`, "basic");
 		return { totalTokens: 0, inputTokens: 0, outputTokens: 0 };
 	}
 }
@@ -110,10 +125,12 @@ async function calculateTokensFromTranscript(transcriptPath: string): Promise<{
 export async function getContextTokens(
 	data: HookInput,
 ): Promise<{ tokens: number; percentage: number; inputTokens: number; outputTokens: number }> {
+	debug(`[getContextTokens] Called with session_id: ${data.session_id}`, "basic");
 	const contextWindowSize = data.context_window?.context_window_size || 200000;
 
 	// Primary: current_usage for context fullness (T: display)
 	if (data.context_window?.current_usage) {
+		debug(`[getContextTokens] current_usage exists`, "basic");
 		const cu = data.context_window.current_usage;
 		const cuInput = (cu.input_tokens || 0) + (cu.cache_creation_input_tokens || 0) + (cu.cache_read_input_tokens || 0);
 		const cuOutput = cu.output_tokens || 0;
@@ -122,15 +139,37 @@ export async function getContextTokens(
 		const contextTokens = cuInput + cuOutput;
 		const percentage = Math.min(100, Math.round((contextTokens / contextWindowSize) * 100));
 
-		// IO: from transcript if available, else from current_usage
-		let ioInput = cuInput;
-		let ioOutput = cuOutput;
+		// IO: from transcript if available, else from cache, else from current_usage
+		let ioInput = 0;
+		let ioOutput = 0;
+		let transcriptEmpty = false;
+
 		if (data.session_id && data.transcript_path) {
 			const t = await calculateTokensFromTranscript(data.transcript_path);
-			if (t.totalTokens > 0) {
+			if (t.inputTokens > 0 || t.outputTokens > 0) {
+				// Transcript has data - use it
 				ioInput = t.inputTokens;
 				ioOutput = t.outputTokens;
+			} else {
+				// Transcript is empty (after /clear) - try cache
+				transcriptEmpty = true;
+				debug(`Transcript is empty - checking cache for session ${data.session_id}`, "basic");
+				const cached = await loadSessionTokens(data.session_id);
+				if (cached) {
+					debug(
+						`Loaded cached tokens: input=${cached.inputTokens}, output=${cached.outputTokens}`,
+						"basic",
+					);
+					ioInput = cached.inputTokens;
+					ioOutput = cached.outputTokens;
+				}
 			}
+		}
+
+		// Fallback to current_usage if no transcript and no cache
+		if (ioInput === 0 && ioOutput === 0) {
+			ioInput = cuInput;
+			ioOutput = cuOutput;
 		}
 
 		return { tokens: contextTokens, percentage, inputTokens: ioInput, outputTokens: ioOutput };
@@ -139,15 +178,35 @@ export async function getContextTokens(
 	// /clear 後: context_window は存在するが current_usage が明示的に null
 	// → コンテキストがクリアされた状態。T: は 0、IO: は transcript 累積を維持
 	if (data.context_window && data.context_window.current_usage === null) {
+		debug(`[getContextTokens] /clear detected (current_usage is null)`, "basic");
 		let ioInput = 0;
 		let ioOutput = 0;
 		if (data.session_id && data.transcript_path) {
+			debug(`[getContextTokens] /clear detected - reading transcript from: ${data.transcript_path}`, "basic");
 			const t = await calculateTokensFromTranscript(data.transcript_path);
-			if (t.totalTokens > 0) {
+			debug(`[getContextTokens] Transcript tokens: total=${t.totalTokens}, input=${t.inputTokens}, output=${t.outputTokens}`, "basic");
+
+			// If transcript is empty (cleared), load from cache
+			if (t.inputTokens === 0 && t.outputTokens === 0) {
+				debug(`[getContextTokens] Transcript is empty after /clear - loading from cache`, "basic");
+				const cached = await loadSessionTokens(data.session_id);
+				if (cached) {
+					debug(`[getContextTokens] Loaded cached tokens: input=${cached.inputTokens}, output=${cached.outputTokens}`, "basic");
+					ioInput = cached.inputTokens;
+					ioOutput = cached.outputTokens;
+				} else {
+					debug(`[getContextTokens] No cached tokens found for session ${data.session_id}`, "basic");
+				}
+			} else {
+				// Use transcript values if available
+				debug(`[getContextTokens] Using transcript values: input=${t.inputTokens}, output=${t.outputTokens}`, "basic");
 				ioInput = t.inputTokens;
 				ioOutput = t.outputTokens;
 			}
+		} else {
+			debug(`[getContextTokens] Missing session_id or transcript_path`, "basic");
 		}
+		debug(`[getContextTokens] Returning after /clear: tokens=0, inputTokens=${ioInput}, outputTokens=${ioOutput}`, "basic");
 		return { tokens: 0, percentage: 0, inputTokens: ioInput, outputTokens: ioOutput };
 	}
 
@@ -231,6 +290,34 @@ export function formatTokenCount(tokens: number): string {
 }
 
 /**
+ * コスト値（USD）を数値文字列にフォーマット（ドル記号なし）
+ *
+ * @param {number} cost - フォーマットするコスト（USD）
+ * @returns {string} フォーマットされたコスト文字列
+ *
+ * @remarks
+ * - $0.01 以上の場合: 小数点第2位まで表示（例："1.23"）
+ * - $0.01 未満かつ 0 より大きい場合: 小数点第3位まで表示（例："0.005"）
+ * - toFixed() によって自動的に四捨五入される
+ *
+ * @example
+ * formatCostValue(99.6);   // returns "99.60"
+ * formatCostValue(1.234);  // returns "1.23"
+ * formatCostValue(0.05);   // returns "0.05"
+ * formatCostValue(0.005);  // returns "0.005"
+ * formatCostValue(0);      // returns "0.00"
+ */
+export function formatCostValue(cost: number): string {
+	if (cost >= 0.01) {
+		return cost.toFixed(2);
+	}
+	if (cost > 0) {
+		return cost.toFixed(3);
+	}
+	return "0.00";
+}
+
+/**
  * コスト値をドル形式にフォーマット
  * $1.00 以上は小数点第2位まで、$0.01-$0.99 は小数点第2位まで、
  * $0.01 未満は小数点第3位まで表示します。
@@ -239,26 +326,16 @@ export function formatTokenCount(tokens: number): string {
  * @returns {string} ドル記号付きのフォーマット済みコスト（例："$1.23"、"$0.01"、"$0.005"）
  *
  * @remarks
- * - $0.00 の場合（cost === 0）は "$0.00" を返す
- * - マイナス値は通常発生しないが、渡された場合も処理可能
+ * - formatCostValue() でフォーマットした値にドル記号を付加
  *
  * @example
- * formatCost(1.234);  // returns "$1.23"（小数点第2位で四捨五入）
+ * formatCost(1.234);  // returns "$1.23"
  * formatCost(0.05);   // returns "$0.05"
  * formatCost(0.005);  // returns "$0.005"
  * formatCost(0);      // returns "$0.00"
  */
 export function formatCost(cost: number): string {
-	if (cost >= 1) {
-		return `$${cost.toFixed(2)}`;
-	}
-	if (cost >= 0.01) {
-		return `$${cost.toFixed(2)}`;
-	}
-	if (cost > 0) {
-		return `$${cost.toFixed(3)}`;
-	}
-	return "$0.00";
+	return `$${formatCostValue(cost)}`;
 }
 
 /**

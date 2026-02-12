@@ -207,7 +207,7 @@ describe("CostMetricsBuilder", () => {
 		};
 		const result = await builder.build(config, mockMetricsData);
 		expect(result).toContain("DAY:");
-		expect(result).toContain("1.3"); // cost display (1.25 rounded to 1 decimal place)
+		expect(result).toContain("1.25"); // cost display (2 decimals)
 	});
 });
 

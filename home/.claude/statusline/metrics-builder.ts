@@ -7,7 +7,7 @@ import type { UsageLimits } from "./utils.ts";
 import { colors } from "./colors.ts";
 import { label, LABEL_KEYS, type LabelKey } from "./labels.ts";
 import { debug } from "./logging.ts";
-import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly } from "./context.ts";
+import { formatBrailleProgressBar, formatResetTime, formatResetDateOnly, formatCostValue } from "./context.ts";
 import { getPeriodCost } from "./cache.ts";
 
 /**
@@ -216,7 +216,7 @@ export class LimitMetricsBuilder implements MetricsBuilder {
 		// Build cost display string if >= $0.01 (respects showPeriodCost config)
 		const costDisplayFiveHour =
 			config.rateLimits.showPeriodCost && periodCost >= 0.01
-				? ` ${colors.gray("$")}${colors.white(periodCost.toFixed(2))}`
+				? ` ${colors.gray("$")}${colors.white(formatCostValue(periodCost))}`
 				: "";
 
 		let limitsPart = `${label("LMT")}${bar} ${colors.lightGray(fiveHour.utilization.toString())}${colors.gray("%")}`;
@@ -253,7 +253,7 @@ export class CostMetricsBuilder implements MetricsBuilder {
 			return null;
 		}
 
-		return `${label("DAY")}${colors.gray("$")}${colors.white(data.todayCost.toFixed(1))}`;
+		return `${label("DAY")}${colors.gray("$")}${colors.white(formatCostValue(data.todayCost))}`;
 	}
 }
 

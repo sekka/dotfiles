@@ -29,7 +29,7 @@ import { label } from "./statusline/labels.ts";
 import { getGitStatus } from "./statusline/git.ts";
 
 // Token calculations and formatting
-import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount } from "./statusline/context.ts";
+import { getContextTokens, formatElapsedTime, getSessionElapsedTime, getCompactCount, formatCostValue } from "./statusline/context.ts";
 
 // Caching and cost tracking
 import {
@@ -37,6 +37,7 @@ import {
 	getCachedUsageLimits,
 	getTodayCost,
 	saveSessionCost,
+	saveSessionTokens,
 } from "./statusline/cache.ts";
 
 // Metrics builder strategy pattern
@@ -222,7 +223,10 @@ async function buildMetricsLine(
  * // Claude 3.5 Sonnet 📁 statusline 🌿 feature ↑5 +3 -1 abc123xyz
  * // S 1:23:45  T 75% (75K/100K) [████░░░░░░]  L 45%  D $0.05  W 60%
  */
-async function buildStatusline(data: HookInput): Promise<string> {
+async function buildStatusline(
+	data: HookInput,
+	contextInfo?: { tokens: number; percentage: number; inputTokens: number; outputTokens: number },
+): Promise<string> {
 	// Phase 4.3: Load configuration (with caching)
 	const config = await loadConfigCached();
 
@@ -231,14 +235,15 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	const dirName = currentDir.split("/").pop() || currentDir;
 
 	// Phase 1.1: Parallel execution of independent async operations
-	const [gitStatus, contextInfo, usageLimits, todayCost] = await Promise.all([
+	// If contextInfo is provided, skip getContextTokens call
+	const [gitStatus, contextInfoResult, usageLimits, todayCost] = await Promise.all([
 		getGitStatus(currentDir, config),
-		getContextTokens(data),
+		contextInfo ?? getContextTokens(data),
 		getCachedUsageLimits(),
 		getTodayCost(),
 	]);
 
-	const { tokens: contextTokens, percentage, inputTokens, outputTokens } = contextInfo;
+	const { tokens: contextTokens, percentage, inputTokens, outputTokens } = contextInfoResult;
 
 	// Build git part with config
 	let gitPart = "";
@@ -263,12 +268,7 @@ async function buildStatusline(data: HookInput): Promise<string> {
 	}
 
 	// Get cost and duration
-	const costNum =
-		data.cost.total_cost_usd >= 1
-			? data.cost.total_cost_usd.toFixed(2)
-			: data.cost.total_cost_usd >= 0.01
-				? data.cost.total_cost_usd.toFixed(2)
-				: data.cost.total_cost_usd.toFixed(3);
+	const costNum = formatCostValue(data.cost.total_cost_usd);
 	const costDisplay = `${colors.gray("$")}${colors.white(costNum)}`;
 	const durationDisplay = formatElapsedTime(data.cost.total_duration_ms);
 
@@ -346,12 +346,38 @@ async function main() {
 	try {
 		const data: HookInput = await Bun.stdin.json();
 
+		debug(`[MAIN] session_id: ${data.session_id}`, "basic");
+		debug(`[MAIN] context_window.current_usage: ${JSON.stringify(data.context_window?.current_usage)}`, "basic");
+		debug(`[MAIN] transcript_path: ${data.transcript_path}`, "basic");
+
 		// Save session cost if available (Phase 3)
 		if (data.session_id && data.cost.total_cost_usd > 0) {
 			await saveSessionCost(data.session_id, data.cost.total_cost_usd);
 		}
 
-		const statusLine = await buildStatusline(data);
+		// Get context tokens for caching (before buildStatusline to avoid duplicate calls)
+		debug(`[MAIN] Calling getContextTokens...`, "basic");
+		const contextInfo = await getContextTokens(data);
+		debug(
+			`[MAIN] getContextTokens returned: tokens=${contextInfo.tokens}, inputTokens=${contextInfo.inputTokens}, outputTokens=${contextInfo.outputTokens}`,
+			"basic",
+		);
+
+		// Save session tokens for /clear persistence
+		// Only save when current_usage exists (i.e., BEFORE /clear)
+		// After /clear, current_usage is null, and we should rely on cached values instead
+		if (data.session_id && data.context_window?.current_usage && (contextInfo.inputTokens > 0 || contextInfo.outputTokens > 0)) {
+			debug(`[MAIN] Saving session tokens (current_usage exists): input=${contextInfo.inputTokens}, output=${contextInfo.outputTokens}`, "basic");
+			await saveSessionTokens(data.session_id, contextInfo.inputTokens, contextInfo.outputTokens);
+			debug(`[MAIN] Session tokens saved`, "basic");
+		} else {
+			debug(
+				`[MAIN] Skipping saveSessionTokens: session_id=${data.session_id}, current_usage=${data.context_window?.current_usage ? "exists" : "null"}, inputTokens=${contextInfo.inputTokens}, outputTokens=${contextInfo.outputTokens}`,
+				"basic",
+			);
+		}
+
+		const statusLine = await buildStatusline(data, contextInfo);
 		console.log(statusLine);
 	} catch (error) {
 		// Fallback on error

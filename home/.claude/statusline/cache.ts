@@ -340,6 +340,18 @@ interface SessionCostStore {
 	};
 }
 
+// ============================================================================
+// Session IO Tokens Tracking (for /clear persistence)
+// ============================================================================
+
+interface SessionTokensStore {
+	[sessionId: string]: {
+		inputTokens: number;
+		outputTokens: number;
+		updated: number;
+	};
+}
+
 export async function saveSessionCost(sessionId: string, cost: number): Promise<void> {
 	const storeFile = `${HOME}/.claude/data/session-costs.json`;
 	const today = new Date().toISOString().split("T")[0];
@@ -436,6 +448,105 @@ export async function getTodayCost(): Promise<number> {
 			.reduce((sum, s) => sum + s.cost, 0);
 	} catch {
 		return 0;
+	}
+}
+
+/**
+ * セッションの累積 I/O トークンを保存
+ * /clear 後も累積値を保持するために使用
+ */
+export async function saveSessionTokens(
+	sessionId: string,
+	inputTokens: number,
+	outputTokens: number,
+): Promise<void> {
+	debug(`[saveSessionTokens] Called with sessionId=${sessionId}, input=${inputTokens}, output=${outputTokens}`, "basic");
+	const storeFile = `${HOME}/.claude/data/session-io-tokens.json`;
+
+	let store: SessionTokensStore = {};
+
+	try {
+		store = await Bun.file(storeFile).json();
+		debug(`[saveSessionTokens] Loaded existing store with ${Object.keys(store).length} sessions`, "basic");
+	} catch {
+		debug(`[saveSessionTokens] Creating new store file`, "basic");
+		// File doesn't exist or is invalid, create new
+	}
+
+	// Update session tokens
+	store[sessionId] = {
+		inputTokens,
+		outputTokens,
+		updated: Date.now(),
+	};
+
+	// Clean up entries older than 7 days (sessions are typically shorter)
+	const cutoffMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+	for (const [sid, data] of Object.entries(store)) {
+		if (data.updated < cutoffMs) {
+			delete store[sid];
+		}
+	}
+
+	try {
+		await Bun.write(storeFile, JSON.stringify(store, null, 2));
+		await chmod(storeFile, 0o600);
+		debug(`[saveSessionTokens] Successfully saved to ${storeFile}`, "basic");
+	} catch (error) {
+		debug(
+			`[saveSessionTokens] Failed to save session tokens: ${error instanceof Error ? error.message : String(error)}`,
+			"warning",
+		);
+	}
+}
+
+/**
+ * セッションの累積 I/O トークンを読み込み
+ * /clear 後に transcript から取得できない場合に使用
+ */
+export async function loadSessionTokens(sessionId: string): Promise<{
+	inputTokens: number;
+	outputTokens: number;
+} | null> {
+	debug(`[loadSessionTokens] Called with sessionId=${sessionId}`, "basic");
+	const storeFile = `${HOME}/.claude/data/session-io-tokens.json`;
+
+	// Check if file exists
+	try {
+		const file = Bun.file(storeFile);
+		const exists = await file.exists();
+		debug(`[loadSessionTokens] Cache file exists: ${exists}`, "basic");
+
+		if (!exists) {
+			debug(`[loadSessionTokens] Cache file not found: ${storeFile}`, "basic");
+			return null;
+		}
+	} catch (e) {
+		debug(`[loadSessionTokens] Error checking file existence: ${e instanceof Error ? e.message : String(e)}`, "basic");
+		return null;
+	}
+
+	try {
+		const store: SessionTokensStore = await Bun.file(storeFile).json();
+		debug(`[loadSessionTokens] Loaded store with ${Object.keys(store).length} sessions`, "basic");
+		debug(`[loadSessionTokens] Available session IDs: ${Object.keys(store).join(", ")}`, "basic");
+		const data = store[sessionId];
+
+		if (!data) {
+			debug(`[loadSessionTokens] No data found for session ${sessionId}`, "basic");
+			return null;
+		}
+
+		debug(`[loadSessionTokens] Found cached tokens: input=${data.inputTokens}, output=${data.outputTokens}`, "basic");
+		// Return cached tokens if found
+		return {
+			inputTokens: data.inputTokens,
+			outputTokens: data.outputTokens,
+		};
+	} catch (error) {
+		debug(`[loadSessionTokens] Failed to load: ${error instanceof Error ? error.message : String(error)}`, "basic");
+		return null;
 	}
 }
 

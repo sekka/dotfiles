@@ -486,6 +486,31 @@ describe("getContextTokens current_usage priority for T: display", () => {
 });
 
 // ============================================================================
+// formatCostValue Tests
+// ============================================================================
+
+describe("formatCostValue", () => {
+	it("should format costs >= $1.00 with 2 decimals", () => {
+		expect(contextModule.formatCostValue(99.6)).toBe("99.60");
+		expect(contextModule.formatCostValue(1.0)).toBe("1.00");
+	});
+
+	it("should format costs $0.01-$0.99 with 2 decimals", () => {
+		expect(contextModule.formatCostValue(0.16)).toBe("0.16");
+		expect(contextModule.formatCostValue(0.01)).toBe("0.01");
+	});
+
+	it("should format tiny costs < $0.01 with 3 decimals", () => {
+		expect(contextModule.formatCostValue(0.005)).toBe("0.005");
+		expect(contextModule.formatCostValue(0.001)).toBe("0.001");
+	});
+
+	it("should format zero cost", () => {
+		expect(contextModule.formatCostValue(0)).toBe("0.00");
+	});
+});
+
+// ============================================================================
 // Input/Output Token Tests
 // ============================================================================
 
@@ -750,5 +775,25 @@ describe("getContextTokens /clear behavior", () => {
 		expect(result.tokens).toBe(1500);
 		expect(result.inputTokens).toBe(1000);
 		expect(result.outputTokens).toBe(500);
+	});
+
+	it("should handle transcript file read errors gracefully", async () => {
+		// Test with non-existent transcript path
+		const hookInput: HookInput = {
+			session_id: "test",
+			transcript_path: "/non/existent/path/transcript.jsonl",
+			context_window: {
+				context_window_size: 200000,
+				current_usage: null,
+			},
+		};
+
+		const result = await contextModule.getContextTokens(hookInput);
+
+		// Should return zeros when transcript cannot be read
+		expect(result.tokens).toBe(0);
+		expect(result.percentage).toBe(0);
+		expect(result.inputTokens).toBe(0);
+		expect(result.outputTokens).toBe(0);
 	});
 });
