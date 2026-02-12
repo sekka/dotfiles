@@ -1,7 +1,14 @@
 personality = "pragmatic"
+model = "gpt-5.3-codex"
 [features]
 unified_exec = true
 shell_snapshot = true
 apps = true
 steer = true
 personality = true
+
+[projects."~/dotfiles"]
+trust_level = "trusted"
+
+[notice.model_migrations]
+"gpt-5.2-codex" = "gpt-5.3-codex"
