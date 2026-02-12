@@ -163,6 +163,7 @@ CLAUDE_FILES=(
   CLAUDE.md
   settings.json
   statusline.ts
+  statusline-config.json
 )
 
 for file in "${CLAUDE_FILES[@]}"; do
@@ -175,6 +176,11 @@ CLAUDE_FOLDERS=(
   "agents:Agents"
   "skills:Skills"
   "plans:Plans"
+  "hooks:Hooks"
+  "rules:Rules"
+  "docs:Docs"
+  "lib:Lib"
+  "statusline:Statusline"
 )
 
 for folder_pair in "${CLAUDE_FOLDERS[@]}"; do
