@@ -1,10 +1,15 @@
 {
   "permissions": {
     "allow": [
+      "Bash(codex exec:*)",
+      "Bash(codex:*)",
+      "Bash(command -v:*)",
       "Bash(playwright-cli:*)",
       "Bash(source:*)",
+      "Bash(tts-clone)",
       "Bash(tts:*)",
       "Bash(uv tool list:*)",
+      "Bash(uv tool run:*)",
       "WebFetch(domain:agentnativedev.medium.com)",
       "WebFetch(domain:alceo.simplex.inc)",
       "WebFetch(domain:alexop.dev)",
@@ -17,6 +22,7 @@
       "WebFetch(domain:beamscreative.jp)",
       "WebFetch(domain:beeshoney.jp)",
       "WebFetch(domain:blog.3qe.us)",
+      "WebFetch(domain:blog.johnys.io)",
       "WebFetch(domain:blog.modelcontextprotocol.io)",
       "WebFetch(domain:blog.nishimu.land)",
       "WebFetch(domain:bokoko33.me)",
@@ -89,6 +95,7 @@
       "WebFetch(domain:oraios.github.io)",
       "WebFetch(domain:photoshopvip.net)",
       "WebFetch(domain:phpspot.org)",
+      "WebFetch(domain:pypi.org)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -155,8 +162,7 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)",
-      "Bash(uv tool run:*)"
+      "WebFetch(domain:zoewave.medium.com)"
     ],
     "deny": [],
     "ask": []

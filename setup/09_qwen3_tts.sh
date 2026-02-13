@@ -17,8 +17,38 @@
 #    $ cp your_reference.wav ~/.local/share/qwen3-tts/reference-audio/
 #
 # 2. TTS 実行
-#    $ mlx-audio tts --text "読み上げたいテキスト" --output output.wav
-#    $ mlx-audio tts --text "テキスト" --reference ~/.local/share/qwen3-tts/reference-audio/your_reference.wav --output output.wav
+#
+#    【基本的な使用例】
+#
+#    a. 音声即座再生（デフォルト動作）
+#       $ mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16 \
+#           --text "こんにちは、これはテストです" --play
+#
+#    b. ファイルに保存
+#       $ mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16 \
+#           --text "Hello world" \
+#           --output_path ~/audio --file_prefix greeting --audio_format wav
+#       → ~/audio/greeting_000.wav が生成される
+#
+#    c. ボイスクローン（参照音声を使った声質の模倣）
+#       $ mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-bf16 \
+#           --text "この声で読み上げてください" \
+#           --ref_audio ~/.local/share/qwen3-tts/reference-audio/my_voice.wav \
+#           --ref_text "参照音声で話している内容のテキスト" \
+#           --play
+#
+#    d. MP3形式で保存
+#       $ mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16 \
+#           --text "MP3形式のテスト" \
+#           --output_path ~/audio --file_prefix test --audio_format mp3
+#
+#    【シェル関数を使った簡単な使い方】
+#    （65_tts.zsh が読み込まれている場合）
+#
+#    a. 基本: tts "読み上げたいテキスト"
+#    b. ファイル保存: tts -o ~/audio/output.wav "テキスト"
+#    c. ボイスクローン: tts-clone ~/.local/share/qwen3-tts/reference-audio/my_voice.wav "テキスト"
+#    d. 参照音声リスト: tts-voices
 #
 # 【モデルについて】
 #    - 初回実行時にモデルが自動ダウンロードされます
@@ -98,6 +128,11 @@ echo "=== Qwen3 TTS Setup Complete ==="
 echo ""
 echo "Next steps:"
 echo "  1. (Optional) Place reference audio: cp your_reference.wav $REFERENCE_AUDIO_DIR/"
-echo '  2. Run TTS: mlx-audio tts --text "Hello, world!" --output output.wav'
-echo "  3. Model will be downloaded automatically on first run"
+echo "  2. Try basic TTS:"
+echo '     mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16 --text "Hello, world!" --play'
+echo "  3. Or use shell functions (after reloading shell):"
+echo '     tts "Hello, world!"'
+echo "  4. Model will be downloaded automatically on first run (~200MB-700MB)"
+echo ""
+echo "For more usage examples, see comments at the top of this script."
 echo ""
