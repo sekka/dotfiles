@@ -249,7 +249,7 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
 
         # 一時ファイルのクリーンアップ設定
         local temp_output_file="audio_clone_$$.wav"
-        trap 'rm -f ./audio_clone_$$*.wav' EXIT ERR
+        trap 'rm -f ./audio_clone_$$*.wav 2>/dev/null' EXIT ERR
 
         local model="mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16"
         local reference_audio=""
