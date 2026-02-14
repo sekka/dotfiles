@@ -76,7 +76,11 @@ _tts_find_output_file() {
     if [[ -f "$expected_file" ]]; then
         echo "$expected_file"
         return 0
-    elif (( ${#candidates[@]} > 0 )); then
+    elif (( ${#candidates[@]} > 1 )); then
+        # 複数ファイルがある場合は最新のものを選択
+        echo "${candidates[-1]}"
+        return 0
+    elif (( ${#candidates[@]} == 1 )); then
         echo "${candidates[1]}"
         return 0
     fi
@@ -86,12 +90,10 @@ _tts_find_output_file() {
     return 1
 }
 
-# 音声再生とクリーンアップ（macOS専用）
+# 音声ファイルの再生（macOS専用）
 # 引数1: 音声ファイルパス
-# 引数2: クリーンアップするか（true/false、デフォルト: true）
-_tts_playback_and_cleanup() {
+_tts_playback() {
     local audio_file="$1"
-    local cleanup="${2:-true}"
 
     if [[ -z "$audio_file" || ! -f "$audio_file" ]]; then
         echo "Warning: Audio file not found for playback" >&2
@@ -102,12 +104,28 @@ _tts_playback_and_cleanup() {
     afplay "$audio_file" || {
         echo "Warning: Playback failed" >&2
     }
+}
 
-    # クリーンアップ
+# 一時ファイルのクリーンアップ
+# 引数1: 音声ファイルパス
+_tts_cleanup() {
+    local audio_file="$1"
+    [[ -f "$audio_file" ]] && rm -f "$audio_file" || {
+        echo "Warning: Failed to clean up: $audio_file" >&2
+    }
+}
+
+# 後方互換性のための統合関数（既存コードのため保持）
+# 引数1: 音声ファイルパス
+# 引数2: クリーンアップするか（true/false、デフォルト: true）
+_tts_playback_and_cleanup() {
+    local audio_file="$1"
+    local cleanup="${2:-true}"
+
+    _tts_playback "$audio_file" || return $?
+
     if [[ "$cleanup" == "true" ]]; then
-        rm -f "$audio_file" || {
-            echo "Warning: Failed to clean up: $audio_file" >&2
-        }
+        _tts_cleanup "$audio_file"
     fi
 }
 
@@ -217,7 +235,12 @@ USAGE
         return 1
     fi
 
-    extra_args+=(--output_path "$output_dir" --file_prefix "${actual_output_file:t:r}")
+    local file_prefix="${actual_output_file:t:r}"
+    if [[ -z "$file_prefix" ]]; then
+        echo "Error: Invalid output filename" >&2
+        return 1
+    fi
+    extra_args+=(--output_path "$output_dir" --file_prefix "$file_prefix")
     local ext="${actual_output_file:t:e}"
     if [[ -n "$ext" ]]; then
         # サポートされているフォーマットの検証
@@ -243,7 +266,8 @@ USAGE
     # mlx-audio v0.3.1+ の内部実装による非エラー終了コード
     # exit code 144 は音声ファイル生成成功を示す特殊コード
     # 参考: セッション#S26 でのコミット 2084ea9
-    # TODO: MLX Audio公式でこのコードが文書化されているか確認
+    # TODO(issue): MLX Audio公式でこのコードが文書化されているか確認
+    # 参考: https://github.com/ml-explore/mlx-audio/issues
     _tts_check_status $tts_status || return $?
 
     # 出力ファイルの存在確認
@@ -387,7 +411,8 @@ USAGE
     # mlx-audio v0.3.1+ の内部実装による非エラー終了コード
     # exit code 144 は音声ファイル生成成功を示す特殊コード
     # 参考: セッション#S26 でのコミット 2084ea9
-    # TODO: MLX Audio公式でこのコードが文書化されているか確認
+    # TODO(issue): MLX Audio公式でこのコードが文書化されているか確認
+    # 参考: https://github.com/ml-explore/mlx-audio/issues
     if ! _tts_check_status $tts_status; then
         local pattern="${temp_output_file:t:r}"
         [[ -n "$pattern" ]] && rm -f ./"${pattern}"*.wav 2>/dev/null
