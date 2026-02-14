@@ -12,6 +12,9 @@ plans/
 reports/
 .playwright-mcp/
 
+# TTS テストで生成される音声ファイル
+*.wav
+
 # yazi プラグインとテーマ（package.tomlで管理）
 home/config/yazi/plugins/
 home/config/yazi/flavors/
