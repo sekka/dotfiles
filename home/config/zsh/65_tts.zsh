@@ -49,7 +49,7 @@ _tts_sanitize() {
 
     # シェルメタ文字エスケープ（テキスト用のみ）
     if [[ "$escape_shell" == "true" ]]; then
-        text="${text//;/\;}"
+        text="${text//;/\\;}"
         text="${text//|/\\|}"
         text="${text//&/\\&}"
         text="${text//$'\n'/\\n}"
@@ -189,7 +189,10 @@ USAGE
 
     if [[ -z "$output_file" ]]; then
         # 出力ファイル指定がない場合は一時ファイルを作成
-        actual_output_file="audio_output_$$.wav"
+        actual_output_file=$(mktemp --suffix=.wav) || {
+            echo "Error: Failed to create temporary file" >&2
+            return 1
+        }
         auto_play=true
     else
         # セキュリティ: 出力ファイルパスのサニタイゼーション
@@ -267,7 +270,11 @@ function tts-clone() {
     setopt local_options nullglob
 
     # 一時ファイルのクリーンアップ設定
-    local temp_output_file="audio_clone_$$.wav"
+    local temp_output_file
+    temp_output_file=$(mktemp --suffix=.wav) || {
+        echo "Error: Failed to create temporary file" >&2
+        return 1
+    }
 
     local model="$_TTS_MODEL_DEFAULT"
     local reference_audio=""
@@ -382,14 +389,16 @@ USAGE
     # 参考: セッション#S26 でのコミット 2084ea9
     # TODO: MLX Audio公式でこのコードが文書化されているか確認
     if ! _tts_check_status $tts_status; then
-        rm -f ./"${temp_output_file:t:r}"*.wav 2>/dev/null
+        local pattern="${temp_output_file:t:r}"
+        [[ -n "$pattern" ]] && rm -f ./"${pattern}"*.wav 2>/dev/null
         return $tts_status
     fi
 
     # 生成されたファイルを探して再生
     local playback_file
     playback_file=$(_tts_find_output_file "$output_dir" "${temp_output_file:t:r}" "wav") || {
-        rm -f ./"${temp_output_file:t:r}"*.wav 2>/dev/null
+        local pattern="${temp_output_file:t:r}"
+        [[ -n "$pattern" ]] && rm -f ./"${pattern}"*.wav 2>/dev/null
         return 1
     }
 
