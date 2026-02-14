@@ -11,13 +11,7 @@
 #   tts-clone ref.wav "生成テキスト"      - ボイスクローン再生
 #   tts-voices                           - 参照音声ディレクトリを開く
 
-# mlx_audio.tts.generate コマンドが利用可能かチェック
-if ! command -v mlx_audio.tts.generate >/dev/null 2>&1; then
-    return 0
-fi
-
-# コマンドが実際に実行可能かチェック（追加の安全性チェック）
-# --help オプションで正常に動作するか確認
+# mlx_audio.tts.generate コマンドの実行可能性チェック
 if ! mlx_audio.tts.generate --help >/dev/null 2>&1; then
     return 0
 fi
@@ -27,37 +21,90 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
     # セキュリティ: テキスト入力のサニタイゼーション
     # シェルメタ文字をエスケープしてコマンドインジェクションを防止
     _tts_sanitize_text() {
-        local text="$1"
-        # バックスラッシュをエスケープ
-        text="${text//\\/\\\\}"
-        # ダブルクォートをエスケープ
-        text="${text//\"/\\\"}"
-        # ドル記号をエスケープ（変数展開防止）
-        text="${text//\$/\\\$}"
-        # バッククォートをエスケープ（コマンド置換防止）
-        text="${text//\`/\\\`}"
-        # セミコロンをエスケープ（コマンド連結防止）
-        text="${text//;/\\;}"
-        # パイプをエスケープ
-        text="${text//|/\\|}"
-        # アンパサンドをエスケープ
-        text="${text//&/\\&}"
-        # 改行をエスケープ
-        text="${text//$'\n'/\\n}"
-        echo "$text"
+        _tts_sanitize "$1" true
     }
 
     # セキュリティ: ファイルパスのサニタイゼーション
     # ダブルクォート内で安全に使用できるようエスケープ
     _tts_sanitize_path() {
-        local path="$1"
-        # ダブルクォートをエスケープ
-        path="${path//\"/\\\"}"
-        # ドル記号をエスケープ
-        path="${path//\$/\\\$}"
-        # バッククォートをエスケープ
-        path="${path//\`/\\\`}"
-        echo "$path"
+        _tts_sanitize "$1" false
+    }
+
+    # セキュリティ: 共通サニタイゼーション関数
+    # 引数1: サニタイズするテキスト
+    # 引数2: シェルメタ文字もエスケープするか（true/false、デフォルト: false）
+    _tts_sanitize() {
+        local text="$1"
+        local escape_shell="${2:-false}"
+
+        # 基本エスケープ（両関数共通）
+        text="${text//\\/\\\\}"
+        text="${text//\"/\\\"}"
+        text="${text//\$/\\\$}"
+        text="${text//\`/\\\`}"
+
+        # シェルメタ文字エスケープ（テキスト用のみ）
+        if [[ "$escape_shell" == "true" ]]; then
+            text="${text//;/\\;}"
+            text="${text//|/\\|}"
+            text="${text//&/\\&}"
+            text="${text//$'\n'/\\n}"
+        fi
+
+        echo "$text"
+    }
+
+    # 出力ファイル検出関数
+    # MLX Audioが生成したファイル（prefix_000.ext形式）を検索
+    # 引数1: 出力ディレクトリ
+    # 引数2: ファイルプレフィックス
+    # 引数3: 拡張子（デフォルト: wav）
+    _tts_find_output_file() {
+        local output_dir="$1"
+        local file_prefix="$2"
+        local extension="${3:-wav}"
+
+        setopt local_options nullglob
+
+        local expected_file="${output_dir}/${file_prefix}.${extension}"
+        local candidates=("${expected_file%.*}"_*.${extension})
+
+        if [[ -f "$expected_file" ]]; then
+            echo "$expected_file"
+            return 0
+        elif (( ${#candidates[@]} > 0 )); then
+            echo "${candidates[1]}"
+            return 0
+        fi
+
+        echo "Error: Expected output file not created" >&2
+        echo "Expected: $expected_file or ${expected_file%.*}_NNN.${extension}" >&2
+        return 1
+    }
+
+    # 音声再生とクリーンアップ（macOS専用）
+    # 引数1: 音声ファイルパス
+    # 引数2: クリーンアップするか（true/false、デフォルト: true）
+    _tts_playback_and_cleanup() {
+        local audio_file="$1"
+        local cleanup="${2:-true}"
+
+        if [[ -z "$audio_file" || ! -f "$audio_file" ]]; then
+            echo "Warning: Audio file not found for playback" >&2
+            return 1
+        fi
+
+        echo "Playing audio..."
+        afplay "$audio_file" || {
+            echo "Warning: Playback failed" >&2
+        }
+
+        # クリーンアップ
+        if [[ "$cleanup" == "true" ]]; then
+            rm -f "$audio_file" || {
+                echo "Warning: Failed to clean up: $audio_file" >&2
+            }
+        fi
     }
 
     # tts - 基本的なテキスト→音声生成+再生
@@ -75,6 +122,8 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
     # これらのオプションを追加する場合は、以下の形式で extra_args に追加:
     # extra_args+=(--speed "$speed_value")
     function tts() {
+        setopt local_options nullglob
+
         local model="mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16"
         local output_file=""
         local text=""
@@ -117,69 +166,71 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
         # mlx_audio.tts.generate に渡す前にエスケープ
         text=$(_tts_sanitize_text "$text")
 
-        # 出力ファイル指定がなければデフォルトで再生
+        # 出力ファイルの決定
+        local actual_output_file="$output_file"
+        local auto_play=false
+
         if [[ -z "$output_file" ]]; then
-            extra_args+=(--play)
+            # 出力ファイル指定がない場合は一時ファイルを作成
+            actual_output_file="audio_output_$$.wav"
+            auto_play=true
         else
             # セキュリティ: 出力ファイルパスのサニタイゼーション
-            output_file=$(_tts_sanitize_path "$output_file")
+            actual_output_file=$(_tts_sanitize_path "$output_file")
+        fi
 
-            local output_dir="${output_file:h}"
-            # ディレクトリ作成とエラーハンドリング
-            if [[ ! -d "$output_dir" ]]; then
-                mkdir -p "$output_dir" || {
-                    echo "Error: Failed to create output directory: $output_dir" >&2
-                    return 1
-                }
-            fi
-            # 書き込み権限チェック
-            if [[ ! -w "$output_dir" ]]; then
-                echo "Error: Output directory not writable: $output_dir" >&2
+        local output_dir="${actual_output_file:h}"
+        # ディレクトリ作成とエラーハンドリング
+        if [[ ! -d "$output_dir" ]]; then
+            mkdir -p "$output_dir" || {
+                echo "Error: Failed to create output directory: $output_dir" >&2
                 return 1
+            }
+        fi
+        # 書き込み権限チェック
+        if [[ ! -w "$output_dir" ]]; then
+            echo "Error: Output directory not writable: $output_dir" >&2
+            return 1
+        fi
+
+        extra_args+=(--output_path "$output_dir" --file_prefix "${actual_output_file:t:r}")
+        local ext="${actual_output_file:t:e}"
+        if [[ -n "$ext" ]]; then
+            # サポートされているフォーマットの検証
+            local -r valid_formats=("wav" "mp3" "flac" "ogg" "aac" "opus")
+            if [[ ! " ${valid_formats[*]} " =~ " ${ext} " ]]; then
+                echo "Warning: Audio format '$ext' may not be supported" >&2
+                echo "Supported formats: ${valid_formats[*]}" >&2
+                echo "Proceeding anyway..." >&2
             fi
-            extra_args+=(--output_path "$output_dir" --file_prefix "${output_file:t:r}")
-            local ext="${output_file:t:e}"
-            if [[ -n "$ext" ]]; then
-                # サポートされているフォーマットの検証
-                local -r valid_formats=("wav" "mp3" "flac" "ogg" "aac" "opus")
-                if [[ ! " ${valid_formats[*]} " =~ " ${ext} " ]]; then
-                    echo "Warning: Audio format '$ext' may not be supported" >&2
-                    echo "Supported formats: ${valid_formats[*]}" >&2
-                    echo "Proceeding anyway..." >&2
-                fi
-                extra_args+=(--audio_format "$ext")
-            fi
+            extra_args+=(--audio_format "$ext")
         fi
 
         # TTS実行
         mlx_audio.tts.generate \
             --model "$model" \
             --text "$text" \
+            --lang_code auto \
             "${extra_args[@]}"
 
         # コマンドの終了ステータスチェック
+        # mlx-audio v0.3.1+ の内部実装による非エラー終了コード
+        # exit code 144 は音声ファイル生成成功を示す特殊コード
+        # 参考: セッション#S26 でのコミット 2084ea9
+        # TODO: MLX Audio公式でこのコードが文書化されているか確認
         local tts_status=$?
-        if (( tts_status != 0 )); then
+        if (( tts_status != 0 && tts_status != 144 )); then
             echo "Error: TTS generation failed with status $tts_status" >&2
             return $tts_status
         fi
 
-        # 出力ファイルが指定されている場合、ファイルが生成されたか確認
-        if [[ -n "$output_file" ]]; then
-            local expected_file="${output_dir}/${output_file:t:r}"
-            if [[ -n "$ext" ]]; then
-                expected_file="${expected_file}.${ext}"
-            else
-                expected_file="${expected_file}.wav"  # デフォルト
-            fi
+        # 出力ファイルの存在確認
+        local playback_file
+        playback_file=$(_tts_find_output_file "$output_dir" "${actual_output_file:t:r}" "${ext:-wav}") || return 1
 
-            # ファイルの存在確認（ワイルドカードで _000, _001 などのサフィックス対応）
-            local generated_files=("${expected_file%.*}"_*.${ext:-wav})
-            if [[ ! -f "$expected_file" ]] && [[ ! -f "${generated_files[1]}" ]]; then
-                echo "Error: Expected output file not created" >&2
-                echo "Expected: $expected_file or ${expected_file%.*}_NNN.${ext:-wav}" >&2
-                return 1
-            fi
+        # 自動再生（output_fileが指定されていない場合のみ）
+        if $auto_play; then
+            _tts_playback_and_cleanup "$playback_file" true
         fi
     }
 
@@ -194,6 +245,12 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
     #   - 品質: クリアな音声、ノイズなし
     #   - パス: 絶対パス（セキュリティのため必須）
     function tts-clone() {
+        setopt local_options nullglob
+
+        # 一時ファイルのクリーンアップ設定
+        local temp_output_file="audio_clone_$$.wav"
+        trap 'rm -f ./audio_clone_$$*.wav' RETURN ERR
+
         local model="mlx-community/Qwen3-TTS-12Hz-0.6B-CustomVoice-bf16"
         local reference_audio=""
         local text=""
@@ -234,6 +291,17 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
             esac
         done
 
+        # ref-text 必須チェック（mlx-audio の Whisper STT バグ回避）
+        if [[ -z "$reference_text" ]]; then
+            {
+                echo "Error: --ref-text is required."
+                echo ""
+                echo "Usage: tts-clone <ref_audio> <text> --ref-text <ref_audio_content>"
+                echo "Example: tts-clone ref.wav \"Hello\" --ref-text \"Reference audio transcript\""
+            } >&2
+            return 1
+        fi
+
         # セキュリティ: 入力値のサニタイゼーション
         text=$(_tts_sanitize_text "$text")
         if [[ -n "$reference_text" ]]; then
@@ -246,39 +314,65 @@ _TTS_REFERENCE_AUDIO_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/qwen3-tts/referen
             return 1
         fi
 
-        # 絶対パス検証（セキュリティベストプラクティス）
-        if [[ "$reference_audio" != /* ]]; then
-            echo "Error: Reference audio path must be absolute: $reference_audio" >&2
-            echo "Hint: Use $_TTS_REFERENCE_AUDIO_DIR/your_file.wav or provide full path" >&2
+        # セキュリティ: 絶対パス検証とパストラバーサル対策
+        local real_path
+        real_path=$(realpath "$reference_audio" 2>/dev/null) || {
+            echo "Error: Invalid reference audio path: $reference_audio" >&2
+            return 1
+        }
+
+        # 許可ディレクトリ内か確認
+        if [[ ! "$real_path" =~ ^"$_TTS_REFERENCE_AUDIO_DIR"/* ]] && \
+           [[ ! "$real_path" =~ ^"$HOME"/* ]]; then
+            echo "Error: Reference audio must be in $_TTS_REFERENCE_AUDIO_DIR or HOME directories" >&2
             return 1
         fi
+
+        # 以降は正規化されたパスを使用
+        reference_audio="$real_path"
 
         # セキュリティ: 参照音声パスのサニタイゼーション
         reference_audio=$(_tts_sanitize_path "$reference_audio")
 
+        # 一時出力ファイルのディレクトリ設定
+        local output_dir="${temp_output_file:h}"
+        if [[ "$output_dir" == "$temp_output_file" ]]; then
+            output_dir="."
+        fi
+
         # TTS実行
         # ボイスクローンパラメータ（mlx_audio.tts.generate v0.3.1+ で検証済み）
         # --ref_audio: 参照音声ファイルのパス
-        # --ref_text: 参照音声の内容（オプショナル、品質向上に寄与）
+        # --ref_text: 参照音声の内容（必須、Whisper STTバグ回避のため）
         local tts_args=(
             --model "$model"
             --text "$text"
             --ref_audio "$reference_audio"
-            --play
+            --ref_text "$reference_text"
+            --lang_code auto
+            --output_path "$output_dir"
+            --file_prefix "${temp_output_file:t:r}"
         )
-
-        if [[ -n "$reference_text" ]]; then
-            tts_args+=(--ref_text "$reference_text")
-        fi
 
         mlx_audio.tts.generate "${tts_args[@]}"
 
         # コマンドの終了ステータスチェック
+        # mlx-audio v0.3.1+ の内部実装による非エラー終了コード
+        # exit code 144 は音声ファイル生成成功を示す特殊コード
+        # 参考: セッション#S26 でのコミット 2084ea9
+        # TODO: MLX Audio公式でこのコードが文書化されているか確認
         local tts_status=$?
-        if (( tts_status != 0 )); then
+        if (( tts_status != 0 && tts_status != 144 )); then
             echo "Error: TTS generation failed with status $tts_status" >&2
             return $tts_status
         fi
+
+        # 生成されたファイルを探して再生
+        local playback_file
+        playback_file=$(_tts_find_output_file "$output_dir" "${temp_output_file:t:r}" "wav") || return 1
+
+        # 再生とクリーンアップ
+        _tts_playback_and_cleanup "$playback_file" true
     }
 
     # tts-voices - 参照音声の管理
