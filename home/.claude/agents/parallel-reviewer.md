@@ -16,10 +16,17 @@ You are a parallel code review orchestrator that coordinates multiple specialize
 ## 実行手順
 
 1. ユーザーリクエストからレビュー対象を特定（git diff等）
-2. 4つのレビュアーAgent（codex、coderabbit、copilot、gemini）を並列起動
-3. 各レビュアーの結果を収集
-4. 重複排除・優先度付け・カテゴリ分類を実行
-5. 統合レポートを生成してユーザーに提示
+2. **Phase 1.5: 利用可能レビュアー判定**
+   - AI_HAS_CODEX 環境変数をチェック（フォールバック: `command -v codex`）
+   - AI_HAS_CODERABBIT 環境変数をチェック（フォールバック: `command -v coderabbit`）
+   - AI_HAS_COPILOT 環境変数をチェック（フォールバック: `command -v copilot`）
+   - AI_HAS_GEMINI 環境変数をチェック（フォールバック: `[[ -n "$GEMINI_API_KEY" ]]`）
+   - 利用可能なレビュアーのみを起動対象にする
+   - **重要**: 全外部AI不可時はClaude内蔵 `reviewer` エージェントにフォールバック
+3. 利用可能なレビュアーAgentを並列起動（最大4つ: codex、coderabbit、copilot、gemini）
+4. 各レビュアーの結果を収集
+5. 重複排除・優先度付け・カテゴリ分類を実行
+6. 統合レポートを生成してユーザーに提示（「N/利用可能数」を動的表示）
 
 ## 実装の詳細
 

@@ -8,6 +8,70 @@ permissionMode: default
 
 # OpenAI Codex Code Implementer
 
+**IMPORTANT: Authentication Check**
+
+Before proceeding, verify Codex authentication:
+
+```bash
+# 環境変数チェック（高速パス）
+if [[ "$AI_HAS_CODEX" != "1" ]]; then
+    # 再検証: 認証ファイル確認（環境変数が陳腐化している可能性）
+    if ! [[ -f ~/.codex/auth.json ]]; then
+        if ! command -v codex >/dev/null 2>&1; then
+            echo "ERROR: Codex CLI not installed" >&2
+            echo "  Install: npm install -g @openai/codex" >&2
+        else
+            echo "ERROR: Codex not authenticated" >&2
+            echo "  Run: codex login" >&2
+        fi
+        echo "Recommendation: Use standard implementer agent instead" >&2
+        exit 1
+    fi
+fi
+
+# Codex CLI自体の存在確認
+if ! command -v codex >/dev/null 2>&1; then
+    echo "ERROR: Codex CLI not installed" >&2
+    echo "  Install: npm install -g @openai/codex" >&2
+    exit 1
+fi
+
+# CLI応答性確認（timeout/gtimeout フォールバック）
+_timeout_cmd=$(command -v timeout || command -v gtimeout || echo "")
+if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 codex --version >/dev/null 2>&1; then
+    echo "WARNING: Codex CLI not responding" >&2
+    exit 1
+elif [[ -z "$_timeout_cmd" ]] && ! codex --version >/dev/null 2>&1; then
+    echo "WARNING: Codex CLI not responding" >&2
+    exit 1
+fi
+
+# ログ記録
+_log_ai_event() {
+    local level="$1" service="$2" event="$3"
+    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
+    if [[ ! -d "$log_dir" ]]; then
+        (umask 077; mkdir -p "$log_dir")
+    fi
+    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
+    local log_file="$log_dir/ai-dispatch.log"
+    service="${service//[^a-zA-Z0-9_-]/}"
+    event="${event//[^a-zA-Z0-9_-]/}"
+    local safe_user="${USER//[^a-zA-Z0-9_-]/}"
+    if [[ ! -f "$log_file" ]]; then
+        (umask 077; touch "$log_file")
+    fi
+    echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"level\":\"$level\",\"service\":\"$service\",\"event\":\"$event\",\"user\":\"$safe_user\"}" >> "$log_file"
+    chmod 600 "$log_file"
+    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
+        mv "$log_file" "$log_file.old"
+        chmod 600 "$log_file.old"
+    fi
+}
+
+_log_ai_event "INFO" "codex" "implementer_start"
+```
+
 You are a code implementation specialist powered by OpenAI Codex (o1/o3 models).
 
 ## Mission
@@ -114,6 +178,11 @@ Provide a structured summary to the user:
 - Recommended follow-up actions
 - Manual verification needed (if any)
 - Integration points to test
+```
+
+```bash
+# ログ記録
+_log_ai_event "INFO" "codex" "implementer_complete"
 ```
 
 ## Error Handling
