@@ -1,8 +1,70 @@
 # ===========================================
 # 67_ai_availability.zsh - AI可用性検出
-# NOTE: macOS (BSD stat) 専用。Linux環境ではCI早期終了で回避。
 # DEPENDENCY: GNU coreutils (gtimeout) - managed via Brewfile
 # ===========================================
+
+# Cross-platform stat helpers
+# These functions provide macOS/Linux compatibility for file metadata operations
+
+_get_file_mtime() {
+    local filepath="$1"
+    if [[ ! -f "$filepath" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    local mtime
+    # macOS: -f%m, Linux: -c%Y
+    mtime=$(stat -f%m "$filepath" 2>/dev/null || stat -c%Y "$filepath" 2>/dev/null)
+
+    if [[ -z "$mtime" ]]; then
+        echo "WARNING: Failed to get mtime for $filepath" >&2
+        echo "0"
+        return 1
+    fi
+
+    echo "$mtime"
+}
+
+_get_file_size() {
+    local filepath="$1"
+    if [[ ! -f "$filepath" ]]; then
+        echo "0"
+        return 1
+    fi
+
+    local size
+    # macOS: -f%z, Linux: -c%s
+    size=$(stat -f%z "$filepath" 2>/dev/null || stat -c%s "$filepath" 2>/dev/null)
+
+    if [[ -z "$size" ]]; then
+        echo "WARNING: Failed to get size for $filepath" >&2
+        echo "0"
+        return 1
+    fi
+
+    echo "$size"
+}
+
+_get_file_perms() {
+    local filepath="$1"
+    if [[ ! -f "$filepath" ]]; then
+        echo "???"
+        return 1
+    fi
+
+    local perms
+    # macOS: -f%OLp (octal permissions), Linux: -c%a
+    perms=$(stat -f%OLp "$filepath" 2>/dev/null || stat -c%a "$filepath" 2>/dev/null)
+
+    if [[ -z "$perms" ]]; then
+        echo "WARNING: Failed to get permissions for $filepath" >&2
+        echo "???"
+        return 1
+    fi
+
+    echo "$perms"
+}
 
 # CLI応答性チェック関数（コマンドインジェクション対策 + gtimeout/timeout依存）
 _check_cli_responsiveness() {
@@ -94,30 +156,34 @@ if [[ -n "$CI" ]] || [[ -n "$GITHUB_ACTIONS" ]] || [[ -n "$GITLAB_CI" ]]; then
 fi
 
 # キャッシュ再利用チェック（30分TTL + 破損検証）
-# NOTE: stat -f%m はmacOS/BSD専用（Linux環境ではCIブロックで早期終了するため問題なし）
-if [[ -f "$_ai_cache_file" ]] && (( $(date +%s) - $(stat -f%m "$_ai_cache_file") < _ai_cache_ttl )); then
-    # キャッシュ内容の完全性チェック（必須変数が全て含まれているか）
-    local _cache_valid=1
-    local _required_vars=("AI_HAS_CODEX" "AI_HAS_GEMINI" "AI_HAS_COPILOT" "AI_HAS_CODERABBIT" "AI_AVAILABLE_MODELS")
+if [[ -f "$_ai_cache_file" ]]; then
+    _cache_mtime=$(_get_file_mtime "$_ai_cache_file")
+    _cache_age=$(( $(date +%s) - _cache_mtime ))
 
-    for _var in "${_required_vars[@]}"; do
-        if ! grep -qF "export ${_var}=" "$_ai_cache_file" 2>/dev/null; then
-            _cache_valid=0
-            break
-        fi
-    done
+    if (( _cache_age < _ai_cache_ttl )); then
+        # キャッシュ内容の完全性チェック（必須変数が全て含まれているか）
+        _cache_valid=1
+        _required_vars=("AI_HAS_CODEX" "AI_HAS_GEMINI" "AI_HAS_COPILOT" "AI_HAS_CODERABBIT" "AI_AVAILABLE_MODELS")
 
-    if (( _cache_valid )); then
-        # キャッシュ破損検証（source可能かチェック）
-        if source "$_ai_cache_file" 2>/dev/null; then
-            return 0  # キャッシュ有効
+        for _var in "${_required_vars[@]}"; do
+            if ! grep -qF "export ${_var}=" "$_ai_cache_file" 2>/dev/null; then
+                _cache_valid=0
+                break
+            fi
+        done
+
+        if (( _cache_valid )); then
+            # キャッシュ破損検証（source可能かチェック）
+            if source "$_ai_cache_file" 2>/dev/null; then
+                return 0  # キャッシュ有効
+            else
+                echo "WARNING: Cache corrupted, rebuilding..." >&2
+                rm -f "$_ai_cache_file"
+            fi
         else
-            echo "WARNING: Cache corrupted, rebuilding..." >&2
+            echo "WARNING: Cache incomplete, rebuilding..." >&2
             rm -f "$_ai_cache_file"
         fi
-    else
-        echo "WARNING: Cache incomplete, rebuilding..." >&2
-        rm -f "$_ai_cache_file"
     fi
 fi
 
@@ -127,33 +193,53 @@ _detect_ai_availability() {
     local auth_files="$2"   # パイプ区切り（複数ファイル対応）
     local env_var="$3"
 
-    # CLI存在確認（先にチェック: CLI未インストール時は早期終了）
+    # Step 1: CLI存在確認（先にチェック: CLI未インストール時は早期終了）
     if ! command -v "$ai_name" >/dev/null 2>&1; then
         return 1  # CLI未インストール
     fi
 
-    # 環境変数チェック（優先）
-    if [[ -n "$env_var" ]] && [[ -n "${(P)env_var}" ]]; then
-        if _check_cli_responsiveness "$ai_name" 2; then
-            return 0  # 利用可能
-        else
-            return 1  # CLI応答なし
-        fi
+    # Step 2: CLI応答性チェック（最優先: OAuth/キャッシュ認証を検出）
+    # NOTE: Gemini (OAuth), CodeRabbit (動的認証) はファイル/環境変数なしでも動作可能
+    if _check_cli_responsiveness "$ai_name" 2; then
+        return 0  # 利用可能
     fi
 
-    # 認証ファイルチェック（パイプ区切り対応）
+    # Step 3: フォールバック - 環境変数チェック
+    if [[ -n "$env_var" ]] && [[ -n "${(P)env_var}" ]]; then
+        return 0  # 環境変数認証あり（CLI応答なしでも一旦判定）
+    fi
+
+    # Step 4: フォールバック - 認証ファイルチェック（パイプ区切り対応）
     if [[ -n "$auth_files" ]]; then
         local IFS='|'
         local -a file_list=("${(@s:|:)auth_files}")
-        local found=0
 
         for auth_file in "${file_list[@]}"; do
             if [[ -f "$auth_file" ]]; then
-                # パーミッション検証
-                local current_perm=$(stat -f%A "$auth_file" 2>/dev/null)
-                if [[ "$current_perm" != "600" ]]; then
+                # SECURITY: 所有者確認でTOCTOU攻撃を防止（chmod前に確認）
+                local file_owner
+                if command -v stat >/dev/null 2>&1; then
+                    file_owner=$(stat -f%Su "$auth_file" 2>/dev/null || stat -c%U "$auth_file" 2>/dev/null)
+                fi
+
+                if [[ -z "$file_owner" ]]; then
+                    echo "WARNING: Failed to get owner for $auth_file" >&2
+                    return 1
+                fi
+
+                if [[ "$file_owner" != "$USER" ]]; then
+                    echo "ERROR: $auth_file is not owned by $USER (owner: $file_owner)" >&2
+                    return 1
+                fi
+
+                # パーミッション検証（600 or 400 を許可）
+                local current_perm=$(_get_file_perms "$auth_file")
+                if [[ "$current_perm" != "600" ]] && [[ "$current_perm" != "400" ]]; then
                     echo "WARNING: $auth_file has insecure permissions ($current_perm). Auto-fixing to 600..." >&2
-                    chmod 600 "$auth_file"
+                    chmod 600 "$auth_file" 2>/dev/null || {
+                        echo "ERROR: Failed to fix permissions for $auth_file" >&2
+                        return 1
+                    }
                 fi
 
                 # シンボリックリンク検出（セキュリティ）
@@ -162,24 +248,12 @@ _detect_ai_availability() {
                     return 1
                 fi
 
-                found=1
-                break
+                return 0  # 認証ファイル存在
             fi
         done
-
-        if (( found )); then
-            # CLI応答性確認
-            if _check_cli_responsiveness "$ai_name" 2; then
-                return 0  # 利用可能
-            else
-                return 1  # CLI応答なし
-            fi
-        else
-            return 1  # 認証ファイルなし
-        fi
     fi
 
-    return 1  # 環境変数も認証ファイルもなし
+    return 1  # CLI応答なし かつ 環境変数/認証ファイルもなし
 }
 
 _ai_models=("claude")  # Claude Code常に利用可能
@@ -224,12 +298,13 @@ fi
 
 # Copilot - GitHub CLI認証 + API疎通確認（タイムアウト保護）
 # NOTE: gh api user は追加の信頼性チェック（ネットワーク遅延対策: 5秒タイムアウト）
+# SECURITY: stdin を /dev/null にリダイレクト（入力待ちブロック防止）
 _gh_ok=0
 if [[ -n "$_timeout_cmd" ]]; then
-    $_timeout_cmd 5 sh -c 'gh auth status >/dev/null 2>&1 && gh api user --jq .login >/dev/null 2>&1' && _gh_ok=1
+    $_timeout_cmd 5 sh -c 'gh auth status </dev/null >/dev/null 2>&1 && gh api user --jq .login </dev/null >/dev/null 2>&1' && _gh_ok=1
 else
     # timeout未インストール時はgh auth status のみチェック
-    gh auth status >/dev/null 2>&1 && _gh_ok=1
+    gh auth status </dev/null >/dev/null 2>&1 && _gh_ok=1
 fi
 
 if (( _gh_ok )); then
@@ -265,7 +340,13 @@ fi
 
 # AI利用可能リストをエクスポート
 # NOTE: Claudeは常に含まれる（Claude Code本体）
-export AI_AVAILABLE_MODELS="${(j:,:)_ai_models}"
+# bash互換のため IFS を利用した配列結合
+if [[ -n "$ZSH_VERSION" ]]; then
+    export AI_AVAILABLE_MODELS="${(j:,:)_ai_models}"
+else
+    # bash環境（サブシェルでIFSを変更）
+    export AI_AVAILABLE_MODELS="$(IFS=','; echo "${_ai_models[*]}")"
+fi
 
 # キャッシュ保存（ディレクトリがなければ作成）
 # セキュリティ: キャッシュファイルを作成前に安全な権限でディレクトリ作成
@@ -283,3 +364,4 @@ export AI_AVAILABLE_MODELS="${(j:,:)_ai_models}"
 ) || echo "WARNING: Failed to write AI availability cache" >&2
 
 unset _ai_models _ai_cache_file _ai_cache_ttl _copilot_ok _gh_ok _ai_auth_files _ai_env_vars
+unset -f _get_file_mtime _get_file_size _get_file_perms
