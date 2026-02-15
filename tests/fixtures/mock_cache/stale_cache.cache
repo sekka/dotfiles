@@ -1,0 +1,5 @@
+export AI_HAS_CODEX='1'
+export AI_HAS_GEMINI='1'
+export AI_HAS_COPILOT='0'
+export AI_HAS_CODERABBIT='0'
+export AI_AVAILABLE_MODELS='claude,codex,gemini'
