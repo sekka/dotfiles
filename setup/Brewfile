@@ -11,6 +11,7 @@ brew "tpm"                # https://formulae.brew.sh/formula/tpm              # 
 # === ターミナル ===
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher    # 超すごいgrep
 brew "bat"                # https://formulae.brew.sh/formula/bat              # すごいcat
+brew "coreutils"          # https://formulae.brew.sh/formula/coreutils        # GNU基本ツール（gtimeout等 for AI検出）
 brew "eza"                # https://formulae.brew.sh/formula/eza              # すごいls
 brew "fd"                 # https://formulae.brew.sh/formula/fd               # すごいfind
 brew "fpp"                # https://formulae.brew.sh/formula/fpp              # パスピッカー
