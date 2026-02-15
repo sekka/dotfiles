@@ -8,6 +8,7 @@ Brewfile.lock.json
 .claude/stats-cache.json
 .claude/logs/
 .claude/sessions/
+home/.claude/state/
 plans/
 reports/
 .playwright-mcp/
