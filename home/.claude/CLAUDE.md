@@ -56,6 +56,7 @@
 - コードレビュー: `/reviewing-with-claude`（軽量）, `/reviewing-parallel`（包括的）
 - 設計相談: `/ask-peer`
 - 技術選定: `/evaluating-tools`
+- AI選択: `/multi-ai-dispatch`（環境に応じた最適AIルーティング）
 
 ## オーケストレーション戦略
 
@@ -86,6 +87,32 @@
 - コードレビュー
 - 品質チェック
 - セキュリティ監査
+
+#### 環境適応ルーティング
+
+AI可用性に応じた動的ルーティング（AI_AVAILABLE_MODELS環境変数で判定）:
+
+**Gemini利用可能時 (AI_HAS_GEMINI=1):**
+- Research（大規模コードベース調査） → gemini-researcher
+
+**Codex利用可能時 (AI_HAS_CODEX=1):**
+- Implementation（深い推論が必要） → codex-implementer
+
+**Copilot利用可能時 (AI_HAS_COPILOT=1):**
+- Review（GitHub統合重視） → copilot-reviewer
+
+**CodeRabbit利用可能時 (AI_HAS_CODERABBIT=1):**
+- Review（セキュリティ重視） → coderabbit-reviewer
+
+**複数AI利用可能時:**
+- Review（包括的） → parallel-reviewer（全利用可能レビュアーを並列実行）
+
+**フォールバック（Claudeのみ）:**
+- 全タスク → Claude内蔵エージェント（researcher/implementer/reviewer）
+
+**判定方法:**
+- 環境変数: `AI_HAS_CODEX`, `AI_HAS_GEMINI`, `AI_HAS_COPILOT`, `AI_HAS_CODERABBIT`
+- または: `command -v codex/gemini/copilot/coderabbit` で直接確認
 
 #### 並列 vs 逐次実行
 
@@ -135,3 +162,4 @@
 - TDD: `@.claude/rules/tdd-workflow.md`
 - セキュリティ: `@.claude/rules/security.md`
 - サブエージェント定義: `@.claude/agents/`
+- AI統合インターフェース: `@.claude/rules/ai-interface.md`

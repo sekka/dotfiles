@@ -11,6 +11,7 @@
   },
   "permissions": {
     "allow": [
+      "Bash(ai-refresh)",
       "Bash(basename:*)",
       "Bash(bash:*)",
       "Bash(brew:*)",
@@ -20,9 +21,12 @@
       "Bash(claude help:*)",
       "Bash(coderabbit review:*)",
       "Bash(codesign:*)",
-      "Bash(codex review:*)",
       "Bash(codex --full-auto:*)",
+      "Bash(codex exec:*)",
+      "Bash(codex review:*)",
+      "Bash(codex:*)",
       "Bash(command -v codex)",
+      "Bash(command -v:*)",
       "Bash(command brew bundle)",
       "Bash(copilot:*)",
       "Bash(defaults read:*)",
@@ -37,6 +41,7 @@
       "Bash(fzf:*)",
       "Bash(gemini:*)",
       "Bash(gh api:*)",
+      "Bash(gh auth status:*)",
       "Bash(gh pr comment:*)",
       "Bash(gh pr diff:*)",
       "Bash(gh pr view:*)",
@@ -59,31 +64,32 @@
       "Bash(mdfind:*)",
       "Bash(mise:*)",
       "Bash(mkdir:*)",
+      "Bash(mlx_audio.tts.generate:*)",
       "Bash(navi *)",
-      "Bash(nvim:*)",
       "Bash(node -e:*)",
       "Bash(npx tsc:*)",
+      "Bash(nvim:*)",
       "Bash(oxlint:*)",
+      "Bash(playwright-cli:*)",
       "Bash(printenv:*)",
       "Bash(rg:*)",
       "Bash(shellcheck:*)",
+      "Bash(source:*)",
       "Bash(sqlite3:*)",
       "Bash(test:*)",
       "Bash(timeout:*)",
       "Bash(tmux:*)",
       "Bash(tree:*)",
+      "Bash(tts-clone)",
+      "Bash(tts-clone:*)",
+      "Bash(tts:*)",
+      "Bash(uv tool list:*)",
+      "Bash(uv tool run:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
       "Bash(yazi:*)",
       "Bash(zoxide:*)",
       "Edit(*)",
-      "mcp__chrome-devtools__*",
-      "mcp__deepwiki__*",
-      "mcp__plugin_claude-mem_mem-search__*",
-      "mcp__plugin_context7_context7__*",
-      "mcp__plugin_playwright_playwright__*",
-      "mcp__plugin_serena_serena__*",
-      "mcp__sequential-thinking__*",
       "Skill(agent-memory)",
       "Skill(asking-peer)",
       "Skill(commit)",
@@ -101,7 +107,14 @@
       "Skill(review-with-multi-ai)",
       "Skill(writing-documentation)",
       "WebSearch",
-      "Write(*)"
+      "Write(*)",
+      "mcp__chrome-devtools__*",
+      "mcp__deepwiki__*",
+      "mcp__plugin_claude-mem_mem-search__*",
+      "mcp__plugin_context7_context7__*",
+      "mcp__plugin_playwright_playwright__*",
+      "mcp__plugin_serena_serena__*",
+      "mcp__sequential-thinking__*"
     ],
     "deny": [
       "Bash(git rebase:*)",
@@ -112,16 +125,16 @@
       "Bash(rm -rf ~/*)",
       "Bash(rm -rf:*)",
       "Bash(sudo:*)",
-      "Read(**/.env*)",
       "Read(**/*.key)",
       "Read(**/*.pem)",
       "Read(**/*key*)",
       "Read(**/*secret*)",
       "Read(**/*token*)",
+      "Read(**/.env*)",
       "Read(**/secrets/**)",
       "Read(~/.ssh/*)",
-      "Write(**/.env*)",
-      "Write(**/*secret*)"
+      "Write(**/*secret*)",
+      "Write(**/.env*)"
     ],
     "ask": [
       "Bash(chmod:*)",
@@ -309,22 +322,40 @@
   "plansDirectory": "./plans",
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
-      "source": { "source": "github", "repo": "anthropics/skills" }
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
     },
     "thedotmack": {
-      "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
+      }
     },
     "claude-code-harness-marketplace": {
-      "source": { "source": "github", "repo": "Chachamaru127/claude-code-harness" }
+      "source": {
+        "source": "github",
+        "repo": "Chachamaru127/claude-code-harness"
+      }
     },
     "hiropon-plugins": {
-      "source": { "source": "github", "repo": "hiroro-work/claude-plugins" }
+      "source": {
+        "source": "github",
+        "repo": "hiroro-work/claude-plugins"
+      }
     },
     "Mixedbread-Grep": {
-      "source": { "source": "git", "url": "https://github.com/mixedbread-ai/mgrep.git" }
+      "source": {
+        "source": "git",
+        "url": "https://github.com/mixedbread-ai/mgrep.git"
+      }
     },
     "claude-mem-jp": {
-      "source": { "source": "github", "repo": "Chachamaru127/claude-mem-jp" }
+      "source": {
+        "source": "github",
+        "repo": "Chachamaru127/claude-mem-jp"
+      }
     }
   }
 }
