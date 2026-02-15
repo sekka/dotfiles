@@ -22,8 +22,8 @@ if [[ -z $file_path ]]; then
   exit 0
 fi
 
-# Validate that the file is .claude/settings.local.json
-if ! [[ $file_path =~ \.claude/settings\.local\.json$ ]]; then
+# Validate that the file is .claude/settings.json or .claude/settings.local.json
+if ! [[ $file_path =~ \.claude/settings(\.local)?\.json$ ]]; then
   exit 0 # Not a target file, skip silently
 fi
 
@@ -37,7 +37,7 @@ temp_file=$(mktemp)
 trap 'rm -f -- "$temp_file"' EXIT
 
 # Sort permissions using jq
-if ! jq '.permissions.allow |= sort | .permissions.deny |= sort' "$file_path" >"$temp_file" 2>/dev/null; then
+if ! jq '.permissions.allow |= sort | .permissions.deny |= sort | .permissions.ask |= sort' "$file_path" >"$temp_file" 2>/dev/null; then
   exit 1
 fi
 
