@@ -153,7 +153,7 @@ async function generateTmuxStatus(): Promise<string> {
 		parts.push(wks);
 	}
 
-	return parts.join("  ");
+	return parts.join(" ");
 }
 
 // ============================================================================

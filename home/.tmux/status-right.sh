@@ -8,4 +8,4 @@ waiting=$(echo "$agents" | grep -c "Waiting")
 out=""
 [ "$running" -gt 0 ] 2>/dev/null && out="${running}R "
 [ "$waiting" -gt 0 ] 2>/dev/null && out="${out}${waiting}W"
-[ -n "$out" ] && echo "✻ $out"
+[ -n "$out" ] && echo "✻ $out "
