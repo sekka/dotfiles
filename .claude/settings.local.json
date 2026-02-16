@@ -164,7 +164,9 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:zoewave.medium.com)"
+      "WebFetch(domain:zoewave.medium.com)",
+      "WebFetch(domain:lobehub.com)",
+      "Skill(reviewing-with-claude)"
     ],
     "deny": [],
     "ask": []

@@ -49,6 +49,23 @@ fi
 # プラグイン管理
 # ======================
 
+# グローバル変数の初期化
+UPDATE_MODE=false
+INSTALLED_PLUGINS_FILE="$HOME/.claude/plugins/installed_plugins.json"
+
+# 引数パース
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --update)
+    UPDATE_MODE=true
+    shift
+    ;;
+  *)
+    shift
+    ;;
+  esac
+done
+
 # jq が利用可能か確認
 if ! command -v jq &>/dev/null; then
   echo "⚠️  警告: jq がインストールされていません。プラグインの更新検出をスキップします。"
@@ -72,11 +89,87 @@ is_marketplace_added() {
 
 # プラグインがインストール済みか確認
 is_plugin_installed() {
-  local plugin="$1" # 形式: plugin@marketplace
-  # claude plugin list の出力から、プラグイン名を検索
-  # "❯ " プレフィックスを含めることで、誤マッチを防ぐ
-  claude plugin list 2>/dev/null | grep -qF "❯ $plugin"
+  local plugin="$1"
+
+  # jq と installed_plugins.json の両方が必要
+  if [[ $JQ_AVAILABLE != "true" ]] || [[ ! -f $INSTALLED_PLUGINS_FILE ]]; then
+    return 1 # false（未インストール扱い）
+  fi
+
+  # 配列構造に対応: .plugins["name"][0] で存在確認
+  jq -e ".plugins[\"$plugin\"][0]" "$INSTALLED_PLUGINS_FILE" >/dev/null 2>&1
   return $?
+}
+
+# ヘルパー関数: version フィールドから SHA を抽出
+extract_sha_from_version() {
+  local version="$1"
+  # 12桁以上の16進数文字列ならSHA、それ以外はセマンティックバージョン
+  if [[ $version =~ ^[0-9a-f]{12,}$ ]]; then
+    echo "$version"
+  else
+    echo "" # セマンティックバージョン → 比較不可
+  fi
+}
+
+# プラグインの更新が必要か確認
+plugin_needs_update() {
+  local plugin="$1"
+  local marketplace="${plugin##*@}"
+
+  # マーケットプレイスの installLocation を取得
+  local known_marketplaces_file="$HOME/.claude/plugins/known_marketplaces.json"
+  if [[ ! -f $known_marketplaces_file ]]; then
+    echo "   ⚠️  known_marketplaces.json not found (skipping update check)"
+    return 0 # ファイル不明 → 更新必要と判定（安全側）
+  fi
+
+  local install_location
+  install_location=$(jq -r ".[\"$marketplace\"].installLocation // empty" "$known_marketplaces_file" 2>/dev/null)
+
+  if [[ -z $install_location ]] || [[ ! -d "$install_location/.git" ]]; then
+    echo "   ⚠️  Marketplace '$marketplace' not found or invalid (skipping update check)"
+    return 0 # マーケットプレイス不明 → 更新必要と判定（安全側）
+  fi
+
+  # マーケットプレイス HEAD SHA を取得
+  local marketplace_head
+  if ! marketplace_head=$(cd "$install_location" && git rev-parse HEAD 2>/dev/null); then
+    echo "   ⚠️  Failed to get HEAD for marketplace '$marketplace' (skipping update check)"
+    return 0 # HEAD取得失敗 → 更新必要と判定（安全側）
+  fi
+
+  # SHA フォーマット検証（40桁の16進数）
+  if [[ ! $marketplace_head =~ ^[0-9a-f]{40}$ ]]; then
+    echo "   ⚠️  Invalid git SHA format for '$marketplace' (skipping update check)"
+    return 0 # SHA不正 → 更新必要と判定（安全側）
+  fi
+
+  # インストール済み SHA を取得
+  local installed_sha
+  installed_sha=$(jq -r ".plugins[\"$plugin\"][0].gitCommitSha // empty" "$INSTALLED_PLUGINS_FILE" 2>/dev/null)
+
+  if [[ -n $installed_sha ]]; then
+    # gitCommitSha がある場合: 完全一致確認
+    [[ $installed_sha == "$marketplace_head" ]] && return 1 # 更新不要
+    return 0                                                # 更新必要
+  fi
+
+  # gitCommitSha がない場合: version フィールドから SHA を抽出
+  local version
+  version=$(jq -r ".plugins[\"$plugin\"][0].version // empty" "$INSTALLED_PLUGINS_FILE" 2>/dev/null)
+  local version_sha
+  version_sha=$(extract_sha_from_version "$version")
+
+  if [[ -n $version_sha ]]; then
+    # version が SHA の場合: プレフィックス一致確認（12桁で比較）
+    [[ $marketplace_head == "$version_sha"* ]] && return 1 # 更新不要
+    return 0                                               # 更新必要
+  fi
+
+  # セマンティックバージョン（1.0.0等）の場合 → 更新スキップ
+  echo "   📝  Plugin '$plugin' uses semantic version '$version' (skipping update check)"
+  return 1 # 更新不要
 }
 
 # マーケットプレースを追加または更新
@@ -85,8 +178,12 @@ ensure_marketplace() {
   local source="$2" # 追加時のソース（GitHub repo または URL）
 
   if is_marketplace_added "$name"; then
-    echo "📦 Marketplace '$name' を更新中..."
-    claude plugin marketplace update "$name"
+    if [[ $UPDATE_MODE == "true" ]]; then
+      echo "📦 Marketplace '$name' を更新中..."
+      claude plugin marketplace update "$name"
+    else
+      echo "📦 Marketplace '$name' は追加済み（スキップ）"
+    fi
   else
     echo "📦 Marketplace '$source' を追加中..."
     claude plugin marketplace add "$source"
@@ -98,11 +195,19 @@ ensure_plugin() {
   local plugin="$1" # 形式: plugin@marketplace
 
   if is_plugin_installed "$plugin"; then
-    echo "🔌 Plugin '$plugin' を更新中..."
-    if ! claude plugin update "$plugin" 2>/dev/null; then
-      echo "   ⚠️  プラグインの更新に失敗しました（続行します）"
+    if [[ $UPDATE_MODE == "true" ]]; then
+      if plugin_needs_update "$plugin"; then
+        echo "🔌 Plugin '$plugin' を更新中..."
+        if ! claude plugin update "$plugin" 2>/dev/null; then
+          echo "   ⚠️  プラグインの更新に失敗しました（続行します）"
+        else
+          echo "   ✅ プラグインを更新しました"
+        fi
+      else
+        echo "🔌 Plugin '$plugin' は最新です（スキップ）"
+      fi
     else
-      echo "   ✅ プラグインを更新しました"
+      echo "🔌 Plugin '$plugin' はインストール済み（スキップ）"
     fi
   else
     echo "🔌 Plugin '$plugin' をインストール中..."
