@@ -1,6 +1,11 @@
 {
   "permissions": {
     "allow": [
+      "Bash(bats:*)",
+      "Bash(coderabbit:*)",
+      "Bash(else)",
+      "Bash(then)",
+      "Bash(unset:*)",
       "WebFetch(domain:agentnativedev.medium.com)",
       "WebFetch(domain:alceo.simplex.inc)",
       "WebFetch(domain:alexop.dev)",
@@ -161,12 +166,7 @@
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
-      "Bash(unset:*)",
-      "WebFetch(domain:zoewave.medium.com)",
-      "Bash(then)",
-      "Bash(else)",
-      "Bash(bats:*)",
-      "Bash(coderabbit:*)"
+      "WebFetch(domain:zoewave.medium.com)"
     ],
     "deny": [],
     "ask": []
