@@ -134,13 +134,19 @@ run = "ccsearch"
 description = "Claude Codeのセッション使用状況を表示"
 run = "ccusage"
 
-[tasks."llm-claude:sort-permissions-global"]
-description = "global settings.json の permissions を辞書順ソート"
+# home/.claude/ のグローバル設定ファイル（シンボリックリンク元）
+[tasks."llm-claude:sort-permissions-home-global"]
+description = "home/.claude/settings.json の permissions を辞書順ソート"
 run = "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file=$HOME/dotfiles/home/.claude/settings.json"
 
-[tasks."llm-claude:sort-permissions-local"]
-description = "local settings.local.json の permissions を辞書順ソート"
-run = "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file=.claude/settings.local.json"
+[tasks."llm-claude:sort-permissions-home-local"]
+description = "home/.claude/settings.local.json の permissions を辞書順ソート"
+run = "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file=$HOME/dotfiles/home/.claude/settings.local.json"
+
+# dotfilesプロジェクト自体の設定ファイル
+[tasks."llm-claude:sort-permissions-project-local"]
+description = "dotfiles/.claude/settings.local.json の permissions を辞書順ソート"
+run = "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file=$HOME/dotfiles/.claude/settings.local.json"
 
 # codemass
 [tasks.llm-codemass]
