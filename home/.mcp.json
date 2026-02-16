@@ -45,10 +45,6 @@
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    },
-    "vibe_kanban": {
-      "command": "npx",
-      "args": ["-y", "vibe-kanban", "--mcp"]
     }
   }
 }
