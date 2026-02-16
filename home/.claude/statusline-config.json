@@ -6,13 +6,13 @@
 		"alwaysShowMain": true
 	},
 	"rateLimits": {
-		"showFiveHour": true,
-		"showWeekly": true,
-		"showSonnetWeekly": true,
-		"showPeriodCost": true
+		"showFiveHour": false,
+		"showWeekly": false,
+		"showSonnetWeekly": false,
+		"showPeriodCost": false
 	},
 	"costs": {
-		"showDailyCost": true,
+		"showDailyCost": false,
 		"showSessionCost": true
 	},
 	"tokens": {
@@ -27,6 +27,6 @@
 	},
 	"display": {
 		"showSeparators": false,
-		"lineBreakBefore": ["weekly"]
+		"lineBreakBefore": []
 	}
 }

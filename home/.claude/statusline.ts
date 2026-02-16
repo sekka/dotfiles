@@ -101,17 +101,6 @@ function buildFirstLine(
 ): string {
 	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.white(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
 
-	// Add IO info (input/output tokens and compact count) using common render function
-	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
-		const ioText = renderIO(
-			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
-			{ inputTokens, outputTokens, compactCount },
-		);
-		if (ioText) {
-			result += ` ${ioText}`;
-		}
-	}
-
 	// Add session info (time and cost) if configured to show in first line
 	if (config.session.showInFirstLine && sessionTimeDisplay) {
 		const sessionText = renderSession({ sessionTimeDisplay, costDisplay });
@@ -174,17 +163,6 @@ async function buildMetricsLine(
 ): Promise<string> {
 	const parts: Array<{ label: string; text: string }> = [];
 
-	// IO metrics (if not shown in first line)
-	if (!config.session.showInFirstLine && (config.tokens.showInputOutput || config.tokens.showCompactCount)) {
-		const ioText = renderIO(
-			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
-			{ inputTokens, outputTokens, compactCount },
-		);
-		if (ioText) {
-			parts.push({ label: "io", text: ioText });
-		}
-	}
-
 	// Session metrics (if not shown in first line)
 	if (!config.session.showInFirstLine && config.session.showElapsedTime) {
 		const sessionText = renderSession({ sessionTimeDisplay, costDisplay });
@@ -201,6 +179,17 @@ async function buildMetricsLine(
 			contextWindowSize: data.context_window?.context_window_size || 200000,
 		});
 		parts.push({ label: "token", text: tokenText });
+	}
+
+	// IO metrics (always enabled, moved after token display)
+	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
+		const ioText = renderIO(
+			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
+			{ inputTokens, outputTokens, compactCount },
+		);
+		if (ioText) {
+			parts.push({ label: "io", text: ioText });
+		}
 	}
 
 	// 5-hour rate limit
