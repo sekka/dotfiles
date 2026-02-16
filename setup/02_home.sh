@@ -123,6 +123,10 @@ for file in "${DOT_FILES[@]}"; do
   link_file "$HOME/dotfiles/home/$file" "$HOME/$file" "$file"
 done
 
+# tmux helper scripts
+ensure_dir "$HOME/.tmux"
+link_file "$HOME/dotfiles/home/.tmux/status-right.sh" "$HOME/.tmux/status-right.sh" "tmux status-right"
+
 # =======================================================================================
 # .config ディレクトリ配下
 # =======================================================================================
@@ -165,6 +169,7 @@ CLAUDE_FILES=(
   settings.local.json
   statusline.ts
   statusline-config.json
+  tmux-status.ts
 )
 
 for file in "${CLAUDE_FILES[@]}"; do

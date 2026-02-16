@@ -7,6 +7,8 @@ brew "mas"                # https://formulae.brew.sh/formula/mas              # 
 # === tmux ===
 brew "tmux"               # https://formulae.brew.sh/formula/tmux             # ターミナルマルチプレクサ
 brew "tpm"                # https://formulae.brew.sh/formula/tpm              # tmuxプラグインマネージャ
+tap "k1LoW/tap"
+brew "k1LoW/tap/tcmux"        # https://github.com/k1LoW/tcmux              # tmuxウィンドウのAIエージェントステータス表示
 
 # === ターミナル ===
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher    # 超すごいgrep
