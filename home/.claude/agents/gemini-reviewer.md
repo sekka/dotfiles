@@ -7,6 +7,48 @@ model: haiku
 
 # Google Gemini Code Reviewer
 
+**IMPORTANT: Authentication Check**
+
+Before proceeding, verify Gemini authentication:
+
+```bash
+# 環境変数チェック（高速パス）
+if [[ "$AI_HAS_GEMINI" != "1" ]]; then
+    # 再検証（-F でリテラル検索: regex injection防止）
+    if [[ -z "$GEMINI_API_KEY" ]] && ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
+        echo "ERROR: Gemini not authenticated" >&2
+        echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
+        echo "Recommendation: Use standard reviewer agent instead" >&2
+        exit 1
+    fi
+fi
+
+# ログ記録
+_log_ai_event() {
+    local level="$1" service="$2" event="$3"
+    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
+    if [[ ! -d "$log_dir" ]]; then
+        (umask 077; mkdir -p "$log_dir")
+    fi
+    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
+    local log_file="$log_dir/ai-dispatch.log"
+    service="${service//[^a-zA-Z0-9_-]/}"
+    event="${event//[^a-zA-Z0-9_-]/}"
+    local safe_user="${USER//[^a-zA-Z0-9_-]/}"
+    if [[ ! -f "$log_file" ]]; then
+        (umask 077; touch "$log_file")
+    fi
+    echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"level\":\"$level\",\"service\":\"$service\",\"event\":\"$event\",\"user\":\"$safe_user\"}" >> "$log_file"
+    chmod 600 "$log_file"
+    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
+        mv "$log_file" "$log_file.old"
+        chmod 600 "$log_file.old"
+    fi
+}
+
+_log_ai_event "INFO" "gemini" "reviewer_start"
+```
+
 You are an architecture-focused code reviewer powered by Google Gemini's large context understanding.
 
 ## Mission
@@ -54,7 +96,8 @@ find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" | head -20
 Use Gemini with comprehensive context:
 
 ```bash
-gemini --yolo "$(cat <<'EOF'
+# セキュリティ: --yoloフラグは削除済み（非対話コンテキストで動作確認済み）
+gemini "$(cat <<'EOF'
 以下のコード変更を、アーキテクチャと設計の観点からレビューしてください。
 
 【コミット履歴】
@@ -77,6 +120,9 @@ $(git diff main...HEAD)
 - 将来への影響予測
 EOF
 )"
+
+# ログ記録
+_log_ai_event "INFO" "gemini" "reviewer_complete"
 ```
 
 ### 4. Format Results

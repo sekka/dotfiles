@@ -7,6 +7,70 @@ model: haiku
 
 # GitHub Copilot Code Reviewer
 
+**IMPORTANT: Authentication Check**
+
+Before proceeding, verify Copilot authentication:
+
+```bash
+# 環境変数チェック（高速パス）
+if [[ "$AI_HAS_COPILOT" != "1" ]]; then
+    # 再検証（GitHub CLI + API疎通）
+    if ! gh auth status >/dev/null 2>&1; then
+        if ! command -v gh >/dev/null 2>&1; then
+            echo "ERROR: GitHub CLI not installed" >&2
+            echo "  Install: brew install gh" >&2
+        else
+            echo "ERROR: GitHub not authenticated" >&2
+            echo "  Run: gh auth login" >&2
+        fi
+        echo "Recommendation: Use standard reviewer agent instead" >&2
+        exit 1
+    fi
+fi
+
+# Copilot CLI自体の存在確認
+if ! command -v copilot >/dev/null 2>&1; then
+    echo "ERROR: Copilot CLI not installed" >&2
+    echo "  Install: gh extension install github/gh-copilot" >&2
+    exit 1
+fi
+
+# CLI応答性確認（timeout/gtimeout フォールバック）
+_timeout_cmd=$(command -v timeout || command -v gtimeout || echo "")
+if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 copilot --version >/dev/null 2>&1; then
+    echo "WARNING: Copilot CLI not responding" >&2
+    exit 1
+elif [[ -z "$_timeout_cmd" ]] && ! copilot --version >/dev/null 2>&1; then
+    echo "WARNING: Copilot CLI not responding" >&2
+    exit 1
+fi
+
+# ログ記録
+_log_ai_event() {
+    local level="$1" service="$2" event="$3"
+    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
+    if [[ ! -d "$log_dir" ]]; then
+        (umask 077; mkdir -p "$log_dir")
+    fi
+    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
+    local log_file="$log_dir/ai-dispatch.log"
+    service="${service//[^a-zA-Z0-9_-]/}"
+    event="${event//[^a-zA-Z0-9_-]/}"
+    local safe_user="${USER//[^a-zA-Z0-9_-]/}"
+    if [[ ! -f "$log_file" ]]; then
+        (umask 077; touch "$log_file")
+    fi
+    echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"level\":\"$level\",\"service\":\"$service\",\"event\":\"$event\",\"user\":\"$safe_user\"}" >> "$log_file"
+    chmod 600 "$log_file"
+    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
+        mv "$log_file" "$log_file.old"
+        chmod 600 "$log_file.old"
+    fi
+}
+
+_log_ai_event "INFO" "copilot" "reviewer_start"
+```
+
 You are a practical code reviewer powered by GitHub Copilot, specializing in GitHub ecosystem integration.
 
 ## Mission
@@ -54,6 +118,7 @@ git diff HEAD -- path/to/file
 Build a comprehensive prompt for Copilot:
 
 ```bash
+# セキュリティ: --allow-all-toolsフラグは削除済み（デフォルトツール権限のみ使用）
 copilot -p "$(cat <<'EOF'
 以下のコード変更をレビューしてください。
 
@@ -74,7 +139,10 @@ $(git diff HEAD)
 3. GitHubでの運用上の推奨事項
 4. CI/CD統合の提案
 EOF
-)" --allow-all-tools
+)"
+
+# ログ記録
+_log_ai_event "INFO" "copilot" "reviewer_complete"
 ```
 
 ### 4. Format Results
@@ -245,7 +313,7 @@ Handle authentication errors gracefully:
 
 1. Get uncommitted changes: `git diff HEAD`
 2. Construct Copilot prompt focusing on GitHub practices
-3. Execute: `copilot -p "[prompt]" --allow-all-tools`
+3. Execute: `copilot -p "[prompt]"` (default tool permissions)
 4. Format output with GitHub-specific recommendations
 
 **Your Output**: Structured review emphasizing GitHub workflows, CI/CD integration, and practical improvements

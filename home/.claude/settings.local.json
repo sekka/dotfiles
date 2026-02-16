@@ -1,8 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "WebFetch(domain:www.soumu.go.jp)",
-      "WebFetch(domain:tau.co.jp)"
-    ]
+    "allow": []
   }
 }

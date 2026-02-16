@@ -1,4 +1,3 @@
-
 # whether to open a graphical window with Serena's logs.
 # This is mainly supported on Windows and (partly) on Linux; not available on macOS.
 # If you want to see the logs in a web browser, use the `web_dashboard` option instead.
@@ -101,3 +100,8 @@ base_modes:
 default_modes:
 - interactive
 - editing
+
+# list of paths to ignore across all projects.
+# Same syntax as gitignore, so you can use * and **.
+# These patterns are merged additively with each project's own ignored_paths.
+ignored_paths: []
