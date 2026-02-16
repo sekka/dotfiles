@@ -11,6 +11,7 @@
   "permissions": {
     "allow": [
       "Bash(ai-refresh)",
+      "Bash(alias:*)",
       "Bash(basename:*)",
       "Bash(bash:*)",
       "Bash(bats:*)",
@@ -63,6 +64,7 @@
       "Bash(ls:*)",
       "Bash(lsof:*)",
       "Bash(mdfind:*)",
+      "Bash(mgrep --web --answer:*)",
       "Bash(mise:*)",
       "Bash(mkdir:*)",
       "Bash(mlx_audio.tts.generate:*)",
