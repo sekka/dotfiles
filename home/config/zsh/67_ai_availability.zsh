@@ -277,21 +277,35 @@ else
     export AI_HAS_CODEX=0
 fi
 
-# Gemini - 環境変数 or OAuth or .env + CLI応答性
-if _detect_ai_availability "gemini" "${_ai_auth_files[gemini]}" "${_ai_env_vars[gemini]}"; then
-    # .envファイルの追加検証（GEMINI_API_KEY の存在確認）
-    if [[ -f ~/.gemini/.env ]] && ! [[ -n "$GEMINI_API_KEY" ]]; then
-        # セキュリティ: -F でリテラル検索（regex injection防止）
-        if grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null && grep -qE '^GEMINI_API_KEY=.+' ~/.gemini/.env 2>/dev/null; then
-            export AI_HAS_GEMINI=1
-            _ai_models+=("gemini")
+# Gemini - 環境変数 or OAuth or .env + CLI応答性（タイムアウト5秒）
+# NOTE: Gemini CLI は OAuth 認証のため、初回実行時に応答が遅い場合がある
+_gemini_available=0
+
+# Step 1: CLI存在確認
+if command -v "gemini" >/dev/null 2>&1; then
+    # Step 2: CLI応答性チェック（Gemini専用: 5秒タイムアウト）
+    if _check_cli_responsiveness "gemini" 5; then
+        _gemini_available=1
+    # Step 3: フォールバック - 環境変数チェック
+    elif [[ -n "${_ai_env_vars[gemini]}" ]] && [[ -n "$GEMINI_API_KEY" ]]; then
+        _gemini_available=1
+    # Step 4: フォールバック - 認証ファイルチェック
+    elif [[ -f ~/.gemini/oauth_creds.json ]] || [[ -f ~/.gemini/.env ]]; then
+        # .envファイルの追加検証（GEMINI_API_KEY の存在確認）
+        if [[ -f ~/.gemini/.env ]]; then
+            # セキュリティ: -F でリテラル検索（regex injection防止）
+            if grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null && grep -qE '^GEMINI_API_KEY=.+' ~/.gemini/.env 2>/dev/null; then
+                _gemini_available=1
+            fi
         else
-            export AI_HAS_GEMINI=0
+            _gemini_available=1  # OAuth認証ファイル存在
         fi
-    else
-        export AI_HAS_GEMINI=1
-        _ai_models+=("gemini")
     fi
+fi
+
+if (( _gemini_available )); then
+    export AI_HAS_GEMINI=1
+    _ai_models+=("gemini")
 else
     export AI_HAS_GEMINI=0
 fi
