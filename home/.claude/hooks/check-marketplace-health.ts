@@ -22,7 +22,7 @@
  */
 
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve, sep } from "node:path";
+import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 // HOME 環境変数の検証
@@ -72,45 +72,13 @@ function loadCache(): Record<string, CacheEntry> {
 	try {
 		if (existsSync(CACHE_FILE)) {
 			const data = JSON.parse(readFileSync(CACHE_FILE, "utf-8"));
-
-			// スキーマ検証: オブジェクトであることを確認
-			if (typeof data !== "object" || data === null || Array.isArray(data)) {
-				console.warn("Cache file has invalid format");
-				if (process.env.DEBUG) {
-					console.debug(
-						`[DEBUG] Invalid cache format: ${typeof data}`,
-					);
-				}
-				return {};
+			// 基本的な型チェック
+			if (data && typeof data === "object" && !Array.isArray(data)) {
+				return data as Record<string, CacheEntry>;
 			}
-
-			// 各エントリを検証
-			for (const [name, entry] of Object.entries(data)) {
-				if (
-					typeof entry !== "object" ||
-					entry === null ||
-					typeof (entry as any).lastChecked !== "number" ||
-					typeof (entry as any).status !== "string"
-				) {
-					console.warn(`Removing invalid cache entry: ${name}`);
-					if (process.env.DEBUG) {
-						console.debug(
-							`[DEBUG] Invalid entry structure: ${JSON.stringify(entry)}`,
-						);
-					}
-					delete data[name];
-				}
-			}
-
-			return data as Record<string, CacheEntry>;
 		}
-	} catch (error) {
-		console.warn("Failed to load cache");
-		if (process.env.DEBUG) {
-			console.debug(
-				`[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
-			);
-		}
+	} catch {
+		// キャッシュ読み込み失敗は正常動作を妨げない
 	}
 	return {};
 }
@@ -230,49 +198,18 @@ function attemptGitRepair(installLocation: string): boolean {
 }
 
 /**
- * ディレクトリを削除（セキュリティチェック付き）
+ * ディレクトリを削除
  */
 function removeDirectory(installLocation: string): boolean {
 	try {
-		// セキュリティ: ~/.claude/plugins 配下のみ削除許可
-		const allowedPath = join(HOME, ".claude", "plugins");
-
-		// CRITICAL: resolve() で相対パスを完全に解決してから検証
-		// これにより ../ などのパストラバーサル攻撃を防ぐ
-		const resolvedLocation = resolve(installLocation);
-		const resolvedAllowed = resolve(allowedPath);
-
-		// ディレクトリセパレータで境界を明確にする
-		// resolvedLocation === resolvedAllowed の場合も許可
-		if (
-			resolvedLocation !== resolvedAllowed &&
-			!resolvedLocation.startsWith(resolvedAllowed + sep)
-		) {
-			console.error(
-				`Security: Attempted to delete outside allowed directory: ${resolvedLocation}`,
-			);
-			if (process.env.DEBUG) {
-				console.debug(
-					`[DEBUG] Resolved path: ${resolvedLocation}, Allowed path: ${resolvedAllowed}`,
-				);
-			}
+		if (!existsSync(installLocation)) {
 			return false;
 		}
 
-		if (!existsSync(resolvedLocation)) {
-			return false;
-		}
-
-		rmSync(resolvedLocation, { recursive: true, force: true });
-		console.log(`Removed corrupted directory: ${resolvedLocation}`);
+		rmSync(installLocation, { recursive: true, force: true });
+		console.log(`Removed corrupted directory: ${installLocation}`);
 		return true;
-	} catch (error) {
-		console.error("Failed to remove directory");
-		if (process.env.DEBUG) {
-			console.debug(
-				`[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
-			);
-		}
+	} catch {
 		return false;
 	}
 }
