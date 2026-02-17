@@ -170,7 +170,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-files.sh"
+            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
           }
         ]
       },
@@ -179,7 +179,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-read.sh"
+            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
           }
         ]
       },

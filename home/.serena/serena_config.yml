@@ -98,8 +98,12 @@ base_modes:
 # The full set of modes to be activated is base_modes + default_modes.
 # These modes can be overridden by the project configuration (project.yml) or through the CLI (--mode).
 default_modes:
-- interactive
-- editing
+  - interactive
+  - editing
+
+# list of paths to ignore across all projects.
+# Same syntax as gitignore, so you can use * and **.
+# These patterns are merged additively with each project's own ignored_paths.
 
 # list of paths to ignore across all projects.
 # Same syntax as gitignore, so you can use * and **.

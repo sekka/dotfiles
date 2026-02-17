@@ -36,5 +36,5 @@
 
 Hooksで機密ファイルへのアクセスを制限済み：
 
-- `protect-files.sh`: `.env*`, `*.key`, `secrets/*` へのアクセスをブロック
+- `protect-sensitive.sh`: `.env*`, `*.key`, `secrets/*` へのアクセスをブロック
 - `validate-command.ts`: 危険なコマンドを検出

@@ -126,50 +126,23 @@ export const logger = pino(
 );
 
 /**
- * Zod互換のバリデーション型（後方互換性）
- * @deprecated logger.info(), logger.error() 等を直接使用してください
+ * STATUSLINE_DEBUG 環境変数に基づいてデバッグログを出力
+ * @param message - ログメッセージ
+ * @param level - ログレベル（'error', 'warning', 'basic', 'verbose'）
  */
-export type DebugLevel = "off" | "basic" | "verbose" | "error" | "warning";
+export function debug(message: string, level: string = 'basic'): void {
+	const debugLevel = process.env.STATUSLINE_DEBUG || '';
 
-/**
- * 後方互換性: 既存コードで使用されていたdebug()関数の互換実装
- * @deprecated logger.info(), logger.error(), logger.debug() 等を直接使用してください
- */
-export function debug(message: string, level: DebugLevel = "basic"): void {
-	switch (level) {
-		case "error":
-			logger.error(message);
-			break;
-		case "warning":
-			logger.warn(message);
-			break;
-		case "verbose":
-			logger.debug(message);
-			break;
-		case "basic":
-		default:
-			logger.info(message);
-			break;
-		case "off":
-			break;
+	// レベル階層: error > warning > basic > verbose
+	const levels = ['error', 'warning', 'basic', 'verbose'];
+	const currentLevel = levels.indexOf(debugLevel);
+	const messageLevel = levels.indexOf(level);
+
+	// 現在のレベルがメッセージレベル以上の場合のみ出力
+	if (currentLevel !== -1 && messageLevel !== -1 && messageLevel <= currentLevel) {
+		logger.info(`[${level}] ${message}`);
 	}
 }
-
-/**
- * デバッグレベルのバリデーション（後方互換性）
- * @deprecated logger.info(), logger.error() 等を直接使用してください
- */
-export function validateDebugLevel(value: string | undefined): DebugLevel {
-	const normalized = (value ?? "off").toLowerCase().trim();
-	const validLevels: DebugLevel[] = ["off", "basic", "verbose", "error", "warning"];
-	return validLevels.includes(normalized as DebugLevel) ? (normalized as DebugLevel) : "off";
-}
-
-/**
- * グローバルデバッグレベル定数（後方互換性）
- * @deprecated logger.level を直接参照してください
- */
-export const DEBUG_LEVEL: DebugLevel = validateDebugLevel(process.env.STATUSLINE_DEBUG);
 
 /** エラーオブジェクトから文字列メッセージを抽出 */
 export function errorMessage(e: unknown): string {

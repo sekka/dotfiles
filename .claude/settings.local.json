@@ -166,7 +166,12 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "WebFetch(domain:lobehub.com)",
-      "Skill(reviewing-with-claude)"
+      "Skill(reviewing-with-claude)",
+      "Bash(zsh -n /Users/kei/dotfiles/home/config/zsh/67_ai_availability.zsh)",
+      "Bash(git -C /Users/kei/dotfiles diff --stat home/.claude/agents/ home/.claude/rules/ai-interface.md)",
+      "Bash(git -C /Users/kei/dotfiles diff --shortstat home/.claude/agents/ home/.claude/rules/ai-interface.md)",
+      "Bash(/Users/kei/dotfiles/home/.claude/statusline.ts)",
+      "Bash(wait:*)"
     ],
     "deny": [],
     "ask": []
