@@ -58,103 +58,26 @@ Claude Code ↔ 各AI間の標準化された入出力契約。
 | タイムアウト | 各AI実行5分 |
 | リトライ | 指数バックオフ (1s, 2s, 4s, 8s max) |
 | フォールバック | Claude内蔵エージェントに自動切替 |
-| ログ | `~/.local/share/claude/ai-dispatch.log` |
 | ユーザー通知 | `[AI-DISPATCH] Fallback triggered: <reason>` を stderr出力 |
-
-## ログ記録関数
-
-全エージェントで共通使用する `_log_ai_event` 関数:
-
-```bash
-# ~/.local/share/claude/ai-dispatch.log にイベント記録
-_log_ai_event() {
-    local level="$1" service="$2" event="$3"
-    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
-
-    # セキュリティ: ログディレクトリを安全な権限で作成
-    if [[ ! -d "$log_dir" ]]; then
-        (umask 077; mkdir -p "$log_dir")
-    fi
-    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
-
-    local log_file="$log_dir/ai-dispatch.log"
-
-    # JSON生成（jq使用 - 自動エスケープ）
-    local json_log
-    if command -v jq >/dev/null 2>&1; then
-        json_log=$(jq -n -c \
-            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --arg lv "$level" \
-            --arg svc "$service" \
-            --arg evt "$event" \
-            --arg usr "$USER" \
-            '{timestamp: $ts, level: $lv, service: $svc, event: $evt, user: $usr}')
-    else
-        # jq未インストール時のフォールバック: 手動エスケープ
-        # SECURITY: バックスラッシュを最初にエスケープ（JSON injection防止）
-        local ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-        local safe_level="${level//\\/\\\\}"
-        safe_level="${safe_level//\"/\\\"}"
-        local safe_service="${service//\\/\\\\}"
-        safe_service="${safe_service//\"/\\\"}"
-        local safe_event="${event//\\/\\\\}"
-        safe_event="${safe_event//\"/\\\"}"
-        local safe_user="${USER//\\/\\\\}"
-        safe_user="${safe_user//\"/\\\"}"
-
-        json_log="{\"timestamp\":\"$ts\",\"level\":\"$safe_level\",\"service\":\"$safe_service\",\"event\":\"$safe_event\",\"user\":\"$safe_user\"}"
-    fi
-
-    # セキュリティ: ログファイル初回作成時に安全な権限で作成
-    if [[ ! -f "$log_file" ]]; then
-        (umask 077; touch "$log_file")
-    fi
-
-    echo "$json_log" >> "$log_file"
-    chmod 600 "$log_file"
-
-    # ログローテーション: 1MB超過時にタイムスタンプ付きアーカイブ
-    # SECURITY: PID + RANDOM でファイル名衝突防止（並列実行対策）
-    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || stat -c%s "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
-        local rotated_file="$log_file.$(date -u +%Y%m%d%H%M%S).$$.$RANDOM"
-        mv "$log_file" "$rotated_file"
-        chmod 600 "$rotated_file" 2>/dev/null || true
-
-        # 7日以上前のログを削除
-        find "$log_dir" -name "ai-dispatch.log.*" -type f -mtime +7 -delete 2>/dev/null || true
-    fi
-}
-
-# 使用例
-_log_ai_event "INFO" "codex" "agent_start"
-_log_ai_event "ERROR" "gemini" "auth_failed"
-_log_ai_event "WARN" "copilot" "timeout"
-```
 
 ## 認証再検証パターン
 
 各エージェントで使用する共通ガードパターン:
 
-### 共通関数
+### 共通パターン
 
-各AI別スクリプトで使用する共通ヘルパー関数:
+macOS専用環境のため、`gtimeout`を使用した応答性チェック:
 
 ```bash
-# timeout/gtimeout フォールバック検証
-_check_cli_responsiveness() {
-    local cli_name="$1"
-    local timeout_seconds="${2:-2}"
-    local _timeout_cmd=$(command -v timeout || command -v gtimeout || echo "")
-
-    if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd "$timeout_seconds" "$cli_name" --version >/dev/null 2>&1; then
-        echo "WARNING: $cli_name CLI not responding" >&2
-        return 1
-    elif [[ -z "$_timeout_cmd" ]] && ! "$cli_name" --version >/dev/null 2>&1; then
-        echo "WARNING: $cli_name CLI not responding" >&2
-        return 1
-    fi
-    return 0
-}
+# macOS専用: gtimeout を使用
+_timeout_cmd=$(command -v gtimeout || echo "")
+if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 <CLI_NAME> --version >/dev/null 2>&1; then
+    echo "WARNING: <CLI_NAME> CLI not responding" >&2
+    exit 1
+elif [[ -z "$_timeout_cmd" ]] && ! <CLI_NAME> --version >/dev/null 2>&1; then
+    echo "WARNING: <CLI_NAME> CLI not responding" >&2
+    exit 1
+fi
 ```
 
 ### Codex系エージェント
@@ -176,8 +99,13 @@ if [[ "$AI_HAS_CODEX" != "1" ]]; then
     fi
 fi
 
-# CLI応答性確認（共通関数使用）
-if ! _check_cli_responsiveness "codex" 2; then
+# CLI応答性確認（macOS専用: gtimeout）
+_timeout_cmd=$(command -v gtimeout || echo "")
+if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 codex --version >/dev/null 2>&1; then
+    echo "WARNING: Codex CLI not responding" >&2
+    exit 1
+elif [[ -z "$_timeout_cmd" ]] && ! codex --version >/dev/null 2>&1; then
+    echo "WARNING: Codex CLI not responding" >&2
     exit 1
 fi
 ```
@@ -221,8 +149,13 @@ if ! command -v copilot >/dev/null 2>&1; then
     exit 1
 fi
 
-# CLI応答性確認（共通関数使用）
-if ! _check_cli_responsiveness "copilot" 2; then
+# CLI応答性確認（macOS専用: gtimeout）
+_timeout_cmd=$(command -v gtimeout || echo "")
+if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 copilot --version >/dev/null 2>&1; then
+    echo "WARNING: Copilot CLI not responding" >&2
+    exit 1
+elif [[ -z "$_timeout_cmd" ]] && ! copilot --version >/dev/null 2>&1; then
+    echo "WARNING: Copilot CLI not responding" >&2
     exit 1
 fi
 ```

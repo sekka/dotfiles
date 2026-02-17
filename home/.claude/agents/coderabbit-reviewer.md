@@ -26,31 +26,6 @@ if [[ "$AI_HAS_CODERABBIT" != "1" ]]; then
         exit 1
     fi
 fi
-
-# ログ記録
-_log_ai_event() {
-    local level="$1" service="$2" event="$3"
-    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
-    if [[ ! -d "$log_dir" ]]; then
-        (umask 077; mkdir -p "$log_dir")
-    fi
-    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
-    local log_file="$log_dir/ai-dispatch.log"
-    service="${service//[^a-zA-Z0-9_-]/}"
-    event="${event//[^a-zA-Z0-9_-]/}"
-    local safe_user="${USER//[^a-zA-Z0-9_-]/}"
-    if [[ ! -f "$log_file" ]]; then
-        (umask 077; touch "$log_file")
-    fi
-    echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"level\":\"$level\",\"service\":\"$service\",\"event\":\"$event\",\"user\":\"$safe_user\"}" >> "$log_file"
-    chmod 600 "$log_file"
-    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
-        mv "$log_file" "$log_file.old"
-        chmod 600 "$log_file.old"
-    fi
-}
-
-_log_ai_event "INFO" "coderabbit" "reviewer_start"
 ```
 
 You are a security and performance-focused code reviewer powered by CodeRabbit AI.
@@ -171,11 +146,6 @@ Present findings in a structured, prioritized format:
 - **Performance Score**: [A/B/C/D/F] - Efficiency analysis
 - **Test Coverage**: [percentage]% - Coverage estimate
 - **Code Quality**: [A/B/C/D/F] - Maintainability assessment
-```
-
-```bash
-# ログ記録
-_log_ai_event "INFO" "coderabbit" "reviewer_complete"
 ```
 
 ## Security Focus Areas

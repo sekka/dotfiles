@@ -35,8 +35,8 @@ if ! command -v codex >/dev/null 2>&1; then
     exit 1
 fi
 
-# CLI応答性確認（timeout/gtimeout フォールバック）
-_timeout_cmd=$(command -v timeout || command -v gtimeout || echo "")
+# CLI応答性確認（macOS専用: gtimeout）
+_timeout_cmd=$(command -v gtimeout || echo "")
 if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 codex --version >/dev/null 2>&1; then
     echo "WARNING: Codex CLI not responding" >&2
     exit 1
@@ -44,31 +44,6 @@ elif [[ -z "$_timeout_cmd" ]] && ! codex --version >/dev/null 2>&1; then
     echo "WARNING: Codex CLI not responding" >&2
     exit 1
 fi
-
-# ログ記録
-_log_ai_event() {
-    local level="$1" service="$2" event="$3"
-    local log_dir="${XDG_DATA_HOME:-$HOME/.local/share}/claude"
-    if [[ ! -d "$log_dir" ]]; then
-        (umask 077; mkdir -p "$log_dir")
-    fi
-    [[ -d "$log_dir" ]] && chmod 700 "$log_dir"
-    local log_file="$log_dir/ai-dispatch.log"
-    service="${service//[^a-zA-Z0-9_-]/}"
-    event="${event//[^a-zA-Z0-9_-]/}"
-    local safe_user="${USER//[^a-zA-Z0-9_-]/}"
-    if [[ ! -f "$log_file" ]]; then
-        (umask 077; touch "$log_file")
-    fi
-    echo "{\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"level\":\"$level\",\"service\":\"$service\",\"event\":\"$event\",\"user\":\"$safe_user\"}" >> "$log_file"
-    chmod 600 "$log_file"
-    if [[ -f "$log_file" ]] && (( $(stat -f%z "$log_file" 2>/dev/null || echo 0) > 1048576 )); then
-        mv "$log_file" "$log_file.old"
-        chmod 600 "$log_file.old"
-    fi
-}
-
-_log_ai_event "INFO" "codex" "reviewer_start"
 ```
 
 You are a code review specialist powered by OpenAI Codex (o1/o3 models).
@@ -160,11 +135,6 @@ Present the results in a clear, actionable format:
 - **Security**: [A/B/C/D/F] - Brief explanation
 - **Performance**: [A/B/C/D/F] - Brief explanation
 - **Maintainability**: [A/B/C/D/F] - Brief explanation
-```
-
-```bash
-# ログ記録
-_log_ai_event "INFO" "codex" "reviewer_complete"
 ```
 
 ## Review Guidelines
