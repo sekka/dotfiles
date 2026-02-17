@@ -29,7 +29,7 @@ function _is_git_repo() {
 #
 # 依存:
 #   - fzf
-#   - tac または tail (履歴の逆順表示用)
+#   - tail (履歴の逆順表示用)
 function fzf-select-history() {
     if ! command -v fzf >/dev/null 2>&1; then
         echo "Error: fzf is not installed"
@@ -39,41 +39,20 @@ function fzf-select-history() {
     local selected
 
     # 履歴の取得と選択（新しい順）
-    if command -v tac >/dev/null 2>&1; then
-        if [[ -n "$TMUX" ]]; then
-            selected=$(history -n 1 | tac | fzf-tmux -p 90%,90% -- \
-                --query "$LBUFFER" \
-                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-                --preview "echo {}" \
-                --preview-window=right:60%:wrap
-            ) || return
-        else
-            selected=$(history -n 1 | tac | fzf \
-                --query "$LBUFFER" \
-                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-                --preview "echo {}" \
-                --preview-window=right:60%:wrap
-            ) || return
-        fi
-    elif command -v tail >/dev/null 2>&1; then
-        if [[ -n "$TMUX" ]]; then
-            selected=$(history -n 1 | tail -r | fzf-tmux -p 90%,90% -- \
-                --query "$LBUFFER" \
-                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-                --preview "echo {}" \
-                --preview-window=right:60%:wrap
-            ) || return
-        else
-            selected=$(history -n 1 | tail -r | fzf \
-                --query "$LBUFFER" \
-                --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-                --preview "echo {}" \
-                --preview-window=right:60%:wrap
-            ) || return
-        fi
+    if [[ -n "$TMUX" ]]; then
+        selected=$(history -n 1 | tail -r | fzf-tmux -p 90%,90% -- \
+            --query "$LBUFFER" \
+            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+            --preview "echo {}" \
+            --preview-window=right:60%:wrap
+        ) || return
     else
-        echo "Error: Neither 'tac' nor 'tail' command available"
-        return 1
+        selected=$(history -n 1 | tail -r | fzf \
+            --query "$LBUFFER" \
+            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+            --preview "echo {}" \
+            --preview-window=right:60%:wrap
+        ) || return
     fi
 
     if [[ -n "$selected" ]]; then
@@ -211,12 +190,7 @@ function fcd() {
     if command -v eza >/dev/null 2>&1; then
         preview_cmd="eza -la --git --color=always --group-directories-first {} 2>/dev/null"
     else
-        # macOS/BSD互換性のため、OSに応じてカラーオプションを変更
-        if [[ "$(uname)" == "Darwin" ]]; then
-            preview_cmd="ls -laG {} 2>/dev/null"
-        else
-            preview_cmd="ls -la --color=always {} 2>/dev/null"
-        fi
+        preview_cmd="ls -laG {} 2>/dev/null"
     fi
 
     # ディレクトリ検索（fdが利用可能ならfdを使用、なければfind）

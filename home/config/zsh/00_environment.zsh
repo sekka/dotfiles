@@ -51,13 +51,9 @@ add_to_fpath() {
 # プラットフォーム固有設定
 # ===========================================
 
-case ${OSTYPE} in
-    darwin*)
-        # macOS 用設定
-        export CLICOLOR=1
-        # ls エイリアスは 50_aliases.zsh で eza を使用
-        ;;
-esac
+# macOS 用設定
+export CLICOLOR=1
+# ls エイリアスは 50_aliases.zsh で eza を使用
 
 # ===========================================
 # PATH 管理（一元化）
