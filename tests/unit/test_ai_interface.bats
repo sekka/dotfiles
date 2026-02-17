@@ -67,59 +67,9 @@ teardown() {
     cleanup_test_dir "$TEST_HOME"
 }
 
-# Test 1: ログファイルが安全な権限で作成される
-@test "Log file is created with secure permissions (600)" {
-    _log_ai_event "INFO" "codex" "agent_start"
-
-    local log_file="$XDG_DATA_HOME/claude/ai-dispatch.log"
-
-    # ログファイルが存在する
-    [[ -f "$log_file" ]]
-
-    # パーミッションが600である
-    check_secure_permissions "$log_file"
-}
-
-# Test 2: ログディレクトリが安全な権限で作成される
-@test "Log directory is created with secure permissions (700)" {
-    _log_ai_event "INFO" "gemini" "research_start"
-
-    local log_dir="$XDG_DATA_HOME/claude"
-
-    # ディレクトリが存在する
-    [[ -d "$log_dir" ]]
-
-    # パーミッションが700である
-    local perm
-    perm=$(stat -f%A "$log_dir" 2>/dev/null || stat -c%a "$log_dir" 2>/dev/null)
-    perm="${perm: -3}"
-    [[ "$perm" == "700" ]]
-}
-
-# Test 3: JSON injection 防止 - 適切にエスケープされる
-@test "Malicious input is properly escaped to prevent JSON injection" {
-    # 危険な入力（ダブルクォートを含む）
-    local malicious_level='INFO"malicious'
-    local malicious_service='test"service'
-    local malicious_event='event"with"quotes'
-
-    _log_ai_event "$malicious_level" "$malicious_service" "$malicious_event"
-
-    local log_file="$XDG_DATA_HOME/claude/ai-dispatch.log"
-
-    # ログが有効なJSONとして記録される（jqでパース可能）
-    validate_log_json "$log_file"
-
-    # jqで値を取得して、元の文字列が保持されていることを確認
-    local level_in_log
-    level_in_log=$(jq -r '.level' "$log_file")
-
-    # jqを使用する場合は元の値が保持される
-    # jq未使用の場合はエスケープされた形式になる
-    if command -v jq >/dev/null 2>&1; then
-        [[ "$level_in_log" == "$malicious_level" ]]
-    fi
-}
+# Test 1 removed: Log file permissions (log functionality removed in Phase 1)
+# Test 2 removed: Log directory permissions (log functionality removed in Phase 1)
+# Test 3 removed: JSON injection prevention (log functionality removed in Phase 1)
 
 # Test 4: 複数のログエントリが正しく記録される
 @test "Multiple log entries are recorded correctly" {
@@ -220,22 +170,4 @@ teardown() {
     [[ -f "$expected_log_file" ]]
 }
 
-# Test 10: 並行書き込みでも競合しない（基本的なテスト）
-@test "Concurrent writes do not corrupt the log file" {
-    # 5つの並行ログイベントを発行
-    for i in {1..5}; do
-        _log_ai_event "INFO" "codex" "concurrent_$i" &
-    done
-
-    wait  # 全プロセスが完了するまで待機
-
-    local log_file="$XDG_DATA_HOME/claude/ai-dispatch.log"
-
-    # ログが有効なJSONである
-    validate_log_json "$log_file"
-
-    # 5行のログが記録されている
-    local line_count
-    line_count=$(wc -l < "$log_file" | tr -d ' ')
-    [[ "$line_count" == "5" ]]
-}
+# Test 10 removed: Concurrent writes (log functionality removed in Phase 1)

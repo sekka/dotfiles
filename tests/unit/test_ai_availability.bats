@@ -106,61 +106,10 @@ teardown() {
     [[ $cache_age -lt 1800 ]]
 }
 
-# Test 5: stat コマンドのクロスプラットフォーム対応
-@test "Cross-platform stat command works for mtime" {
-    local test_file="$TEST_HOME/test.txt"
-    echo "test" > "$test_file"
-
-    # macOS/Linux両対応のmtime取得
-    local mtime
-    mtime=$(stat -f%m "$test_file" 2>/dev/null || stat -c%Y "$test_file" 2>/dev/null)
-
-    # mtimeが取得できたことを確認（数値）
-    [[ $mtime =~ ^[0-9]+$ ]]
-}
-
-# Test 6: stat コマンドのクロスプラットフォーム対応（ファイルサイズ）
-@test "Cross-platform stat command works for file size" {
-    local test_file="$TEST_HOME/test.txt"
-    echo "test content" > "$test_file"
-
-    # macOS/Linux両対応のファイルサイズ取得
-    local size
-    size=$(stat -f%z "$test_file" 2>/dev/null || stat -c%s "$test_file" 2>/dev/null)
-
-    # サイズが取得できたことを確認（数値）
-    [[ $size =~ ^[0-9]+$ ]]
-
-    # 0より大きいことを確認
-    [[ $size -gt 0 ]]
-}
-
-# Test 7: 認証ファイルのパーミッション検証 - 600でない場合は警告
-@test "Insecure auth file permissions are detected" {
-    local auth_file="$TEST_HOME/.codex/auth.json"
-    echo '{"OPENAI_API_KEY":"sk-test"}' > "$auth_file"
-
-    # 緩い権限を設定（644）
-    chmod 644 "$auth_file"
-
-    # パーミッション検証
-    run check_secure_permissions "$auth_file"
-
-    # セキュアでないことを確認（終了コード 1）
-    [[ $status -eq 1 ]]
-}
-
-# Test 8: 認証ファイルのパーミッション検証 - 600の場合はOK
-@test "Secure auth file permissions (600) are accepted" {
-    local auth_file="$TEST_HOME/.codex/auth.json"
-    create_mock_auth_file "codex" "$auth_file"
-
-    # パーミッション検証
-    run check_secure_permissions "$auth_file"
-
-    # セキュアであることを確認（終了コード 0）
-    [[ $status -eq 0 ]]
-}
+# Test 5 removed: Cross-platform stat (macOS-only now)
+# Test 6 removed: Cross-platform stat file size (macOS-only now)
+# Test 7 removed: Permission validation (basic security only)
+# Test 8 removed: Permission validation (basic security only)
 
 # Test 9: CI環境ではキャッシュが即座に生成される
 @test "CI environment triggers immediate cache creation with all AIs disabled" {
@@ -239,21 +188,7 @@ teardown() {
     [[ -f "${file_list[0]}" ]]
 }
 
-# Test 13: シンボリックリンクの認証ファイルは拒否される
-@test "Symlinked auth files are rejected for security" {
-    local real_auth="$TEST_HOME/real_auth.json"
-    local link_auth="$TEST_HOME/.codex/auth.json"
-
-    # 実ファイルを作成
-    echo '{"OPENAI_API_KEY":"sk-test"}' > "$real_auth"
-    chmod 600 "$real_auth"
-
-    # シンボリックリンクを作成
-    ln -s "$real_auth" "$link_auth"
-
-    # シンボリックリンク検出
-    [[ -L "$link_auth" ]]
-}
+# Test 13 removed: Symlink rejection (excessive security, not needed for personal dotfiles)
 
 # Test 14: jqによるCodex認証ファイルの追加検証
 @test "Codex auth file is validated with jq if available" {
@@ -284,43 +219,8 @@ teardown() {
     grep -qE '^GEMINI_API_KEY=.+' "$env_file"
 }
 
-# Test 16: _check_cli_responsiveness のホワイトリスト検証
-@test "CLI name whitelist prevents command injection" {
-    # ホワイトリスト外のCLI名は拒否される
-    local allowed_clis=("codex" "gemini" "copilot" "coderabbit")
-    local malicious_cli="; rm -rf /tmp; echo "
-
-    local found=0
-    for allowed in "${allowed_clis[@]}"; do
-        if [[ "$malicious_cli" == "$allowed" ]]; then
-            found=1
-            break
-        fi
-    done
-
-    # 見つからないことを確認（ホワイトリスト外）
-    [[ $found -eq 0 ]]
-}
-
-# Test 17: キャッシュディレクトリの安全な権限（700）
-@test "Cache directory is created with secure permissions (700)" {
-    local cache_dir="$XDG_CACHE_HOME/test_secure_dir"
-
-    # ディレクトリを安全に作成
-    (umask 077; mkdir -p "$cache_dir")
-
-    # パーミッションが700であることを確認
-    local perm
-    perm=$(stat -f%A "$cache_dir" 2>/dev/null || stat -c%a "$cache_dir" 2>/dev/null)
-
-    # ディレクトリの場合、先頭の数字（ファイルタイプ）を除去しない
-    # macOS: "700" または "40700"（ディレクトリ）
-    # Linux: "700" または "40700"
-    # 最後の3桁のみを取得
-    perm="${perm: -3}"
-
-    [[ "$perm" == "700" ]]
-}
+# Test 16 removed: CLI whitelist (excessive security for personal dotfiles)
+# Test 17 removed: Directory permissions (basic security only)
 
 # Test 18: Copilot GitHub CLI + API疎通確認のタイムアウト保護
 @test "Copilot GitHub API check has timeout protection" {

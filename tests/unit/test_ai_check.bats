@@ -211,38 +211,8 @@ teardown() {
     [[ $found_count -eq 1 ]]
 }
 
-# Test 12: stat コマンドのクロスプラットフォーム対応（パーミッション）
-@test "Cross-platform stat for permissions works" {
-    local test_file="$TEST_HOME/test.txt"
-    echo "test" > "$test_file"
-    chmod 600 "$test_file"
-
-    # パーミッション取得
-    local perm
-    perm=$(stat -f%A "$test_file" 2>/dev/null || stat -c%a "$test_file" 2>/dev/null)
-
-    # パーミッションが取得できた
-    [[ -n "$perm" ]]
-
-    # 数値形式である
-    [[ "$perm" =~ ^[0-9]+$ ]]
-}
-
-# Test 13: stat コマンドのクロスプラットフォーム対応（mtime）
-@test "Cross-platform stat for mtime works in ai-check.sh" {
-    local cache_file="$XDG_CACHE_HOME/ai-availability.cache"
-    create_mock_cache "valid" "$cache_file"
-
-    # mtime取得（ai-check.shのロジック）
-    local mtime
-    mtime=$(stat -f%m "$cache_file" 2>/dev/null || stat -c%Y "$cache_file" 2>/dev/null || echo 0)
-
-    # mtimeが取得できた（0でない）
-    [[ $mtime -ne 0 ]]
-
-    # 数値形式である
-    [[ $mtime =~ ^[0-9]+$ ]]
-}
+# Test 12 removed: Cross-platform stat (macOS-only now)
+# Test 13 removed: Cross-platform stat mtime (macOS-only now)
 
 # Test 14: 環境変数が未設定の場合でもクラッシュしない
 @test "Script does not crash when environment variables are unset" {

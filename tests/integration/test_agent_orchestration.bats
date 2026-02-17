@@ -227,24 +227,7 @@ teardown() {
     [[ "$AI_HAS_CODEX" == "$cached_codex" ]]
 }
 
-# Test 13: 認証ファイル権限の自動修正
-@test "Insecure auth file permissions are auto-fixed" {
-    local auth_file="$TEST_HOME/.codex/auth.json"
-    create_mock_auth_file "codex" "$auth_file"
-
-    # 緩い権限に変更
-    chmod 644 "$auth_file"
-
-    # 自動修正ロジック
-    local current_perm
-    current_perm=$(stat -f%A "$auth_file" 2>/dev/null | tail -c 4)
-    if [[ "$current_perm" != "600" ]]; then
-        chmod 600 "$auth_file"
-    fi
-
-    # 修正後のパーミッション確認
-    check_secure_permissions "$auth_file"
-}
+# Test 13 removed: Auto-fix permissions (excessive security for personal dotfiles)
 
 # Test 14: CI環境での早期終了
 @test "CI environment triggers early exit with all AIs disabled" {

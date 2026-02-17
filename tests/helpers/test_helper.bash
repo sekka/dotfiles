@@ -36,9 +36,8 @@ EOF
     ;;
   stale)
     create_mock_cache "valid" "$cache_file"
-    # macOS/Linux両対応の古いタイムスタンプ設定
-    touch -t 202401010000 "$cache_file" 2>/dev/null ||
-      touch -d "2024-01-01 00:00:00" "$cache_file" 2>/dev/null
+    # macOS専用タイムスタンプ設定
+    touch -t 202401010000 "$cache_file"
     ;;
   corrupted)
     echo "export AI_HAS_CODEX='1'" >"$cache_file"
@@ -64,8 +63,8 @@ check_secure_permissions() {
   local file="$1"
   local perm
 
-  # macOS/Linux両対応のパーミッション取得
-  perm=$(stat -f%A "$file" 2>/dev/null || stat -c%a "$file" 2>/dev/null)
+  # macOS専用パーミッション取得
+  perm=$(stat -f%A "$file")
 
   # 最後の3桁を取得（ファイル権限部分）
   perm="${perm: -3}"
@@ -78,8 +77,8 @@ get_cache_age() {
   local cache_file="$1"
   local mtime current_time
 
-  # macOS/Linux両対応のmtime取得
-  mtime=$(stat -f%m "$cache_file" 2>/dev/null || stat -c%Y "$cache_file" 2>/dev/null)
+  # macOS専用mtime取得
+  mtime=$(stat -f%m "$cache_file")
   current_time=$(date +%s)
 
   echo $((current_time - mtime))
