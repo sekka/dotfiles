@@ -7,8 +7,10 @@
 
 import argparse
 import json
+import os
 import re
 from collections import defaultdict
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -83,6 +85,38 @@ CRITICAL_SECURITY_PATTERNS = [
     'race_condition',
 ]
 
+PLAN_CATEGORY_PATTERNS = {
+    "feasibility": [
+        r"実現可能", r"feasib", r"技術的に", r"実装できない", r"不可能",
+        r"現実的", r"実用的", r"viable", r"achievable",
+    ],
+    "completeness": [
+        r"抜け", r"漏れ", r"不完全", r"エッジケース", r"edge case",
+        r"考慮不足", r"未定義", r"未検討", r"incomplete", r"missing",
+    ],
+    "risk": [
+        r"リスク", r"危険", r"問題", r"障害", r"失敗", r"破損",
+        r"データ損失", r"data.?loss", r"risk", r"danger", r"critical",
+    ],
+    "architecture": [
+        r"設計", r"アーキテクチャ", r"構造", r"パターン", r"結合",
+        r"cohes", r"coupling", r"design", r"architect", r"structure",
+    ],
+    "scope": [
+        r"YAGNI", r"過剰", r"不要", r"スコープ", r"範囲外",
+        r"over.?engineer", r"unnecessary", r"scope", r"bloat",
+    ],
+    "dependencies": [
+        r"依存", r"外部", r"ライブラリ", r"サービス", r"API",
+        r"depend", r"external", r"library", r"integration",
+    ],
+}
+
+CRITICAL_PLAN_PATTERNS = [
+    r"data.?loss", r"データ損失", r"セキュリティ", r"security.?breach",
+    r"破損", r"不可逆", r"irreversible", r"致命的", r"critical",
+]
+
 
 # ========================================
 # Finding データ構造
@@ -118,6 +152,21 @@ class Finding:
     def key(self) -> Tuple:
         """重複排除用のキー"""
         return (self.file, self.line, self.category)
+
+
+@dataclass
+class PlanFinding:
+    """プランレビュー用Finding（セクションベース）"""
+    section: str
+    description: str
+    category: str
+    priority: str
+    ai_source: str
+    suggestion: str = ""
+    detail: str = ""
+    # 既存コードとの互換性のために
+    file: str = ""
+    line: int = 0
 
 
 # ========================================
@@ -180,6 +229,162 @@ def parse_reviewer_output(reviewer_name: str, output_text: str) -> List[Finding]
         findings.append(finding)
 
     return findings
+
+
+def classify_plan_category(description: str) -> str:
+    """プランFindingのカテゴリを分類する"""
+    desc_lower = description.lower()
+    for category, patterns in PLAN_CATEGORY_PATTERNS.items():
+        for pattern in patterns:
+            if re.search(pattern, desc_lower, re.IGNORECASE):
+                return category
+    return "architecture"  # デフォルト
+
+
+def escalate_plan_risk_priority(finding: PlanFinding) -> PlanFinding:
+    """重大なリスクパターンを検出してpriorityをcriticalに昇格させる"""
+    desc = f"{finding.description} {finding.detail}".lower()
+    for pattern in CRITICAL_PLAN_PATTERNS:
+        if re.search(pattern, desc, re.IGNORECASE):
+            finding.priority = "critical"
+            break
+    return finding
+
+
+def parse_plan_reviewer_output(output: str, ai_source: str) -> List[PlanFinding]:
+    """
+    プランレビュアーの出力をパースしてPlanFindingリストを返す。
+
+    期待する出力フォーマット:
+    #### [priority] [section] 説明
+    - **Category**: ...
+    - **Detail**: ...
+    - **Suggestion**: ...
+    """
+    findings = []
+    # セクション見出しパターン: #### [priority] [section] 説明
+    heading_pattern = re.compile(
+        r"####\s+\[?(critical|high|medium|low)\]?\s+\[?([^\]]+)\]?\s+(.+)",
+        re.IGNORECASE,
+    )
+
+    lines = output.split("\n")
+    i = 0
+    while i < len(lines):
+        m = heading_pattern.match(lines[i].strip())
+        if m:
+            priority = m.group(1).lower()
+            section = m.group(2).strip()
+            description = m.group(3).strip()
+
+            category = ""
+            detail = ""
+            suggestion = ""
+
+            # 次の行からメタデータを読む
+            i += 1
+            while i < len(lines) and not heading_pattern.match(lines[i].strip()):
+                line = lines[i].strip()
+                if line.startswith("- **Category**:"):
+                    category = line.split(":", 1)[1].strip()
+                elif line.startswith("- **Detail**:"):
+                    detail = line.split(":", 1)[1].strip()
+                elif line.startswith("- **Suggestion**:"):
+                    suggestion = line.split(":", 1)[1].strip()
+                i += 1
+
+            if not category:
+                category = classify_plan_category(description)
+
+            finding = PlanFinding(
+                section=section,
+                description=description,
+                category=category,
+                priority=priority,
+                ai_source=ai_source,
+                suggestion=suggestion,
+                detail=detail,
+            )
+            finding = escalate_plan_risk_priority(finding)
+            findings.append(finding)
+        else:
+            i += 1
+
+    return findings
+
+
+def generate_plan_report(
+    findings: List[PlanFinding],
+    output_path: str,
+    plan_file: str = "",
+) -> None:
+    """プランレビュー結果をMarkdownレポートとして出力する"""
+    # 重複排除: {section}:{category} をキーとする
+    seen: Dict[str, PlanFinding] = {}
+    deduped: List[PlanFinding] = []
+    for f in findings:
+        key = f"{f.section}:{f.category}"
+        if key not in seen:
+            seen[key] = f
+            deduped.append(f)
+        else:
+            # 優先度が高い方を残す
+            priority_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+            if priority_order.get(f.priority, 3) < priority_order.get(seen[key].priority, 3):
+                # 既存を入れ替え
+                idx = deduped.index(seen[key])
+                deduped[idx] = f
+                seen[key] = f
+
+    # 優先度でソート
+    priority_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    deduped.sort(key=lambda x: priority_order.get(x.priority, 3))
+
+    counts: Dict[str, int] = defaultdict(int)
+    for f in deduped:
+        counts[f.priority] += 1
+
+    lines = [
+        "# プランレビュー統合レポート",
+        "",
+        f"**対象プラン**: {plan_file or '(不明)'}",
+        f"**Total**: {len(deduped)}, "
+        f"**Critical**: {counts['critical']}, "
+        f"**High**: {counts['high']}, "
+        f"**Medium**: {counts['medium']}, "
+        f"**Low**: {counts['low']}",
+        "",
+        "---",
+        "",
+    ]
+
+    category_sections = [
+        ("feasibility", "実現可能性"),
+        ("completeness", "完全性"),
+        ("risk", "リスク"),
+        ("architecture", "アーキテクチャ"),
+        ("scope", "スコープ"),
+        ("dependencies", "依存関係"),
+    ]
+
+    for cat_key, cat_label in category_sections:
+        cat_findings = [f for f in deduped if f.category == cat_key]
+        if not cat_findings:
+            continue
+        lines.append(f"## {cat_label}")
+        lines.append("")
+        for f in cat_findings:
+            lines.append(f"#### [{f.priority.upper()}] [{f.section}] {f.description}")
+            lines.append(f"- **Category**: {f.category}")
+            if f.detail:
+                lines.append(f"- **Detail**: {f.detail}")
+            if f.suggestion:
+                lines.append(f"- **Suggestion**: {f.suggestion}")
+            lines.append(f"- **Source**: {f.ai_source}")
+            lines.append("")
+
+    with open(output_path, "w", encoding="utf-8") as fp:
+        fp.write("\n".join(lines))
 
 
 # ========================================
@@ -384,47 +589,75 @@ def main():
     parser.add_argument('--copilot', help='Copilotの出力ファイル')
     parser.add_argument('--gemini', help='Geminiの出力ファイル')
     parser.add_argument('--output', help='出力ファイルパス', default='integrated-report.md')
+    parser.add_argument(
+        '--type',
+        choices=['code', 'plan'],
+        default='code',
+        help='レビュータイプ: code (デフォルト) または plan',
+    )
+    parser.add_argument(
+        '--plan-file',
+        default='',
+        help='レビュー対象プランファイルのパス（plan タイプ時のみ）',
+    )
 
     args = parser.parse_args()
 
-    # 各レビュアーの出力を読み込み
-    all_findings = []
-    failed_reviewers = []
-    reviewers = {'codex': args.codex, 'coderabbit': args.coderabbit,
-                 'copilot': args.copilot, 'gemini': args.gemini}
+    ai_results = {
+        'codex': args.codex,
+        'coderabbit': args.coderabbit,
+        'copilot': args.copilot,
+        'gemini': args.gemini,
+    }
 
-    for reviewer_name, file_path in reviewers.items():
-        if file_path and Path(file_path).exists():
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                findings = parse_reviewer_output(reviewer_name, content)
-                all_findings.extend(findings)
-            except Exception as e:
-                print(f"Error reading {reviewer_name}: {e}")
-                failed_reviewers.append(reviewer_name)
-        else:
-            failed_reviewers.append(reviewer_name)
-
-    # 重複排除処理
-    exact_deduplicated = deduplicate_exact_match(all_findings)
-    deduplicated = deduplicate_fuzzy_match(exact_deduplicated)
-
-    # 優先度付け処理
-    findings_with_priority = apply_priority_calculation(deduplicated)
-
-    # レポート生成
-    report = generate_report(findings_with_priority, failed_reviewers)
-
-    # 出力
+    # 出力先ディレクトリを事前に作成
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(report)
+    if args.type == 'plan':
+        # プランレビューモード
+        all_plan_findings: List[PlanFinding] = []
+        for ai_name, result_file in ai_results.items():
+            if result_file and os.path.exists(result_file):
+                content = open(result_file, encoding='utf-8').read()
+                findings = parse_plan_reviewer_output(content, ai_name)
+                all_plan_findings.extend(findings)
+        generate_plan_report(all_plan_findings, args.output, args.plan_file)
+        print(f"統合プランレビューレポートを生成しました: {output_path}")
+        print(f"検出された問題: {len(all_plan_findings)}件")
+    else:
+        # 既存のコードレビューモード
+        all_findings = []
+        failed_reviewers = []
 
-    print(f"✅ 統合レポートを生成しました: {output_path}")
-    print(f"検出された問題: {len(findings_with_priority)}件")
+        for reviewer_name, file_path in ai_results.items():
+            if file_path and Path(file_path).exists():
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    findings = parse_reviewer_output(reviewer_name, content)
+                    all_findings.extend(findings)
+                except Exception as e:
+                    print(f"Error reading {reviewer_name}: {e}")
+                    failed_reviewers.append(reviewer_name)
+            else:
+                failed_reviewers.append(reviewer_name)
+
+        # 重複排除処理
+        exact_deduplicated = deduplicate_exact_match(all_findings)
+        deduplicated = deduplicate_fuzzy_match(exact_deduplicated)
+
+        # 優先度付け処理
+        findings_with_priority = apply_priority_calculation(deduplicated)
+
+        # レポート生成
+        report = generate_report(findings_with_priority, failed_reviewers)
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(report)
+
+        print(f"統合レポートを生成しました: {output_path}")
+        print(f"検出された問題: {len(findings_with_priority)}件")
 
 
 if __name__ == '__main__':
