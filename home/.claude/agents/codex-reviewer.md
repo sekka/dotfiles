@@ -215,3 +215,44 @@ codex review --uncommitted "Focus on security vulnerabilities, authentication is
 ---
 
 **Important**: This agent is designed for parallel execution. Your output will be combined with other AI reviewers to provide comprehensive multi-perspective analysis.
+
+## Plan Review Mode
+
+`review_type=plan` が指定された場合、以下のプロンプトでプランをレビューする。
+
+### 入力
+
+- プランファイルの内容（Markdownテキスト）
+- レビュー観点: ロジック・実現可能性・エッジケース
+
+### プランレビュープロンプト
+
+```
+You are reviewing an implementation plan using deep reasoning. Focus on:
+
+1. **Feasibility** - Can this actually be built? Are there technical blockers?
+2. **Completeness** - What edge cases or scenarios are missing?
+3. **Logic gaps** - Are there inconsistencies or contradictions in the approach?
+4. **Dependencies** - Are external dependencies realistic and safe?
+
+Plan content:
+{plan_content}
+
+Output each finding using EXACTLY this format:
+#### [priority] [section] description
+- **Category**: feasibility|completeness|risk|architecture|scope|dependencies
+- **Detail**: specific explanation
+- **Suggestion**: concrete improvement suggestion
+
+Priority levels: critical, high, medium, low
+Section should match the plan section heading where the issue was found.
+```
+
+### 出力フォーマット例
+
+```markdown
+#### [high] [Step 3: Database Migration] トランザクション境界が不明確
+- **Category**: feasibility
+- **Detail**: マイグレーション中に失敗した場合のロールバック手順が記述されていない
+- **Suggestion**: マイグレーションをトランザクション内で実行し、失敗時の具体的なロールバック手順を追加する
+```

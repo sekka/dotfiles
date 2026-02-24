@@ -1,6 +1,6 @@
 ---
 description: 複数のAIエージェントで並列コードレビューを実施
-argument-hint: [対象: --uncommitted, --base <branch>, など]
+argument-hint: [対象: --uncommitted, --base <branch>, plans/foo.md, など]
 ---
 
 # 並列AIコードレビュー
@@ -126,6 +126,21 @@ Use @agent-codex-reviewer @agent-coderabbit-reviewer background for reviewing ch
 パフォーマンスボトルネックを特定してレビューしてください
 ```
 
+### プランレビュー
+
+```
+# 特定のプランファイルをレビュー
+/review-parallel plans/my-feature-plan.md
+
+# キーワードでプランレビューを起動
+/review-parallel
+最新のプランをレビューしてください
+
+# 設計をレビュー
+/review-parallel
+この設計をレビューしてください
+```
+
 ## レビュー結果の見方
 
 各AIエージェントは独立してレビューを実施し、それぞれの専門分野に基づいた結果を返します：
@@ -235,6 +250,15 @@ Use @agent-codex-reviewer @agent-copilot-reviewer background
 | `/review-parallel` | 包括的レビュー | 中速（並列） |
 | `/review` | 単一の詳細レビュー | 中速 |
 | `/review-pr` | PRレビュー | 中速 |
+
+### 用途別コマンド例
+
+| 用途 | コマンド例 |
+|------|-----------|
+| 未コミット変更のコードレビュー | `/review-parallel` |
+| ブランチ比較のコードレビュー | `/review-parallel --base main` |
+| プランファイルのレビュー | `/review-parallel plans/foo.md` |
+| 設計・計画レビュー | `/review-parallel` + "プランをレビュー" |
 
 ---
 

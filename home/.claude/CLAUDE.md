@@ -78,10 +78,9 @@
 - テスト実行
 - ビルド操作
 
-**Implementation タスク（Codex委譲） → codex-implementer サブエージェント**
-- ユーザーが明示的にCodex実装を指示した場合
-- 複雑なアルゴリズムやロジックでセカンドオピニオンが必要な場合
-- 深い推論による高品質な実装が必要な場合
+**Implementation タスク → codex-implementer サブエージェント（Codex利用可能時は無条件で最優先）**
+- Codex利用可能時: 機械的実装を含む全ての実装タスク
+- Codex利用不可時: implementer サブエージェントにフォールバック
 
 **Review タスク → reviewer サブエージェント**
 - コードレビュー
@@ -93,10 +92,10 @@
 AI可用性に応じた動的ルーティング（AI_AVAILABLE_MODELS環境変数で判定）:
 
 **Gemini利用可能時 (AI_HAS_GEMINI=1):**
-- Research（大規模コードベース調査） → gemini-researcher
+- Research（全て） → gemini-researcher（最優先）
 
 **Codex利用可能時 (AI_HAS_CODEX=1):**
-- Implementation（深い推論が必要） → codex-implementer
+- Implementation（機械的実装含む全ての実装タスク） → codex-implementer
 
 **Copilot利用可能時 (AI_HAS_COPILOT=1):**
 - Review（GitHub統合重視） → copilot-reviewer
