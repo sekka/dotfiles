@@ -16,6 +16,7 @@
 | **調査（大規模）** | gemini-researcher | `AI_HAS_GEMINI` | researcher (Claude) | 1Mトークンで大規模コードベース分析 |
 | **アーキテクチャ分析** | gemini-reviewer | `AI_HAS_GEMINI` | reviewer (Claude) | 大規模コンテキストでアーキテクチャ理解 |
 | **GitHub/CI/CD** | copilot-reviewer | `AI_HAS_COPILOT` | reviewer (Claude) | GitHub統合とCI最適化 |
+| **プランレビュー** | parallel-reviewer (review_type=plan) | .md ファイル指定 or "プランをレビュー"/"設計レビュー"/"plan review" キーワード | reviewer (Claude) | 設計・計画の多角的検証 |
 
 ## タスクタイプの判定キーワード
 
@@ -38,6 +39,7 @@
 
 ### 特殊系
 - **GitHub/CI/CD**: "GitHub", "Actions", "CI", "CD", "パイプライン", "workflow"
+- **プランレビュー**: "プランをレビュー", "設計をレビュー", "計画をレビュー", "plan review", "review plan", "review this plan"
 
 ## ルーティング実装例
 
@@ -45,6 +47,12 @@
 # タスク分類関数
 classify_task() {
     local user_request="$1"
+
+    # プランレビュー（review より前に評価）
+    if [[ "$user_request" =~ \.md$ ]] || [[ "$user_request" =~ (プランをレビュー|設計をレビュー|計画をレビュー|plan\ review|review\ plan|review\ this\ plan) ]]; then
+        echo "plan-review"
+        return
+    fi
 
     # セキュリティレビュー
     if [[ "$user_request" =~ (セキュリティ|脆弱性|OWASP|security|vulnerability) ]]; then
@@ -99,6 +107,10 @@ route_task() {
     local task_type="$1"
 
     case "$task_type" in
+        "plan-review")
+            # parallel-reviewerがreview_type=planで多角的な設計レビューを実施
+            echo "parallel-reviewer"
+            ;;
         "security-review")
             if [[ "$AI_HAS_CODERABBIT" == "1" ]]; then
                 echo "coderabbit-reviewer"
