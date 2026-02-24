@@ -39,9 +39,38 @@ coderabbit auth status 2>/dev/null || echo "⚠️ coderabbit not authenticated"
 python3 --version
 ```
 
+## Phase 0.5: レビュータイプ判定
+
+入力を分析してレビュータイプを確定する。
+
+| 条件 | review_type |
+|------|-------------|
+| `.md` ファイルパスが引数 | plan |
+| "plan", "プラン", "設計", "計画" キーワード | plan |
+| それ以外 | code（デフォルト） |
+
+`review_type=plan` の場合:
+- プランファイルを特定（引数 or `plans/` 最新ファイル）
+- Phase 1 で git diff の代わりにプランファイル読み込みへ
+
+`review_type=code` の場合:
+- 既存の Phase 1-5 をそのまま実行
+
 ## Phase 1: レビュー対象の特定（最適化版）
 
 ユーザーリクエストからレビュー対象を判定し、必要なgit diffを取得します。
+
+### 入力取得の分岐
+
+**review_type=code（既存動作）:**
+```bash
+git diff HEAD  # または指定された base との差分
+```
+
+**review_type=plan:**
+```bash
+cat <plan-file>  # プランファイルのフルコンテンツを取得
+```
 
 ### 1.1 ターゲット判定
 
@@ -105,12 +134,12 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 
 ### 2.2 レビュアー一覧と専門分野
 
-| レビュアー | 専門分野 | Agent | Focus |
-|-----------|---------|-------|-------|
-| **Codex** | コード品質、ベストプラクティス、深い推論 | @agent-codex-reviewer | Code Quality Analysis |
-| **CodeRabbit** | セキュリティ脆弱性、パフォーマンス、OWASP | @agent-coderabbit-reviewer | Security & Performance |
-| **Copilot** | GitHub統合、CI/CD最適化、実践的改善 | @agent-copilot-reviewer | GitHub Workflow Integration |
-| **Gemini** | アーキテクチャ分析、システム設計、SOLID原則 | @agent-gemini-reviewer | Architecture Analysis |
+| レビュアー | コードレビュー専門 | プランレビュー専門 | Agent | Focus |
+|-----------|----------------|----------------|-------|-------|
+| **Codex** | コード品質、ベストプラクティス、深い推論 | 実現可能性・エッジケース | @agent-codex-reviewer | Code Quality Analysis |
+| **CodeRabbit** | セキュリティ脆弱性、パフォーマンス、OWASP | セキュリティリスク・データ保護 | @agent-coderabbit-reviewer | Security & Performance |
+| **Copilot** | GitHub統合、CI/CD最適化、実践的改善 | 実装実用性・工数 | @agent-copilot-reviewer | GitHub Workflow Integration |
+| **Gemini** | アーキテクチャ分析、システム設計、SOLID原則 | 設計整合性・スケーラビリティ | @agent-gemini-reviewer | Architecture Analysis |
 
 ### 2.3 並列実行方法
 
@@ -198,6 +227,18 @@ python ~/.claude/skills/review-parallel/parallel-review-merge.py \
   --output integrated-findings.md
 ```
 
+**review_type=plan の場合は `--type plan` フラグを追加:**
+```bash
+python parallel-review-merge.py \
+  --type plan \
+  --plan-file "<plan-file>" \
+  --codex <(echo "$codex_output") \
+  --coderabbit <(echo "$coderabbit_output") \
+  --copilot <(echo "$copilot_output") \
+  --gemini <(echo "$gemini_output") \
+  --output integrated-findings.md
+```
+
 ### 4.2 統合処理のステップ
 
 1. **パース処理**: 各レビュアーの出力からFindingを抽出
@@ -263,6 +304,33 @@ python ~/.claude/skills/review-parallel/parallel-review-merge.py \
 2. 🟡 Highの問題を優先的に対応
 3. 🟢 Mediumの問題をスプリントに組み込み
 4. ℹ️ Lowの問題は検討
+```
+
+### プランレビューレポート形式
+
+```markdown
+# プランレビュー統合レポート
+
+**対象プラン**: <plan-file>
+**Total**: N, **Critical**: N, **High**: N, **Medium**: N, **Low**: N
+
+## 実現可能性 (Feasibility)
+...
+
+## 完全性 (Completeness)
+...
+
+## リスク (Risk)
+...
+
+## アーキテクチャ (Architecture)
+...
+
+## スコープ (Scope)
+...
+
+## 依存関係 (Dependencies)
+...
 ```
 
 ### 5.2 Finding表示フォーマット

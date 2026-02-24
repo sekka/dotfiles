@@ -535,3 +535,53 @@ Generated: {timestamp}
 - **ReDoS対策**: 正規表現の安全性を確保
 - **インジェクション対策**: ユーザー入力をエスケープ
 - **ファイルI/O**: 容量制限（500文字）で悪意のある入力から保護
+
+## プランレビューアルゴリズム
+
+コードレビューとは独立したプランレビュー専用のアルゴリズム仕様。
+
+### PLAN_CATEGORY_PATTERNS
+
+プランFindingのカテゴリ自動分類パターン:
+
+| カテゴリ | キーワード例 | 意味 |
+|---------|------------|------|
+| feasibility | 実現可能, feasib, viable | 技術的な実現可能性の問題 |
+| completeness | 抜け, edge case, missing | 仕様の不完全性・抜け漏れ |
+| risk | リスク, data loss, critical | 実装・運用リスク |
+| architecture | 設計, coupling, cohes | 設計・アーキテクチャの問題 |
+| scope | YAGNI, 過剰, over-engineer | スコープ過剰・YAGNI違反 |
+| dependencies | 依存, external, library | 外部依存リスク |
+
+### CRITICAL_PLAN_PATTERNS
+
+以下のパターンにマッチするFindingは自動的に `critical` に昇格:
+
+- `data.?loss` / `データ損失`
+- `セキュリティ` / `security.?breach`
+- `破損` / `不可逆` / `irreversible`
+- `致命的` / `critical`
+
+### プランFinding重複排除
+
+コードレビューの `{file}:{line}:{category}` キーとは異なり、プランレビューは `{section}:{category}` をキーとして使用する。
+
+同一キーが複数のAIから報告された場合、優先度が高い方を採用する（critical > high > medium > low）。
+
+### プランFindingソート順
+
+1. Critical（自動昇格含む）
+2. High
+3. Medium
+4. Low
+
+カテゴリ別にグループ化してレポート出力: feasibility → completeness → risk → architecture → scope → dependencies
+
+### AIの役割分担（プランレビュー）
+
+| AI | 観点 | 出力フォーカス |
+|----|------|-------------|
+| Codex | ロジック・エッジケース | feasibility, completeness |
+| Gemini | 設計整合性・スケーラビリティ | architecture, dependencies |
+| Copilot | 実装実用性・工数 | scope, feasibility |
+| CodeRabbit | セキュリティ・リスク | risk, dependencies |

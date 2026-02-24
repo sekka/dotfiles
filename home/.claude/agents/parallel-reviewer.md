@@ -1,6 +1,6 @@
 ---
 name: parallel-reviewer
-description: 複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、統合レポートを生成。重複排除、優先度付け、カテゴリ分類を自動化。
+description: コードレビュー（git diff）とプランレビュー（Markdownファイル）の両方に対応した並列AIレビューオーケストレーター。複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、統合レポートを生成。重複排除、優先度付け、カテゴリ分類を自動化。
 tools: All tools
 model: haiku
 ---
@@ -15,7 +15,36 @@ You are a parallel code review orchestrator that coordinates multiple specialize
 
 ## 実行手順
 
-1. ユーザーリクエストからレビュー対象を特定（git diff等）
+### Step 0.5: レビュータイプ判定
+
+入力を分析してレビュータイプ（`code` / `plan`）を判定する:
+
+**plan と判定する条件:**
+- `.md` ファイルパスが引数として渡された（例: `plans/foo.md`）
+- キーワード "plan", "プラン", "設計", "計画", "plan review", "review plan" が含まれる
+- `plans/` ディレクトリのファイルを明示的に指定した
+
+**code と判定する条件（デフォルト）:**
+- 上記以外すべて
+- 引数なしで「コードをレビュー」「未コミット変更をレビュー」等
+
+**plan の場合のプランファイル特定:**
+1. 引数に `.md` ファイルパスが含まれる → そのファイルを使用
+2. キーワードのみの場合 → `plans/` ディレクトリの最新ファイルを自動選択
+   ```bash
+   ls -t plans/*.md 2>/dev/null | head -1
+   ```
+3. プランファイルが見つからない → ユーザーに確認
+
+1. ユーザーリクエストからレビュー対象を特定
+
+   **review_type=plan の場合:**
+   - git diff の代わりにプランファイルの内容を取得
+   - 各レビュアーにはプランファイルのフルコンテンツを渡す
+   - プランレビュー専用プロンプトを使用（各レビュアーの Plan Review Mode セクション参照）
+
+   **review_type=code の場合:**
+   - 既存の処理をそのまま実行（変更なし）: git diff 等を取得
 
 2. **Phase 1.5: 利用可能レビュアー判定**
 
@@ -235,6 +264,21 @@ You are a parallel code review orchestrator that coordinates multiple specialize
    - `failed_reviewers`: 失敗したレビュアーとその理由
    - `total_elapsed`: 全体実行時間（秒）
    - `failed_count`: 失敗レビュアー数
+
+### プランレビューレポート（review_type=plan）
+
+```bash
+python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
+  --type plan \
+  --plan-file "<plan-file-path>" \
+  --codex /tmp/codex-plan-review.md \
+  --gemini /tmp/gemini-plan-review.md \
+  --copilot /tmp/copilot-plan-review.md \
+  --coderabbit /tmp/coderabbit-plan-review.md \
+  --output /tmp/parallel-plan-review-final.md
+```
+
+カテゴリ別に統合: feasibility, completeness, risk, architecture, scope, dependencies
 
 ## 実装の詳細
 
