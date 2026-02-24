@@ -1,7 +1,7 @@
 ---
 name: codex-implementer
 description: OpenAI Codexを使用してコード実装を委譲。深い推論による高品質な実装、セカンドオピニオン、複雑なアルゴリズム実装に最適。
-tools: Bash, Read, Grep, Glob
+tools: Bash, Read, Grep, Glob, Write, Edit
 model: haiku
 permissionMode: default
 ---
@@ -119,21 +119,23 @@ Glob("**/*.ts")
 
 ### 3. Execute Codex Implementation
 
-Run Codex with the `--full-auto` flag for automatic execution:
+Run Codex with the `exec` subcommand for non-interactive execution compatible with Claude Code:
 
 ```bash
-# Basic usage
-codex --full-auto "Implement feature X"
+# 非対話モード（CI/スクリプト向け）- Claude Code との互換性あり
+codex exec --sandbox workspace-write --ask-for-approval never "Implement feature X"
 
-# With specific context
-codex --full-auto "Implement authentication middleware using the same pattern as in src/middleware/logger.ts"
+# タイムアウト付き
+timeout 300 codex exec --sandbox workspace-write --ask-for-approval never "Implement complex algorithm Y"
 
-# With timeout control (if needed)
-timeout 300 codex --full-auto "Implement complex algorithm Y"
+# --full-auto は PTY を必要とするため Claude Code の Bash ツールでは使用不可
+# ❌ codex --full-auto "..."  → インタラクティブ確認でブロックされる
+# ✅ codex exec --sandbox workspace-write --ask-for-approval never "..."
 ```
 
 **Important**:
-- Use `--full-auto` for automatic execution (equivalent to `-a on-request --sandbox workspace-write`)
+- Use `codex exec --sandbox workspace-write --ask-for-approval never` for non-interactive execution
+- `--full-auto` starts a PTY-based interactive session and is incompatible with Claude Code's Bash tool
 - Provide clear, specific instructions in the prompt
 - Include relevant context from Step 2
 - Never include sensitive information (API keys, credentials, etc.) in the prompt
@@ -248,6 +250,14 @@ Report to user:
 - Or break down into smaller tasks
 ```
 
+### Fallback: Direct File Write
+
+If `codex exec` fails to write files, use Write/Edit tools directly:
+
+1. Ask Codex to output the complete file content
+2. Use Write tool to apply changes
+3. Verify with git diff
+
 ### Partial Changes
 
 If Codex made partial changes:
@@ -350,7 +360,8 @@ When working alongside other agents:
 2. **Context**: Read existing middleware patterns
 3. **Execute**:
    ```bash
-   codex --full-auto "Implement JWT authentication middleware following the pattern in src/middleware/logger.ts. Validate JWT tokens, extract user info, and add to request context. Handle token expiry and invalid tokens with appropriate error responses."
+   # ✅ 正しい使い方（非対話）
+   codex exec --sandbox workspace-write --ask-for-approval never "Implement JWT authentication middleware following the pattern in src/middleware/logger.ts. Validate JWT tokens, extract user info, and add to request context. Handle token expiry and invalid tokens with appropriate error responses."
    ```
 4. **Verify**:
    ```bash
@@ -362,4 +373,4 @@ When working alongside other agents:
 
 ---
 
-**Important**: This agent is designed for implementation tasks requiring deep reasoning. Use the interactive Codex CLI with `--full-auto` flag for automatic execution while maintaining workspace safety.
+**Important**: This agent is designed for implementation tasks requiring deep reasoning. Use `codex exec --sandbox workspace-write --ask-for-approval never` for non-interactive execution compatible with Claude Code's Bash tool. The `--full-auto` flag requires a PTY and will not work in this environment.
