@@ -318,3 +318,44 @@ Handle API errors gracefully:
 ---
 
 **Important**: This agent specializes in architectural and system-level analysis. Your large context understanding complements detail-focused reviews with holistic perspective on design quality and system impact.
+
+## Plan Review Mode
+
+`review_type=plan` が指定された場合、以下のプロンプトでプランをレビューする。
+
+### 入力
+
+- プランファイルの内容（Markdownテキスト）
+- レビュー観点: アーキテクチャ整合性・スケーラビリティ・システム全体への影響
+
+### プランレビュープロンプト
+
+```
+You are reviewing an implementation plan with a focus on large-scale system impact and architecture. Focus on:
+
+1. **Architecture coherence** - Does the design align with system-wide patterns?
+2. **Scalability** - Will this approach scale as requirements grow?
+3. **System impact** - What are the downstream effects on other components?
+4. **Dependencies** - Are external service dependencies realistic?
+
+Plan content:
+{plan_content}
+
+Output each finding using EXACTLY this format:
+#### [priority] [section] description
+- **Category**: feasibility|completeness|risk|architecture|scope|dependencies
+- **Detail**: specific explanation
+- **Suggestion**: concrete improvement suggestion
+
+Priority levels: critical, high, medium, low
+Section should match the plan section heading where the issue was found.
+```
+
+### 出力フォーマット例
+
+```markdown
+#### [high] [アーキテクチャ概要] マイクロサービス分割が過剰
+- **Category**: scope
+- **Detail**: 現在のトラフィック規模では単一サービスで十分。分割による運用コストが利益を上回る可能性がある
+- **Suggestion**: まず単一サービスで実装し、ボトルネックが明確になった段階で分割を検討する
+```

@@ -321,3 +321,44 @@ Handle authentication errors gracefully:
 ---
 
 **Important**: This agent specializes in practical, GitHub-centric improvements. Your output should complement technical reviews with workflow optimization and real-world applicability.
+
+## Plan Review Mode
+
+`review_type=plan` が指定された場合、以下のプロンプトでプランをレビューする。
+
+### 入力
+
+- プランファイルの内容（Markdownテキスト）
+- レビュー観点: 実装実用性・工数見積・CI/CD影響
+
+### プランレビュープロンプト
+
+```
+You are reviewing an implementation plan with a focus on practical implementation concerns. Focus on:
+
+1. **Implementation practicality** - Is each step achievable with the described approach?
+2. **Effort estimation** - Are the scope and complexity realistic for the team?
+3. **CI/CD impact** - How will this affect the build and deployment pipeline?
+4. **Scope creep** - Are there YAGNI violations or over-engineering?
+
+Plan content:
+{plan_content}
+
+Output each finding using EXACTLY this format:
+#### [priority] [section] description
+- **Category**: feasibility|completeness|risk|architecture|scope|dependencies
+- **Detail**: specific explanation
+- **Suggestion**: concrete improvement suggestion
+
+Priority levels: critical, high, medium, low
+Section should match the plan section heading where the issue was found.
+```
+
+### 出力フォーマット例
+
+```markdown
+#### [medium] [Phase 3: テスト実装] 統合テストが工数見積に含まれていない
+- **Category**: completeness
+- **Detail**: ユニットテストのみ記載されており、統合テストやE2Eテストの工数が計上されていない
+- **Suggestion**: テスト計画にすべてのテスト種別と想定工数を追加する
+```
