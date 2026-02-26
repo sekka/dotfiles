@@ -13,19 +13,8 @@ permissionMode: default
 Before proceeding, verify CodeRabbit authentication:
 
 ```bash
-# 環境変数チェック（高速パス）
-if [[ "$AI_HAS_CODERABBIT" != "1" ]]; then
-    # 再検証
-    if ! [[ -f ~/.coderabbit/config.json || -f ~/.coderabbit/auth.token ]]; then
-        if ! command -v coderabbit >/dev/null 2>&1; then
-            echo "ERROR: CodeRabbit CLI not installed" >&2
-        else
-            echo "ERROR: CodeRabbit not configured" >&2
-            echo "  Run: coderabbit auth login" >&2
-        fi
-        echo "Recommendation: Use standard reviewer agent instead" >&2
-        exit 1
-    fi
+if ! "$HOME/.claude/lib/check-ai-auth.sh" coderabbit; then
+    exit 1
 fi
 ```
 

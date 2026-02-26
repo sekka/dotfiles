@@ -13,36 +13,7 @@ permissionMode: default
 Before proceeding, verify Codex authentication:
 
 ```bash
-# 環境変数チェック（高速パス）
-if [[ "$AI_HAS_CODEX" != "1" ]]; then
-    # 再検証: 認証ファイル確認（環境変数が陳腐化している可能性）
-    if ! [[ -f ~/.codex/auth.json ]]; then
-        if ! command -v codex >/dev/null 2>&1; then
-            echo "ERROR: Codex CLI not installed" >&2
-            echo "  Install: npm install -g @openai/codex" >&2
-        else
-            echo "ERROR: Codex not authenticated" >&2
-            echo "  Run: codex login" >&2
-        fi
-        echo "Recommendation: Use standard reviewer agent instead" >&2
-        exit 1
-    fi
-fi
-
-# Codex CLI自体の存在確認
-if ! command -v codex >/dev/null 2>&1; then
-    echo "ERROR: Codex CLI not installed" >&2
-    echo "  Install: npm install -g @openai/codex" >&2
-    exit 1
-fi
-
-# CLI応答性確認（macOS専用: gtimeout）
-_timeout_cmd=$(command -v gtimeout || echo "")
-if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 codex --version >/dev/null 2>&1; then
-    echo "WARNING: Codex CLI not responding" >&2
-    exit 1
-elif [[ -z "$_timeout_cmd" ]] && ! codex --version >/dev/null 2>&1; then
-    echo "WARNING: Codex CLI not responding" >&2
+if ! "$HOME/.claude/lib/check-ai-auth.sh" codex; then
     exit 1
 fi
 ```
