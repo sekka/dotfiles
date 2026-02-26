@@ -33,13 +33,80 @@
 
 各Phaseは以下のサイクルで進行する:
 
-1. **実装**: Phase内の全Stepを実施（並列可能なものは並列で）
-2. **レビュー**: Phase完了後にコードレビューを実施（reviewer エージェント）
-3. **修正**: レビュー指摘があれば対応
-4. **コミット**: Phase単位または Step単位でコミット
-5. **次Phase**: レビュー完了後に次のPhaseへ進行
+- [ ] **実装**: Phase内の全Stepを実施（並列可能なものは並列で）
+- [ ] **レビュー**: Phase完了後にコードレビューを実施（reviewer エージェント）
+- [ ] **修正**: レビュー指摘があれば対応
+- [ ] **コミット**: Phase単位または Step単位でコミット
+- [ ] **次Phase**: レビュー完了後に次のPhaseへ進行
 
 **Phase間の区切り**: 各Phase完了時にユーザーに進捗報告し、次Phase進行の確認を取る。
+
+---
+
+## Phase 0-A: Git Worktree ネイティブ化（カスタムツール削除）
+
+Claude Code に `--worktree` フラグがネイティブ追加されたため、カスタム worktree スキルを削除する。各ステップは独立しており並列実施可能。
+
+**残すもの（削除しない）:** `scripts/git/issue-worktree-create.ts`, `scripts/git/pr-worktree-create.ts`, `scripts/git/worktree-remove.ts`, `home/.claude/hooks/auto-detect-worktree.ts`
+
+### Step 0-A-1: worktree-manager スキルディレクトリ削除 `[ ]`
+
+- **ファイル**: `home/.claude/skills/worktree-manager/`（ディレクトリごと削除）
+- **対象**: `skill.json`, `prompt.md`, `README.md` の3ファイル
+- **変更**: `rm -rf home/.claude/skills/worktree-manager/`
+- **検証**: `ls home/.claude/skills/` で `worktree-manager` が存在しないこと確認
+
+### Step 0-A-2: superpowers:using-git-worktrees スキル削除 `[ ]`
+
+- **ファイル**: `home/.claude/skills/` 以下の `using-git-worktrees` または類似パス
+- **変更**: 該当ファイル・ディレクトリを削除（存在する場合のみ）
+- **検証**: `ls home/.claude/skills/` で対象が存在しないこと確認
+
+### Step 0-A-3: .gitignore に `.claude/worktrees/` を追加 `[ ]`
+
+- **ファイル**: `.gitignore`（リポジトリルート）
+- **変更**: `.claude/worktrees/` を追記（Claude Code ネイティブ worktree の出力先）
+- **検証**: `grep -F '.claude/worktrees/' .gitignore` でエントリが存在すること確認
+
+---
+
+## Phase 0-B: CLAUDE.md / rules ファイルの冗長性削除
+
+LLM既知の内容・未使用仕様・過剰なドキュメントを削除し、コンテキストウィンドウを節約する。各ステップは独立しており並列実施可能。
+
+### Step 0-B-1: tdd-workflow.md 削除 `[ ]`
+
+- **ファイル**: `home/.claude/rules/tdd-workflow.md`（削除）
+- **理由**: TDDはClaude既知の一般知識。`home/.claude/CLAUDE.md` にも同内容が記載されており完全重複
+- **変更**: ファイル削除
+- **検証**: `ls home/.claude/rules/` で `tdd-workflow.md` が存在しないこと確認
+
+### Step 0-B-2: plan-review.md を5行以内に削減 `[ ]`
+
+- **ファイル**: `home/.claude/rules/plan-review.md`
+- **変更**: ExitPlanMode 後に `/review-parallel` を提案する旨のみ残す（5行以内）
+- **削減目標**: 5行以内
+- **検証**: `wc -l home/.claude/rules/plan-review.md` で行数が5以内であること確認
+
+### Step 0-B-3: security.md を20行以内に削減 `[ ]`
+
+- **ファイル**: `home/.claude/rules/security.md`
+- **変更**: Context7はOSSのみ・WebFetch認証制限の具体例のみ残す。その他の脅威モデリング・チェックリスト・Hooksセクションを削除
+- **削減目標**: 20行以内
+- **検証**: `wc -l home/.claude/rules/security.md` で行数が20以内であること確認
+
+### Step 0-B-4: ai-interface.md を20行以内に削減 `[ ]`
+
+- **ファイル**: `home/.claude/rules/ai-interface.md`
+- **変更**: 認証検証テーブル（各AIの環境変数・認証確認・CLI存在確認・応答性確認の表）のみ残す。入出力テンプレート・汎用エラー処理・CLIコマンドマッピングは削除
+- **削減目標**: 20行以内
+- **検証**: `wc -l home/.claude/rules/ai-interface.md` で行数が20以内であること確認
+
+### Step 0-B-5: CLAUDE.md から Playwright 選択フレームワーク削除 `[ ]`
+
+- **ファイル**: `home/.claude/CLAUDE.md`
+- **変更**: `playwright-cli vs MCP` 判断基準セクション（約26-51行相当）を削除。`## ブラウザ自動化ツールの選択` セクション全体が対象
+- **検証**: `grep -n 'playwright-cli vs' home/.claude/CLAUDE.md` でヒットしないこと確認
 
 ---
 
@@ -282,16 +349,18 @@ LLMが既知の一般知識の列挙を削除。各ステップ独立。
 
 ## サマリー
 
-| Phase                         | Steps                         | 削減見込み           | リスク | 並列可                  |
-| ----------------------------- | ----------------------------- | -------------------- | ------ | ----------------------- |
-| 1: バグ修正・安全な削除       | 1-5                           | ~12行 + ファイル削除 | 低     | 全て                    |
-| 2: macOS前提の不要コード      | 6-9                           | ~18行                | 低     | 全て（8は任意）         |
-| 3: エージェント冗長セクション | 10-13                         | ~288行               | 低     | 全て                    |
-| 4: AI認証整合性修正           | 14-16                         | ~40行                | 中     | 14\|\|15, 15→16         |
-| 5: fzf/tmux統一               | 18                            | ~88行                | 中     | -                       |
-| 6: setupスクリプト            | 20-22                         | ~40行                | 中     | 全て                    |
-| 7: zsh/TTS整理                | 23-24                         | ~30行                | 低     | 23は独立, 24はStep5依存 |
-| **合計**                      | **22 steps** (実施21 + 任意1) | **~516行**           |        |                         |
+| Phase                           | Steps                         | 削減見込み                    | リスク | 並列可                  |
+| ------------------------------- | ----------------------------- | ----------------------------- | ------ | ----------------------- |
+| 0-A: Git Worktree ネイティブ化  | 0-A-1〜0-A-3                  | ファイル削除 + .gitignore追記 | 低     | 全て                    |
+| 0-B: CLAUDE.md/rules 冗長性削除 | 0-B-1〜0-B-5                  | ~100行 + ファイル削除         | 低     | 全て                    |
+| 1: バグ修正・安全な削除         | 1-5                           | ~12行 + ファイル削除          | 低     | 全て                    |
+| 2: macOS前提の不要コード        | 6-9                           | ~18行                         | 低     | 全て（8は任意）         |
+| 3: エージェント冗長セクション   | 10-13                         | ~288行                        | 低     | 全て                    |
+| 4: AI認証整合性修正             | 14-16                         | ~40行                         | 中     | 14\|\|15, 15→16         |
+| 5: fzf/tmux統一                 | 18                            | ~88行                         | 中     | -                       |
+| 6: setupスクリプト              | 20-22                         | ~40行                         | 中     | 全て                    |
+| 7: zsh/TTS整理                  | 23-24                         | ~30行                         | 低     | 23は独立, 24はStep5依存 |
+| **合計**                        | **30 steps** (実施29 + 任意1) | **~616行**                    |        |                         |
 
 **削除したステップ（トレードオフ不利）:**
 
