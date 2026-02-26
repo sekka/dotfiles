@@ -3,6 +3,7 @@ name: parallel-reviewer
 description: コードレビュー（git diff）とプランレビュー（Markdownファイル）の両方に対応した並列AIレビューオーケストレーター。複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、統合レポートを生成。重複排除、優先度付け、カテゴリ分類を自動化。
 tools: All tools
 model: haiku
+permissionMode: default
 ---
 
 # 並列AIレビュー統合Agent

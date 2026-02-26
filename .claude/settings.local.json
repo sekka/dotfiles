@@ -180,7 +180,8 @@
       "WebFetch(domain:www.nxcode.io)",
       "WebFetch(domain:venturebeat.com)",
       "WebFetch(domain:docs.openclaw.ai)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(git:*)"
     ],
     "deny": [],
     "ask": []
