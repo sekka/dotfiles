@@ -33,20 +33,7 @@ Execute code implementation using the `codex` interactive CLI and provide high-q
 
 ## Implementation Process
 
-### 1. Pre-check: Verify Codex CLI Availability
-
-Before starting implementation, verify that Codex CLI is installed:
-
-```bash
-command -v codex
-```
-
-If not found:
-- Report error to user
-- Provide installation instructions: `npm install -g @openai/codex`
-- Exit gracefully
-
-### 2. Context Collection
+### 1. Context Collection
 
 Gather necessary context using available tools:
 
@@ -63,7 +50,7 @@ Glob("**/*.ts")
 
 **Purpose**: Understand codebase structure, existing patterns, and implementation context.
 
-### 3. Execute Codex Implementation
+### 2. Execute Codex Implementation
 
 Run Codex with the `exec` subcommand for non-interactive execution compatible with Claude Code:
 
@@ -83,10 +70,10 @@ timeout 300 codex exec --sandbox workspace-write --ask-for-approval never "Imple
 - Use `codex exec --sandbox workspace-write --ask-for-approval never` for non-interactive execution
 - `--full-auto` starts a PTY-based interactive session and is incompatible with Claude Code's Bash tool
 - Provide clear, specific instructions in the prompt
-- Include relevant context from Step 2
+- Include relevant context from Step 1
 - Never include sensitive information (API keys, credentials, etc.) in the prompt
 
-### 4. Verify Results
+### 3. Verify Results
 
 After Codex execution, verify the changes:
 
@@ -101,7 +88,7 @@ git diff
 npm test  # or appropriate test command
 ```
 
-### 5. Report Results
+### 4. Report Results
 
 Provide a structured summary to the user:
 
@@ -130,94 +117,11 @@ Provide a structured summary to the user:
 
 ## Error Handling
 
-### Codex CLI Not Installed
-
-```markdown
-❌ **Error**: Codex CLI not found
-
-**Resolution**:
-1. Install Codex CLI: `npm install -g @openai/codex`
-2. Verify installation: `command -v codex`
-3. Retry the task
-```
-
-### Authentication Failure
-
-```markdown
-❌ **Error**: Codex authentication failed
-
-**Resolution**:
-1. Run: `codex login`
-2. Follow authentication prompts
-3. Retry the task
-```
-
-### Execution Timeout
-
-If Codex execution takes too long (>5 minutes):
-
-```markdown
-⏱️ **Warning**: Codex execution timed out
-
-**Resolution**:
-1. Break down the task into smaller steps
-2. Run Codex on each step individually
-3. Report partial progress to user
-```
-
-### Implementation Failure
-
-If Codex fails to implement correctly:
-
-```bash
-# Check what changed
-git diff
-git status
-```
-
-Report to user:
-```markdown
-⚠️ **Warning**: Codex implementation incomplete or failed
-
-**Changes Made**:
-[List files changed from git status]
-
-**Diff Summary**:
-[Key changes from git diff]
-
-**Recommendation**:
-- Review the changes manually
-- Consider alternative approach
-- Or break down into smaller tasks
-```
-
-### Fallback: Direct File Write
-
-If `codex exec` fails to write files, use Write/Edit tools directly:
-
-1. Ask Codex to output the complete file content
-2. Use Write tool to apply changes
-3. Verify with git diff
-
-### Partial Changes
-
-If Codex made partial changes:
-
-```markdown
-⚠️ **Warning**: Codex made partial changes
-
-**What Changed**:
-[List changes from git diff]
-
-**What's Missing**:
-[List incomplete parts]
-
-**Next Action**:
-Please review the changes and decide whether to:
-1. Complete manually
-2. Run Codex again with refined instructions
-3. Rollback changes with `git restore .`
-```
+- **CLI not found**: Install with `npm install -g @openai/codex`
+- **Auth failure**: Run `codex login` and retry
+- **Timeout (>5min)**: Break task into smaller steps and run individually
+- **Exec failure**: Fall back to Write/Edit tools directly; verify with `git diff`
+- **Partial changes**: Report progress and ask user to complete manually or run Codex again with refined instructions
 
 ## Security Guidelines
 
@@ -243,45 +147,6 @@ The following files are already protected by deny list and hooks:
 - `*secret*`, `*token*`
 - `~/.ssh/*`
 
-## Implementation Guidelines
-
-### Focus Areas
-
-1. **Correctness**
-   - Implement required functionality accurately
-   - Handle edge cases
-   - Null/undefined safety
-
-2. **Security**
-   - Input validation and sanitization
-   - No hardcoded credentials
-   - Secure API usage
-   - OWASP Top 10 awareness
-
-3. **Performance**
-   - Efficient algorithms
-   - Avoid unnecessary computations
-   - Resource management
-
-4. **Code Quality**
-   - Follow existing codebase patterns
-   - Clear naming and structure
-   - Appropriate comments for complex logic
-   - DRY principle
-
-5. **Testing**
-   - Implement tests alongside code (TDD)
-   - Cover edge cases
-   - Integration test considerations
-
-### Output Principles
-
-- **Be Specific**: Report exact files and changes made
-- **Be Transparent**: Show git diff and status
-- **Be Actionable**: Provide clear next steps
-- **Be Honest**: Report failures and limitations clearly
-- **Be Secure**: Never expose sensitive information
-
 ## Integration with Other Agents
 
 When working alongside other agents:
@@ -297,20 +162,19 @@ When working alongside other agents:
 
 **Your Actions**:
 
-1. **Pre-check**: Verify Codex CLI
-2. **Context**: Read existing middleware patterns
-3. **Execute**:
+1. **Context**: Read existing middleware patterns
+2. **Execute**:
    ```bash
    # ✅ 正しい使い方（非対話）
    codex exec --sandbox workspace-write --ask-for-approval never "Implement JWT authentication middleware following the pattern in src/middleware/logger.ts. Validate JWT tokens, extract user info, and add to request context. Handle token expiry and invalid tokens with appropriate error responses."
    ```
-4. **Verify**:
+3. **Verify**:
    ```bash
    git status
    git diff
    npm test
    ```
-5. **Report**: Structured summary with changes, verification results, and next steps
+4. **Report**: Structured summary with changes, verification results, and next steps
 
 ---
 

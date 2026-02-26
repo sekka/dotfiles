@@ -40,23 +40,9 @@ interface WorktreeConfig {
  * 現在のディレクトリが worktree かどうかを判定
  */
 function isWorktree(): boolean {
-  const cwd = process.cwd();
-
-  // .git が通常のディレクトリではなくファイルの場合、worktree
-  const gitPath = path.join(cwd, '.git');
-
-  if (!fs.existsSync(gitPath)) {
-    return false;
-  }
-
-  const stats = fs.statSync(gitPath);
-
-  if (stats.isFile()) {
-    // .git がファイルの場合、worktree
-    return true;
-  }
-
-  return false;
+  const gitPath = path.join(process.cwd(), '.git');
+  if (!fs.existsSync(gitPath)) return false;
+  return fs.statSync(gitPath).isFile();
 }
 
 /**

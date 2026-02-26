@@ -12,8 +12,9 @@ OUTPUT_DIR="${HOME}/Desktop"
 echo "=== macOS設定のスナップショット取得（変更後） ==="
 echo ""
 
-# 最新のbeforeファイルを検索
-LATEST_BEFORE=$(find "${SNAPSHOT_DIR}" -name "before_*.txt" -type f -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+# 最新のbeforeファイルを検索（GNU find の -printf は macOS BSD find 非対応のため ls -t を使用）
+# shellcheck disable=SC2012
+LATEST_BEFORE=$(ls -t "${SNAPSHOT_DIR}"/before_*.txt 2>/dev/null | head -1)
 
 if [ -z "$LATEST_BEFORE" ]; then
   echo "❌ エラー: 変更前のスナップショットが見つかりません"

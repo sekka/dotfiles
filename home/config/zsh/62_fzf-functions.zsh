@@ -11,6 +11,27 @@ function _is_git_repo() {
     git rev-parse --git-dir >/dev/null 2>&1
 }
 
+# tmux 内なら fzf-tmux、それ以外は fzf を使うヘルパー関数
+# 使い方: _fzf_cmd [fzf-tmux専用オプション...] -- [fzf共通オプション...]
+# 例: _fzf_cmd -p 90%,90% -- --header "..."
+function _fzf_cmd() {
+    if [[ -n "$TMUX" ]]; then
+        fzf-tmux "$@"
+    else
+        # "--" 区切りより後の引数（fzf共通オプション）のみ fzf に渡す
+        local -a fzf_args=()
+        local pass=0
+        for arg in "$@"; do
+            if [[ "$arg" == "--" ]]; then
+                pass=1
+            elif [[ $pass -eq 1 ]]; then
+                fzf_args+=("$arg")
+            fi
+        done
+        fzf "${fzf_args[@]}"
+    fi
+}
+
 # ===========================================
 # FZF インタラクティブ関数
 # ===========================================
@@ -39,21 +60,12 @@ function fzf-select-history() {
     local selected
 
     # 履歴の取得と選択（新しい順）
-    if [[ -n "$TMUX" ]]; then
-        selected=$(history -n 1 | tail -r | fzf-tmux -p 90%,90% -- \
-            --query "$LBUFFER" \
-            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-            --preview "echo {}" \
-            --preview-window=right:60%:wrap
-        ) || return
-    else
-        selected=$(history -n 1 | tail -r | fzf \
-            --query "$LBUFFER" \
-            --header "📜 Command History | Enter: Execute | Esc: Cancel" \
-            --preview "echo {}" \
-            --preview-window=right:60%:wrap
-        ) || return
-    fi
+    selected=$(history -n 1 | tail -r | _fzf_cmd -p 90%,90% -- \
+        --query "$LBUFFER" \
+        --header "📜 Command History | Enter: Execute | Esc: Cancel" \
+        --preview "echo {}" \
+        --preview-window=right:60%:wrap
+    ) || return
 
     if [[ -n "$selected" ]]; then
         BUFFER="$selected"
@@ -125,21 +137,12 @@ function fzf-src() {
         fi
     "
 
-    if [[ -n "$TMUX" ]]; then
-        selected_dir=$(ghq list -p 2>/dev/null | fzf-tmux -p 90%,90% -- \
-            --query "$LBUFFER" \
-            --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
-            --preview "$preview_cmd" \
-            --preview-window=right:60%:wrap
-        ) || return
-    else
-        selected_dir=$(ghq list -p 2>/dev/null | fzf \
-            --query "$LBUFFER" \
-            --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
-            --preview "$preview_cmd" \
-            --preview-window=right:60%:wrap
-        ) || return
-    fi
+    selected_dir=$(ghq list -p 2>/dev/null | _fzf_cmd -p 90%,90% -- \
+        --query "$LBUFFER" \
+        --header "🔍 Select Repository | Enter: cd | Esc: Cancel" \
+        --preview "$preview_cmd" \
+        --preview-window=right:60%:wrap
+    ) || return
 
     if [[ -n "$selected_dir" ]] && [[ -d "$selected_dir" ]]; then
         BUFFER="cd -- ${(qq)selected_dir}"
@@ -194,52 +197,27 @@ function fcd() {
     fi
 
     # ディレクトリ検索（fdが利用可能ならfdを使用、なければfind）
-    if [[ -n "$TMUX" ]]; then
-        if command -v fd >/dev/null 2>&1; then
-            dir=$(fd --type d \
-                --hidden \
-                --exclude .git \
-                --exclude node_modules \
-                --exclude target \
-                . "$base_dir" 2>/dev/null | fzf-tmux -p 90%,90% -- \
-                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-                --preview "$preview_cmd" \
-                --preview-window=right:50%:wrap
-            )
-        else
-            dir=$(find "$base_dir" -type d \
-                -not -path '*/\.*' \
-                -not -path '*/node_modules/*' \
-                -not -path '*/target/*' \
-                2>/dev/null | fzf-tmux -p 90%,90% -- \
-                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-                --preview "$preview_cmd" \
-                --preview-window=right:50%:wrap
-            )
-        fi
+    if command -v fd >/dev/null 2>&1; then
+        dir=$(fd --type d \
+            --hidden \
+            --exclude .git \
+            --exclude node_modules \
+            --exclude target \
+            . "$base_dir" 2>/dev/null | _fzf_cmd -p 90%,90% -- \
+            --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+            --preview "$preview_cmd" \
+            --preview-window=right:50%:wrap
+        )
     else
-        if command -v fd >/dev/null 2>&1; then
-            dir=$(fd --type d \
-                --hidden \
-                --exclude .git \
-                --exclude node_modules \
-                --exclude target \
-                . "$base_dir" 2>/dev/null | fzf \
-                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-                --preview "$preview_cmd" \
-                --preview-window=right:50%:wrap
-            )
-        else
-            dir=$(find "$base_dir" -type d \
-                -not -path '*/\.*' \
-                -not -path '*/node_modules/*' \
-                -not -path '*/target/*' \
-                2>/dev/null | fzf \
-                --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
-                --preview "$preview_cmd" \
-                --preview-window=right:50%:wrap
-            )
-        fi
+        dir=$(find "$base_dir" -type d \
+            -not -path '*/\.*' \
+            -not -path '*/node_modules/*' \
+            -not -path '*/target/*' \
+            2>/dev/null | _fzf_cmd -p 90%,90% -- \
+            --header "📁 Select Directory | Enter: cd | Esc: Cancel" \
+            --preview "$preview_cmd" \
+            --preview-window=right:50%:wrap
+        )
     fi
 
     # ディレクトリが選択されたら移動
@@ -297,23 +275,13 @@ function fzf-git-branch() {
     fi
 
     # fzfでブランチ選択（tmux内ならpopup表示）
-    if [[ -n "$TMUX" ]]; then
-        branch=$(echo "$branches" | fzf-tmux -p 90%,90% -- \
-            --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
-            --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
-            --preview-window=right:60%:wrap \
-            --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
-            --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
-        )
-    else
-        branch=$(echo "$branches" | fzf \
-            --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
-            --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
-            --preview-window=right:60%:wrap \
-            --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
-            --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
-        )
-    fi
+    branch=$(echo "$branches" | _fzf_cmd -p 90%,90% -- \
+        --header "🌿 Git Branches | Enter: Checkout | Ctrl+R: +Remote | Ctrl+L: Local | Esc: Cancel" \
+        --preview "git show --color=always --stat {} 2>/dev/null || echo 'No commits yet'" \
+        --preview-window=right:60%:wrap \
+        --bind "ctrl-r:reload(git branch --all | command grep -v HEAD | sed 's/^[* ] //' | sed 's#remotes/##')+change-header(🌿 Git Branches (All) | Enter: Checkout | Ctrl+L: Local | Esc: Cancel)" \
+        --bind "ctrl-l:reload(git branch | sed 's/^[* ] //')+change-header(🌿 Git Branches (Local) | Enter: Checkout | Ctrl+R: +Remote | Esc: Cancel)"
+    )
 
     # ブランチが選択されたらチェックアウト
     if [[ -n "$branch" ]]; then
@@ -361,47 +329,25 @@ function gifit() {
     local from_commit to_commit from_hash to_hash
 
     # 開始コミット（FROM）を選択
-    if [[ -n "$TMUX" ]]; then
-        from_commit=$(git log --oneline --decorate -100 --color=always | \
-            fzf-tmux -p 90%,90% -- \
-                --ansi \
-                --header "> difit \$TO \$FROM~1" \
-                --prompt "Select \$FROM>" \
-                --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=top:3:wrap
-        ) || return
-    else
-        from_commit=$(git log --oneline --decorate -100 --color=always | \
-            fzf \
-                --ansi \
-                --header "> difit \$TO \$FROM~1" \
-                --prompt "Select \$FROM>" \
-                --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=top:3:wrap
-        ) || return
-    fi
+    from_commit=$(git log --oneline --decorate -100 --color=always | \
+        _fzf_cmd -p 90%,90% -- \
+            --ansi \
+            --header "> difit \$TO \$FROM~1" \
+            --prompt "Select \$FROM>" \
+            --preview 'git log --oneline --decorate --color=always -1 {1}' \
+            --preview-window=top:3:wrap
+    ) || return
     from_hash="${from_commit%% *}"
 
     # 終了コミット（TO）を選択
-    if [[ -n "$TMUX" ]]; then
-        to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
-            fzf-tmux -p 90%,90% -- \
-                --ansi \
-                --header "> difit \$TO $from_hash~1" \
-                --prompt "Select \$TO>" \
-                --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=top:3:wrap
-        ) || return
-    else
-        to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
-            fzf \
-                --ansi \
-                --header "> difit \$TO $from_hash~1" \
-                --prompt "Select \$TO>" \
-                --preview 'git log --oneline --decorate --color=always -1 {1}' \
-                --preview-window=top:3:wrap
-        ) || return
-    fi
+    to_commit=$(git log --oneline --decorate -100 --color=always $from_hash~1.. | \
+        _fzf_cmd -p 90%,90% -- \
+            --ansi \
+            --header "> difit \$TO $from_hash~1" \
+            --prompt "Select \$TO>" \
+            --preview 'git log --oneline --decorate --color=always -1 {1}' \
+            --preview-window=top:3:wrap
+    ) || return
     to_hash="${to_commit%% *}"
 
     # difitを実行

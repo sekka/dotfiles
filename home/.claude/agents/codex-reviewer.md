@@ -167,8 +167,7 @@ When running in parallel with other AI reviewers:
 
 If `codex review` fails:
 
-- Check if Codex CLI is installed: `command -v codex`
-- Verify authentication: `codex login`
+- Authentication was already verified at startup; check the error message for runtime issues
 - Ensure we're in a Git repository
 - Report the error clearly to the user with troubleshooting steps
 

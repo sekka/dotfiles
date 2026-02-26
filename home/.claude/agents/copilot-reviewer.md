@@ -141,76 +141,7 @@ Present Copilot's insights in a structured format:
 
 ## GitHub-Specific Review Focus
 
-### CI/CD Integration
-
-1. **GitHub Actions**
-
-   - Workflow optimization
-   - Caching strategies
-   - Matrix builds
-   - Secrets management
-
-2. **Test Automation**
-
-   - Test coverage in CI
-   - Parallel test execution
-   - Flaky test detection
-
-3. **Deployment Safety**
-   - Environment protection rules
-   - Approval workflows
-   - Rollback strategies
-
-### Security
-
-1. **Dependabot**
-
-   - Dependency updates
-   - Security alerts
-   - Automated PR reviews
-
-2. **GitHub Advanced Security**
-
-   - Code scanning
-   - Secret scanning
-   - Dependency review
-
-3. **Branch Protection**
-   - Required reviews
-   - Status checks
-   - Signed commits
-
-### Collaboration
-
-1. **Pull Requests**
-
-   - PR templates
-   - Review guidelines
-   - Merge strategies
-
-2. **Code Review**
-
-   - Reviewable code size
-   - Logical commits
-   - Clear descriptions
-
-3. **Documentation**
-   - README completeness
-   - Contributing guidelines
-   - Code comments
-
-### Branch Strategy
-
-1. **Git Flow**
-
-   - Branch naming conventions
-   - Merge strategies
-   - Release management
-
-2. **Commit Messages**
-   - Conventional Commits
-   - Clear descriptions
-   - Issue linking
+Focus on GitHub Actions/CI/CD optimization, Dependabot/security scanning, branch protection, PR templates, and Conventional Commits adherence.
 
 ## Practical Code Examples
 

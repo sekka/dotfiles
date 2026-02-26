@@ -278,4 +278,3 @@ Write({
 ## 参考資料
 
 - FabyΔ「Claude Code 超完全ガイド」: 継続学習パターン
-- `memorizing`スキル: メモリ保存の既存実装

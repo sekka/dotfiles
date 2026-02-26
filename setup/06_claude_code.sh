@@ -66,13 +66,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# jq が利用可能か確認
+# jq が必須: 未インストールの場合は続行不可
 if ! command -v jq &>/dev/null; then
-  echo "⚠️  警告: jq がインストールされていません。プラグインの更新検出をスキップします。"
+  echo "❌ エラー: jq がインストールされていません。セットアップを中断します。"
   echo "   インストール方法: brew install jq"
-  JQ_AVAILABLE=false
-else
-  JQ_AVAILABLE=true
+  exit 1
 fi
 
 # マーケットプレースが追加済みか確認
@@ -80,7 +78,7 @@ is_marketplace_added() {
   local name="$1"
   local json_file="$HOME/.claude/plugins/known_marketplaces.json"
 
-  if [[ $JQ_AVAILABLE == "true" ]] && [[ -f $json_file ]]; then
+  if [[ -f $json_file ]]; then
     jq -e ".[\"$name\"]" "$json_file" >/dev/null 2>&1
     return $?
   fi
@@ -91,8 +89,7 @@ is_marketplace_added() {
 is_plugin_installed() {
   local plugin="$1"
 
-  # jq と installed_plugins.json の両方が必要
-  if [[ $JQ_AVAILABLE != "true" ]] || [[ ! -f $INSTALLED_PLUGINS_FILE ]]; then
+  if [[ ! -f $INSTALLED_PLUGINS_FILE ]]; then
     return 1 # false（未インストール扱い）
   fi
 

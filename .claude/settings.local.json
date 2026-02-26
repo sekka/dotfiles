@@ -42,7 +42,6 @@
       "WebFetch(domain:developer.microsoft.com)",
       "WebFetch(domain:developers.openai.com)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:docs.claude-mem.ai)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:docs.coderabbit.ai)",
       "WebFetch(domain:docs.docker.com)",
@@ -181,7 +180,8 @@
       "WebFetch(domain:venturebeat.com)",
       "WebFetch(domain:docs.openclaw.ai)",
       "Bash(python3:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(zsh:*)"
     ],
     "deny": [],
     "ask": []

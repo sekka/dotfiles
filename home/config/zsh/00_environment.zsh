@@ -116,21 +116,15 @@ add_to_path "$HOME/.antigravity/antigravity/bin" append
 # --- アプリケーション ---
 
 # Rancher Desktop
-if [[ -d "$HOME/.rd/bin" ]]; then
-    add_to_path "$HOME/.rd/bin" append
-fi
+add_to_path "$HOME/.rd/bin" append
 
 # --- クラウドツール ---
 
 # Google Cloud SDK
-if [[ -d "$HOME/google-cloud-sdk/bin" ]]; then
-    add_to_path "$HOME/google-cloud-sdk/bin" append
-fi
+add_to_path "$HOME/google-cloud-sdk/bin" append
 
 # AWS CLI
-if [[ -d "$HOME/.local/aws-cli/v2/current/bin" ]]; then
-    add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
-fi
+add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 
 # ===========================================
 # コア機能
