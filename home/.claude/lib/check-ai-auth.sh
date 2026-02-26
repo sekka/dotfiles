@@ -27,22 +27,14 @@ _check_timeout() {
 
 case "$_ai" in
     codex)
-        if [[ "$AI_HAS_CODEX" != "1" ]]; then
-            if ! [[ -f ~/.codex/auth.json ]]; then
-                if ! command -v codex >/dev/null 2>&1; then
-                    echo "ERROR: Codex CLI not installed" >&2
-                    echo "  Install: npm install -g @openai/codex" >&2
-                else
-                    echo "ERROR: Codex not authenticated" >&2
-                    echo "  Run: codex login" >&2
-                fi
-                echo "Recommendation: Use standard implementer agent instead" >&2
-                exit 1
-            fi
-        fi
         if ! command -v codex >/dev/null 2>&1; then
             echo "ERROR: Codex CLI not installed" >&2
             echo "  Install: npm install -g @openai/codex" >&2
+            exit 1
+        fi
+        if [[ "${AI_HAS_CODEX:-}" != "1" ]] && ! [[ -f ~/.codex/auth.json ]]; then
+            echo "ERROR: Codex not authenticated" >&2
+            echo "  Run: codex login" >&2
             exit 1
         fi
         if ! _check_timeout codex; then
@@ -51,33 +43,29 @@ case "$_ai" in
         fi
         ;;
     gemini)
-        if [[ "$AI_HAS_GEMINI" != "1" ]]; then
+        if [[ "${AI_HAS_GEMINI:-}" != "1" ]]; then
             if [[ -z "${GEMINI_API_KEY:-}" ]] && \
                ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
                 echo "ERROR: Gemini not authenticated" >&2
                 echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
-                echo "Recommendation: Use standard researcher agent instead" >&2
                 exit 1
             fi
         fi
         ;;
     copilot)
-        if [[ "$AI_HAS_COPILOT" != "1" ]]; then
-            if ! gh auth status >/dev/null 2>&1; then
-                if ! command -v gh >/dev/null 2>&1; then
-                    echo "ERROR: GitHub CLI not installed" >&2
-                    echo "  Install: brew install gh" >&2
-                else
-                    echo "ERROR: GitHub not authenticated" >&2
-                    echo "  Run: gh auth login" >&2
-                fi
-                echo "Recommendation: Use standard reviewer agent instead" >&2
-                exit 1
-            fi
+        if ! command -v gh >/dev/null 2>&1; then
+            echo "ERROR: GitHub CLI not installed" >&2
+            echo "  Install: brew install gh" >&2
+            exit 1
         fi
         if ! command -v copilot >/dev/null 2>&1; then
             echo "ERROR: Copilot CLI not installed" >&2
             echo "  Install: gh extension install github/gh-copilot" >&2
+            exit 1
+        fi
+        if [[ "${AI_HAS_COPILOT:-}" != "1" ]] && ! gh auth status >/dev/null 2>&1; then
+            echo "ERROR: GitHub not authenticated" >&2
+            echo "  Run: gh auth login" >&2
             exit 1
         fi
         if ! _check_timeout copilot; then
@@ -86,15 +74,15 @@ case "$_ai" in
         fi
         ;;
     coderabbit)
-        if [[ "$AI_HAS_CODERABBIT" != "1" ]]; then
+        if ! command -v coderabbit >/dev/null 2>&1; then
+            echo "ERROR: CodeRabbit CLI not installed" >&2
+            echo "  Install: npm install -g @coderabbitai/coderabbit-cli" >&2
+            exit 1
+        fi
+        if [[ "${AI_HAS_CODERABBIT:-}" != "1" ]]; then
             if ! [[ -f ~/.coderabbit/config.json || -f ~/.coderabbit/auth.token ]]; then
-                if ! command -v coderabbit >/dev/null 2>&1; then
-                    echo "ERROR: CodeRabbit CLI not installed" >&2
-                else
-                    echo "ERROR: CodeRabbit not configured" >&2
-                    echo "  Run: coderabbit auth login" >&2
-                fi
-                echo "Recommendation: Use standard reviewer agent instead" >&2
+                echo "ERROR: CodeRabbit not configured" >&2
+                echo "  Run: coderabbit auth login" >&2
                 exit 1
             fi
         fi

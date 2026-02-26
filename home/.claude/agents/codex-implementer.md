@@ -33,20 +33,7 @@ Execute code implementation using the `codex` interactive CLI and provide high-q
 
 ## Implementation Process
 
-### 1. Pre-check: Verify Codex CLI Availability
-
-Before starting implementation, verify that Codex CLI is installed:
-
-```bash
-command -v codex
-```
-
-If not found:
-- Report error to user
-- Provide installation instructions: `npm install -g @openai/codex`
-- Exit gracefully
-
-### 2. Context Collection
+### 1. Context Collection
 
 Gather necessary context using available tools:
 
@@ -63,7 +50,7 @@ Glob("**/*.ts")
 
 **Purpose**: Understand codebase structure, existing patterns, and implementation context.
 
-### 3. Execute Codex Implementation
+### 2. Execute Codex Implementation
 
 Run Codex with the `exec` subcommand for non-interactive execution compatible with Claude Code:
 
@@ -83,10 +70,10 @@ timeout 300 codex exec --sandbox workspace-write --ask-for-approval never "Imple
 - Use `codex exec --sandbox workspace-write --ask-for-approval never` for non-interactive execution
 - `--full-auto` starts a PTY-based interactive session and is incompatible with Claude Code's Bash tool
 - Provide clear, specific instructions in the prompt
-- Include relevant context from Step 2
+- Include relevant context from Step 1
 - Never include sensitive information (API keys, credentials, etc.) in the prompt
 
-### 4. Verify Results
+### 3. Verify Results
 
 After Codex execution, verify the changes:
 
@@ -101,7 +88,7 @@ git diff
 npm test  # or appropriate test command
 ```
 
-### 5. Report Results
+### 4. Report Results
 
 Provide a structured summary to the user:
 
@@ -297,20 +284,19 @@ When working alongside other agents:
 
 **Your Actions**:
 
-1. **Pre-check**: Verify Codex CLI
-2. **Context**: Read existing middleware patterns
-3. **Execute**:
+1. **Context**: Read existing middleware patterns
+2. **Execute**:
    ```bash
    # ✅ 正しい使い方（非対話）
    codex exec --sandbox workspace-write --ask-for-approval never "Implement JWT authentication middleware following the pattern in src/middleware/logger.ts. Validate JWT tokens, extract user info, and add to request context. Handle token expiry and invalid tokens with appropriate error responses."
    ```
-4. **Verify**:
+3. **Verify**:
    ```bash
    git status
    git diff
    npm test
    ```
-5. **Report**: Structured summary with changes, verification results, and next steps
+4. **Report**: Structured summary with changes, verification results, and next steps
 
 ---
 
