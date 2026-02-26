@@ -44,13 +44,12 @@ case "$_ai" in
         fi
         ;;
     gemini)
-        if [[ "${AI_HAS_GEMINI:-}" != "1" ]]; then
-            if [[ -z "${GEMINI_API_KEY:-}" ]] && \
-               ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
-                echo "ERROR: Gemini not authenticated" >&2
-                echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
-                exit 1
-            fi
+        if [[ "${AI_HAS_GEMINI:-}" == "1" ]]; then exit 0; fi
+        if [[ -z "${GEMINI_API_KEY:-}" ]] && \
+           ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
+            echo "ERROR: Gemini not authenticated" >&2
+            echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
+            exit 1
         fi
         ;;
     copilot)

@@ -164,4 +164,4 @@ mkdir -p "$(dirname "$_ai_cache_file")"
     echo "export AI_AVAILABLE_MODELS='${AI_AVAILABLE_MODELS}'"
 } >| "$_ai_cache_file" 2>/dev/null || echo "WARNING: Failed to write AI availability cache" >&2
 
-unset _ai_models _ai_cache_file _ai_cache_ttl _copilot_ok _gh_ok _ai_auth_files
+unset _ai_models _ai_cache_file _ai_cache_ttl _copilot_ok _gh_ok _ai_auth_files _gemini_available _timeout_cmd

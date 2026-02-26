@@ -41,7 +41,7 @@ echo "# zshをshellリストに追加する"
 if ! grep -qF "$WHICH_ZSH" /etc/shells; then
   echo "Adding zsh..."
   # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
-  sudo sh -c 'echo $(which zsh) >> /etc/shells'
+  sudo sh -c "echo $WHICH_ZSH >> /etc/shells"
 else
   echo "zsh already added."
 fi

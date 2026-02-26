@@ -12,7 +12,7 @@ OUTPUT_DIR="${HOME}/Desktop"
 echo "=== macOS設定のスナップショット取得（変更後） ==="
 echo ""
 
-# 最新のbeforeファイルを検索
+# 最新のbeforeファイルを検索（GNU find の -printf は macOS BSD find 非対応のため ls -t を使用）
 # shellcheck disable=SC2012
 LATEST_BEFORE=$(ls -t "${SNAPSHOT_DIR}"/before_*.txt 2>/dev/null | head -1)
 
