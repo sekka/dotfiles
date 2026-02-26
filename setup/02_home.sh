@@ -216,16 +216,6 @@ ensure_dir "$HOME/.serena"
 link_file "$HOME/dotfiles/home/.serena/serena_config.yml" "$HOME/.serena/serena_config.yml" "serena_config.yml"
 
 # =======================================================================================
-# claude-mem 設定
-# =======================================================================================
-
-echo ""
-echo "claude-mem 設定のシンボリックリンクを作成..."
-
-ensure_dir "$HOME/.claude-mem"
-link_file "$HOME/dotfiles/home/.claude-mem/settings.json" "$HOME/.claude-mem/settings.json" "settings.json"
-
-# =======================================================================================
 # codex 設定
 # =======================================================================================
 
@@ -298,7 +288,6 @@ echo "   .config/: ghostty, mise, nvim, sheldon, gwq, lazygit, yazi"
 echo "   navi/: コマンドチートシート"
 echo "   .claude/: AI開発支援ツール設定"
 echo "   .serena/: セマンティックコーディング設定"
-echo "   .claude-mem/: Claude メモリ設定"
 echo "   .codex/: OpenAI Codex CLI 設定"
 echo "   .git/hooks/: Git hooks (commit前のlintチェック)"
 echo ""

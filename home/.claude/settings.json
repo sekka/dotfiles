@@ -97,14 +97,12 @@
       "Bash(xargs:*)",
       "Bash(yazi:*)",
       "Bash(zoxide:*)",
-      "Skill(agent-memory)",
       "Skill(asking-peer)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(generating-skills-from-logs)",
       "Skill(managing-frontend-knowledge)",
-      "Skill(memorizing)",
       "Skill(review-parallel)",
       "Skill(review-pr)",
       "Skill(review-with-claude)",
@@ -118,7 +116,6 @@
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
-      "mcp__plugin_claude-mem_mem-search__*",
       "mcp__plugin_context7_context7__*",
       "mcp__plugin_playwright_playwright__*",
       "mcp__plugin_serena_serena__*",
@@ -182,15 +179,6 @@
             "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
           }
         ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccm hook PreToolUse"
-          }
-        ]
       }
     ],
     "PostToolUse": [
@@ -206,15 +194,6 @@
             "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
           }
         ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccm hook PostToolUse"
-          }
-        ]
       }
     ],
     "Stop": [
@@ -223,15 +202,6 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccm hook Stop"
           }
         ]
       }
@@ -243,25 +213,6 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccm hook Notification"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "ccm hook UserPromptSubmit"
           }
         ]
       }
@@ -305,7 +256,6 @@
     "serena@claude-plugins-official": true,
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
-    "claude-mem@thedotmack": true,
     "claude-code-harness@claude-code-harness-marketplace": true,
     "Notion@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
@@ -335,12 +285,6 @@
         "repo": "anthropics/skills"
       }
     },
-    "thedotmack": {
-      "source": {
-        "source": "github",
-        "repo": "thedotmack/claude-mem"
-      }
-    },
     "claude-code-harness-marketplace": {
       "source": {
         "source": "github",
@@ -357,12 +301,6 @@
       "source": {
         "source": "git",
         "url": "https://github.com/mixedbread-ai/mgrep.git"
-      }
-    },
-    "claude-mem-jp": {
-      "source": {
-        "source": "github",
-        "repo": "Chachamaru127/claude-mem-jp"
       }
     }
   }
