@@ -141,15 +141,7 @@ route_task() {
                 echo "[AI-DISPATCH] Fallback: Copilot unavailable, using Claude reviewer" >&2
             fi
             ;;
-        "deep-implementation")
-            if [[ "$AI_HAS_CODEX" == "1" ]]; then
-                echo "codex-implementer"
-            else
-                echo "implementer" # fallback
-                echo "[AI-DISPATCH] Fallback: Codex unavailable, using Claude implementer" >&2
-            fi
-            ;;
-        "normal-implementation")
+        "deep-implementation"|"normal-implementation")
             if [[ "$AI_HAS_CODEX" == "1" ]]; then
                 echo "codex-implementer"
             else

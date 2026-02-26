@@ -13,17 +13,9 @@ tools: Bash, Read, Grep, Glob
 ## 使用前チェック
 
 ```bash
-# 環境変数チェック
-if [[ "$AI_HAS_GEMINI" != "1" ]]; then
-    # 再検証（-F でリテラル検索: regex injection防止）
-    if [[ -z "$GEMINI_API_KEY" ]] && ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
-        echo "ERROR: Gemini not authenticated" >&2
-        echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
-        echo "Recommendation: Use standard researcher agent instead" >&2
-        exit 1
-    fi
+if ! "$HOME/.claude/lib/check-ai-auth.sh" gemini; then
+    exit 1
 fi
-
 ```
 
 ## 実行フロー

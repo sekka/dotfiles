@@ -62,118 +62,21 @@ Claude Code ↔ 各AI間の標準化された入出力契約。
 
 ## 認証再検証パターン
 
-各エージェントで使用する共通ガードパターン:
-
-### 共通パターン
-
-macOS専用環境のため、`gtimeout`を使用した応答性チェック:
+各エージェントは `~/.claude/lib/check-ai-auth.sh` を呼び出す:
 
 ```bash
-# macOS専用: gtimeout を使用
-_timeout_cmd=$(command -v gtimeout || echo "")
-if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 <CLI_NAME> --version >/dev/null 2>&1; then
-    echo "WARNING: <CLI_NAME> CLI not responding" >&2
-    exit 1
-elif [[ -z "$_timeout_cmd" ]] && ! <CLI_NAME> --version >/dev/null 2>&1; then
-    echo "WARNING: <CLI_NAME> CLI not responding" >&2
+if ! "$HOME/.claude/lib/check-ai-auth.sh" <ai-name>; then
     exit 1
 fi
 ```
 
-### Codex系エージェント
+実装詳細: `home/.claude/lib/check-ai-auth.sh` を参照。
 
-```bash
-# 環境変数チェック（高速パス）
-if [[ "$AI_HAS_CODEX" != "1" ]]; then
-    # 再検証: 認証ファイル確認（環境変数が陳腐化している可能性）
-    if ! [[ -f ~/.codex/auth.json ]]; then
-        if ! command -v codex >/dev/null 2>&1; then
-            echo "ERROR: Codex CLI not installed" >&2
-            echo "  Install: npm install -g @openai/codex" >&2
-        else
-            echo "ERROR: Codex not authenticated" >&2
-            echo "  Run: codex login" >&2
-        fi
-        echo "Recommendation: Use standard implementer agent instead" >&2
-        exit 1
-    fi
-fi
+### 各AIの検証フロー
 
-# CLI応答性確認（macOS専用: gtimeout）
-_timeout_cmd=$(command -v gtimeout || echo "")
-if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 codex --version >/dev/null 2>&1; then
-    echo "WARNING: Codex CLI not responding" >&2
-    exit 1
-elif [[ -z "$_timeout_cmd" ]] && ! codex --version >/dev/null 2>&1; then
-    echo "WARNING: Codex CLI not responding" >&2
-    exit 1
-fi
-```
-
-### Gemini系エージェント
-
-```bash
-if [[ "$AI_HAS_GEMINI" != "1" ]]; then
-    # 再検証（-F でリテラル検索: regex injection防止）
-    if [[ -z "$GEMINI_API_KEY" ]] && ! ( [[ -f ~/.gemini/.env ]] && grep -qF 'GEMINI_API_KEY=' ~/.gemini/.env 2>/dev/null ); then
-        echo "ERROR: Gemini not authenticated" >&2
-        echo "  Set GEMINI_API_KEY environment variable or create ~/.gemini/.env" >&2
-        echo "Recommendation: Use standard researcher agent instead" >&2
-        exit 1
-    fi
-fi
-```
-
-### Copilot系エージェント
-
-```bash
-if [[ "$AI_HAS_COPILOT" != "1" ]]; then
-    # 再検証（GitHub CLI + API疎通）
-    if ! gh auth status >/dev/null 2>&1; then
-        if ! command -v gh >/dev/null 2>&1; then
-            echo "ERROR: GitHub CLI not installed" >&2
-            echo "  Install: brew install gh" >&2
-        else
-            echo "ERROR: GitHub not authenticated" >&2
-            echo "  Run: gh auth login" >&2
-        fi
-        echo "Recommendation: Use standard reviewer agent instead" >&2
-        exit 1
-    fi
-fi
-
-# Copilot CLI自体の存在確認
-if ! command -v copilot >/dev/null 2>&1; then
-    echo "ERROR: Copilot CLI not installed" >&2
-    echo "  Install: gh extension install github/gh-copilot" >&2
-    exit 1
-fi
-
-# CLI応答性確認（macOS専用: gtimeout）
-_timeout_cmd=$(command -v gtimeout || echo "")
-if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 copilot --version >/dev/null 2>&1; then
-    echo "WARNING: Copilot CLI not responding" >&2
-    exit 1
-elif [[ -z "$_timeout_cmd" ]] && ! copilot --version >/dev/null 2>&1; then
-    echo "WARNING: Copilot CLI not responding" >&2
-    exit 1
-fi
-```
-
-### CodeRabbit系エージェント
-
-```bash
-if [[ "$AI_HAS_CODERABBIT" != "1" ]]; then
-    # 再検証
-    if ! [[ -f ~/.coderabbit/config.json || -f ~/.coderabbit/auth.token ]]; then
-        if ! command -v coderabbit >/dev/null 2>&1; then
-            echo "ERROR: CodeRabbit CLI not installed" >&2
-        else
-            echo "ERROR: CodeRabbit not configured" >&2
-            echo "  Run: coderabbit auth login" >&2
-        fi
-        echo "Recommendation: Use standard reviewer agent instead" >&2
-        exit 1
-    fi
-fi
-```
+| AI | 環境変数 | 認証確認 | CLI存在確認 | 応答性確認 |
+|----|----------|---------|------------|----------|
+| codex | `AI_HAS_CODEX` | `~/.codex/auth.json` | `command -v codex` | `gtimeout 2 codex --version` |
+| gemini | `AI_HAS_GEMINI` | `GEMINI_API_KEY` or `~/.gemini/.env` | - | - |
+| copilot | `AI_HAS_COPILOT` | `gh auth status` | `command -v copilot` | `gtimeout 2 copilot --version` |
+| coderabbit | `AI_HAS_CODERABBIT` | `~/.coderabbit/config.json` or `auth.token` | `command -v coderabbit` | - |

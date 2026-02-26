@@ -13,36 +13,7 @@ permissionMode: default
 Before proceeding, verify Copilot authentication:
 
 ```bash
-# 環境変数チェック（高速パス）
-if [[ "$AI_HAS_COPILOT" != "1" ]]; then
-    # 再検証（GitHub CLI + API疎通）
-    if ! gh auth status >/dev/null 2>&1; then
-        if ! command -v gh >/dev/null 2>&1; then
-            echo "ERROR: GitHub CLI not installed" >&2
-            echo "  Install: brew install gh" >&2
-        else
-            echo "ERROR: GitHub not authenticated" >&2
-            echo "  Run: gh auth login" >&2
-        fi
-        echo "Recommendation: Use standard reviewer agent instead" >&2
-        exit 1
-    fi
-fi
-
-# Copilot CLI自体の存在確認
-if ! command -v copilot >/dev/null 2>&1; then
-    echo "ERROR: Copilot CLI not installed" >&2
-    echo "  Install: gh extension install github/gh-copilot" >&2
-    exit 1
-fi
-
-# CLI応答性確認（macOS専用: gtimeout）
-_timeout_cmd=$(command -v gtimeout || echo "")
-if [[ -n "$_timeout_cmd" ]] && ! $_timeout_cmd 2 copilot --version >/dev/null 2>&1; then
-    echo "WARNING: Copilot CLI not responding" >&2
-    exit 1
-elif [[ -z "$_timeout_cmd" ]] && ! copilot --version >/dev/null 2>&1; then
-    echo "WARNING: Copilot CLI not responding" >&2
+if ! "$HOME/.claude/lib/check-ai-auth.sh" copilot; then
     exit 1
 fi
 ```
