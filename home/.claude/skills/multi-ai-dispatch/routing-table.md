@@ -4,40 +4,34 @@
 
 ## ルーティング決定表
 
-| タスクタイプ | 優先AI | 環境変数チェック | フォールバック | 理由 |
-|------------|--------|---------------|-------------|------|
-| **実装（通常）** | implementer (Claude) | - | - | Claude内蔵で常に利用可能 |
-| **実装（深い推論）** | codex-implementer | `AI_HAS_CODEX` | implementer (Claude) | Codexの深い推論能力を活用 |
-| **レビュー（軽量）** | reviewer (Claude) | - | - | Claude内蔵で常に利用可能 |
-| **レビュー（包括的）** | parallel-reviewer | 複数チェック | reviewer (Claude) | 利用可能な全AIで多角的レビュー |
-| **レビュー（セキュリティ）** | coderabbit-reviewer | `AI_HAS_CODERABBIT` | reviewer (Claude) | OWASP Top 10に特化 |
-| **レビュー（品質）** | codex-reviewer | `AI_HAS_CODEX` | reviewer (Claude) | コード品質とベストプラクティス |
-| **調査（通常）** | researcher (Claude) | - | - | Claude内蔵で常に利用可能 |
-| **調査（大規模）** | gemini-researcher | `AI_HAS_GEMINI` | researcher (Claude) | 1Mトークンで大規模コードベース分析 |
-| **アーキテクチャ分析** | gemini-reviewer | `AI_HAS_GEMINI` | reviewer (Claude) | 大規模コンテキストでアーキテクチャ理解 |
-| **GitHub/CI/CD** | copilot-reviewer | `AI_HAS_COPILOT` | reviewer (Claude) | GitHub統合とCI最適化 |
-| **プランレビュー** | parallel-reviewer (review_type=plan) | .md ファイル指定 or "プランをレビュー"/"設計レビュー"/"plan review" キーワード | reviewer (Claude) | 設計・計画の多角的検証 |
+| タスクタイプ                 | 優先AI                               | 環境変数チェック                                                               | フォールバック       | 理由                                           |
+| ---------------------------- | ------------------------------------ | ------------------------------------------------------------------------------ | -------------------- | ---------------------------------------------- |
+| **実装**                     | codex-implementer                    | `AI_HAS_CODEX`                                                                 | implementer (Claude) | Codex利用可能時は全実装を委譲（CLAUDE.md準拠） |
+| **レビュー（包括的）**       | parallel-reviewer                    | 複数チェック                                                                   | reviewer (Claude)    | 利用可能な全AIで多角的レビュー                 |
+| **レビュー（セキュリティ）** | coderabbit-reviewer                  | `AI_HAS_CODERABBIT`                                                            | reviewer (Claude)    | OWASP Top 10に特化                             |
+| **レビュー（品質）**         | codex-reviewer                       | `AI_HAS_CODEX`                                                                 | reviewer (Claude)    | コード品質とベストプラクティス                 |
+| **調査**                     | gemini-researcher                    | `AI_HAS_GEMINI`                                                                | researcher (Claude)  | 1Mトークンで大規模コードベース分析             |
+| **アーキテクチャ分析**       | gemini-reviewer                      | `AI_HAS_GEMINI`                                                                | reviewer (Claude)    | 大規模コンテキストでアーキテクチャ理解         |
+| **GitHub/CI/CD**             | copilot-reviewer                     | `AI_HAS_COPILOT`                                                               | reviewer (Claude)    | GitHub統合とCI最適化                           |
+| **プランレビュー**           | parallel-reviewer (review_type=plan) | .md ファイル指定 or "プランをレビュー"/"設計レビュー"/"plan review" キーワード | reviewer (Claude)    | 設計・計画の多角的検証                         |
 
 ## タスクタイプの判定キーワード
 
 ユーザーの要求から以下のキーワードでタスクタイプを判定:
 
-### 実装系
-- **実装（通常）**: "実装", "作成", "追加", "書いて", "create", "implement"
-- **実装（深い推論）**: "複雑", "アルゴリズム", "セカンドオピニオン", "Codex", "深い推論"
-
 ### レビュー系
-- **レビュー（軽量）**: "レビュー", "確認", "チェック", "review", "check"
+
 - **レビュー（包括的）**: "包括的", "詳細に", "並列", "全AI", "parallel", "comprehensive"
 - **レビュー（セキュリティ）**: "セキュリティ", "脆弱性", "OWASP", "security", "vulnerability"
 - **レビュー（品質）**: "品質", "ベストプラクティス", "quality", "best practices"
 
 ### 調査系
-- **調査（通常）**: "調査", "探して", "検索", "research", "find", "search"
-- **調査（大規模）**: "大規模", "横断", "全体", "アーキテクチャ", "large-scale", "cross-file"
+
+- **調査**: "大規模", "横断", "全体", "アーキテクチャ", "large-scale", "cross-file"
 - **アーキテクチャ分析**: "アーキテクチャ", "設計", "構造", "architecture", "design"
 
 ### 特殊系
+
 - **GitHub/CI/CD**: "GitHub", "Actions", "CI", "CD", "パイプライン", "workflow"
 - **プランレビュー**: "プランをレビュー", "設計をレビュー", "計画をレビュー", "plan review", "review plan", "review this plan"
 
@@ -156,7 +150,12 @@ route_task() {
             fi
             ;;
         "normal-implementation")
-            echo "implementer"
+            if [[ "$AI_HAS_CODEX" == "1" ]]; then
+                echo "codex-implementer"
+            else
+                echo "implementer" # fallback
+                echo "[AI-DISPATCH] Fallback: Codex unavailable, using Claude implementer" >&2
+            fi
             ;;
         "normal-review")
             echo "reviewer"
