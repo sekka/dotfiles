@@ -34,7 +34,7 @@ echo "Permission Check"
 echo "================"
 for f in ~/.codex/auth.json ~/.gemini/.env ~/.coderabbit/auth.token ~/.coderabbit/config.json; do
   if [[ -f $f ]]; then
-    perm=$(stat -f%A "$f" 2>/dev/null || stat -c%a "$f" 2>/dev/null || echo "???")
+    perm=$(stat -f%A "$f" 2>/dev/null || echo "???")
     if [[ $perm == "600" ]]; then
       echo "[OK]   $f ($perm)"
     else
@@ -47,7 +47,7 @@ done
 echo ""
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/ai-availability.cache"
 if [[ -f $cache ]]; then
-  age=$(($(date +%s) - $(stat -f%m "$cache" 2>/dev/null || stat -c%Y "$cache" 2>/dev/null || echo 0)))
+  age=$(($(date +%s) - $(stat -f%m "$cache" 2>/dev/null || echo 0)))
   echo "Cache: $cache (age: ${age}s)"
 else
   echo "Cache: not found"

@@ -96,8 +96,8 @@ else
   OS_NAME="macos" # macOS 専用（Darwin）
   ARCH=$(uname -m)
   case "$ARCH" in
-  arm64 | aarch64) ARCH_NAME="aarch64" ;;
-  x86_64 | amd64) ARCH_NAME="x86_64" ;;
+  arm64) ARCH_NAME="aarch64" ;;
+  x86_64) ARCH_NAME="x86_64" ;;
   *)
     echo "⚠ Unsupported architecture: $ARCH"
     ARCH_NAME=""

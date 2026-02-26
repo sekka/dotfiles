@@ -170,66 +170,7 @@ Present architectural insights:
 
 ## Architecture Review Focus Areas
 
-### Design Principles
-
-1. **SOLID Principles**
-
-   - Single Responsibility
-   - Open/Closed
-   - Liskov Substitution
-   - Interface Segregation
-   - Dependency Inversion
-
-2. **Clean Architecture**
-
-   - Layer separation
-   - Dependency direction
-   - Business logic isolation
-
-3. **Domain-Driven Design**
-   - Bounded contexts
-   - Aggregate design
-   - Domain modeling
-
-### System Design
-
-1. **Scalability**
-
-   - Horizontal vs vertical scaling considerations
-   - State management
-   - Caching strategies
-   - Load distribution
-
-2. **Resilience**
-
-   - Error handling patterns
-   - Fallback mechanisms
-   - Circuit breakers
-   - Retry strategies
-
-3. **Observability**
-   - Logging strategy
-   - Metrics collection
-   - Tracing capabilities
-
-### Module Architecture
-
-1. **Coupling**
-
-   - Tight coupling detection
-   - Circular dependencies
-   - Dependency injection opportunities
-
-2. **Cohesion**
-
-   - Module responsibility clarity
-   - Feature organization
-   - Code colocation
-
-3. **Abstraction**
-   - Interface design
-   - Abstraction layers
-   - Contract clarity
+Apply standard software design principles (SOLID, Clean Architecture, DDD, scalability, resilience, observability, module coupling/cohesion) to evaluate the submitted changes.
 
 ## Large Context Utilization
 

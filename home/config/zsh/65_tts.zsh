@@ -115,20 +115,6 @@ _tts_cleanup() {
     }
 }
 
-# 後方互換性のための統合関数（既存コードのため保持）
-# 引数1: 音声ファイルパス
-# 引数2: クリーンアップするか（true/false、デフォルト: true）
-_tts_playback_and_cleanup() {
-    local audio_file="$1"
-    local cleanup="${2:-true}"
-
-    _tts_playback "$audio_file" || return $?
-
-    if [[ "$cleanup" == "true" ]]; then
-        _tts_cleanup "$audio_file"
-    fi
-}
-
 # TTS実行結果の検証
 # exit code 144 は mlx-audio v0.3.1+ で音声生成成功を示す特殊コード
 _tts_check_status() {
@@ -146,14 +132,6 @@ _tts_check_status() {
 #   tts --hq "高品質テスト"              # 1.7Bモデルで高品質生成
 #   tts -o output.wav "保存テスト"      # ファイル保存
 #
-# 将来的な拡張オプション（未実装）:
-# - --voice: 音声選択（Base モデル用）
-# - --speed: 話速調整（0.5〜2.0）
-# - --pitch: ピッチ調整（-12〜12）
-# - --instruct: 感情/スタイル指定（CustomVoice モデル用）
-#
-# これらのオプションを追加する場合は、以下の形式で extra_args に追加:
-# extra_args+=(--speed "$speed_value")
 function tts() {
     setopt local_options nullglob
 
@@ -276,7 +254,8 @@ USAGE
 
     # 自動再生（output_fileが指定されていない場合のみ）
     if $auto_play; then
-        _tts_playback_and_cleanup "$playback_file" true
+        _tts_playback "$playback_file"
+        _tts_cleanup "$playback_file"
     fi
 }
 
@@ -411,8 +390,6 @@ USAGE
     # mlx-audio v0.3.1+ の内部実装による非エラー終了コード
     # exit code 144 は音声ファイル生成成功を示す特殊コード
     # 参考: セッション#S26 でのコミット 2084ea9
-    # TODO(issue): MLX Audio公式でこのコードが文書化されているか確認
-    # 参考: https://github.com/ml-explore/mlx-audio/issues
     if ! _tts_check_status $tts_status; then
         local pattern="${temp_output_file:t:r}"
         [[ -n "$pattern" ]] && rm -f ./"${pattern}"*.wav 2>/dev/null
@@ -428,7 +405,8 @@ USAGE
     }
 
     # 再生とクリーンアップ
-    _tts_playback_and_cleanup "$playback_file" true
+    _tts_playback "$playback_file"
+    _tts_cleanup "$playback_file"
 }
 
 # tts-voices - 参照音声の管理

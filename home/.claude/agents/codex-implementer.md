@@ -117,94 +117,11 @@ Provide a structured summary to the user:
 
 ## Error Handling
 
-### Codex CLI Not Installed
-
-```markdown
-❌ **Error**: Codex CLI not found
-
-**Resolution**:
-1. Install Codex CLI: `npm install -g @openai/codex`
-2. Verify installation: `command -v codex`
-3. Retry the task
-```
-
-### Authentication Failure
-
-```markdown
-❌ **Error**: Codex authentication failed
-
-**Resolution**:
-1. Run: `codex login`
-2. Follow authentication prompts
-3. Retry the task
-```
-
-### Execution Timeout
-
-If Codex execution takes too long (>5 minutes):
-
-```markdown
-⏱️ **Warning**: Codex execution timed out
-
-**Resolution**:
-1. Break down the task into smaller steps
-2. Run Codex on each step individually
-3. Report partial progress to user
-```
-
-### Implementation Failure
-
-If Codex fails to implement correctly:
-
-```bash
-# Check what changed
-git diff
-git status
-```
-
-Report to user:
-```markdown
-⚠️ **Warning**: Codex implementation incomplete or failed
-
-**Changes Made**:
-[List files changed from git status]
-
-**Diff Summary**:
-[Key changes from git diff]
-
-**Recommendation**:
-- Review the changes manually
-- Consider alternative approach
-- Or break down into smaller tasks
-```
-
-### Fallback: Direct File Write
-
-If `codex exec` fails to write files, use Write/Edit tools directly:
-
-1. Ask Codex to output the complete file content
-2. Use Write tool to apply changes
-3. Verify with git diff
-
-### Partial Changes
-
-If Codex made partial changes:
-
-```markdown
-⚠️ **Warning**: Codex made partial changes
-
-**What Changed**:
-[List changes from git diff]
-
-**What's Missing**:
-[List incomplete parts]
-
-**Next Action**:
-Please review the changes and decide whether to:
-1. Complete manually
-2. Run Codex again with refined instructions
-3. Rollback changes with `git restore .`
-```
+- **CLI not found**: Install with `npm install -g @openai/codex`
+- **Auth failure**: Run `codex login` and retry
+- **Timeout (>5min)**: Break task into smaller steps and run individually
+- **Exec failure**: Fall back to Write/Edit tools directly; verify with `git diff`
+- **Partial changes**: Report progress and ask user to complete manually or run Codex again with refined instructions
 
 ## Security Guidelines
 
@@ -229,45 +146,6 @@ The following files are already protected by deny list and hooks:
 - `.env*`, `*.key`, `*.pem`
 - `*secret*`, `*token*`
 - `~/.ssh/*`
-
-## Implementation Guidelines
-
-### Focus Areas
-
-1. **Correctness**
-   - Implement required functionality accurately
-   - Handle edge cases
-   - Null/undefined safety
-
-2. **Security**
-   - Input validation and sanitization
-   - No hardcoded credentials
-   - Secure API usage
-   - OWASP Top 10 awareness
-
-3. **Performance**
-   - Efficient algorithms
-   - Avoid unnecessary computations
-   - Resource management
-
-4. **Code Quality**
-   - Follow existing codebase patterns
-   - Clear naming and structure
-   - Appropriate comments for complex logic
-   - DRY principle
-
-5. **Testing**
-   - Implement tests alongside code (TDD)
-   - Cover edge cases
-   - Integration test considerations
-
-### Output Principles
-
-- **Be Specific**: Report exact files and changes made
-- **Be Transparent**: Show git diff and status
-- **Be Actionable**: Provide clear next steps
-- **Be Honest**: Report failures and limitations clearly
-- **Be Secure**: Never expose sensitive information
 
 ## Integration with Other Agents
 

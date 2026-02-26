@@ -15,68 +15,35 @@ NC='\033[0m' # No Color
 # ヘルパー関数
 # =======================================================================================
 
-# ファイルのシンボリックリンクを作成
-# Usage: link_file <source> <target> [label]
-link_file() {
-  local source_file="$1"
-  local target_file="$2"
-  local label="${3:-$(basename "$target_file")}"
+# シンボリックリンクを作成（ファイル・ディレクトリ共用）
+# Usage: link_item <source> <target> [label]
+link_item() {
+  local source="$1"
+  local target="$2"
+  local label="${3:-$(basename "$target")}"
 
-  if [[ ! -f $source_file ]]; then
+  if [[ ! -e $source ]]; then
     echo -e "${YELLOW}⚠️  警告:${NC} $label がソースに見つかりません"
     return 1
   fi
 
-  if [[ -L $target_file ]]; then
+  if [[ -L $target ]]; then
     local current
-    current=$(readlink "$target_file")
-    if [[ $current == "$source_file" ]]; then
+    current=$(readlink "$target")
+    if [[ $current == "$source" ]]; then
       echo -e "${YELLOW}スキップ:${NC} $label (既に正しくリンク)"
       ((skipped++))
     else
       echo -e "${GREEN}更新:${NC} $label"
-      rm "$target_file"
-      ln -s "$source_file" "$target_file"
+      rm "$target"
+      ln -s "$source" "$target"
       ((created++))
     fi
-  elif [[ -f $target_file ]]; then
-    echo -e "${RED}⚠️  警告:${NC} $label は実体ファイルです。手動確認してください。"
+  elif [[ -e $target ]]; then
+    echo -e "${RED}⚠️  警告:${NC} $label は実体が存在します。手動確認してください。"
   else
     echo -e "${GREEN}✅ 作成:${NC} $label"
-    ln -s "$source_file" "$target_file"
-    ((created++))
-  fi
-}
-
-# ディレクトリのシンボリックリンクを作成
-# Usage: link_dir <source> <target> [label]
-link_dir() {
-  local source_dir="$1"
-  local target_dir="$2"
-  local label="${3:-$(basename "$target_dir")}"
-
-  if [[ ! -d $source_dir ]]; then
-    echo -e "${YELLOW}⚠️  警告:${NC} $label がソースに見つかりません"
-    return 1
-  fi
-
-  if [[ -L $target_dir ]]; then
-    local current
-    current=$(readlink "$target_dir")
-    if [[ $current == "$source_dir" ]]; then
-      echo -e "${YELLOW}スキップ:${NC} $label (既に正しくリンク)"
-      ((skipped++))
-    else
-      echo -e "${GREEN}更新:${NC} $label"
-      rm "$target_dir"
-      ln -s "$source_dir" "$target_dir"
-      ((created++))
-    fi
-  elif [[ -d $target_dir ]]; then
-    echo -e "${RED}⚠️  警告:${NC} $label は実体ディレクトリです。手動確認してください。"
-  else
-    echo -e "${GREEN}✅ 作成:${NC} $label"
-    ln -s "$source_dir" "$target_dir"
+    ln -s "$source" "$target"
     ((created++))
   fi
 }
@@ -120,12 +87,12 @@ DOT_FILES=(
 )
 
 for file in "${DOT_FILES[@]}"; do
-  link_file "$HOME/dotfiles/home/$file" "$HOME/$file" "$file"
+  link_item "$HOME/dotfiles/home/$file" "$HOME/$file" "$file"
 done
 
 # tmux helper scripts
 ensure_dir "$HOME/.tmux"
-link_file "$HOME/dotfiles/home/.tmux/status-right.sh" "$HOME/.tmux/status-right.sh" "tmux status-right"
+link_item "$HOME/dotfiles/home/.tmux/status-right.sh" "$HOME/.tmux/status-right.sh" "tmux status-right"
 
 # =======================================================================================
 # .config ディレクトリ配下
@@ -147,7 +114,7 @@ CONFIG_DIRS=(
 )
 
 for dir in "${CONFIG_DIRS[@]}"; do
-  link_dir "$HOME/dotfiles/home/config/$dir" "$HOME/.config/$dir" "$dir"
+  link_item "$HOME/dotfiles/home/config/$dir" "$HOME/.config/$dir" "$dir"
 done
 
 # =======================================================================================
@@ -173,7 +140,7 @@ CLAUDE_FILES=(
 )
 
 for file in "${CLAUDE_FILES[@]}"; do
-  link_file "$DOTFILES_CLAUDE_DIR/$file" "$HOME_CLAUDE_DIR/$file" "$file"
+  link_item "$DOTFILES_CLAUDE_DIR/$file" "$HOME_CLAUDE_DIR/$file" "$file"
 done
 
 # Claudeフォルダ
@@ -192,7 +159,7 @@ CLAUDE_FOLDERS=(
 for folder_pair in "${CLAUDE_FOLDERS[@]}"; do
   folder="${folder_pair%%:*}"
   label="${folder_pair##*:}"
-  link_dir "$DOTFILES_CLAUDE_DIR/$folder" "$HOME_CLAUDE_DIR/$folder" "$label"
+  link_item "$DOTFILES_CLAUDE_DIR/$folder" "$HOME_CLAUDE_DIR/$folder" "$label"
 done
 
 # =======================================================================================
@@ -203,7 +170,7 @@ echo ""
 echo "Navi チートシートのシンボリックリンクを作成..."
 
 ensure_dir "$HOME/.local/share/navi/cheats/dotfiles"
-link_file "$HOME/dotfiles/home/config/navi/dotfiles.cheat" "$HOME/.local/share/navi/cheats/dotfiles/dotfiles.cheat" "dotfiles.cheat"
+link_item "$HOME/dotfiles/home/config/navi/dotfiles.cheat" "$HOME/.local/share/navi/cheats/dotfiles/dotfiles.cheat" "dotfiles.cheat"
 
 # =======================================================================================
 # Serena 設定
@@ -213,7 +180,7 @@ echo ""
 echo "Serena 設定のシンボリックリンクを作成..."
 
 ensure_dir "$HOME/.serena"
-link_file "$HOME/dotfiles/home/.serena/serena_config.yml" "$HOME/.serena/serena_config.yml" "serena_config.yml"
+link_item "$HOME/dotfiles/home/.serena/serena_config.yml" "$HOME/.serena/serena_config.yml" "serena_config.yml"
 
 # =======================================================================================
 # codex 設定
@@ -223,7 +190,7 @@ echo ""
 echo "codex 設定のシンボリックリンクを作成..."
 
 ensure_dir "$HOME/.codex"
-link_file "$HOME/dotfiles/home/codex/config.toml" "$HOME/.codex/config.toml" "config.toml"
+link_item "$HOME/dotfiles/home/codex/config.toml" "$HOME/.codex/config.toml" "config.toml"
 
 # =======================================================================================
 # LaunchAgents
@@ -233,7 +200,7 @@ echo ""
 echo "LaunchAgents のシンボリックリンクを作成..."
 
 ensure_dir "$HOME/Library/LaunchAgents"
-link_file "$HOME/dotfiles/home/Library/LaunchAgents/com.ollama.serve.plist" "$HOME/Library/LaunchAgents/com.ollama.serve.plist" "Ollama LaunchAgent"
+link_item "$HOME/dotfiles/home/Library/LaunchAgents/com.ollama.serve.plist" "$HOME/Library/LaunchAgents/com.ollama.serve.plist" "Ollama LaunchAgent"
 
 # =======================================================================================
 # Git hooks セットアップ

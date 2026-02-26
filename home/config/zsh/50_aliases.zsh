@@ -58,22 +58,14 @@ alias fslc="fossil-mcp clones"
 unalias prun 2>/dev/null
 prun() {
   local script
-  if [[ -n "$TMUX" ]]; then
-    script=$(npm-scripts.ts | fzf-tmux -p 90%,90%) || return 1
-  else
-    script=$(npm-scripts.ts | fzf) || return 1
-  fi
+  script=$(npm-scripts.ts | _fzf_cmd -p 90%,90% --) || return 1
   [ -n "$script" ] && ni run "$script"
 }
 
 unalias mrun 2>/dev/null
 mrun() {
   local task
-  if [[ -n "$TMUX" ]]; then
-    task=$(mise tasks ls --no-header 2>/dev/null | fzf-tmux -p 90%,90% --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=top:3:wrap) || return 1
-  else
-    task=$(mise tasks ls --no-header 2>/dev/null | fzf --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=top:3:wrap) || return 1
-  fi
+  task=$(mise tasks ls --no-header 2>/dev/null | _fzf_cmd -p 90%,90% -- --with-nth=1 --delimiter=' ' --preview 'echo {}' --preview-window=top:3:wrap) || return 1
   # 最初の列（タスク名）を抽出
   local task_name=$(echo "$task" | awk '{print $1}')
   [ -n "$task_name" ] && mise run "$task_name"

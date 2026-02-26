@@ -27,12 +27,13 @@ _check_timeout() {
 
 case "$_ai" in
     codex)
+        if [[ "${AI_HAS_CODEX:-}" == "1" ]]; then exit 0; fi
         if ! command -v codex >/dev/null 2>&1; then
             echo "ERROR: Codex CLI not installed" >&2
             echo "  Install: npm install -g @openai/codex" >&2
             exit 1
         fi
-        if [[ "${AI_HAS_CODEX:-}" != "1" ]] && ! [[ -f ~/.codex/auth.json ]]; then
+        if ! [[ -f ~/.codex/auth.json ]]; then
             echo "ERROR: Codex not authenticated" >&2
             echo "  Run: codex login" >&2
             exit 1
@@ -53,6 +54,7 @@ case "$_ai" in
         fi
         ;;
     copilot)
+        if [[ "${AI_HAS_COPILOT:-}" == "1" ]]; then exit 0; fi
         if ! command -v gh >/dev/null 2>&1; then
             echo "ERROR: GitHub CLI not installed" >&2
             echo "  Install: brew install gh" >&2
@@ -63,7 +65,7 @@ case "$_ai" in
             echo "  Install: gh extension install github/gh-copilot" >&2
             exit 1
         fi
-        if [[ "${AI_HAS_COPILOT:-}" != "1" ]] && ! gh auth status >/dev/null 2>&1; then
+        if ! gh auth status >/dev/null 2>&1; then
             echo "ERROR: GitHub not authenticated" >&2
             echo "  Run: gh auth login" >&2
             exit 1
@@ -74,17 +76,16 @@ case "$_ai" in
         fi
         ;;
     coderabbit)
+        if [[ "${AI_HAS_CODERABBIT:-}" == "1" ]]; then exit 0; fi
         if ! command -v coderabbit >/dev/null 2>&1; then
             echo "ERROR: CodeRabbit CLI not installed" >&2
             echo "  Install: npm install -g @coderabbitai/coderabbit-cli" >&2
             exit 1
         fi
-        if [[ "${AI_HAS_CODERABBIT:-}" != "1" ]]; then
-            if ! [[ -f ~/.coderabbit/config.json || -f ~/.coderabbit/auth.token ]]; then
-                echo "ERROR: CodeRabbit not configured" >&2
-                echo "  Run: coderabbit auth login" >&2
-                exit 1
-            fi
+        if ! [[ -f ~/.coderabbit/config.json || -f ~/.coderabbit/auth.token ]]; then
+            echo "ERROR: CodeRabbit not configured" >&2
+            echo "  Run: coderabbit auth login" >&2
+            exit 1
         fi
         ;;
     *)

@@ -26,7 +26,7 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 // HOME 環境変数の検証
-const HOME = process.env.HOME || process.env.USERPROFILE;
+const HOME = process.env.HOME;
 if (!HOME) {
 	console.error("Error: HOME environment variable is not set");
 	process.exit(0);

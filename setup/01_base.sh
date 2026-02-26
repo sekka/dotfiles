@@ -34,13 +34,11 @@ echo "# zshを導入する"
 
 brew install zsh
 
-ETC_SHELLS=$(tail -1 /etc/shells)
-echo "$ETC_SHELLS"
 WHICH_ZSH="$(which zsh)"
 echo "$WHICH_ZSH"
 
 echo "# zshをshellリストに追加する"
-if [[ $ETC_SHELLS != "$WHICH_ZSH" ]]; then
+if ! grep -qF "$WHICH_ZSH" /etc/shells; then
   echo "Adding zsh..."
   # /etc/shells の末尾に /opt/homebrew/bin/zsh を追記
   sudo sh -c 'echo $(which zsh) >> /etc/shells'
@@ -51,7 +49,7 @@ fi
 echo "# デフォルトシェルをzshに変更する"
 if [[ $SHELL != "$WHICH_ZSH" ]]; then
   echo "Changing default Shell..."
-  chsh -s /opt/homebrew/bin/zsh
+  chsh -s "$WHICH_ZSH"
 else
   echo "zsh already default shell."
 fi
