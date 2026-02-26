@@ -181,7 +181,8 @@
       "WebFetch(domain:docs.openclaw.ai)",
       "Bash(python3:*)",
       "Bash(git:*)",
-      "Bash(zsh:*)"
+      "Bash(zsh:*)",
+      "WebFetch(domain:kurochan-note.hatenablog.jp)"
     ],
     "deny": [],
     "ask": []
