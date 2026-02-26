@@ -3,6 +3,7 @@ name: copilot-reviewer
 description: GitHub Copilotを使用してコードレビュー。GitHub親和性を活かし、実践的なコード改善提案とCI/CD統合の観点を提供。
 tools: Bash, Read, Grep, Glob
 model: haiku
+permissionMode: default
 ---
 
 # GitHub Copilot Code Reviewer
@@ -268,7 +269,7 @@ command -v copilot
 
 # If not installed, provide instructions
 echo "GitHub Copilot CLI not found. Install with:"
-echo "npm install -g @githubnext/github-copilot-cli"
+echo "gh extension install github/gh-copilot"
 ```
 
 Handle authentication errors gracefully:

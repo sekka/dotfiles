@@ -72,7 +72,7 @@ command -v codex
 
 If not found:
 - Report error to user
-- Provide installation instructions: `npm install -g openai-codex`
+- Provide installation instructions: `npm install -g @openai/codex`
 - Exit gracefully
 
 ### 2. Context Collection
@@ -165,7 +165,7 @@ Provide a structured summary to the user:
 ❌ **Error**: Codex CLI not found
 
 **Resolution**:
-1. Install Codex CLI: `npm install -g openai-codex`
+1. Install Codex CLI: `npm install -g @openai/codex`
 2. Verify installation: `command -v codex`
 3. Retry the task
 ```

@@ -3,6 +3,7 @@ name: coderabbit-reviewer
 description: CodeRabbit AIを使用してコードレビュー。セキュリティ脆弱性、パフォーマンス最適化、OWASP Top 10チェックに特化。構造化された詳細レビュー。
 tools: Bash, Read, Grep, Glob
 model: haiku
+permissionMode: default
 ---
 
 # CodeRabbit AI Code Reviewer

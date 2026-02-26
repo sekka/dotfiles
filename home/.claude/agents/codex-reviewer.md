@@ -3,6 +3,7 @@ name: codex-reviewer
 description: OpenAI Codexを使用してコードレビューを実施。コード品質、ベストプラクティス、深い推論による分析に特化。複数AI並列レビューに最適。
 tools: Bash, Read, Grep, Glob
 model: haiku
+permissionMode: default
 ---
 
 # OpenAI Codex Code Reviewer

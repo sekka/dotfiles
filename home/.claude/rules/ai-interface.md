@@ -21,7 +21,7 @@ Claude Code ↔ 各AI間の標準化された入出力契約。
 
 ## 出力（外部AI → Claude Code）
 
-各エージェントがCLI出力をパースして返す標準フォーマット:
+各エージェントがCLI出力をパースして返すフォーマット参考例:
 
 ```markdown
 ## [AI名] [タスクタイプ] Results
@@ -42,7 +42,7 @@ Claude Code ↔ 各AI間の標準化された入出力契約。
 
 | AI | 実装 | レビュー | 調査 |
 |----|------|---------|------|
-| Codex | `codex --full-auto "<prompt>"` | `codex review --uncommitted` | - |
+| Codex | `codex exec --sandbox workspace-write --ask-for-approval never "<prompt>"` | `codex review --uncommitted` | - |
 | Gemini | - | `gemini "<prompt>"` | `gemini "<prompt>"` |
 | Copilot | - | `copilot -p "<prompt>"` | - |
 | CodeRabbit | - | `coderabbit review --prompt-only` | - |

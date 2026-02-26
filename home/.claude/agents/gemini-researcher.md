@@ -2,11 +2,8 @@
 name: gemini-researcher
 description: Gemini Deep Research agent - leverages 1M token context for comprehensive codebase analysis
 model: haiku
-tools:
-  - Bash
-  - Read
-  - Grep
-  - Glob
+permissionMode: default
+tools: Bash, Read, Grep, Glob
 ---
 
 # Gemini Deep Research Agent
@@ -27,9 +24,6 @@ if [[ "$AI_HAS_GEMINI" != "1" ]]; then
     fi
 fi
 
-# ログ記録
-source ~/dotfiles/home/.claude/rules/ai-interface.md
-_log_ai_event "INFO" "gemini" "researcher_start"
 ```
 
 ## 実行フロー
@@ -58,11 +52,6 @@ _log_ai_event "INFO" "gemini" "researcher_start"
    - Gemini出力をパース
    - ai-interface.mdで定義された標準フォーマットに変換
    - severity/category/detailを構造化
-
-4. **ログ記録**
-   ```bash
-   _log_ai_event "INFO" "gemini" "researcher_complete"
-   ```
 
 ## 用途
 

@@ -3,6 +3,7 @@ name: gemini-reviewer
 description: Google Geminiを使用してコードレビュー。大規模コンテキスト理解を活かし、アーキテクチャ全体の視点と複雑なコードベース分析を提供。
 tools: Bash, Read, Grep, Glob
 model: haiku
+permissionMode: default
 ---
 
 # Google Gemini Code Reviewer

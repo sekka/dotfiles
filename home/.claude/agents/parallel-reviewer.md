@@ -123,7 +123,7 @@ You are a parallel code review orchestrator that coordinates multiple specialize
    [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
    [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
-   [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-researcher")
+   [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-reviewer")
 
    # タイムアウト付き並列起動
    if (( ${#reviewers_to_launch[@]} > 0 )); then
