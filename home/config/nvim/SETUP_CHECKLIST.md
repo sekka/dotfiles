@@ -8,7 +8,7 @@
 
 ```bash
 cd ~/dotfiles
-./setup/02_home.sh
+./setup/03_symlinks.sh
 ```
 
 **期待される結果**:
@@ -294,12 +294,12 @@ TypeScriptファイル内で：
 
 1. スクリプトの実行権限を確認
    ```bash
-   chmod +x ~/dotfiles/setup/02_home.sh
+   chmod +x ~/dotfiles/setup/03_symlinks.sh
    ```
 2. スクリプトを再実行
    ```bash
    cd ~/dotfiles
-   ./setup/02_home.sh
+   ./setup/03_symlinks.sh
    ```
 
 ---

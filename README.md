@@ -10,15 +10,15 @@
 # 1. システム基盤のセットアップ
 ./setup/01_base.sh
 
-# 2. 全設定ファイルのシンボリックリンク作成
-# (dotfiles, .config, Claude, Serena等すべて含む)
-./setup/02_home.sh
+# 2. Homebrewパッケージのインストール
+./setup/02_brew.sh
 
-# 3. Homebrewアプリのインストール
-./setup/04_homebrew.sh
+# 3. 全設定ファイルのシンボリックリンク作成
+# (dotfiles, .config, Claude, Serena等すべて含む)
+./setup/03_symlinks.sh
 
 # 4. Claude Code公式版のインストール
-./setup/06_claude_code.sh
+./setup/06_claude.sh
 ```
 
 ## ⚡ 自動機能
@@ -57,7 +57,7 @@ mise run format    # 全ファイル形式の整形（oxfmt, dprint, shfmt）
 
 - `home/` 内のファイルを直接編集
 - シンボリックリンクにより自動反映
-- 新規ファイル追加時は `./setup/02_home.sh` を再実行
+- 新規ファイル追加時は `./setup/03_symlinks.sh` を再実行
 
 ## 🍎 macOS設定管理
 
@@ -123,7 +123,7 @@ Claude Code は公式推奨の方法でインストールされます：
 
 ```bash
 # セットアップスクリプトで自動インストール
-./setup/06_claude_code.sh
+./setup/06_claude.sh
 ```
 
 ### 環境変数の設定

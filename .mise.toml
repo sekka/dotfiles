@@ -1,13 +1,17 @@
 # mise task configuration for dotfiles
 # https://mise.jdx.dev/tasks/
 
+[tasks."setup:all"]
+description = "全セットアップを実行"
+run = "bash setup/setup.sh"
+
 [tasks."macos:check"]
 description = "現在のmacOS設定がデフォルトから変更されているかチェック"
 run = "scripts/system/macos/check-defaults.sh"
 
 [tasks."macos:apply"]
-description = "メジャーなmacOS設定を適用（setup/03_macos_defaults.sh）"
-run = "setup/03_macos_defaults.sh"
+description = "メジャーなmacOS設定を適用（setup/04_macos.sh）"
+run = "setup/04_macos.sh"
 
 [tasks."macos:snapshot-before"]
 description = "設定変更前のスナップショットを取得（pdef用）"
