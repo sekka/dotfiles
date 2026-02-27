@@ -65,7 +65,7 @@ if [[ -f "$HOME/Library/LaunchAgents/com.ollama.serve.plist" ]]; then
   echo "✓ Ollama LaunchAgent loaded"
   sleep 2 # Ollama 起動待ち
 else
-  echo "⚠ Ollama LaunchAgent not found. Run setup/02_home.sh first."
+  echo "⚠ Ollama LaunchAgent not found. Run setup/03_symlinks.sh first."
 fi
 
 # Ollama モデルのセットアップ

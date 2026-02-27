@@ -8,7 +8,7 @@
 
 ```bash
 cd ~/dotfiles
-./setup/02_home.sh
+./setup/03_symlinks.sh
 ```
 
 **期待される結果**:
@@ -299,7 +299,7 @@ TypeScriptファイル内で：
 2. スクリプトを再実行
    ```bash
    cd ~/dotfiles
-   ./setup/02_home.sh
+   ./setup/03_symlinks.sh
    ```
 
 ---
