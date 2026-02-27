@@ -172,7 +172,8 @@
       "WebFetch(domain:zoewave.medium.com)",
       "WebFetch(domain:www.cmux.dev)",
       "WebFetch(domain:agent-browser.dev)",
-      "WebFetch(domain:help.apiyi.com)"
+      "WebFetch(domain:help.apiyi.com)",
+      "Bash(mgrep coderabbit:*)"
     ],
     "deny": [],
     "ask": []
