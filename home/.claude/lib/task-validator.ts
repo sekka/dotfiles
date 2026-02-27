@@ -3,16 +3,10 @@
  * Zodベースの型安全なバリデーション
  */
 
-import { z } from 'zod';
-import matter from 'gray-matter';
-import type {
-	TaskFile,
-	TaskPhase,
-} from './task-schema';
-import {
-	TaskSchema,
-	VALID_PHASE_TRANSITIONS,
-} from './task-schema';
+import { z } from "zod";
+import matter from "gray-matter";
+import type { TaskFile, TaskPhase } from "./task-schema";
+import { TaskSchema, VALID_PHASE_TRANSITIONS } from "./task-schema";
 
 // ============================================================================
 // 型定義
@@ -68,7 +62,7 @@ export class TaskValidator {
 		} catch (error) {
 			// Parse errors are returned as failed validation
 			const message = error instanceof Error ? error.message : String(error);
-			console.error('Task parsing error:', message);
+			console.error("Task parsing error:", message);
 
 			// フォールバック：empty object で Zod validation を実行
 			// これにより、required fields のエラーが返される
@@ -120,42 +114,48 @@ function parseTaskMarkdown(content: string): Record<string, unknown> {
 	};
 
 	// Markdownセクションを解析
-	const lines = markdown.split('\n');
-	let currentSection = '';
+	const lines = markdown.split("\n");
+	let currentSection = "";
 
 	for (const currentLine of lines) {
 		const line = currentLine.trim();
 		if (!line) continue;
 
 		// セクションヘッダー検出
-		if (line.startsWith('## ')) {
+		if (line.startsWith("## ")) {
 			currentSection = line
 				.substring(3)
 				.toLowerCase()
-				.replace(/\s+/g, '_')
-				.replace(/[^a-z0-9_]/g, '');
+				.replace(/\s+/g, "_")
+				.replace(/[^a-z0-9_]/g, "");
 			continue;
 		}
 
 		// セクション別の処理
-		if (currentSection === 'dependencies' && line.startsWith('- ')) {
+		if (currentSection === "dependencies" && line.startsWith("- ")) {
 			const dep = line.substring(2).trim();
 			if (dep) {
-				(result['dependencies'] as string[]).push(dep);
+				(result["dependencies"] as string[]).push(dep);
 			}
-		} else if (currentSection === 'success_criteria' && line.startsWith('- ')) {
+		} else if (currentSection === "success_criteria" && line.startsWith("- ")) {
 			const criterion = line.substring(2).trim();
 			if (criterion) {
-				(result['success_criteria'] as string[]).push(criterion);
+				(result["success_criteria"] as string[]).push(criterion);
 			}
-		} else if (currentSection === 'context' && (line.startsWith('- ') || line.includes('**Files:**'))) {
-			const file = line.replace(/^\*\*Files:\*\*\s*/, '').replace(/^- /, '').trim();
+		} else if (
+			currentSection === "context" &&
+			(line.startsWith("- ") || line.includes("**Files:**"))
+		) {
+			const file = line
+				.replace(/^\*\*Files:\*\*\s*/, "")
+				.replace(/^- /, "")
+				.trim();
 			if (file) {
-				((result['context'] as any)['files'] as string[]).push(file);
+				((result["context"] as any)["files"] as string[]).push(file);
 			}
-		} else if (line.startsWith('# ')) {
+		} else if (line.startsWith("# ")) {
 			// タイトル抽出
-			result['title'] = line.substring(2).trim();
+			result["title"] = line.substring(2).trim();
 		}
 	}
 
@@ -193,10 +193,7 @@ export function validateTask(content: string): ValidationResult {
  * }
  * ```
  */
-export function isValidTransition(
-	currentPhase: TaskPhase,
-	nextPhase: TaskPhase,
-): boolean {
+export function isValidTransition(currentPhase: TaskPhase, nextPhase: TaskPhase): boolean {
 	const validator = new TaskValidator();
 	return validator.validatePhaseTransition(currentPhase, nextPhase);
 }

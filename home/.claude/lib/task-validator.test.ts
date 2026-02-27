@@ -3,12 +3,12 @@
  * Zod + Gray-Matter の統合テスト
  */
 
-import { describe, it, expect } from 'bun:test';
-import { validateTask, isValidTransition } from './task-validator';
+import { describe, it, expect } from "bun:test";
+import { validateTask, isValidTransition } from "./task-validator";
 
-describe('TaskValidator', () => {
-	describe('validate()', () => {
-		it('should validate correct task file', () => {
+describe("TaskValidator", () => {
+	describe("validate()", () => {
+		it("should validate correct task file", () => {
 			const validTask = `---
 title: Test Task
 phase: analyze
@@ -30,9 +30,9 @@ updated_at: 2025-01-01T00:00:00Z
 			const result = validateTask(validTask);
 			expect(result.success).toBe(true);
 			if (result.success) {
-				expect(result.data.title).toBe('Test Task');
-				expect(result.data.phase).toBe('analyze');
-				expect(result.data.status).toBe('pending');
+				expect(result.data.title).toBe("Test Task");
+				expect(result.data.phase).toBe("analyze");
+				expect(result.data.status).toBe("pending");
 				// Markdown セクションから解析された依存関係
 				expect(Array.isArray(result.data.dependencies)).toBe(true);
 				expect(result.data.dependencies.length).toBeGreaterThan(0);
@@ -42,7 +42,7 @@ updated_at: 2025-01-01T00:00:00Z
 			}
 		});
 
-		it('should handle gray-matter Date conversion for unquoted ISO 8601', () => {
+		it("should handle gray-matter Date conversion for unquoted ISO 8601", () => {
 			// Unquoted ISO 8601 はGray-Matterで Date オブジェクトに変換される
 			const taskWithUnquotedDate = `---
 title: Test
@@ -57,12 +57,12 @@ updated_at: 2025-01-01T00:00:00Z
 			expect(result.success).toBe(true);
 			if (result.success) {
 				// Date オブジェクトは ISO 文字列に変換される
-				expect(typeof result.data.created_at).toBe('string');
-				expect(typeof result.data.updated_at).toBe('string');
+				expect(typeof result.data.created_at).toBe("string");
+				expect(typeof result.data.updated_at).toBe("string");
 			}
 		});
 
-		it('should preserve frontmatter arrays (regression test for fix #1)', () => {
+		it("should preserve frontmatter arrays (regression test for fix #1)", () => {
 			// Frontmatter で指定した配列が保持されることを確認
 			const taskWithArrays = `---
 title: Test
@@ -84,12 +84,12 @@ updated_at: 2025-01-01T00:00:00Z
 			expect(result.success).toBe(true);
 			if (result.success) {
 				// 修正1: Frontmatter データが上書きされない
-				expect(result.data.dependencies).toEqual(['dep1', 'dep2', 'dep3']);
-				expect(result.data.success_criteria).toEqual(['criteria1', 'criteria2']);
+				expect(result.data.dependencies).toEqual(["dep1", "dep2", "dep3"]);
+				expect(result.data.success_criteria).toEqual(["criteria1", "criteria2"]);
 			}
 		});
 
-		it('should preserve context files from frontmatter', () => {
+		it("should preserve context files from frontmatter", () => {
 			const taskWithContext = `---
 title: Test
 phase: analyze
@@ -114,7 +114,7 @@ updated_at: 2025-01-01T00:00:00Z
 			}
 		});
 
-		it('should handle parse errors gracefully (regression test for fix #2)', () => {
+		it("should handle parse errors gracefully (regression test for fix #2)", () => {
 			// 不正な YAML で エラーが返される
 			const invalidTask = `---
 invalid yaml: [
@@ -130,7 +130,7 @@ invalid yaml: [
 			}
 		});
 
-		it('should validate with minimal required fields', () => {
+		it("should validate with minimal required fields", () => {
 			const minimalTask = `---
 title: Minimal Task
 phase: plan
@@ -151,7 +151,7 @@ updated_at: 2025-01-01T00:00:00Z
 			}
 		});
 
-		it('should reject missing required fields', () => {
+		it("should reject missing required fields", () => {
 			const incompleteTask = `---
 title: Incomplete Task
 phase: analyze
@@ -165,7 +165,7 @@ status: pending
 			}
 		});
 
-		it('should reject invalid phase', () => {
+		it("should reject invalid phase", () => {
 			const invalidPhaseTask = `---
 title: Invalid Phase Task
 phase: invalid_phase
@@ -179,7 +179,7 @@ updated_at: 2025-01-01T00:00:00Z
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject invalid status', () => {
+		it("should reject invalid status", () => {
 			const invalidStatusTask = `---
 title: Invalid Status Task
 phase: analyze
@@ -193,7 +193,7 @@ updated_at: 2025-01-01T00:00:00Z
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject invalid ISO8601 date', () => {
+		it("should reject invalid ISO8601 date", () => {
 			const invalidDateTask = `---
 title: Invalid Date Task
 phase: analyze
@@ -207,8 +207,8 @@ updated_at: 2025-01-01T00:00:00Z
 			expect(result.success).toBe(false);
 		});
 
-		it('should reject title exceeding max length', () => {
-			const longTitle = 'a'.repeat(101);
+		it("should reject title exceeding max length", () => {
+			const longTitle = "a".repeat(101);
 			const longTitleTask = `---
 title: ${longTitle}
 phase: analyze
@@ -223,42 +223,42 @@ updated_at: 2025-01-01T00:00:00Z
 		});
 	});
 
-	describe('validatePhaseTransition()', () => {
-		it('should allow analyze → plan transition', () => {
-			expect(isValidTransition('analyze', 'plan')).toBe(true);
+	describe("validatePhaseTransition()", () => {
+		it("should allow analyze → plan transition", () => {
+			expect(isValidTransition("analyze", "plan")).toBe(true);
 		});
 
-		it('should allow plan → execute transition', () => {
-			expect(isValidTransition('plan', 'execute')).toBe(true);
+		it("should allow plan → execute transition", () => {
+			expect(isValidTransition("plan", "execute")).toBe(true);
 		});
 
-		it('should allow execute → examine transition', () => {
-			expect(isValidTransition('execute', 'examine')).toBe(true);
+		it("should allow execute → examine transition", () => {
+			expect(isValidTransition("execute", "examine")).toBe(true);
 		});
 
-		it('should reject analyze → execute transition (skip)', () => {
-			expect(isValidTransition('analyze', 'execute')).toBe(false);
+		it("should reject analyze → execute transition (skip)", () => {
+			expect(isValidTransition("analyze", "execute")).toBe(false);
 		});
 
-		it('should reject plan → analyze transition (backward)', () => {
-			expect(isValidTransition('plan', 'analyze')).toBe(false);
+		it("should reject plan → analyze transition (backward)", () => {
+			expect(isValidTransition("plan", "analyze")).toBe(false);
 		});
 
-		it('should reject execute → plan transition (backward)', () => {
-			expect(isValidTransition('execute', 'plan')).toBe(false);
+		it("should reject execute → plan transition (backward)", () => {
+			expect(isValidTransition("execute", "plan")).toBe(false);
 		});
 
-		it('should reject examine → any transition (end state)', () => {
-			expect(isValidTransition('examine', 'analyze')).toBe(false);
-			expect(isValidTransition('examine', 'plan')).toBe(false);
-			expect(isValidTransition('examine', 'execute')).toBe(false);
-			expect(isValidTransition('examine', 'examine')).toBe(false);
+		it("should reject examine → any transition (end state)", () => {
+			expect(isValidTransition("examine", "analyze")).toBe(false);
+			expect(isValidTransition("examine", "plan")).toBe(false);
+			expect(isValidTransition("examine", "execute")).toBe(false);
+			expect(isValidTransition("examine", "examine")).toBe(false);
 		});
 
-		it('should reject same phase transition', () => {
-			expect(isValidTransition('analyze', 'analyze')).toBe(false);
-			expect(isValidTransition('plan', 'plan')).toBe(false);
-			expect(isValidTransition('execute', 'execute')).toBe(false);
+		it("should reject same phase transition", () => {
+			expect(isValidTransition("analyze", "analyze")).toBe(false);
+			expect(isValidTransition("plan", "plan")).toBe(false);
+			expect(isValidTransition("execute", "execute")).toBe(false);
 		});
 	});
 });
