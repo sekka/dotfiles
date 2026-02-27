@@ -9,7 +9,7 @@ function rm {
     # システム
     '.DS_Store' '._*'
     # 一時ファイル / キャッシュ
-    '/tmp/*' "${TMPDIR:-/tmp}/*" '.cache' '*.zwc'
+    '/tmp/*' "${TMPDIR:-/tmp}/*" '.cache' '*/.cache/*' '*.zwc'
     # Node.js
     'node_modules' '.next' '.nuxt' '.turbo' '.parcel-cache' 'dist'
     # Python
