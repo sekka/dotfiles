@@ -4,6 +4,22 @@
 
 set -euo pipefail
 
+# Repair symlink if Claude Code overwrote it with a real file
+python3 - <<'PYEOF' || true
+import os, shutil
+try:
+    live = os.path.expanduser('~/.claude/settings.json')
+    dotfiles = os.path.expanduser('~/dotfiles/home/.claude/settings.json')
+    if os.path.isfile(live) and not os.path.islink(live) and os.path.isfile(dotfiles):
+        shutil.copy2(live, dotfiles)
+        os.remove(live)
+        os.symlink(dotfiles, live)
+        print('✓ Repaired symlink: ~/.claude/settings.json -> ' + dotfiles)
+except Exception as e:
+    import sys
+    print(f'⚠ Symlink repair failed: {e}', file=sys.stderr)
+PYEOF
+
 file_path=""
 
 # Parse command line arguments or read from stdin
