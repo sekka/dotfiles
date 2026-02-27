@@ -51,6 +51,15 @@ else
   log_info "cot コマンドをインストールしました"
 fi
 
+# --- mise ランタイム更新 ---
+
+if ! is_installed mise; then
+  log_warn "mise がインストールされていません"
+else
+  log_info "mise ランタイムをアップグレードしています..."
+  mise upgrade
+fi
+
 # --- サマリー ---
 
 log_section "05: 完了"

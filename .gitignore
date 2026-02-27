@@ -26,6 +26,9 @@ plans/
 # yazi プラグインとテーマ（package.tomlで管理）
 home/config/yazi/plugins/
 home/config/yazi/flavors/
+
+# sheldon が自動生成するキャッシュ（絶対パスが含まれるため管理対象外）
+home/config/sheldon/sheldon.zsh
 ### https://raw.github.com/github/gitignore//Swift.gitignore
 
 # Xcode

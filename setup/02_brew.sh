@@ -17,6 +17,11 @@ fi
 log_info "Homebrew を更新しています..."
 brew update
 
+log_info "サードパーティ tap をインストールしています..."
+grep '^tap ' "$(dirname "$0")/Brewfile" | sed 's/tap "\(.*\)"/\1/' | while IFS= read -r t; do
+  brew tap "$t" 2>/dev/null || log_warn "tap $t のインストールに失敗しました"
+done
+
 log_info "Brewfile でパッケージをインストールしています..."
 brew bundle --file="$(dirname "$0")/Brewfile"
 
