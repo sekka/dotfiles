@@ -10,6 +10,7 @@
   },
   "permissions": {
     "allow": [
+      "Bash(agent-browser:*)",
       "Bash(ai-refresh)",
       "Bash(alias:*)",
       "Bash(basename:*)",

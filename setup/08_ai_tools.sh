@@ -68,6 +68,20 @@ else
   fi
 fi
 
+# --- agent-browser ---
+
+if is_installed agent-browser; then
+  log_skip "agent-browser はインストール済み（$(agent-browser --version 2>/dev/null || echo 'version unknown')）"
+  log_info "agent-browser のブラウザをセットアップしています..."
+  if agent-browser install; then
+    log_info "agent-browser の準備が完了しました"
+  else
+    log_error "agent-browser install に失敗しました。手動で実行してください: agent-browser install"
+  fi
+else
+  log_warn "agent-browser が見つかりません。mise install を実行してください（npm:agent-browser）"
+fi
+
 # --- サマリー ---
 
 log_section "08: 完了"

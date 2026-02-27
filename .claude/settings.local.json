@@ -170,7 +170,9 @@
       "WebFetch(domain:yuto-takahashi.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
-      "WebFetch(domain:www.cmux.dev)"
+      "WebFetch(domain:www.cmux.dev)",
+      "WebFetch(domain:agent-browser.dev)",
+      "WebFetch(domain:help.apiyi.com)"
     ],
     "deny": [],
     "ask": []
