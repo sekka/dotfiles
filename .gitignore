@@ -11,6 +11,7 @@ Brewfile.lock.json
 .claude/worktrees/
 home/.claude/state/
 reports/
+plans/
 .playwright-mcp/
 
 # TTS テストで生成される音声ファイル
