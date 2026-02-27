@@ -244,6 +244,8 @@ brew "carlocab/personal/unrar"  # https://formulae.brew.sh/formula/unrar      # 
 #cask "utm"
 
 # === ターミナル ===
+tap "manaflow-ai/cmux"
+cask "cmux"                  # https://www.cmux.dev/                            # Ghosttyベースマルチタスクターミナル
 #cask "ghostty"
 #cask "iterm2"
 #cask "warp"
