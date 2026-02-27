@@ -35,10 +35,7 @@
       "Bash(fuser:*)",
       "Bash(fzf:*)",
       "Bash(gemini:*)",
-      "Bash(gh auth status:*)",
-      "Bash(gh pr comment:*)",
-      "Bash(gh pr diff:*)",
-      "Bash(gh pr view:*)",
+      "Bash(gh:*)",
       "Bash(git:*)",
       "Bash(gpg:*)",
       "Bash(gpgconf:*)",
@@ -55,7 +52,6 @@
       "Bash(navi *)",
       "Bash(npx tsc:*)",
       "Bash(oxlint:*)",
-      "Bash(playwright-cli:*)",
       "Bash(printenv:*)",
       "Bash(ps:*)",
       "Bash(pstree:*)",
@@ -70,8 +66,7 @@
       "Bash(tts-clone:*)",
       "Bash(tts:*)",
       "Bash(unset:*)",
-      "Bash(uv tool list:*)",
-      "Bash(uv tool run:*)",
+      "Bash(uv:*)",
       "Bash(wait:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
@@ -92,7 +87,6 @@
       "Skill(review-with-gemini)",
       "Skill(review-with-multi-ai)",
       "Skill(reviewing-with-claude)",
-      "Skill(writing-documentation)",
       "WebSearch",
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
@@ -105,17 +99,11 @@
     "deny": [
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
-      "Bash(rm -rf /)",
-      "Bash(rm -rf /*)",
-      "Bash(rm -rf ~)",
-      "Bash(rm -rf ~/*)",
       "Bash(rm -rf:*)",
       "Bash(sudo:*)",
       "Read(**/*.key)",
       "Read(**/*.pem)",
-      "Read(**/*key*)",
       "Read(**/*secret*)",
-      "Read(**/*token*)",
       "Read(**/.env*)",
       "Read(**/secrets/**)",
       "Read(~/.ssh/*)",
@@ -125,12 +113,8 @@
     "ask": [
       "Bash(chmod:*)",
       "Bash(curl:*)",
-      "Bash(dscl:*)",
-      "Bash(gh api:*)",
       "Bash(git merge:*)",
-      "Bash(nvim:*)",
       "Bash(rm:*)",
-      "Bash(sqlite3:*)",
       "Bash(wget:*)"
     ],
     "defaultMode": "plan"
@@ -141,10 +125,6 @@
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/rtk-rewrite.sh"
-          },
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
@@ -166,6 +146,15 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/kei/.claude/hooks/rtk-rewrite.sh"
           }
         ]
       }
