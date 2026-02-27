@@ -16,12 +16,17 @@ fi
 
 install_plugin() {
   local plugin="$1"
-  if ya pkg add "$plugin" 2>/dev/null; then
-    log_info "インストール完了: $plugin"
-  elif ya pkg upgrade "$plugin" 2>/dev/null; then
-    log_skip "既にインストール済み（更新）: $plugin"
+  local pkg_list
+  pkg_list=$(ya pkg list 2>/dev/null)
+  if echo "$pkg_list" | grep -qF "${plugin}"; then
+    log_skip "プラグイン: $plugin (既にインストール済み)"
   else
-    log_warn "スキップ: $plugin（インストール済みまたはエラー）"
+    log_info "プラグインをインストールしています: $plugin"
+    if ya pkg add "$plugin" &>/dev/null; then
+      log_info "インストール完了: $plugin"
+    else
+      log_warn "インストールに失敗しました: $plugin"
+    fi
   fi
 }
 
