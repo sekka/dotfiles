@@ -134,6 +134,11 @@ run = "ccsearch"
 description = "Claude Codeのセッション使用状況を表示"
 run = "ccusage"
 
+# RTK トークン節約量レポート
+[tasks.llm-rtk-gain]
+description = "RTKのトークン節約量をグラフ付きで表示"
+run = "rtk gain --graph --quota"
+
 # home/.claude/ のグローバル設定ファイル（シンボリックリンク元）
 [tasks."llm-claude:sort-permissions-home-global"]
 description = "home/.claude/settings.json の permissions を辞書順ソート"
