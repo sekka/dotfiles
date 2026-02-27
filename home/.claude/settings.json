@@ -20,6 +20,7 @@
       "Bash(bunx:*)",
       "Bash(cat:*)",
       "Bash(claude help:*)",
+      "Bash(claude:*)",
       "Bash(coderabbit review:*)",
       "Bash(coderabbit:*)",
       "Bash(codesign:*)",
@@ -56,6 +57,7 @@
       "Bash(git restore:*)",
       "Bash(git rm:*)",
       "Bash(git status:*)",
+      "Bash(git:*)",
       "Bash(gpg:*)",
       "Bash(gpgconf:*)",
       "Bash(grep:*)",
@@ -77,7 +79,9 @@
       "Bash(printenv:*)",
       "Bash(ps:*)",
       "Bash(pstree:*)",
+      "Bash(python3:*)",
       "Bash(rg:*)",
+      "Bash(rtk:*)",
       "Bash(shellcheck:*)",
       "Bash(source:*)",
       "Bash(sqlite3:*)",
@@ -93,10 +97,12 @@
       "Bash(unset:*)",
       "Bash(uv tool list:*)",
       "Bash(uv tool run:*)",
+      "Bash(wait:*)",
       "Bash(wc:*)",
       "Bash(xargs:*)",
       "Bash(yazi:*)",
       "Bash(zoxide:*)",
+      "Bash(zsh:*)",
       "Skill(asking-peer)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
@@ -111,6 +117,7 @@
       "Skill(review-with-copilot)",
       "Skill(review-with-gemini)",
       "Skill(review-with-multi-ai)",
+      "Skill(reviewing-with-claude)",
       "Skill(writing-documentation)",
       "WebSearch",
       "mcp__chrome-devtools__*",
@@ -156,6 +163,10 @@
       {
         "matcher": "Bash",
         "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/rtk-rewrite.sh"
+          },
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"

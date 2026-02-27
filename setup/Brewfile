@@ -24,6 +24,7 @@ brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 
 brew "procs"              # https://formulae.brew.sh/formula/procs            # すごいps
 brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
 brew "ripgrep"            # https://formulae.brew.sh/formula/ripgrep          # すごいgrep
+brew "rtk"               # https://github.com/rtk-ai/rtk                    # LLMトークン消費を60-90%削減するCLIプロキシ
 brew "sheldon"            # https://formulae.brew.sh/formula/sheldon          # 高速zshプラグイン管理（Rust製）
 brew "starship"           # https://formulae.brew.sh/formula/starship         # すごいプロンプト表示
 brew "tailspin"           # https://formulae.brew.sh/formula/tailspin         # 高性能tailコマンド

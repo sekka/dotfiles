@@ -105,3 +105,5 @@
 - セキュリティ方針: `.claude/rules/security.md`
 - サブエージェント定義: `.claude/agents/`
 - AI統合インターフェース: `.claude/rules/ai-interface.md`
+
+@RTK.md
