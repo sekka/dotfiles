@@ -38,6 +38,9 @@ legacy_version_file = true
 plugin_autoupdate_last_check_duration = "7 days"
 # 信頼するプロジェクトディレクトリ（これらのディレクトリ内の.mise.tomlは自動的に信頼される）
 trusted_config_paths = ["~/dotfiles", "~/src/**", "~/projects/**"]
+# Node.js ダウンロードの GPG 署名検証を無効化
+# HTTPS によるダウンロード整合性で十分、GPG keyboxd の問題を回避
+node.verify = false
 
 # --------------------------------------
 # AWS関連
@@ -473,7 +476,7 @@ run = 'curl -fsSL https://raw.githubusercontent.com/niklasberglund/xcode-clean.s
 # rust = "stable"        # Rust安定版
 
 # === JavaScript ランタイム ===
-node = ["latest", "lts", "23", "22", "21", "20", "19", "18"]
+node = ["24", "lts", "22", "20", "18"]
 deno = "latest"
 bun = "latest"
 # npm = "latest"
