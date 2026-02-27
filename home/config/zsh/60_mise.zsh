@@ -5,5 +5,5 @@
 # mise の有効化
 # mise コマンドが利用可能な場合のみ有効化
 if command -v mise >/dev/null 2>&1; then
-    eval "$(mise activate zsh)"
+    eval_cache mise activate zsh
 fi

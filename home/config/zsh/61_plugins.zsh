@@ -3,8 +3,17 @@
 # ===========================================
 
 if command -v sheldon >/dev/null 2>&1; then
-    # プラグインをロード（自動でインストール・更新）
-    eval "$(sheldon source)"
+    # sheldon キャッシュ: plugins.toml が変更された場合のみ再生成
+    () {
+        local config="${XDG_CONFIG_HOME:-$HOME/.config}/sheldon"
+        local cache="${config}/sheldon.zsh"
+        local toml="${config}/plugins.toml"
+        if [[ ! -r "$cache" || "$toml" -nt "$cache" ]]; then
+            sheldon source > "$cache"
+            zcompile "$cache"
+        fi
+        source "$cache"
+    }
 
     # tmuximum の実行権限を付与（上流が権限未設定のため）
     TMUXIMUM_PATH="${HOME}/.local/share/sheldon/repos/github.com/arks22/tmuximum/tmuximum"
@@ -29,7 +38,7 @@ if command -v zoxide >/dev/null 2>&1; then
     export _ZO_EXCLUDE_DIRS=""
 
     # zoxide初期化（cd,cdiコマンド生成）
-    eval "$(zoxide init zsh --cmd cd)"
+    eval_cache zoxide init zsh --cmd cd
 
     # tmux popup対応
     if [[ -n "$TMUX" ]]; then
@@ -95,8 +104,8 @@ export FZF_TMUX_OPTS="-p 90%,90%"  # 画面の90%サイズで中央表示
 
 # fzfデフォルトキーバインド読み込み
 # Ctrl+T: ファイル選択、Alt+C: ディレクトリ移動
-if [[ -f "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh" ]]; then
-    source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+if [[ -n "$HOMEBREW_PREFIX" && -f "${HOMEBREW_PREFIX}/opt/fzf/shell/key-bindings.zsh" ]]; then
+    source "${HOMEBREW_PREFIX}/opt/fzf/shell/key-bindings.zsh"
 fi
 
 # ===========================================

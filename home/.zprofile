@@ -12,6 +12,14 @@ if ! typeset -f add_to_path > /dev/null; then
 fi
 
 # ===========================================
+# キャッシュ関数の読み込み（未読み込みの場合のみ）
+# ===========================================
+# .zprofile は .zshrc より前にロードされるため、01_cache.zsh を条件付きで source
+if ! typeset -f eval_cache > /dev/null; then
+    source "$HOME/dotfiles/home/config/zsh/01_cache.zsh"
+fi
+
+# ===========================================
 # エディタ設定
 # ===========================================
 # デフォルトのテキストエディタと ビジュアルエディタ
@@ -40,7 +48,7 @@ export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 
 # direnv - ディレクトリごとの環境変数管理（重い処理）
 if command -v direnv >/dev/null 2>&1; then
-    eval "$(direnv hook zsh)"
+    eval_cache direnv hook zsh
 fi
 
 # Rust/Cargo 環境

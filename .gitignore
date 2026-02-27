@@ -20,6 +20,9 @@ plans/
 # バックアップファイル
 *.bak
 
+# Zsh コンパイル済みバイトコード
+*.zwc
+
 # yazi プラグインとテーマ（package.tomlで管理）
 home/config/yazi/plugins/
 home/config/yazi/flavors/
