@@ -277,33 +277,28 @@ interface Credentials {
 
 async function getClaudeApiToken(): Promise<string | null> {
 	try {
-		const proc = Bun.spawn({
-			cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
-			stdout: "pipe",
-			stderr: "pipe",
-		});
+		// ~/.claude/.credentials.json から直接読み込む
+		// security コマンドは 4030 hex chars でバイナリデータを切り詰めるため使用しない
+		const credFile = Bun.file(`${process.env.HOME}/.claude/.credentials.json`);
+		let trimmedOutput: string;
 
-		const stdout = await new Response(proc.stdout).text();
-		let trimmedOutput = stdout.trim();
-
-		// security(1) がバイナリデータを含むパスワードをHex文字列で出力する場合に対応
-		// 例: \x07"claudeAiOauth":{...} → hex出力 → デコードして {} でラップ
-		if (/^[0-9a-f]+$/i.test(trimmedOutput) && trimmedOutput.length % 2 === 0) {
-			// サイズ制限: 64KB超は不正データとして拒否
-			if (trimmedOutput.length > 131072) {
-				debug(`Keychain output exceeds safe limit: ${trimmedOutput.length} chars`, "error");
-				return null;
-			}
-			const decoded = Buffer.from(trimmedOutput, "hex").toString("utf-8");
-			// 先頭の非表示バイト（フォーマットマーカー等）を除去
-			const jsonContent = decoded.replace(/^[\x00-\x1f]+/, "");
-			// キー・バリューペアの形式 ("key":{...}) を完全なJSONオブジェクトに変換し検証
-			const candidate = jsonContent.startsWith("{") ? jsonContent : `{${jsonContent}}`;
-			try {
-				JSON.parse(candidate);
-				trimmedOutput = candidate;
-			} catch {
-				debug(`Hex-decoded content is not valid JSON`, "error");
+		// アトミック読み込み: exists() + text() の TOCTOU を避け、直接読んで例外で分岐
+		try {
+			trimmedOutput = await credFile.text();
+		} catch (fileErr) {
+			// .code プロパティで判定（文字列マッチより確実）
+			const code = (fileErr as NodeJS.ErrnoException).code;
+			if (code === "ENOENT") {
+				// ファイルなし → Keychain フォールバック
+				const proc = Bun.spawn({
+					cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+					stdout: "pipe",
+					stderr: "pipe",
+				});
+				trimmedOutput = (await new Response(proc.stdout).text()).trim();
+			} else {
+				// EACCES 等は明示的に失敗
+				debug(`Cannot read credentials file: ${errorMessage(fileErr)}`, "error");
 				return null;
 			}
 		}
