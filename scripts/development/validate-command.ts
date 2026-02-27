@@ -3,9 +3,8 @@
 /**
  * Command chain validator for Claude Code's PreToolUse hook
  *
- * コマンドチェーン内の危険なパターン（隠れた破壊的操作）を検出する。
- * settings.json のパーミッション設定と重複しないよう、
- * チェーン内の危険パターンのみに焦点を当てる。
+ * 禁止コマンド（sed/awk/git add -A 等）と危険なコマンドチェーンパターンを検出する。
+ * settings.json の deny ルールを補完し、チェーン内に隠れた操作も検知する。
  */
 
 interface HookInput {
@@ -19,10 +18,29 @@ interface HookInput {
 interface HookOutput {
 	hookSpecificOutput: {
 		hookEventName: "PreToolUse";
-		permissionDecision: "allow" | "block" | "ask";
+		permissionDecision: "allow" | "deny" | "ask";
 		permissionDecisionReason: string;
 	};
 }
+
+// 使用禁止コマンド（即ブロック）
+const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
+	{
+		pattern: /\bg?sed\b/,
+		reason:
+			"sed は禁止されています。ファイル編集には Edit ツールを使用し、ストリーム処理には 'perl -pe' を使用してください。例: perl -pe 's/old/new/g' file",
+	},
+	{
+		pattern: /\bg?awk\b/,
+		reason:
+			"awk は禁止されています。ファイル編集には Edit ツールを使用し、フィールド処理には 'perl -lane' を使用してください。例: perl -lane 'print $F[0]' file",
+	},
+	{
+		pattern: /\bgit\s+add\s+(-A\b|--all\b|\.(?:\s|$))/,
+		reason:
+			"git add -A/--all/. は禁止されています。機密ファイルの意図しないステージングを防ぐため、ファイルを個別に指定してください。例: git add specific-file.ts",
+	},
+];
 
 // チェーン内で危険な組み合わせパターン
 const DANGEROUS_CHAINS = [
@@ -52,13 +70,26 @@ const CRITICAL_PATTERNS = [
 export function validateCommand(command: string): {
 	isValid: boolean;
 	reason: string;
+	severity?: "prohibited" | "dangerous" | "critical";
 } {
+	// 禁止コマンドは即ブロック
+	for (const { pattern, reason } of PROHIBITED_COMMANDS) {
+		if (pattern.test(command)) {
+			return {
+				isValid: false,
+				reason,
+				severity: "prohibited",
+			};
+		}
+	}
+
 	// Critical パターンは即ブロック
 	for (const pattern of CRITICAL_PATTERNS) {
 		if (pattern.test(command)) {
 			return {
 				isValid: false,
 				reason: `Critical: システム破壊の危険性があるコマンドです: ${command.slice(0, 100)}`,
+				severity: "critical",
 			};
 		}
 	}
@@ -69,6 +100,7 @@ export function validateCommand(command: string): {
 			return {
 				isValid: false,
 				reason: `Dangerous chain: コマンドチェーン内に危険な操作が含まれています: ${command.slice(0, 100)}`,
+				severity: "dangerous",
 			};
 		}
 	}
@@ -109,10 +141,19 @@ function main() {
 		}
 
 		const result = validateCommand(command);
+		let permissionDecision: "allow" | "deny" | "ask";
+		if (!result.isValid && (result.severity === "prohibited" || result.severity === "critical")) {
+			permissionDecision = "deny";
+		} else if (!result.isValid) {
+			permissionDecision = "ask";
+		} else {
+			permissionDecision = "allow";
+		}
+
 		const output: HookOutput = {
 			hookSpecificOutput: {
 				hookEventName: "PreToolUse",
-				permissionDecision: result.isValid ? "allow" : "ask",
+				permissionDecision,
 				permissionDecisionReason: result.reason || "Command validated successfully",
 			},
 		};

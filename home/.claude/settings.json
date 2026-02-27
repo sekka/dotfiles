@@ -98,6 +98,10 @@
       "mcp__sequential-thinking__*"
     ],
     "deny": [
+      "Bash(do:*)",
+      "Bash(for:*)",
+      "Bash(until:*)",
+      "Bash(while:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
       "Bash(rm -rf:*)",
