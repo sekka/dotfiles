@@ -32,16 +32,8 @@ if (!HOME) {
 	process.exit(0);
 }
 
-const KNOWN_MARKETPLACES_PATH = join(
-	HOME,
-	".claude",
-	"plugins",
-	"known_marketplaces.json",
-);
-const TIMEOUT_MS = Number.parseInt(
-	process.env.CLAUDE_GIT_TIMEOUT || "15000",
-	10,
-);
+const KNOWN_MARKETPLACES_PATH = join(HOME, ".claude", "plugins", "known_marketplaces.json");
+const TIMEOUT_MS = Number.parseInt(process.env.CLAUDE_GIT_TIMEOUT || "15000", 10);
 const CACHE_DURATION_MS = 60 * 60 * 1000; // 1時間
 const CACHE_FILE = join(HOME, ".claude", "plugins", ".marketplace-health-cache.json");
 
@@ -104,10 +96,7 @@ function saveCache(cache: Record<string, CacheEntry>): void {
 /**
  * マーケットプレースをチェックすべきか判定
  */
-function shouldCheckMarketplace(
-	name: string,
-	cache: Record<string, CacheEntry>,
-): boolean {
+function shouldCheckMarketplace(name: string, cache: Record<string, CacheEntry>): boolean {
 	const entry = cache[name];
 	if (!entry) return true;
 
@@ -140,11 +129,7 @@ function loadKnownMarketplaces(): KnownMarketplaces | null {
  * marketplace.json の存在を確認
  */
 function checkMarketplaceHealth(installLocation: string): boolean {
-	const marketplaceJsonPath = join(
-		installLocation,
-		".claude-plugin",
-		"marketplace.json",
-	);
+	const marketplaceJsonPath = join(installLocation, ".claude-plugin", "marketplace.json");
 	return existsSync(marketplaceJsonPath);
 }
 
@@ -154,11 +139,11 @@ function checkMarketplaceHealth(installLocation: string): boolean {
 function attemptGitRepair(installLocation: string): boolean {
 	try {
 		// origin リモートの存在確認
-		const remoteResult = spawnSync(
-			"git",
-			["remote", "get-url", "origin"],
-			{ cwd: installLocation, timeout: 2000, stdio: "pipe" },
-		);
+		const remoteResult = spawnSync("git", ["remote", "get-url", "origin"], {
+			cwd: installLocation,
+			timeout: 2000,
+			stdio: "pipe",
+		});
 
 		if (remoteResult.status !== 0) {
 			console.error(`No origin remote found in ${installLocation}`);
@@ -166,30 +151,22 @@ function attemptGitRepair(installLocation: string): boolean {
 		}
 
 		// git fetch --depth=1 origin
-		const fetchResult = spawnSync(
-			"git",
-			["fetch", "--depth=1", "origin"],
-			{
-				cwd: installLocation,
-				timeout: TIMEOUT_MS,
-				stdio: "pipe",
-			},
-		);
+		const fetchResult = spawnSync("git", ["fetch", "--depth=1", "origin"], {
+			cwd: installLocation,
+			timeout: TIMEOUT_MS,
+			stdio: "pipe",
+		});
 
 		if (fetchResult.error || fetchResult.status !== 0) {
 			return false;
 		}
 
 		// git reset --hard FETCH_HEAD
-		const resetResult = spawnSync(
-			"git",
-			["reset", "--hard", "FETCH_HEAD"],
-			{
-				cwd: installLocation,
-				timeout: TIMEOUT_MS,
-				stdio: "pipe",
-			},
-		);
+		const resetResult = spawnSync("git", ["reset", "--hard", "FETCH_HEAD"], {
+			cwd: installLocation,
+			timeout: TIMEOUT_MS,
+			stdio: "pipe",
+		});
 
 		return resetResult.status === 0;
 	} catch (error) {
@@ -258,9 +235,7 @@ export function checkAndRepairMarketplaces(): CheckResult {
 		}
 
 		// marketplace.json が欠損 → 修復を試みる
-		console.log(
-			`⚠️  Marketplace '${name}' is corrupted. Attempting repair...`,
-		);
+		console.log(`⚠️  Marketplace '${name}' is corrupted. Attempting repair...`);
 
 		// Step 1: git fetch で修復
 		if (attemptGitRepair(installLocation)) {
@@ -277,9 +252,7 @@ export function checkAndRepairMarketplaces(): CheckResult {
 		}
 
 		// Step 2: git fetch 失敗 → ディレクトリ削除
-		console.log(
-			`❌ Git repair failed for '${name}'. Removing directory for re-clone...`,
-		);
+		console.log(`❌ Git repair failed for '${name}'. Removing directory for re-clone...`);
 		if (removeDirectory(installLocation)) {
 			result.removed.push(name);
 			// キャッシュからエントリを削除
@@ -308,9 +281,7 @@ function main() {
 			console.log(`🔍 Checked marketplaces: ${result.checked.join(", ")}`);
 		}
 		if (result.repaired.length > 0) {
-			console.log(
-				`🔧 Repaired marketplaces: ${result.repaired.join(", ")}`,
-			);
+			console.log(`🔧 Repaired marketplaces: ${result.repaired.join(", ")}`);
 		}
 		if (result.removed.length > 0) {
 			console.log(

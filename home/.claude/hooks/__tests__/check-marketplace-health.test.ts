@@ -1,11 +1,4 @@
-import {
-	afterEach,
-	beforeEach,
-	describe,
-	expect,
-	mock,
-	test,
-} from "bun:test";
+import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -26,25 +19,13 @@ import type { CheckResult } from "../check-marketplace-health";
 // テスト用の一時ディレクトリ
 const TEST_TMP_DIR = join(tmpdir(), "claude-marketplace-test");
 const TEST_PLUGINS_DIR = join(TEST_TMP_DIR, ".claude", "plugins");
-const TEST_KNOWN_MARKETPLACES = join(
-	TEST_PLUGINS_DIR,
-	"known_marketplaces.json",
-);
-const TEST_CACHE_FILE = join(
-	TEST_PLUGINS_DIR,
-	".marketplace-health-cache.json",
-);
+const TEST_KNOWN_MARKETPLACES = join(TEST_PLUGINS_DIR, "known_marketplaces.json");
+const TEST_CACHE_FILE = join(TEST_PLUGINS_DIR, ".marketplace-health-cache.json");
 
 // モジュールを動的に読み込むためのヘルパー
 async function importTestModule() {
 	// 既存のモジュールキャッシュをクリア
-	const modulePath = join(
-		process.cwd(),
-		"home",
-		".claude",
-		"hooks",
-		"check-marketplace-health.ts",
-	);
+	const modulePath = join(process.cwd(), "home", ".claude", "hooks", "check-marketplace-health.ts");
 	delete require.cache[require.resolve(modulePath)];
 
 	const module = await import("../check-marketplace-health");
@@ -87,11 +68,7 @@ describe("check-marketplace-health", () => {
 
 	test("全マーケットプレースが正常な場合は何もしない", async () => {
 		// 正常な marketplace.json を持つマーケットプレース
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"test-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "test-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),
@@ -115,19 +92,11 @@ describe("check-marketplace-health", () => {
 		expect(result.repaired).toHaveLength(0);
 		expect(result.removed).toHaveLength(0);
 		expect(result.errors).toHaveLength(0);
-		expect(
-			existsSync(
-				join(marketplaceDir, ".claude-plugin", "marketplace.json"),
-			),
-		).toBe(true);
+		expect(existsSync(join(marketplaceDir, ".claude-plugin", "marketplace.json"))).toBe(true);
 	});
 
 	test("marketplace.json が欠損している場合は git fetch を試みる（失敗）", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"broken-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "broken-marketplace");
 		mkdirSync(marketplaceDir, { recursive: true });
 
 		// .git ディレクトリは存在するが marketplace.json がない状態
@@ -153,11 +122,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("git fetch 失敗時はディレクトリを削除", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"corrupted-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "corrupted-marketplace");
 		mkdirSync(marketplaceDir, { recursive: true });
 
 		// git リポジトリではない状態（git fetch が失敗する）
@@ -179,11 +144,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("ディレクトリが存在しない場合はスキップ", async () => {
-		const nonExistentDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"non-existent",
-		);
+		const nonExistentDir = join(TEST_PLUGINS_DIR, "marketplaces", "non-existent");
 
 		writeFileSync(
 			TEST_KNOWN_MARKETPLACES,
@@ -203,16 +164,8 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("複数のマーケットプレースが同時に壊れている場合は各々独立に処理", async () => {
-		const marketplace1 = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"marketplace1",
-		);
-		const marketplace2 = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"marketplace2",
-		);
+		const marketplace1 = join(TEST_PLUGINS_DIR, "marketplaces", "marketplace1");
+		const marketplace2 = join(TEST_PLUGINS_DIR, "marketplaces", "marketplace2");
 
 		mkdirSync(marketplace1, { recursive: true });
 		mkdirSync(marketplace2, { recursive: true });
@@ -238,11 +191,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("キャッシュが有効な場合はチェックをスキップ", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"cached-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "cached-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),
@@ -277,11 +226,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("キャッシュが期限切れの場合は再チェック", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"expired-cache-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "expired-cache-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),
@@ -347,18 +292,11 @@ describe("check-marketplace-health", () => {
 		// 攻撃対象ディレクトリを作成
 		const attackTarget = join(tmpdir(), "attack-target");
 		mkdirSync(attackTarget, { recursive: true });
-		writeFileSync(
-			join(attackTarget, "important-file.txt"),
-			"DO NOT DELETE",
-		);
+		writeFileSync(join(attackTarget, "important-file.txt"), "DO NOT DELETE");
 
 		// パストラバーサル攻撃を試みる
 		// TEST_PLUGINS_DIR/marketplaces/evil/../../../attack-target のようなパス
-		const evilMarketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"evil",
-		);
+		const evilMarketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "evil");
 		mkdirSync(evilMarketplaceDir, { recursive: true });
 
 		// 相対パスを使った悪意のあるパスを設定
@@ -387,9 +325,7 @@ describe("check-marketplace-health", () => {
 		// 削除が拒否されることを確認
 		expect(result.removed).not.toContain("evil-marketplace");
 		expect(existsSync(attackTarget)).toBe(true);
-		expect(existsSync(join(attackTarget, "important-file.txt"))).toBe(
-			true,
-		);
+		expect(existsSync(join(attackTarget, "important-file.txt"))).toBe(true);
 
 		// エラーが記録されていることを確認
 		// セキュリティエラーは console.error に出力されるが result.errors には含まれない可能性がある
@@ -405,10 +341,7 @@ describe("check-marketplace-health", () => {
 		// 攻撃対象ディレクトリを作成
 		const attackTarget = join(tmpdir(), "symlink-attack-target");
 		mkdirSync(attackTarget, { recursive: true });
-		writeFileSync(
-			join(attackTarget, "sensitive-file.txt"),
-			"SENSITIVE DATA",
-		);
+		writeFileSync(join(attackTarget, "sensitive-file.txt"), "SENSITIVE DATA");
 
 		// 許可されたディレクトリ内にシンボリックリンクを作成
 		const symlinkDir = join(TEST_PLUGINS_DIR, "marketplaces", "symlink");
@@ -433,9 +366,7 @@ describe("check-marketplace-health", () => {
 
 				// シンボリックリンク先が削除されないことを確認
 				expect(existsSync(attackTarget)).toBe(true);
-				expect(
-					existsSync(join(attackTarget, "sensitive-file.txt")),
-				).toBe(true);
+				expect(existsSync(join(attackTarget, "sensitive-file.txt"))).toBe(true);
 			}
 		} catch (error) {
 			// シンボリックリンクの作成に失敗した場合はスキップ
@@ -453,11 +384,7 @@ describe("check-marketplace-health", () => {
 
 	test("修復成功時はキャッシュを更新", async () => {
 		// 正常な git リポジトリを作成してテスト
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"repairable-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "repairable-marketplace");
 		mkdirSync(marketplaceDir, { recursive: true });
 
 		// git init してテストリポジトリを作成
@@ -506,20 +433,14 @@ describe("check-marketplace-health", () => {
 		expect(result.checked).toContain("repairable-marketplace");
 		expect(result.repaired).toContain("repairable-marketplace");
 		expect(result.removed).not.toContain("repairable-marketplace");
-		expect(
-			existsSync(join(pluginDir, "marketplace.json")),
-		).toBe(true);
+		expect(existsSync(join(pluginDir, "marketplace.json"))).toBe(true);
 
 		// キャッシュファイルが更新されている
 		expect(existsSync(TEST_CACHE_FILE)).toBe(true);
 	});
 
 	test("セキュリティ: キャッシュファイルのパーミッションが 0o600 に設定される", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"test-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "test-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),
@@ -551,11 +472,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("セキュリティ: 破損したキャッシュファイルを安全に処理", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"test-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "test-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),
@@ -583,11 +500,7 @@ describe("check-marketplace-health", () => {
 	});
 
 	test("セキュリティ: 不正なキャッシュエントリを無視", async () => {
-		const marketplaceDir = join(
-			TEST_PLUGINS_DIR,
-			"marketplaces",
-			"test-marketplace",
-		);
+		const marketplaceDir = join(TEST_PLUGINS_DIR, "marketplaces", "test-marketplace");
 		mkdirSync(join(marketplaceDir, ".claude-plugin"), { recursive: true });
 		writeFileSync(
 			join(marketplaceDir, ".claude-plugin", "marketplace.json"),

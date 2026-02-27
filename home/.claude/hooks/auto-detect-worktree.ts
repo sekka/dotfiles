@@ -15,118 +15,114 @@
  * - ウェルカムメッセージの表示
  */
 
-import type {
-  SessionStartEvent,
-  HookResponse,
-} from '@anthropic-ai/claude-code';
-import * as fs from 'fs';
-import * as path from 'path';
+import type { SessionStartEvent, HookResponse } from "@anthropic-ai/claude-code";
+import * as fs from "fs";
+import * as path from "path";
 
 // worktree 設定ファイル名
-const WORKTREE_CONFIG_FILE = '.worktree-config.json';
+const WORKTREE_CONFIG_FILE = ".worktree-config.json";
 
 // worktree 設定の型定義
 interface WorktreeConfig {
-  branch: string;
-  purpose?: string;
-  created: string;
-  claudeConfig?: {
-    model?: 'sonnet' | 'opus' | 'haiku';
-    [key: string]: any;
-  };
+	branch: string;
+	purpose?: string;
+	created: string;
+	claudeConfig?: {
+		model?: "sonnet" | "opus" | "haiku";
+		[key: string]: any;
+	};
 }
 
 /**
  * 現在のディレクトリが worktree かどうかを判定
  */
 function isWorktree(): boolean {
-  const gitPath = path.join(process.cwd(), '.git');
-  if (!fs.existsSync(gitPath)) return false;
-  return fs.statSync(gitPath).isFile();
+	const gitPath = path.join(process.cwd(), ".git");
+	if (!fs.existsSync(gitPath)) return false;
+	return fs.statSync(gitPath).isFile();
 }
 
 /**
  * worktree 設定ファイルを読み込む
  */
 function loadWorktreeConfig(): WorktreeConfig | null {
-  const cwd = process.cwd();
-  const configPath = path.join(cwd, WORKTREE_CONFIG_FILE);
+	const cwd = process.cwd();
+	const configPath = path.join(cwd, WORKTREE_CONFIG_FILE);
 
-  if (!fs.existsSync(configPath)) {
-    return null;
-  }
+	if (!fs.existsSync(configPath)) {
+		return null;
+	}
 
-  try {
-    const content = fs.readFileSync(configPath, 'utf-8');
-    return JSON.parse(content);
-  } catch (error) {
-    console.error('Failed to load worktree config:', error);
-    return null;
-  }
+	try {
+		const content = fs.readFileSync(configPath, "utf-8");
+		return JSON.parse(content);
+	} catch (error) {
+		console.error("Failed to load worktree config:", error);
+		return null;
+	}
 }
 
 /**
  * worktree 情報を取得
  */
 function getWorktreeInfo(): { branch: string; path: string } | null {
-  const cwd = process.cwd();
-  const gitPath = path.join(cwd, '.git');
+	const cwd = process.cwd();
+	const gitPath = path.join(cwd, ".git");
 
-  if (!fs.existsSync(gitPath)) {
-    return null;
-  }
+	if (!fs.existsSync(gitPath)) {
+		return null;
+	}
 
-  try {
-    const content = fs.readFileSync(gitPath, 'utf-8');
-    // gitdir: /path/to/main/.git/worktrees/feature-a
-    const match = content.match(/gitdir:\s*(.+)/);
+	try {
+		const content = fs.readFileSync(gitPath, "utf-8");
+		// gitdir: /path/to/main/.git/worktrees/feature-a
+		const match = content.match(/gitdir:\s*(.+)/);
 
-    if (match) {
-      const gitdir = match[1].trim();
-      const branch = path.basename(gitdir);
-      return { branch, path: cwd };
-    }
-  } catch (error) {
-    console.error('Failed to read .git file:', error);
-  }
+		if (match) {
+			const gitdir = match[1].trim();
+			const branch = path.basename(gitdir);
+			return { branch, path: cwd };
+		}
+	} catch (error) {
+		console.error("Failed to read .git file:", error);
+	}
 
-  return null;
+	return null;
 }
 
 /**
  * worktree 設定を適用
  */
 function applyWorktreeConfig(config: WorktreeConfig): HookResponse {
-  const messages: string[] = [];
+	const messages: string[] = [];
 
-  // Claude Code 設定を適用
-  if (config.claudeConfig) {
-    if (config.claudeConfig.model) {
-      messages.push(`モデル: ${config.claudeConfig.model}`);
-    }
-  }
+	// Claude Code 設定を適用
+	if (config.claudeConfig) {
+		if (config.claudeConfig.model) {
+			messages.push(`モデル: ${config.claudeConfig.model}`);
+		}
+	}
 
-  const configMessages = messages.length > 0
-    ? `\n${messages.map(m => `  - ${m}`).join('\n')}`
-    : '';
+	const configMessages =
+		messages.length > 0 ? `\n${messages.map((m) => `  - ${m}`).join("\n")}` : "";
 
-  return {
-    message: `
+	return {
+		message: `
 📁 git worktree を検出しました
 
 ブランチ: ${config.branch}
-目的: ${config.purpose || '（未設定）'}
-作成日: ${new Date(config.created).toLocaleDateString('ja-JP')}${configMessages}
-`.trim()
-  };
+目的: ${config.purpose || "（未設定）"}
+作成日: ${new Date(config.created).toLocaleDateString("ja-JP")}${configMessages}
+`.trim(),
+	};
 }
 
 /**
  * デフォルトのウェルカムメッセージ
  */
 function createDefaultWelcome(worktreeInfo: { branch: string; path: string }): HookResponse {
-  return {
-    message: `
+	return {
+		message: `
 📁 git worktree で作業中
 
 ブランチ: ${worktreeInfo.branch}
@@ -134,41 +130,41 @@ function createDefaultWelcome(worktreeInfo: { branch: string; path: string }): H
 
 💡 ヒント:
 worktree 専用の設定を保存するには、${WORKTREE_CONFIG_FILE} を作成してください。
-`.trim()
-  };
+`.trim(),
+	};
 }
 
 /**
  * メインの hook ハンドラー
  */
 export default {
-  /**
-   * セッション開始時に実行
-   */
-  onSessionStart: async (event: SessionStartEvent): Promise<HookResponse | void> => {
-    // worktree かどうかを判定
-    if (!isWorktree()) {
-      // 通常のリポジトリ
-      return;
-    }
+	/**
+	 * セッション開始時に実行
+	 */
+	onSessionStart: async (event: SessionStartEvent): Promise<HookResponse | void> => {
+		// worktree かどうかを判定
+		if (!isWorktree()) {
+			// 通常のリポジトリ
+			return;
+		}
 
-    // worktree 情報を取得
-    const worktreeInfo = getWorktreeInfo();
+		// worktree 情報を取得
+		const worktreeInfo = getWorktreeInfo();
 
-    if (!worktreeInfo) {
-      // worktree 情報が取得できない
-      return;
-    }
+		if (!worktreeInfo) {
+			// worktree 情報が取得できない
+			return;
+		}
 
-    // worktree 設定を読み込み
-    const config = loadWorktreeConfig();
+		// worktree 設定を読み込み
+		const config = loadWorktreeConfig();
 
-    if (config) {
-      // 設定がある場合は適用
-      return applyWorktreeConfig(config);
-    } else {
-      // 設定がない場合はデフォルトのメッセージ
-      return createDefaultWelcome(worktreeInfo);
-    }
-  },
+		if (config) {
+			// 設定がある場合は適用
+			return applyWorktreeConfig(config);
+		} else {
+			// 設定がない場合はデフォルトのメッセージ
+			return createDefaultWelcome(worktreeInfo);
+		}
+	},
 };
