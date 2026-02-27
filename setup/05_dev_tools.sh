@@ -12,7 +12,9 @@ if ! is_installed gh; then
 else
   install_gh_extension() {
     local ext="$1"
-    if gh extension list 2>/dev/null | grep -q "${ext##*/}"; then
+    local ext_list
+    ext_list=$(gh extension list 2>/dev/null)
+    if echo "$ext_list" | grep -q "${ext##*/}"; then
       log_skip "gh extension: $ext (既にインストール済み)"
     else
       log_info "gh extension をインストールしています: $ext"
