@@ -131,3 +131,22 @@ alias gdiff="git diff --word-diff"
 alias fshow="git-fzf-show.ts"
 alias fadd="git-fzf-add.ts"
 alias fssh="fzf-ssh.ts"
+
+# ======================
+# 新規ツール
+# ======================
+
+# === Diff / ページャ ===
+alias dn="diffnav"       # delta連携diff ナビゲータ
+
+# === ファイルマネージャ ===
+alias sf="spf"           # TUI ファイルマネージャ（superfile）
+
+# === コード共有 ===
+alias sc="silicon --font 'UDEV Gothic 35LG' --theme 'Dracula' --pad-horiz 40 --pad-vert 40"
+
+# walk - 選択したディレクトリに移動
+function wk {
+  local dir
+  dir=$(walk --icons "$@") && cd "$dir"
+}

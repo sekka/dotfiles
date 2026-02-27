@@ -82,6 +82,19 @@ brew "dockmate"           # https://formulae.brew.sh/formula/dockmate         # 
 brew "navi"               # https://formulae.brew.sh/formula/navi             # コマンドチュートリアル
 brew "pt"                 # https://formulae.brew.sh/formula/pt               # すごいgrep
 
+# === 差分・ページャ ===
+brew "diffnav"            # https://formulae.brew.sh/formula/diffnav          # delta連携diff ナビゲータ
+
+# === ファイルマネージャ ===
+brew "superfile"          # https://formulae.brew.sh/formula/superfile        # TUIファイルマネージャ
+brew "walk"               # https://formulae.brew.sh/formula/walk             # TUIファイルナビゲータ
+
+# === コード共有 ===
+brew "silicon"            # https://formulae.brew.sh/formula/silicon          # コードスクリーンショット生成
+
+# === ログ分析 ===
+brew "lnav"               # https://formulae.brew.sh/formula/lnav             # ログファイルビューア
+
 # === システムツール ===
 brew "direnv"             # https://formulae.brew.sh/formula/direnv           # 環境変数管理
 brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # TUI macOSクリーナー
