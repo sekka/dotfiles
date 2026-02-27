@@ -1,279 +1,280 @@
 {
-	"$schema": "https://json.schemastore.org/claude-code-settings.json",
-	"env": {
-		"ENABLE_TOOL_SEARCH": "auto:5",
-		"CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
-	},
-	"attribution": {
-		"commit": "",
-		"pr": ""
-	},
-	"permissions": {
-		"allow": [
-			"Bash(agent-browser:*)",
-			"Bash(ai-refresh)",
-			"Bash(alias:*)",
-			"Bash(basename:*)",
-			"Bash(bats:*)",
-			"Bash(brew:*)",
-			"Bash(bun:*)",
-			"Bash(bunx:*)",
-			"Bash(cat:*)",
-			"Bash(claude:*)",
-			"Bash(coderabbit:*)",
-			"Bash(codesign:*)",
-			"Bash(codex:*)",
-			"Bash(command -v:*)",
-			"Bash(command brew bundle)",
-			"Bash(copilot:*)",
-			"Bash(defaults read:*)",
-			"Bash(dprint fmt:*)",
-			"Bash(echo:*)",
-			"Bash(env)",
-			"Bash(eza:*)",
-			"Bash(fd:*)",
-			"Bash(find:*)",
-			"Bash(fuser:*)",
-			"Bash(fzf:*)",
-			"Bash(gemini:*)",
-			"Bash(gh:*)",
-			"Bash(git:*)",
-			"Bash(gpg:*)",
-			"Bash(gpgconf:*)",
-			"Bash(grep:*)",
-			"Bash(head:*)",
-			"Bash(keifu:*)",
-			"Bash(ls:*)",
-			"Bash(lsof:*)",
-			"Bash(mdfind:*)",
-			"Bash(mgrep --web --answer:*)",
-			"Bash(mise:*)",
-			"Bash(mkdir:*)",
-			"Bash(mlx_audio.tts.generate:*)",
-			"Bash(navi *)",
-			"Bash(npx tsc:*)",
-			"Bash(oxlint:*)",
-			"Bash(printenv:*)",
-			"Bash(ps:*)",
-			"Bash(pstree:*)",
-			"Bash(rg:*)",
-			"Bash(rtk:*)",
-			"Bash(shellcheck:*)",
-			"Bash(tcmux:*)",
-			"Bash(test:*)",
-			"Bash(timeout:*)",
-			"Bash(tmux:*)",
-			"Bash(tree:*)",
-			"Bash(tts-clone:*)",
-			"Bash(tts:*)",
-			"Bash(unset:*)",
-			"Bash(uv:*)",
-			"Bash(wait:*)",
-			"Bash(wc:*)",
-			"Bash(xargs:*)",
-			"Bash(yazi:*)",
-			"Bash(zoxide:*)",
-			"Skill(asking-peer)",
-			"Skill(commit)",
-			"Skill(commit-commands:*)",
-			"Skill(creating-hooks)",
-			"Skill(generating-skills-from-logs)",
-			"Skill(managing-frontend-knowledge)",
-			"Skill(review-parallel)",
-			"Skill(review-pr)",
-			"Skill(review-with-claude)",
-			"Skill(review-with-coderabbit)",
-			"Skill(review-with-codex)",
-			"Skill(review-with-copilot)",
-			"Skill(review-with-gemini)",
-			"Skill(review-with-multi-ai)",
-			"Skill(reviewing-with-claude)",
-			"WebSearch",
-			"mcp__chrome-devtools__*",
-			"mcp__deepwiki__*",
-			"mcp__drawio__*",
-			"mcp__plugin_context7_context7__*",
-			"mcp__plugin_playwright_playwright__*",
-			"mcp__plugin_serena_serena__*",
-			"mcp__sequential-thinking__*"
-		],
-		"deny": [
-			"Bash(do:*)",
-			"Bash(for:*)",
-			"Bash(until:*)",
-			"Bash(while:*)",
-			"Bash(git rebase:*)",
-			"Bash(git reset:*)",
-			"Bash(rm -rf:*)",
-			"Bash(sudo:*)",
-			"Read(**/*.key)",
-			"Read(**/*.pem)",
-			"Read(**/*secret*)",
-			"Read(**/.env*)",
-			"Read(**/secrets/**)",
-			"Read(~/.ssh/*)",
-			"Write(**/*secret*)",
-			"Write(**/.env*)"
-		],
-		"ask": [
-			"Bash(chmod:*)",
-			"Bash(curl:*)",
-			"Bash(git merge:*)",
-			"Bash(git push:*)",
-			"Bash(rm:*)",
-			"Bash(wget:*)"
-		],
-		"defaultMode": "plan"
-	},
-	"model": "opusplan",
-	"hooks": {
-		"PreToolUse": [
-			{
-				"matcher": "Bash",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
-					}
-				]
-			},
-			{
-				"matcher": "Edit|Write",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
-					}
-				]
-			},
-			{
-				"matcher": "Read",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
-					}
-				]
-			},
-			{
-				"matcher": "Bash",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "/Users/kei/.claude/hooks/rtk-rewrite.sh"
-					}
-				]
-			}
-		],
-		"PostToolUse": [
-			{
-				"matcher": "Edit|Write",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
-					},
-					{
-						"type": "command",
-						"command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
-					}
-				]
-			}
-		],
-		"Stop": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-					}
-				]
-			}
-		],
-		"Notification": [
-			{
-				"matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-					}
-				]
-			}
-		],
-		"PreCompact": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/.claude/hooks/compact-counter.ts"
-					}
-				]
-			}
-		],
-		"SessionStart": [
-			{
-				"hooks": [
-					{
-						"type": "command",
-						"command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
-					}
-				]
-			}
-		]
-	},
-	"statusLine": {
-		"type": "command",
-		"command": "$HOME/.claude/statusline.ts"
-	},
-	"enabledPlugins": {
-		"commit-commands@claude-plugins-official": true,
-		"context7@claude-plugins-official": true,
-		"figma@claude-plugins-official": true,
-		"firebase@claude-plugins-official": false,
-		"frontend-design@claude-plugins-official": true,
-		"playwright@claude-plugins-official": true,
-		"pr-review-toolkit@claude-plugins-official": true,
-		"security-guidance@claude-plugins-official": true,
-		"serena@claude-plugins-official": true,
-		"slack@claude-plugins-official": false,
-		"vercel@claude-plugins-official": false,
-		"Notion@claude-plugins-official": true,
-		"typescript-lsp@claude-plugins-official": true,
-		"feature-dev@claude-plugins-official": true,
-		"example-skills@anthropic-agent-skills": true,
-		"code-simplifier@claude-plugins-official": true,
-		"ask-claude@hiropon-plugins": true,
-		"ask-codex@hiropon-plugins": true,
-		"ask-gemini@hiropon-plugins": true,
-		"peer@hiropon-plugins": true,
-		"mgrep@Mixedbread-Grep": true,
-		"playground@claude-plugins-official": true,
-		"ralph-loop@claude-plugins-official": true,
-		"superpowers@claude-plugins-official": true,
-		"php-lsp@claude-plugins-official": true
-	},
-	"language": "Japanese",
-	"alwaysThinkingEnabled": true,
-	"plansDirectory": "./plans",
-	"extraKnownMarketplaces": {
-		"anthropic-agent-skills": {
-			"source": {
-				"source": "github",
-				"repo": "anthropics/skills"
-			}
-		},
-		"hiropon-plugins": {
-			"source": {
-				"source": "github",
-				"repo": "hiroro-work/claude-plugins"
-			}
-		},
-		"Mixedbread-Grep": {
-			"source": {
-				"source": "git",
-				"url": "https://github.com/mixedbread-ai/mgrep.git"
-			}
-		}
-	}
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "ENABLE_TOOL_SEARCH": "auto:5",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(agent-browser:*)",
+      "Bash(ai-refresh)",
+      "Bash(alias:*)",
+      "Bash(basename:*)",
+      "Bash(bats:*)",
+      "Bash(brew:*)",
+      "Bash(bun:*)",
+      "Bash(bunx:*)",
+      "Bash(cat:*)",
+      "Bash(claude:*)",
+      "Bash(coderabbit:*)",
+      "Bash(codesign:*)",
+      "Bash(codex:*)",
+      "Bash(command -v:*)",
+      "Bash(command brew bundle)",
+      "Bash(copilot:*)",
+      "Bash(defaults read:*)",
+      "Bash(dprint fmt:*)",
+      "Bash(echo:*)",
+      "Bash(env)",
+      "Bash(eza:*)",
+      "Bash(fd:*)",
+      "Bash(find:*)",
+      "Bash(fuser:*)",
+      "Bash(fzf:*)",
+      "Bash(gemini:*)",
+      "Bash(gh:*)",
+      "Bash(git:*)",
+      "Bash(gpg:*)",
+      "Bash(gpgconf:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(keifu:*)",
+      "Bash(ls:*)",
+      "Bash(lsof:*)",
+      "Bash(mdfind:*)",
+      "Bash(mgrep --web --answer:*)",
+      "Bash(mise:*)",
+      "Bash(mkdir:*)",
+      "Bash(mlx_audio.tts.generate:*)",
+      "Bash(navi *)",
+      "Bash(npx tsc:*)",
+      "Bash(oxlint:*)",
+      "Bash(printenv:*)",
+      "Bash(ps:*)",
+      "Bash(pstree:*)",
+      "Bash(rg:*)",
+      "Bash(rtk:*)",
+      "Bash(shellcheck:*)",
+      "Bash(tcmux:*)",
+      "Bash(test:*)",
+      "Bash(timeout:*)",
+      "Bash(tmux:*)",
+      "Bash(tree:*)",
+      "Bash(tts-clone:*)",
+      "Bash(tts:*)",
+      "Bash(unset:*)",
+      "Bash(uv:*)",
+      "Bash(wait:*)",
+      "Bash(wc:*)",
+      "Bash(xargs:*)",
+      "Bash(yazi:*)",
+      "Bash(zoxide:*)",
+      "Skill(asking-peer)",
+      "Skill(commit)",
+      "Skill(commit-commands:*)",
+      "Skill(creating-hooks)",
+      "Skill(generating-skills-from-logs)",
+      "Skill(managing-frontend-knowledge)",
+      "Skill(review-parallel)",
+      "Skill(review-pr)",
+      "Skill(review-with-claude)",
+      "Skill(review-with-coderabbit)",
+      "Skill(review-with-codex)",
+      "Skill(review-with-copilot)",
+      "Skill(review-with-gemini)",
+      "Skill(review-with-multi-ai)",
+      "Skill(reviewing-with-claude)",
+      "WebSearch",
+      "mcp__chrome-devtools__*",
+      "mcp__deepwiki__*",
+      "mcp__drawio__*",
+      "mcp__plugin_context7_context7__*",
+      "mcp__plugin_playwright_playwright__*",
+      "mcp__plugin_serena_serena__*",
+      "mcp__sequential-thinking__*"
+    ],
+    "deny": [
+      "Bash(do:*)",
+      "Bash(for:*)",
+      "Bash(until:*)",
+      "Bash(while:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)",
+      "Read(**/*.key)",
+      "Read(**/*.pem)",
+      "Read(**/*secret*)",
+      "Read(**/.env*)",
+      "Read(**/secrets/**)",
+      "Read(~/.ssh/*)",
+      "Write(**/*secret*)",
+      "Write(**/.env*)"
+    ],
+    "ask": [
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Bash(git merge:*)",
+      "Bash(git push:*)",
+      "Bash(rm:*)",
+      "Bash(wget:*)"
+    ],
+    "defaultMode": "plan"
+  },
+  "model": "opusplan",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/kei/.claude/hooks/rtk-rewrite.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/compact-counter.ts"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "$HOME/.claude/statusline.ts"
+  },
+  "enabledPlugins": {
+    "commit-commands@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
+    "firebase@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
+    "slack@claude-plugins-official": false,
+    "vercel@claude-plugins-official": false,
+    "Notion@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": true,
+    "code-simplifier@claude-plugins-official": true,
+    "ask-claude@hiropon-plugins": true,
+    "ask-codex@hiropon-plugins": true,
+    "ask-gemini@hiropon-plugins": true,
+    "peer@hiropon-plugins": true,
+    "mgrep@Mixedbread-Grep": true,
+    "playground@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "php-lsp@claude-plugins-official": true,
+    "coderabbit@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "hiropon-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "hiroro-work/claude-plugins"
+      }
+    },
+    "Mixedbread-Grep": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/mixedbread-ai/mgrep.git"
+      }
+    }
+  },
+  "language": "Japanese",
+  "alwaysThinkingEnabled": true,
+  "plansDirectory": "./plans"
 }

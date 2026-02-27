@@ -45,7 +45,7 @@ echo "CodeRabbit: $AI_HAS_CODERABBIT"
 # 例: セキュリティレビュー
 if [[ "$AI_HAS_CODERABBIT" == "1" ]]; then
     # 優先: CodeRabbit
-    Task tool with subagent_type="coderabbit-reviewer"
+    Task tool with subagent_type="coderabbit:code-reviewer"
 else
     # フォールバック: Claude内蔵reviewer
     Task tool with subagent_type="reviewer"
@@ -86,7 +86,7 @@ _log_ai_event "INFO" "dispatch" "route_to_${selected_ai}"
 ```
 ユーザー: "このコードのセキュリティレビューして"
 → AI_HAS_CODERABBIT=1 確認
-→ Task(subagent_type="coderabbit-reviewer")
+→ Task(subagent_type="coderabbit:code-reviewer")
 → "CodeRabbitでセキュリティレビューを実行します..."
 ```
 

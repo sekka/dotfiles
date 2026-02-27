@@ -164,15 +164,15 @@ teardown() {
 
     [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
     [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
-    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
+    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit:code-reviewer")
     [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-researcher")
 
     # 2つのレビュアーが起動対象
     [[ ${#reviewers_to_launch[@]} -eq 2 ]]
 
-    # codex-reviewerとcoderabbit-reviewerが含まれる
+    # codex-reviewerとcoderabbit:code-reviewerが含まれる
     [[ " ${reviewers_to_launch[*]} " =~ " codex-reviewer " ]]
-    [[ " ${reviewers_to_launch[*]} " =~ " coderabbit-reviewer " ]]
+    [[ " ${reviewers_to_launch[*]} " =~ " coderabbit:code-reviewer " ]]
 }
 
 # Test 9: 1つのAIのみ利用可能な場合
@@ -187,7 +187,7 @@ teardown() {
 
     [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
     [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
-    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
+    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit:code-reviewer")
     [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-researcher")
 
     # 1つのレビュアーのみ
@@ -207,7 +207,7 @@ teardown() {
 
     [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
     [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
-    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
+    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit:code-reviewer")
     [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-researcher")
 
     # 4つのレビュアー全て
@@ -320,7 +320,7 @@ teardown() {
     local reviewers_to_launch=()
     [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
     [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
-    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
+    [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit:code-reviewer")
     [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-researcher")
 
     # 最大4つまで（今回は2つ）
@@ -341,7 +341,7 @@ teardown() {
     declare -A reviewer_status
     reviewer_status[codex-reviewer]="completed"
     reviewer_status[copilot-reviewer]="timeout"
-    reviewer_status[coderabbit-reviewer]="completed"
+    reviewer_status[coderabbit:code-reviewer]="completed"
 
     # 完了したレビュアー数をカウント
     local completed_count=0

@@ -173,7 +173,8 @@
       "WebFetch(domain:www.cmux.dev)",
       "WebFetch(domain:agent-browser.dev)",
       "WebFetch(domain:help.apiyi.com)",
-      "Bash(mgrep coderabbit:*)"
+      "Bash(mgrep coderabbit:*)",
+      "Bash(oxfmt:*)"
     ],
     "deny": [],
     "ask": []

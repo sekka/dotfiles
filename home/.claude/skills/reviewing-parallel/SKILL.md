@@ -137,7 +137,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 | レビュアー | コードレビュー専門 | プランレビュー専門 | Agent | Focus |
 |-----------|----------------|----------------|-------|-------|
 | **Codex** | コード品質、ベストプラクティス、深い推論 | 実現可能性・エッジケース | @agent-codex-reviewer | Code Quality Analysis |
-| **CodeRabbit** | セキュリティ脆弱性、パフォーマンス、OWASP | セキュリティリスク・データ保護 | @agent-coderabbit-reviewer | Security & Performance |
+| **CodeRabbit** | セキュリティ脆弱性、パフォーマンス、OWASP | セキュリティリスク・データ保護 | coderabbit:code-reviewer | Security & Performance |
 | **Copilot** | GitHub統合、CI/CD最適化、実践的改善 | 実装実用性・工数 | @agent-copilot-reviewer | GitHub Workflow Integration |
 | **Gemini** | アーキテクチャ分析、システム設計、SOLID原則 | 設計整合性・スケーラビリティ | @agent-gemini-reviewer | Architecture Analysis |
 
@@ -168,7 +168,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 # 疑似コード
 results = {
     'codex': get_reviewer_output('codex-reviewer'),
-    'coderabbit': get_reviewer_output('coderabbit-reviewer'),
+    'coderabbit': get_reviewer_output('coderabbit:code-reviewer'),
     'copilot': get_reviewer_output('copilot-reviewer'),
     'gemini': get_reviewer_output('gemini-reviewer')
 }

@@ -39,7 +39,7 @@
 | AI_HAS_GEMINI | Research | gemini-researcher |
 | AI_HAS_CODEX | Implementation | codex-implementer |
 | AI_HAS_COPILOT | Review | copilot-reviewer |
-| AI_HAS_CODERABBIT | Review（セキュリティ） | coderabbit-reviewer |
+| AI_HAS_CODERABBIT | Review（セキュリティ） | coderabbit:code-reviewer |
 | 複数利用可能 | Review | parallel-reviewer |
 
 **並列 vs 逐次実行:**

@@ -48,7 +48,7 @@ uncommitted changesをレビューしてください
 | エージェント | 専門分野 |
 |------------|---------|
 | **@agent-codex-reviewer** | コード品質、深い推論分析、ベストプラクティス |
-| **@agent-coderabbit-reviewer** | セキュリティ脆弱性、パフォーマンス、OWASP Top 10 |
+| **coderabbit:code-reviewer** | セキュリティ脆弱性、パフォーマンス、OWASP Top 10 |
 | **@agent-copilot-reviewer** | GitHub統合、実践的改善、CI/CD最適化 |
 | **@agent-gemini-reviewer** | アーキテクチャ分析、システム設計、大規模コンテキスト理解 |
 
@@ -57,7 +57,7 @@ uncommitted changesをレビューしてください
 ### 全AIレビュー（推奨）
 
 ```
-Use @agent-codex-reviewer @agent-coderabbit-reviewer @agent-copilot-reviewer @agent-gemini-reviewer background for reviewing $ARGUMENTS
+Use @agent-codex-reviewer coderabbit:code-reviewer @agent-copilot-reviewer @agent-gemini-reviewer background for reviewing $ARGUMENTS
 ```
 
 ### 選択的レビュー
@@ -65,7 +65,7 @@ Use @agent-codex-reviewer @agent-coderabbit-reviewer @agent-copilot-reviewer @ag
 #### セキュリティとコード品質重視
 
 ```
-Use @agent-coderabbit-reviewer @agent-codex-reviewer background
+Use coderabbit:code-reviewer @agent-codex-reviewer background
 ```
 
 #### アーキテクチャとGitHub統合
@@ -93,7 +93,7 @@ Use @agent-codex-reviewer @agent-copilot-reviewer background
 または直接指定：
 
 ```
-Use @agent-codex-reviewer @agent-coderabbit-reviewer @agent-copilot-reviewer @agent-gemini-reviewer background for reviewing uncommitted changes
+Use @agent-codex-reviewer coderabbit:code-reviewer @agent-copilot-reviewer @agent-gemini-reviewer background for reviewing uncommitted changes
 ```
 
 ### 特定ブランチとの差分
@@ -107,7 +107,7 @@ mainブランチとの差分をレビューしてください
 または：
 
 ```
-Use @agent-codex-reviewer @agent-coderabbit-reviewer background for reviewing changes against main branch
+Use @agent-codex-reviewer coderabbit:code-reviewer background for reviewing changes against main branch
 ```
 
 ### セキュリティ重視レビュー
