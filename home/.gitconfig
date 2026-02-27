@@ -10,9 +10,13 @@
 	path = ~/.gitconfig_work
 [includeIf "gitdir:~/src/github.com/sekka/"]
 	path = ~/.gitconfig_private
+[diff]
+	tool = diffnav
+[difftool "diffnav"]
+	cmd = diffnav \"$LOCAL\" \"$REMOTE\"
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+	path =
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
