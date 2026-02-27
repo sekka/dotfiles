@@ -1,7 +1,6 @@
 ---
 name: creating-hooks
 description: Claude Codeのイベント駆動型自動化とバリデーション用のhooksを作成します。tool呼び出し、ユーザーメッセージ、コミット前チェックなどのイベントに反応するhooksを実装します。自動化ワークフロー、バリデーション、イベント駆動処理が必要な場合に使用してください。
-extends: shared/template-generator
 template_type: hook
 model: haiku
 allowed-tools: Read, Write, Edit, Bash
@@ -11,12 +10,6 @@ disable-model-invocation: false
 <objective>
 Hooks are event-driven automation for Claude Code that execute shell commands or LLM prompts in response to tool usage, session events, and user interactions. Hooks provide programmatic control over Claude's behavior for validation, automation, logging, and workflow customization.
 </objective>
-
-## About This Skill
-
-This skill extends **shared/template-generator** which handles common configuration workflows.
-
-**Hook-specific focus**: Event types, hook anatomy, matchers, and examples.
 
 ## Hook Configuration
 
