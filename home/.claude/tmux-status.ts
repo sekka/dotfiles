@@ -5,7 +5,8 @@
 // ============================================================================
 
 import { homedir } from "os";
-import { getCachedUsageLimits, getPeriodCost, getTodayCost } from "./statusline/api.ts";
+import { getPeriodCost, getTodayCost } from "./statusline/api.ts";
+import type { UsageLimits, CachedUsageLimits } from "./statusline/api.ts";
 import { formatResetTime, formatResetDateOnly, formatCostValue } from "./statusline/format.ts";
 
 // ============================================================================
@@ -57,19 +58,38 @@ function formatBrailleProgressBarTmux(percentage: number, length = 5): string {
 // Cache Staleness Check
 // ============================================================================
 
-const CACHE_STALE_MS = 10 * 60 * 1000; // 10 minutes
+const CACHE_FRESH_MS = 5 * 60 * 1000;     // 5 minutes: matches api.ts CACHE_TTL_MS
+const CACHE_EXPIRED_MS = 60 * 60 * 1000;  // 60 minutes: expired → hide display
 
-async function isCacheStale(): Promise<boolean> {
+type Staleness = "fresh" | "stale" | "expired";
+
+interface CacheInfo {
+	data: UsageLimits | null;
+	staleness: Staleness;
+	ageMs: number;
+}
+
+async function readCacheWithInfo(): Promise<CacheInfo> {
 	const HOME = homedir();
 	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
 
 	try {
-		const cache = await Bun.file(cacheFile).json();
-		const age = Date.now() - cache.timestamp;
-		return age > CACHE_STALE_MS;
+		const cache: CachedUsageLimits = await Bun.file(cacheFile).json();
+		if (typeof cache.timestamp !== 'number' || cache.timestamp <= 0) {
+			return { data: null, staleness: "expired", ageMs: Infinity };
+		}
+		const ageMs = Date.now() - cache.timestamp;
+		let staleness: Staleness;
+		if (ageMs < CACHE_FRESH_MS) {
+			staleness = "fresh";
+		} else if (ageMs < CACHE_EXPIRED_MS) {
+			staleness = "stale";
+		} else {
+			staleness = "expired";
+		}
+		return { data: cache.data, staleness, ageMs };
 	} catch {
-		// Cache doesn't exist or is invalid
-		return true;
+		return { data: null, staleness: "expired", ageMs: Infinity };
 	}
 }
 
@@ -78,23 +98,25 @@ async function isCacheStale(): Promise<boolean> {
 // ============================================================================
 
 async function generateTmuxStatus(): Promise<string> {
-	// Check cache staleness first
-	if (await isCacheStale()) {
+	const { data: limits, staleness, ageMs } = await readCacheWithInfo();
+
+	if (staleness === "expired" || !limits) {
 		return "";
 	}
 
-	// Get usage limits
-	const limits = await getCachedUsageLimits();
-	if (!limits) {
-		return "";
-	}
+	// Stale suffix: "(Xm ago)"
+	const staleLabel = staleness === "stale"
+		? ` ${tmux.gray}(${Math.floor(ageMs / 60000)}m ago)${tmux.default}`
+		: "";
+	// "?" marker appended to label names when stale
+	const q = staleness === "stale" ? "?" : "";
 
 	const parts: string[] = [];
 
 	// LMT (5-hour limit)
 	if (limits.five_hour) {
 		const bar = formatBrailleProgressBarTmux(limits.five_hour.utilization, 5);
-		let lmt = `${tmux.gray}LMT:${tmux.default}${bar} ${tmux.white}${limits.five_hour.utilization}%${tmux.default}`;
+		let lmt = `${tmux.gray}LMT${q}:${tmux.default}${bar} ${tmux.white}${limits.five_hour.utilization}%${tmux.default}`;
 
 		if (limits.five_hour.resets_at) {
 			const resetDate = formatResetDateOnly(limits.five_hour.resets_at);
@@ -119,7 +141,7 @@ async function generateTmuxStatus(): Promise<string> {
 	try {
 		const todayCost = await getTodayCost();
 		if (todayCost >= 0.01) {
-			parts.push(`${tmux.gray}DAY:${tmux.gray}$${tmux.white}${formatCostValue(todayCost)}${tmux.default}`);
+			parts.push(`${tmux.gray}DAY${q}:${tmux.gray}$${tmux.white}${formatCostValue(todayCost)}${tmux.default}`);
 		}
 	} catch {
 		// Gracefully ignore daily cost errors
@@ -128,7 +150,7 @@ async function generateTmuxStatus(): Promise<string> {
 	// WK (7-day limit)
 	if (limits.seven_day) {
 		const bar = formatBrailleProgressBarTmux(limits.seven_day.utilization, 5);
-		let wk = `${tmux.gray}WK:${tmux.default}${bar} ${tmux.white}${limits.seven_day.utilization}%${tmux.default}`;
+		let wk = `${tmux.gray}WK${q}:${tmux.default}${bar} ${tmux.white}${limits.seven_day.utilization}%${tmux.default}`;
 
 		if (limits.seven_day.resets_at) {
 			const resetDate = formatResetDateOnly(limits.seven_day.resets_at);
@@ -142,7 +164,7 @@ async function generateTmuxStatus(): Promise<string> {
 	// WKS (7-day Sonnet limit)
 	if (limits.seven_day_sonnet) {
 		const bar = formatBrailleProgressBarTmux(limits.seven_day_sonnet.utilization, 5);
-		let wks = `${tmux.gray}WKS:${tmux.default}${bar} ${tmux.white}${limits.seven_day_sonnet.utilization}%${tmux.default}`;
+		let wks = `${tmux.gray}WKS${q}:${tmux.default}${bar} ${tmux.white}${limits.seven_day_sonnet.utilization}%${tmux.default}`;
 
 		if (limits.seven_day_sonnet.resets_at) {
 			const resetDate = formatResetDateOnly(limits.seven_day_sonnet.resets_at);
@@ -151,6 +173,11 @@ async function generateTmuxStatus(): Promise<string> {
 		}
 
 		parts.push(wks);
+	}
+
+	// Append stale age indicator at the end
+	if (staleLabel) {
+		parts.push(staleLabel.trim());
 	}
 
 	return parts.join(" ");
