@@ -57,7 +57,9 @@ if ! is_installed mise; then
   log_warn "mise がインストールされていません"
 else
   log_info "mise ランタイムをアップグレードしています..."
-  mise upgrade
+  mise upgrade || log_warn "mise upgrade に失敗しました（rate limit や GPG 問題の可能性があります）"
+  log_info "mise キャッシュをクリーンアップしています..."
+  mise run mise-clean || log_warn "mise-clean に失敗しました"
 fi
 
 # --- サマリー ---

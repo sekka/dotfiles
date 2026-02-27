@@ -29,7 +29,7 @@ log_info "パッケージをアップグレードしています..."
 brew upgrade
 
 log_info "Cask パッケージをアップグレードしています..."
-brew upgrade --cask --greedy
+brew upgrade --cask --greedy || log_warn "一部 cask のアップグレードに失敗しました（手動確認が必要な場合があります）"
 
 log_info "不要ファイルを削除しています..."
 brew cleanup
