@@ -114,6 +114,7 @@
       "Bash(chmod:*)",
       "Bash(curl:*)",
       "Bash(git merge:*)",
+      "Bash(git push:*)",
       "Bash(rm:*)",
       "Bash(wget:*)"
     ],
@@ -221,32 +222,26 @@
     "command": "$HOME/.claude/statusline.ts"
   },
   "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
     "firebase@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": true,
-    "github@claude-plugins-official": false,
     "playwright@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "security-guidance@claude-plugins-official": true,
     "serena@claude-plugins-official": true,
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
-    "claude-code-harness@claude-code-harness-marketplace": true,
     "Notion@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
-    "greptile@claude-plugins-official": true,
-    "document-skills@anthropic-agent-skills": true,
     "code-simplifier@claude-plugins-official": true,
     "ask-claude@hiropon-plugins": true,
     "ask-codex@hiropon-plugins": true,
     "ask-gemini@hiropon-plugins": true,
     "peer@hiropon-plugins": true,
-    "claude-code-setup@claude-plugins-official": true,
     "mgrep@Mixedbread-Grep": true,
     "playground@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": true,
@@ -261,12 +256,6 @@
       "source": {
         "source": "github",
         "repo": "anthropics/skills"
-      }
-    },
-    "claude-code-harness-marketplace": {
-      "source": {
-        "source": "github",
-        "repo": "Chachamaru127/claude-code-harness"
       }
     },
     "hiropon-plugins": {
