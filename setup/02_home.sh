@@ -93,6 +93,7 @@ done
 # tmux helper scripts
 ensure_dir "$HOME/.tmux"
 link_item "$HOME/dotfiles/home/.tmux/status-right.sh" "$HOME/.tmux/status-right.sh" "tmux status-right"
+link_item "$HOME/dotfiles/home/.tmux/new-session" "$HOME/.tmux/new-session" "tmux new-session"
 
 # =======================================================================================
 # .config ディレクトリ配下
@@ -132,6 +133,7 @@ HOME_CLAUDE_DIR="$HOME/.claude"
 # Claude設定ファイル
 CLAUDE_FILES=(
   CLAUDE.md
+  RTK.md
   settings.json
   settings.local.json
   statusline.ts

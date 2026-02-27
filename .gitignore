@@ -16,6 +16,9 @@ reports/
 # TTS テストで生成される音声ファイル
 *.wav
 
+# バックアップファイル
+*.bak
+
 # yazi プラグインとテーマ（package.tomlで管理）
 home/config/yazi/plugins/
 home/config/yazi/flavors/
