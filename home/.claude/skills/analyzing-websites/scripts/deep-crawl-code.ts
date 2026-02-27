@@ -6,38 +6,41 @@
  */
 
 interface CrawlOptions {
-  baseUrl: string;
-  maxDepth: number;
-  knownPages: string[];
-  targetDomain?: string; // 特定ドメインへのリンクを探す場合
+	baseUrl: string;
+	maxDepth: number;
+	knownPages: string[];
+	targetDomain?: string; // 特定ドメインへのリンクを探す場合
 }
 
 interface CrawlResult {
-  results: Array<{
-    url: string;
-    totalLinks: number;
-    internalLinks: number;
-    externalLinks: number;
-    hasTargetDomain?: boolean;
-  }>;
-  targetDomainLinks?: Array<{
-    foundOn: string;
-    targetUrl: string;
-    linkText: string;
-  }>;
-  totalInternalLinksDiscovered: number;
-  allInternalLinks: string[];
-  unexplored: Array<{
-    targetUrl: string;
-    linkedFrom: Array<{
-      from: string;
-      linkText: string;
-    }>;
-  }>;
-  depthStats: Record<number, {
-    visited: number;
-    totalLinks: number;
-  }>;
+	results: Array<{
+		url: string;
+		totalLinks: number;
+		internalLinks: number;
+		externalLinks: number;
+		hasTargetDomain?: boolean;
+	}>;
+	targetDomainLinks?: Array<{
+		foundOn: string;
+		targetUrl: string;
+		linkText: string;
+	}>;
+	totalInternalLinksDiscovered: number;
+	allInternalLinks: string[];
+	unexplored: Array<{
+		targetUrl: string;
+		linkedFrom: Array<{
+			from: string;
+			linkText: string;
+		}>;
+	}>;
+	depthStats: Record<
+		number,
+		{
+			visited: number;
+			totalLinks: number;
+		}
+	>;
 }
 
 /**
@@ -48,132 +51,133 @@ interface CrawlResult {
  * @returns クロール結果
  */
 export async function deepCrawl(page: any, options: CrawlOptions): Promise<CrawlResult> {
-  const { baseUrl, maxDepth, knownPages, targetDomain } = options;
+	const { baseUrl, maxDepth, knownPages, targetDomain } = options;
 
-  const visited = new Set<string>();
-  const results: CrawlResult['results'] = [];
-  const targetDomainLinks: CrawlResult['targetDomainLinks'] = [];
-  const allInternalLinks = new Set<string>();
-  const discoveredLinks = new Map<string, Array<{ from: string; linkText: string }>>();
+	const visited = new Set<string>();
+	const results: CrawlResult["results"] = [];
+	const targetDomainLinks: CrawlResult["targetDomainLinks"] = [];
+	const allInternalLinks = new Set<string>();
+	const discoveredLinks = new Map<string, Array<{ from: string; linkText: string }>>();
 
-  // ページをクロール
-  for (const url of knownPages) {
-    if (visited.has(url)) continue;
-    visited.add(url);
+	// ページをクロール
+	for (const url of knownPages) {
+		if (visited.has(url)) continue;
+		visited.add(url);
 
-    try {
-      await page.goto(url, {
-        waitUntil: 'domcontentloaded',
-        timeout: 15000
-      });
+		try {
+			await page.goto(url, {
+				waitUntil: "domcontentloaded",
+				timeout: 15000,
+			});
 
-      // リンクを抽出
-      const links = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('a[href]')).map(a => ({
-          href: a.href,
-          text: a.textContent?.trim().substring(0, 100) || ''
-        }));
-      });
+			// リンクを抽出
+			const links = await page.evaluate(() => {
+				return Array.from(document.querySelectorAll("a[href]")).map((a) => ({
+					href: a.href,
+					text: a.textContent?.trim().substring(0, 100) || "",
+				}));
+			});
 
-      // フィルタリング
-      const internalLinks = links.filter(l =>
-        l.href.startsWith(baseUrl) &&
-        !l.href.startsWith('javascript:') &&
-        !l.href.startsWith('mailto:') &&
-        !l.href.startsWith('tel:')
-      );
+			// フィルタリング
+			const internalLinks = links.filter(
+				(l) =>
+					l.href.startsWith(baseUrl) &&
+					!l.href.startsWith("javascript:") &&
+					!l.href.startsWith("mailto:") &&
+					!l.href.startsWith("tel:"),
+			);
 
-      const externalLinks = links.filter(l =>
-        !l.href.startsWith(baseUrl) &&
-        !l.href.startsWith('javascript:') &&
-        !l.href.startsWith('mailto:') &&
-        !l.href.startsWith('tel:')
-      );
+			const externalLinks = links.filter(
+				(l) =>
+					!l.href.startsWith(baseUrl) &&
+					!l.href.startsWith("javascript:") &&
+					!l.href.startsWith("mailto:") &&
+					!l.href.startsWith("tel:"),
+			);
 
-      // ターゲットドメインへのリンクをチェック
-      let hasTargetDomain = false;
-      if (targetDomain) {
-        const targetLinks = links.filter(l => l.href.includes(targetDomain));
-        if (targetLinks.length > 0) {
-          hasTargetDomain = true;
-          targetLinks.forEach(link => {
-            targetDomainLinks!.push({
-              foundOn: url,
-              targetUrl: link.href,
-              linkText: link.text
-            });
-          });
-        }
-      }
+			// ターゲットドメインへのリンクをチェック
+			let hasTargetDomain = false;
+			if (targetDomain) {
+				const targetLinks = links.filter((l) => l.href.includes(targetDomain));
+				if (targetLinks.length > 0) {
+					hasTargetDomain = true;
+					targetLinks.forEach((link) => {
+						targetDomainLinks!.push({
+							foundOn: url,
+							targetUrl: link.href,
+							linkText: link.text,
+						});
+					});
+				}
+			}
 
-      // 内部リンクを記録
-      internalLinks.forEach(link => {
-        allInternalLinks.add(link.href);
+			// 内部リンクを記録
+			internalLinks.forEach((link) => {
+				allInternalLinks.add(link.href);
 
-        if (!discoveredLinks.has(link.href)) {
-          discoveredLinks.set(link.href, []);
-        }
-        discoveredLinks.get(link.href)!.push({
-          from: url,
-          linkText: link.text
-        });
-      });
+				if (!discoveredLinks.has(link.href)) {
+					discoveredLinks.set(link.href, []);
+				}
+				discoveredLinks.get(link.href)!.push({
+					from: url,
+					linkText: link.text,
+				});
+			});
 
-      results.push({
-        url,
-        totalLinks: links.length,
-        internalLinks: internalLinks.length,
-        externalLinks: externalLinks.length,
-        ...(targetDomain && { hasTargetDomain })
-      });
+			results.push({
+				url,
+				totalLinks: links.length,
+				internalLinks: internalLinks.length,
+				externalLinks: externalLinks.length,
+				...(targetDomain && { hasTargetDomain }),
+			});
 
-      // レート制限
-      await page.waitForTimeout(1000);
+			// レート制限
+			await page.waitForTimeout(1000);
+		} catch (error: any) {
+			results.push({
+				url,
+				totalLinks: 0,
+				internalLinks: 0,
+				externalLinks: 0,
+				...(targetDomain && { hasTargetDomain: false }),
+			});
+		}
+	}
 
-    } catch (error: any) {
-      results.push({
-        url,
-        totalLinks: 0,
-        internalLinks: 0,
-        externalLinks: 0,
-        ...(targetDomain && { hasTargetDomain: false })
-      });
-    }
-  }
+	// 未探索ページを特定
+	const unexplored: CrawlResult["unexplored"] = [];
+	for (const [targetUrl, sources] of discoveredLinks.entries()) {
+		if (!visited.has(targetUrl)) {
+			unexplored.push({
+				targetUrl,
+				linkedFrom: sources.slice(0, 5), // 最初の5つのみ
+			});
+		}
+	}
 
-  // 未探索ページを特定
-  const unexplored: CrawlResult['unexplored'] = [];
-  for (const [targetUrl, sources] of discoveredLinks.entries()) {
-    if (!visited.has(targetUrl)) {
-      unexplored.push({
-        targetUrl,
-        linkedFrom: sources.slice(0, 5) // 最初の5つのみ
-      });
-    }
-  }
+	// 階層別統計（簡易版: 既知ページのみ）
+	const depthStats: Record<number, { visited: number; totalLinks: number }> = {};
+	for (let d = 0; d <= maxDepth; d++) {
+		const pagesAtDepth = results.filter((_, i) => {
+			// 簡易的な階層判定（URLのスラッシュの数で判断）
+			const depth = knownPages[i].split("/").length - 3;
+			return depth === d;
+		});
+		depthStats[d] = {
+			visited: pagesAtDepth.length,
+			totalLinks: pagesAtDepth.reduce((sum, p) => sum + p.totalLinks, 0),
+		};
+	}
 
-  // 階層別統計（簡易版: 既知ページのみ）
-  const depthStats: Record<number, { visited: number; totalLinks: number }> = {};
-  for (let d = 0; d <= maxDepth; d++) {
-    const pagesAtDepth = results.filter((_, i) => {
-      // 簡易的な階層判定（URLのスラッシュの数で判断）
-      const depth = (knownPages[i].split('/').length - 3);
-      return depth === d;
-    });
-    depthStats[d] = {
-      visited: pagesAtDepth.length,
-      totalLinks: pagesAtDepth.reduce((sum, p) => sum + p.totalLinks, 0)
-    };
-  }
-
-  return {
-    results,
-    ...(targetDomain && { targetDomainLinks }),
-    totalInternalLinksDiscovered: allInternalLinks.size,
-    allInternalLinks: Array.from(allInternalLinks),
-    unexplored,
-    depthStats
-  };
+	return {
+		results,
+		...(targetDomain && { targetDomainLinks }),
+		totalInternalLinksDiscovered: allInternalLinks.size,
+		allInternalLinks: Array.from(allInternalLinks),
+		unexplored,
+		depthStats,
+	};
 }
 
 // Playwright MCP で実行する場合のコード
