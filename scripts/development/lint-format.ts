@@ -248,7 +248,9 @@ async function runShellcheck(files: string[], verbose: boolean): Promise<LintRes
 	}
 
 	// SC2016 (info) を無視：シングルクォートの警告は手意的な場合があるため
-	const args = ["shellcheck", "--exclude=SC2016", ...shFiles];
+	// -x (--external-sources): source で読み込むファイルを追跡する（動的パスを解決）
+	// --source-path=SCRIPTDIR：スクリプトのディレクトリから source パスを解決する
+	const args = ["shellcheck", "--exclude=SC2016", "-x", "--source-path=SCRIPTDIR", ...shFiles];
 
 	if (verbose) {
 		console.log(`🔧 Running: ${args.join(" ")}`);

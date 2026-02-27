@@ -1,13 +1,37 @@
 #!/bin/bash
-# Homebrewパッケージ管理スクリプト
-# Brewfileを使用してパッケージのインストール・更新・クリーンアップを実行します
+# Homebrew パッケージ管理（インストール・更新・クリーンアップ）
 
-brew --version                                # Homebrewのバージョンを表示
-brew bundle --file="$(dirname "$0")/Brewfile" # brew bundle --file=setup/Brewfile
-brew outdated                                 # 古くなったパッケージを表示
-brew update                                   # Homebrewとパッケージ情報を最新に更新
-brew upgrade                                  # インストールされているパッケージを最新にアップグレード
-brew upgrade --cask --greedy                  # インストールされているCaskパッケージを最新にアップグレード
-brew cleanup                                  # 不要なファイルを削除してディスクスペースを解放
-brew doctor                                   # Homebrewの診断を実行して問題を検出
-brew autoremove                               # 依存関係がなくなったパッケージを自動的に削除
+# shellcheck source=lib/common.sh
+source "$(dirname "$0")/lib/common.sh"
+log_section "02: Homebrew setup"
+
+# --- 前提条件 ---
+
+if ! is_installed brew; then
+  log_error "Homebrew がインストールされていません。先に 01_base.sh を実行してください"
+  exit 1
+fi
+
+# --- メイン処理 ---
+
+log_info "Homebrew を更新しています..."
+brew update
+
+log_info "Brewfile でパッケージをインストールしています..."
+brew bundle --file="$(dirname "$0")/Brewfile"
+
+log_info "パッケージをアップグレードしています..."
+brew upgrade
+
+log_info "Cask パッケージをアップグレードしています..."
+brew upgrade --cask --greedy
+
+log_info "不要ファイルを削除しています..."
+brew cleanup
+
+log_info "使われていない依存パッケージを削除しています..."
+brew autoremove
+
+# --- サマリー ---
+
+log_section "02: 完了"

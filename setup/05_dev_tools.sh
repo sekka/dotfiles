@@ -1,36 +1,54 @@
 #!/bin/bash
-# 開発ツール追加セットアップスクリプト
-# GitHub CLI拡張機能、gibo、CotEditorのコマンドラインツールをセットアップします
+# 開発ツール追加セットアップ（GitHub CLI 拡張機能、gibo、CotEditor）
 
-# =======================================================================================
-# GitHub CLI拡張機能
-# =======================================================================================
+# shellcheck source=lib/common.sh
+source "$(dirname "$0")/lib/common.sh"
+log_section "05: Dev tools setup"
 
-gh extension install him0/gh-sync     # https://zenn.dev/him0/articles/b5e555d98e79ee
-gh extension install dlvhdr/gh-dash   # https://zenn.dev/yuta28/articles/gh-dash-introduction
-gh extension install mislav/gh-branch # https://github.com/mislav/gh-branch
+# --- GitHub CLI 拡張機能 ---
 
-# =======================================================================================
-# gibo (.gitignore生成ツール)
-# =======================================================================================
+if ! is_installed gh; then
+  log_warn "gh がインストールされていません。Brewfile から先にインストールしてください"
+else
+  install_gh_extension() {
+    local ext="$1"
+    if gh extension list 2>/dev/null | grep -q "${ext##*/}"; then
+      log_skip "gh extension: $ext (既にインストール済み)"
+    else
+      log_info "gh extension をインストールしています: $ext"
+      gh extension install "$ext"
+    fi
+  }
 
-gibo update # .gitignoreテンプレートを最新に更新
+  install_gh_extension him0/gh-sync
+  install_gh_extension dlvhdr/gh-dash
+  install_gh_extension mislav/gh-branch
+fi
 
-# =======================================================================================
-# CotEditor コマンドラインツール
-# =======================================================================================
+# --- gibo (.gitignore 生成ツール) ---
+
+if ! is_installed gibo; then
+  log_warn "gibo がインストールされていません。Brewfile から先にインストールしてください"
+else
+  log_info "gibo テンプレートを更新しています..."
+  gibo update
+fi
+
+# --- CotEditor コマンドラインツール ---
 
 COT_SOURCE="/Applications/CotEditor.app/Contents/SharedSupport/bin/cot"
-COT_TARGET="/usr/local/bin/cot"
+COT_TARGET="/opt/homebrew/bin/cot"
 
-if [[ -f $COT_SOURCE ]]; then
-  if [[ ! -L $COT_TARGET ]]; then
-    echo "Creating Cot symlink..."
-    sudo ln -s "$COT_SOURCE" "$COT_TARGET"
-    echo "Cot symlink created."
-  else
-    echo "Cot already installed."
-  fi
+if [[ ! -f $COT_SOURCE ]]; then
+  log_warn "CotEditor が見つかりません: $COT_SOURCE"
+elif [[ -L $COT_TARGET ]]; then
+  log_skip "cot コマンドは既にインストール済み"
 else
-  echo "Warning: CotEditor not found at $COT_SOURCE"
+  log_info "cot シンボリックリンクを作成しています..."
+  sudo ln -s "$COT_SOURCE" "$COT_TARGET"
+  log_info "cot コマンドをインストールしました"
 fi
+
+# --- サマリー ---
+
+log_section "05: 完了"
