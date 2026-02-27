@@ -59,6 +59,7 @@ install_plugin yazi-rs/plugins:jump-to-char
 
 install_plugin ndtoan96/ouch
 install_plugin KKV9/compress
+install_plugin Sonico98/exifaudio.yazi:exifaudio
 
 # --- 依存パッケージ確認 ---
 
