@@ -51,7 +51,7 @@ install_plugin dedukun/bookmarks
 # --- Tier 2: 開発者向けプラグイン ---
 
 install_plugin Reledia/glow
-install_plugin Ape/mediainfo
+install_plugin boydaihungst/mediainfo.yazi:mediainfo
 install_plugin yazi-rs/plugins:chmod
 install_plugin yazi-rs/plugins:jump-to-char
 
