@@ -1,7 +1,6 @@
 // ============================================================================
 // API, Configuration, and Cache Management
 // ============================================================================
-// Phase B2: Merged config.ts + cache.ts into unified api.ts
 
 import { chmod } from "fs/promises";
 import { homedir } from "os";
@@ -96,6 +95,14 @@ export interface CachedUsageLimits {
 	timestamp: number;
 }
 
+export type Staleness = "fresh" | "stale" | "expired";
+
+export interface CacheInfo {
+	data: UsageLimits | null;
+	staleness: Staleness;
+	ageMs: number;
+}
+
 // ============================================================================
 // Default Configuration
 // ============================================================================
@@ -138,7 +145,8 @@ export const DEFAULT_CONFIG: StatuslineConfig = {
 // Cache TTL Constants
 // ============================================================================
 
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+export const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+export const CACHE_STALE_EXPIRED_MS = 60 * 60 * 1000; // 60 minutes: stale data TTL
 const CONFIG_CACHE_TTL = 60 * 1000; // 1 minute
 const API_CALL_TIMEOUT_MS = 5000; // 5 seconds for API calls
 
@@ -147,11 +155,26 @@ const API_CALL_TIMEOUT_MS = 5000; // 5 seconds for API calls
 // ============================================================================
 
 function isValidStatuslineConfig(data: unknown): data is StatuslineConfig {
-	return typeof data === 'object' && data !== null;
+	return typeof data === "object" && data !== null;
 }
 
-function isValidUsageLimits(data: unknown): boolean {
-	return typeof data === 'object' && data !== null;
+function isValidUsageLimits(data: unknown): data is UsageLimits {
+	if (typeof data !== "object" || data === null) return false;
+	const obj = data as Record<string, unknown>;
+	const isValidLimit = (limit: unknown): boolean => {
+		if (limit === undefined || limit === null) return true;
+		if (typeof limit !== "object") return false;
+		const l = limit as Record<string, unknown>;
+		return (
+			typeof l.utilization === "number" && (l.resets_at === null || typeof l.resets_at === "string")
+		);
+	};
+	return (
+		isValidLimit(obj.five_hour) &&
+		isValidLimit(obj.seven_day) &&
+		isValidLimit(obj.seven_day_sonnet) &&
+		isValidLimit(obj.seven_day_opus)
+	);
 }
 
 // ============================================================================
@@ -261,7 +284,29 @@ async function getClaudeApiToken(): Promise<string | null> {
 		});
 
 		const stdout = await new Response(proc.stdout).text();
-		const trimmedOutput = stdout.trim();
+		let trimmedOutput = stdout.trim();
+
+		// security(1) がバイナリデータを含むパスワードをHex文字列で出力する場合に対応
+		// 例: \x07"claudeAiOauth":{...} → hex出力 → デコードして {} でラップ
+		if (/^[0-9a-f]+$/i.test(trimmedOutput) && trimmedOutput.length % 2 === 0) {
+			// サイズ制限: 64KB超は不正データとして拒否
+			if (trimmedOutput.length > 131072) {
+				debug(`Keychain output exceeds safe limit: ${trimmedOutput.length} chars`, "error");
+				return null;
+			}
+			const decoded = Buffer.from(trimmedOutput, "hex").toString("utf-8");
+			// 先頭の非表示バイト（フォーマットマーカー等）を除去
+			const jsonContent = decoded.replace(/^[\x00-\x1f]+/, "");
+			// キー・バリューペアの形式 ("key":{...}) を完全なJSONオブジェクトに変換し検証
+			const candidate = jsonContent.startsWith("{") ? jsonContent : `{${jsonContent}}`;
+			try {
+				JSON.parse(candidate);
+				trimmedOutput = candidate;
+			} catch {
+				debug(`Hex-decoded content is not valid JSON`, "error");
+				return null;
+			}
+		}
 
 		// 基本的な形式チェック
 		if (!trimmedOutput.startsWith("{")) {
@@ -293,7 +338,7 @@ async function getClaudeApiToken(): Promise<string | null> {
 		}
 
 		// 基本的なトークン形式チェック（最小限の長さ）
-		if (token.length < 10) {
+		if (token.length < 20) {
 			debug(`Access token appears invalid (too short)`, "error");
 			return null;
 		}
@@ -431,63 +476,30 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	// Create new promise
 	usageLimitsPromise = (async () => {
 		try {
-			// Fetch from API
-			debug(`Fetching from API...`, "verbose");
 			const token = await getClaudeApiToken();
 			if (!token) {
 				debug(`No API token found, using stale data as fallback`, "verbose");
 				return staleData;
 			}
 
-			debug(`API token found, fetching limits...`, "verbose");
 			const limits = await fetchUsageLimits(token);
-			debug(`API response: ${JSON.stringify(limits)}`, "verbose");
 			if (!limits) {
 				debug(`API returned null, using stale data as fallback`, "verbose");
 				return staleData;
 			}
+
+			// Write cache with secure permissions
 			try {
-				// Security: Create file with secure permissions (0o600) from the start
-				// to prevent race condition where file is readable before chmod() is called
 				const cacheDir = `${HOME}/.claude/data`;
+				const { mkdir } = await import("fs/promises");
+				await mkdir(cacheDir, { recursive: true, mode: 0o700 });
 
-				// Ensure cache directory exists with secure permissions
-				try {
-					await Bun.file(cacheDir).isDirectory();
-				} catch {
-					// Directory doesn't exist, create it with secure permissions
-					const { mkdir } = await import("fs/promises");
-					await mkdir(cacheDir, { recursive: true, mode: 0o700 });
-				}
-
-				// Write file with secure permissions from creation
-				const cacheContent = JSON.stringify(
-					{
-						data: limits,
-						timestamp: Date.now(),
-					},
-					null,
-					2,
-				);
-
-				// Use Bun.write to create file, then immediately set permissions
-				// Note: Bun.write uses default permissions, so we secure immediately after
+				const cacheContent = JSON.stringify({ data: limits, timestamp: Date.now() });
 				await Bun.write(cacheFile, cacheContent);
-
-				// Immediately set permissions before anything else can read
 				await chmod(cacheFile, 0o600);
-
-				debug(`Cache file written securely: ${cacheFile}`, "verbose");
+				debug(`Cache file written: ${cacheFile}`, "verbose");
 			} catch (e) {
-				// Enhanced error handling for cache write
-				const errorMsg = errorMessage(e);
-				if (errorMsg.includes("EACCES")) {
-					debug(`Permission denied writing cache: ${errorMsg}`, "error");
-				} else if (errorMsg.includes("ENOENT")) {
-					debug(`Cache directory does not exist: ${errorMsg}`, "error");
-				} else {
-					debug(`Failed to write cache file: ${errorMsg}`, "error");
-				}
+				debug(`Failed to write cache file: ${errorMessage(e)}`, "error");
 			}
 
 			return limits;
@@ -497,6 +509,33 @@ export async function getCachedUsageLimits(): Promise<UsageLimits | null> {
 	})();
 
 	return usageLimitsPromise;
+}
+
+export async function getCacheWithInfo(): Promise<CacheInfo> {
+	const cacheFile = `${HOME}/.claude/data/usage-limits-cache.json`;
+	try {
+		const cache: CachedUsageLimits = await Bun.file(cacheFile).json();
+		const now = Date.now();
+		if (
+			typeof cache.timestamp !== "number" ||
+			cache.timestamp <= 0 ||
+			cache.timestamp > now + 60_000
+		) {
+			return { data: null, staleness: "expired", ageMs: Infinity };
+		}
+		const ageMs = now - cache.timestamp;
+		let staleness: Staleness;
+		if (ageMs < CACHE_TTL_MS) {
+			staleness = "fresh";
+		} else if (ageMs < CACHE_STALE_EXPIRED_MS) {
+			staleness = "stale";
+		} else {
+			staleness = "expired";
+		}
+		return { data: cache.data, staleness, ageMs };
+	} catch {
+		return { data: null, staleness: "expired", ageMs: Infinity };
+	}
 }
 
 // ============================================================================

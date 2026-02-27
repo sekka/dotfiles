@@ -265,14 +265,14 @@ describe("Error Handling", () => {
 		const invalidOutputs = [null, undefined, "", 123, {}];
 
 		for (const output of invalidOutputs) {
-			const isInvalid = !output || typeof output !== 'string';
+			const isInvalid = !output || typeof output !== "string";
 			expect(isInvalid).toBe(true);
 		}
 	});
 
 	it("should validate string type for git output", () => {
 		const validOutput = "main";
-		const isValid = validOutput && typeof validOutput === 'string';
+		const isValid = validOutput && typeof validOutput === "string";
 		expect(isValid).toBe(true);
 	});
 

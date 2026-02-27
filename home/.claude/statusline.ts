@@ -20,7 +20,12 @@
  */
 
 // Utilities
-import { type HookInput, type StatuslineConfig, type UsageLimits, getPeriodCost } from "./statusline/api.ts";
+import {
+	type HookInput,
+	type StatuslineConfig,
+	type UsageLimits,
+	getPeriodCost,
+} from "./statusline/api.ts";
 import {
 	colors,
 	debug,
@@ -41,7 +46,12 @@ import {
 import { getGitStatus } from "./statusline/git.ts";
 
 // Token calculations and formatting
-import { getContextTokens, getSessionElapsedTime, getCompactCount, saveSessionTokens } from "./statusline/tokens.ts";
+import {
+	getContextTokens,
+	getSessionElapsedTime,
+	getCompactCount,
+	saveSessionTokens,
+} from "./statusline/tokens.ts";
 
 // API, config, and cost tracking
 import {
@@ -184,7 +194,10 @@ async function buildMetricsLine(
 	// IO metrics (always enabled, moved after token display)
 	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
 		const ioText = renderIO(
-			{ showInputOutput: config.tokens.showInputOutput, showCompactCount: config.tokens.showCompactCount },
+			{
+				showInputOutput: config.tokens.showInputOutput,
+				showCompactCount: config.tokens.showCompactCount,
+			},
 			{ inputTokens, outputTokens, compactCount },
 		);
 		if (ioText) {
@@ -203,7 +216,10 @@ async function buildMetricsLine(
 				parts.push({ label: "limit", text: limitText });
 			}
 		} catch (error) {
-			debug(`Failed to fetch period cost: ${error instanceof Error ? error.message : String(error)}`, "error");
+			debug(
+				`Failed to fetch period cost: ${error instanceof Error ? error.message : String(error)}`,
+				"error",
+			);
 			// Fallback: render without period cost
 			const limitText = renderRateLimit("LMT", usageLimits.five_hour, null, config);
 			if (limitText) {
@@ -421,7 +437,10 @@ async function main() {
 		const data: HookInput = await Bun.stdin.json();
 
 		debug(`[MAIN] session_id: ${data.session_id}`, "basic");
-		debug(`[MAIN] context_window.current_usage: ${JSON.stringify(data.context_window?.current_usage)}`, "basic");
+		debug(
+			`[MAIN] context_window.current_usage: ${JSON.stringify(data.context_window?.current_usage)}`,
+			"basic",
+		);
 		debug(`[MAIN] transcript_path: ${data.transcript_path}`, "basic");
 
 		// Save session cost if available (Phase 3)
@@ -440,8 +459,15 @@ async function main() {
 		// Save session tokens for /clear persistence
 		// Only save when current_usage exists (i.e., BEFORE /clear)
 		// After /clear, current_usage is null, and we should rely on cached values instead
-		if (data.session_id && data.context_window?.current_usage && (contextInfo.inputTokens > 0 || contextInfo.outputTokens > 0)) {
-			debug(`[MAIN] Saving session tokens (current_usage exists): input=${contextInfo.inputTokens}, output=${contextInfo.outputTokens}`, "basic");
+		if (
+			data.session_id &&
+			data.context_window?.current_usage &&
+			(contextInfo.inputTokens > 0 || contextInfo.outputTokens > 0)
+		) {
+			debug(
+				`[MAIN] Saving session tokens (current_usage exists): input=${contextInfo.inputTokens}, output=${contextInfo.outputTokens}`,
+				"basic",
+			);
 			await saveSessionTokens(data.session_id, contextInfo.inputTokens, contextInfo.outputTokens);
 			debug(`[MAIN] Session tokens saved`, "basic");
 		} else {

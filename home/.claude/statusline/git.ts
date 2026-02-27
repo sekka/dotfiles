@@ -85,8 +85,8 @@ export async function getGitStatus(
 		const branchStdout = await new Response(branchProc.stdout).text();
 
 		// Validate git output
-		if (!branchStdout || typeof branchStdout !== 'string') {
-			debug('Invalid git branch output format', 'verbose');
+		if (!branchStdout || typeof branchStdout !== "string") {
+			debug("Invalid git branch output format", "verbose");
 			return {
 				branch: "",
 				hasChanges: false,

@@ -85,10 +85,16 @@ export async function calculateTokensFromTranscript(transcriptPath: string): Pro
 			}
 		}
 
-		debug(`[calculateTokensFromTranscript] Processed ${assistantEntries} assistant entries, total=${totalTokens}, input=${inputTokens}, output=${outputTokens}`, "basic");
+		debug(
+			`[calculateTokensFromTranscript] Processed ${assistantEntries} assistant entries, total=${totalTokens}, input=${inputTokens}, output=${outputTokens}`,
+			"basic",
+		);
 		return { totalTokens, inputTokens, outputTokens };
 	} catch (error) {
-		debug(`[calculateTokensFromTranscript] Error reading transcript: ${error instanceof Error ? error.message : String(error)}`, "basic");
+		debug(
+			`[calculateTokensFromTranscript] Error reading transcript: ${error instanceof Error ? error.message : String(error)}`,
+			"basic",
+		);
 		return { totalTokens: 0, inputTokens: 0, outputTokens: 0 };
 	}
 }
@@ -137,7 +143,10 @@ export async function getContextTokens(
 	if (data.context_window?.current_usage) {
 		debug(`[getContextTokens] current_usage exists`, "basic");
 		const cu = data.context_window.current_usage;
-		const cuInput = (cu.input_tokens || 0) + (cu.cache_creation_input_tokens || 0) + (cu.cache_read_input_tokens || 0);
+		const cuInput =
+			(cu.input_tokens || 0) +
+			(cu.cache_creation_input_tokens || 0) +
+			(cu.cache_read_input_tokens || 0);
 		const cuOutput = cu.output_tokens || 0;
 		// Note: output_tokens は次ターンで input に含まれるため、
 		// context fullness の forward-looking 推定値として含む
@@ -187,37 +196,57 @@ export async function getContextTokens(
 		let ioInput = 0;
 		let ioOutput = 0;
 		if (data.session_id && data.transcript_path) {
-			debug(`[getContextTokens] /clear detected - reading transcript from: ${data.transcript_path}`, "basic");
+			debug(
+				`[getContextTokens] /clear detected - reading transcript from: ${data.transcript_path}`,
+				"basic",
+			);
 			const t = await calculateTokensFromTranscript(data.transcript_path);
-			debug(`[getContextTokens] Transcript tokens: total=${t.totalTokens}, input=${t.inputTokens}, output=${t.outputTokens}`, "basic");
+			debug(
+				`[getContextTokens] Transcript tokens: total=${t.totalTokens}, input=${t.inputTokens}, output=${t.outputTokens}`,
+				"basic",
+			);
 
 			// If transcript is empty (cleared), load from cache
 			if (t.inputTokens === 0 && t.outputTokens === 0) {
 				debug(`[getContextTokens] Transcript is empty after /clear - loading from cache`, "basic");
 				const cached = await loadSessionTokens(data.session_id);
 				if (cached) {
-					debug(`[getContextTokens] Loaded cached tokens: input=${cached.inputTokens}, output=${cached.outputTokens}`, "basic");
+					debug(
+						`[getContextTokens] Loaded cached tokens: input=${cached.inputTokens}, output=${cached.outputTokens}`,
+						"basic",
+					);
 					ioInput = cached.inputTokens;
 					ioOutput = cached.outputTokens;
 				} else {
-					debug(`[getContextTokens] No cached tokens found for session ${data.session_id}`, "basic");
+					debug(
+						`[getContextTokens] No cached tokens found for session ${data.session_id}`,
+						"basic",
+					);
 				}
 			} else {
 				// Use transcript values if available
-				debug(`[getContextTokens] Using transcript values: input=${t.inputTokens}, output=${t.outputTokens}`, "basic");
+				debug(
+					`[getContextTokens] Using transcript values: input=${t.inputTokens}, output=${t.outputTokens}`,
+					"basic",
+				);
 				ioInput = t.inputTokens;
 				ioOutput = t.outputTokens;
 			}
 		} else {
 			debug(`[getContextTokens] Missing session_id or transcript_path`, "basic");
 		}
-		debug(`[getContextTokens] Returning after /clear: tokens=0, inputTokens=${ioInput}, outputTokens=${ioOutput}`, "basic");
+		debug(
+			`[getContextTokens] Returning after /clear: tokens=0, inputTokens=${ioInput}, outputTokens=${ioOutput}`,
+			"basic",
+		);
 		return { tokens: 0, percentage: 0, inputTokens: ioInput, outputTokens: ioOutput };
 	}
 
 	// Fallback: transcript for both T: and IO:
 	if (data.session_id && data.transcript_path) {
-		const { totalTokens, inputTokens, outputTokens } = await calculateTokensFromTranscript(data.transcript_path);
+		const { totalTokens, inputTokens, outputTokens } = await calculateTokensFromTranscript(
+			data.transcript_path,
+		);
 		if (totalTokens > 0) {
 			const percentage = Math.min(100, Math.round((totalTokens / contextWindowSize) * 100));
 			return { tokens: totalTokens, percentage, inputTokens, outputTokens };
@@ -225,7 +254,10 @@ export async function getContextTokens(
 	}
 
 	// Fallback: total_input_tokens/total_output_tokens (session cumulative)
-	if (data.context_window?.total_input_tokens !== undefined && data.context_window?.total_output_tokens !== undefined) {
+	if (
+		data.context_window?.total_input_tokens !== undefined &&
+		data.context_window?.total_output_tokens !== undefined
+	) {
 		const inputTokens = data.context_window.total_input_tokens || 0;
 		const outputTokens = data.context_window.total_output_tokens || 0;
 		const totalTokens = inputTokens + outputTokens;
@@ -330,14 +362,20 @@ export async function saveSessionTokens(
 	inputTokens: number,
 	outputTokens: number,
 ): Promise<void> {
-	debug(`[saveSessionTokens] Called with sessionId=${sessionId}, input=${inputTokens}, output=${outputTokens}`, "basic");
+	debug(
+		`[saveSessionTokens] Called with sessionId=${sessionId}, input=${inputTokens}, output=${outputTokens}`,
+		"basic",
+	);
 	const storeFile = join(HOME, ".claude", "data", "session-io-tokens.json");
 
 	let store: SessionTokensStore = {};
 
 	try {
 		store = await Bun.file(storeFile).json();
-		debug(`[saveSessionTokens] Loaded existing store with ${Object.keys(store).length} sessions`, "basic");
+		debug(
+			`[saveSessionTokens] Loaded existing store with ${Object.keys(store).length} sessions`,
+			"basic",
+		);
 	} catch {
 		debug(`[saveSessionTokens] Creating new store file`, "basic");
 		// File doesn't exist or is invalid, create new
@@ -408,14 +446,20 @@ export async function loadSessionTokens(sessionId: string): Promise<{
 			return null;
 		}
 
-		debug(`[loadSessionTokens] Found cached tokens: input=${data.inputTokens}, output=${data.outputTokens}`, "basic");
+		debug(
+			`[loadSessionTokens] Found cached tokens: input=${data.inputTokens}, output=${data.outputTokens}`,
+			"basic",
+		);
 		// Return cached tokens if found
 		return {
 			inputTokens: data.inputTokens,
 			outputTokens: data.outputTokens,
 		};
 	} catch (error) {
-		debug(`[loadSessionTokens] Failed to load: ${error instanceof Error ? error.message : String(error)}`, "basic");
+		debug(
+			`[loadSessionTokens] Failed to load: ${error instanceof Error ? error.message : String(error)}`,
+			"basic",
+		);
 		return null;
 	}
 }

@@ -83,7 +83,7 @@ export const LABEL_KEYS = {
 	WEEKLY_SONNET: "weekly_sonnet",
 } as const;
 
-export type LabelKey = typeof LABEL_KEYS[keyof typeof LABEL_KEYS];
+export type LabelKey = (typeof LABEL_KEYS)[keyof typeof LABEL_KEYS];
 
 /** grayカラー適用済みのラベルを返す */
 export function label(key: string): string {
@@ -130,11 +130,11 @@ export const logger = pino(
  * @param message - ログメッセージ
  * @param level - ログレベル（'error', 'warning', 'basic', 'verbose'）
  */
-export function debug(message: string, level: string = 'basic'): void {
-	const debugLevel = process.env.STATUSLINE_DEBUG || '';
+export function debug(message: string, level: string = "basic"): void {
+	const debugLevel = process.env.STATUSLINE_DEBUG || "";
 
 	// レベル階層: error > warning > basic > verbose
-	const levels = ['error', 'warning', 'basic', 'verbose'];
+	const levels = ["error", "warning", "basic", "verbose"];
 	const currentLevel = levels.indexOf(debugLevel);
 	const messageLevel = levels.indexOf(level);
 
@@ -169,7 +169,6 @@ export function formatCostValue(cost: number): string {
 	return "0.00";
 }
 
-
 /** ミリ秒を HH:MM:SS または MM:SS 形式にフォーマット */
 export function formatElapsedTime(ms: number): string {
 	const totalSeconds = Math.floor(ms / 1000);
@@ -182,7 +181,6 @@ export function formatElapsedTime(ms: number): string {
 	}
 	return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
-
 
 /** パーセンテージをブレイル文字プログレスバーにフォーマット */
 export function formatBrailleProgressBar(percentage: number, length = 10): string {
@@ -279,7 +277,9 @@ export function renderIO(
 	if (config.showInputOutput) {
 		const inStr = formatTokensK(data.inputTokens);
 		const outStr = formatTokensK(data.outputTokens);
-		parts.push(`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`);
+		parts.push(
+			`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`,
+		);
 	}
 
 	if (config.showCompactCount) {
@@ -290,7 +290,10 @@ export function renderIO(
 }
 
 /** セッション時間を描画 */
-export function renderSession(data: { sessionTimeDisplay: string; costDisplay: string }): string | null {
+export function renderSession(data: {
+	sessionTimeDisplay: string;
+	costDisplay: string;
+}): string | null {
 	if (!data.sessionTimeDisplay) {
 		return null;
 	}
@@ -299,7 +302,11 @@ export function renderSession(data: { sessionTimeDisplay: string; costDisplay: s
 }
 
 /** トークン使用状況を描画 */
-export function renderToken(data: { contextPercentage: number; contextTokens: number; contextWindowSize: number }): string {
+export function renderToken(data: {
+	contextPercentage: number;
+	contextTokens: number;
+	contextWindowSize: number;
+}): string {
 	const bar = formatBrailleProgressBar(data.contextPercentage, 5);
 	const contextTokenStr = formatTokensK(data.contextTokens);
 	const contextSizeStr = formatTokensK(data.contextWindowSize);
@@ -361,7 +368,7 @@ export function joinWithSeparators(
 		} else {
 			// lineBreakBefore 設定に基づいて改行挿入
 			if (config.display.lineBreakBefore?.includes(part.label)) {
-				result.push('\n' + part.text);
+				result.push("\n" + part.text);
 			} else {
 				// 通常のセパレータを挿入
 				const separator = config.display.showSeparators ? ` ${colors.gray("・")} ` : " ";
@@ -370,5 +377,5 @@ export function joinWithSeparators(
 		}
 	}
 
-	return result.join('');
+	return result.join("");
 }

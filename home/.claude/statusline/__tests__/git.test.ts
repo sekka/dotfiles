@@ -8,37 +8,37 @@ import { getGitStatus } from "../git.ts";
 describe("Git Output Validation", () => {
 	it("should validate string git output", () => {
 		const validOutput = "main";
-		const isValid = validOutput && typeof validOutput === 'string';
+		const isValid = validOutput && typeof validOutput === "string";
 		expect(isValid).toBe(true);
 	});
 
 	it("should detect invalid git output (null)", () => {
 		const invalidOutput = null;
-		const isInvalid = !invalidOutput || typeof invalidOutput !== 'string';
+		const isInvalid = !invalidOutput || typeof invalidOutput !== "string";
 		expect(isInvalid).toBe(true);
 	});
 
 	it("should detect invalid git output (undefined)", () => {
 		const invalidOutput = undefined;
-		const isInvalid = !invalidOutput || typeof invalidOutput !== 'string';
+		const isInvalid = !invalidOutput || typeof invalidOutput !== "string";
 		expect(isInvalid).toBe(true);
 	});
 
 	it("should detect invalid git output (empty string)", () => {
 		const invalidOutput = "";
-		const isInvalid = !invalidOutput || typeof invalidOutput !== 'string';
+		const isInvalid = !invalidOutput || typeof invalidOutput !== "string";
 		expect(isInvalid).toBe(true);
 	});
 
 	it("should detect invalid git output (number)", () => {
 		const invalidOutput = 123;
-		const isInvalid = !invalidOutput || typeof invalidOutput !== 'string';
+		const isInvalid = !invalidOutput || typeof invalidOutput !== "string";
 		expect(isInvalid).toBe(true);
 	});
 
 	it("should detect invalid git output (object)", () => {
 		const invalidOutput = {};
-		const isInvalid = !invalidOutput || typeof invalidOutput !== 'string';
+		const isInvalid = !invalidOutput || typeof invalidOutput !== "string";
 		expect(isInvalid).toBe(true);
 	});
 });
