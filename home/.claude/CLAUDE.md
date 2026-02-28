@@ -22,26 +22,7 @@
 集中して実行するために、サブエージェント1つにつき1タスクを割り当てる。
 メインのコンテキストウィンドウをクリーンに保つためにサブエージェントを積極的に活用する。
 
-**Research タスク → researcher サブエージェント**
-- コードベース調査と技術ドキュメント検索
-- 優先順位: ローカル検索 → 公式ドキュメント → Web検索
-
-**Implementation タスク → implementer / codex-implementer サブエージェント**
-- コード作成・編集、ファイル生成、テスト実行
-- Codex利用可能時は無条件で codex-implementer を優先
-
-**Review タスク → reviewer サブエージェント**
-- コードレビュー、品質チェック、セキュリティ監査
-
-**環境適応ルーティング:**
-
-| 環境変数 | タスク | エージェント |
-|---------|-------|------------|
-| AI_HAS_GEMINI | Research | gemini-researcher |
-| AI_HAS_CODEX | Implementation | codex-implementer |
-| AI_HAS_COPILOT | Review | copilot-reviewer |
-| AI_HAS_CODERABBIT | Review（セキュリティ） | coderabbit:code-reviewer |
-| 複数利用可能 | Review | parallel-reviewer |
+サブエージェントの種類（researcher / implementer / reviewer）と外部AIルーティングはセクション4を参照。
 
 **並列 vs 逐次実行:**
 - 並列: ファイル重複なし、依存関係なし、独立ドメイン
@@ -105,60 +86,19 @@
 | テスト実行・ビルド | implementer | `AI_HAS_CODEX=1` → codex-implementer |
 | Web調査・ドキュメント検索 | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
 
-### 全タスク共通: 必須ルーティングフロー
+### ルーティング手順
 
-タスクを受けたら、**ツールを使う前に**以下のフローを実行する:
+タスクを受けたら**ツールを使う前に**: 分類（調査/実装/レビュー）→ ホワイトリスト確認 → 上記テーブルで委譲先決定 → Agent tool で起動。
 
-```
-1. タスクを分類する（調査 / 実装 / レビュー / その他）
-2. ホワイトリストに該当するか確認
-   → 該当する → メインで直接実行
-   → 該当しない → 3へ
-3. 外部AI可用性を確認（echo $AI_HAS_CODEX $AI_HAS_GEMINI 等）
-4. ルーティング決定:
-   - 調査 → AI_HAS_GEMINI=1 ? gemini-researcher : researcher
-   - 実装 → AI_HAS_CODEX=1 ? codex-implementer : implementer
-   - レビュー → 複数AI ? parallel-reviewer : reviewer
-5. Agent tool でサブエージェントを起動（5要素を含むプロンプト）
-6. 結果を受け取り、ユーザーに統合報告
-```
+### アンチパターン
 
-### アンチパターン（これをやったら違反）
+- ❌ メインが `Grep→Read→Edit→Bash` と連鎖実行 → ✅ implementer に一括委譲
+- ❌ 「まず確認」で自分が `Read→Edit` → ✅ researcher で調査 → implementer で実装
+- ❌ `AI_HAS_CODEX=1` なのに内蔵 implementer を使用 → ✅ codex-implementer を使用
 
-**NG: メインが自分で調査してから実装も行う**
-```
-❌ Grep("pattern") → Read(file) → Edit(file) → Bash("npm test")
-```
-これはメインのコンテキストを4ツール分消費する。代わりに:
-```
-✅ Agent(subagent_type="implementer", prompt="patternを探して修正し、テストを実行して")
-```
+### 例外（メインが直接実行してよいケース）
 
-**NG: 「まず調べてから判断」で自分がRead/Grepを実行**
-```
-❌ Read(file) → "内容を確認しました。次に..." → Edit(file)
-```
-調査と実装を分ける場合でも、各フェーズをサブエージェントに委譲:
-```
-✅ Agent(subagent_type="researcher", prompt="Xを調査して") → 結果を元に →
-   Agent(subagent_type="implementer", prompt="調査結果に基づきYを実装して")
-```
-
-**NG: 外部AIが利用可能なのにClaude内蔵サブエージェントのみ使用**
-```
-❌ AI_HAS_CODEX=1 なのに Agent(subagent_type="implementer") を使う
-```
-外部AIが利用可能な場合は必ずそちらを優先:
-```
-✅ AI_HAS_CODEX=1 → Agent(subagent_type="codex-implementer")
-```
-
-### 例外: メインが直接ツールを使ってよいケース
-
-- **単一ファイルの既知パスへの軽微修正**: 調査不要で変更内容が自明（3行以内）
-- **ユーザーが「直接やって」と明示的に指示した場合**
-- **サブエージェントが失敗してフォールバックする場合**（1回まで）
-- **環境変数確認やgit操作など、1コマンドで完結する操作**
+既知パスへの3行以内の編集 / ユーザーの明示指示 / サブエージェント失敗時のフォールバック（1回）/ 1コマンドで完結する操作
 
 ---
 
