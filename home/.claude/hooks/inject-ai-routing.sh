@@ -8,7 +8,7 @@ models="${AI_AVAILABLE_MODELS:-claude}"
 rule_CODEX="IMPLEMENTATION: Use codex-implementer (NOT implementer)"
 rule_GEMINI="RESEARCH: Use gemini-researcher (NOT researcher)"
 rule_COPILOT="REVIEW (CI/CD): Use copilot-reviewer"
-rule_CODERABBIT="REVIEW (Security): Use coderabbit-reviewer"
+rule_CODERABBIT="REVIEW (Security): Use coderabbit:code-reviewer"
 
 external_count=0
 routing_rules=""
