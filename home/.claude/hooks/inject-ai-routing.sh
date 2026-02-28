@@ -4,20 +4,19 @@
 
 models="${AI_AVAILABLE_MODELS:-claude}"
 
-# AI名→ルーティング指示のマッピング（単一ループで構築）
-declare -A ai_rules=(
-  [CODEX]="IMPLEMENTATION: Use codex-implementer (NOT implementer)"
-  [GEMINI]="RESEARCH: Use gemini-researcher (NOT researcher)"
-  [COPILOT]="REVIEW (CI/CD): Use copilot-reviewer"
-  [CODERABBIT]="REVIEW (Security): Use coderabbit-reviewer"
-)
+# AI名→ルーティング指示のマッピング（bash 3.2互換: indirect expansion）
+rule_CODEX="IMPLEMENTATION: Use codex-implementer (NOT implementer)"
+rule_GEMINI="RESEARCH: Use gemini-researcher (NOT researcher)"
+rule_COPILOT="REVIEW (CI/CD): Use copilot-reviewer"
+rule_CODERABBIT="REVIEW (Security): Use coderabbit-reviewer"
 
 external_count=0
 routing_rules=""
 for ai in CODEX GEMINI COPILOT CODERABBIT; do
   var="AI_HAS_${ai}"
+  rule="rule_${ai}"
   if [[ "${!var:-0}" == "1" ]]; then
-    routing_rules="${routing_rules} ${ai_rules[$ai]}."
+    routing_rules="${routing_rules} ${!rule}."
     ((external_count++))
   fi
 done
