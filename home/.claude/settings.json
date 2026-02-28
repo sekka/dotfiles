@@ -217,6 +217,10 @@
           {
             "type": "command",
             "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/inject-ai-routing.sh"
           }
         ]
       }
