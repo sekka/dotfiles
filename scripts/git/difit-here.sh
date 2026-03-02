@@ -34,8 +34,7 @@ current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 difitArgs=()
 if [[ $current_branch == "$default_branch" ]] || [[ -z $current_branch ]]; then
   difitArgs=("working")
-elif git merge-base --is-ancestor "$default_branch" HEAD 2>/dev/null; then
-  merge_base=$(git merge-base "$default_branch" HEAD 2>/dev/null)
+elif merge_base=$(git merge-base "$default_branch" HEAD 2>/dev/null); then
   difitArgs=("$merge_base" "HEAD")
 else
   difitArgs=("working")
@@ -54,7 +53,7 @@ DIFIT_PID=$!
 DIFIT_URL=""
 for _ in $(seq 1 20); do
   kill -0 "$DIFIT_PID" 2>/dev/null || break
-  DIFIT_URL=$(grep -o 'http://localhost:[0-9]*' "$DIFIT_LOG" | head -1)
+  DIFIT_URL=$(grep -m 1 -oE 'http://localhost:[0-9]+' "$DIFIT_LOG")
   [[ -n $DIFIT_URL ]] && break
   sleep 0.3
 done
