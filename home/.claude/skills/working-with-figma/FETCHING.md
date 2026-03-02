@@ -1,5 +1,9 @@
 # Figma デザイン情報取得ガイド
 
+## 前提条件
+
+- Figma ファイルで **Auto Layout が正しく設定されている**こと → 未設定だと gap / padding / flex 方向などの数値が取得できない
+
 ## ワークフロー
 
 ### Step 1: URL確認

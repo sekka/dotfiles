@@ -174,7 +174,8 @@
       "WebFetch(domain:agent-browser.dev)",
       "WebFetch(domain:help.apiyi.com)",
       "Bash(mgrep coderabbit:*)",
-      "Bash(oxfmt:*)"
+      "Bash(oxfmt:*)",
+      "WebFetch(domain:blog.jxck.io)"
     ],
     "deny": [],
     "ask": []
