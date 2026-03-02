@@ -178,7 +178,13 @@
       "WebFetch(domain:blog.jxck.io)",
       "WebFetch(domain:efcl.info)",
       "WebFetch(domain:pinchtab.com)",
-      "Bash(pinchtab:*)"
+      "Bash(pinchtab:*)",
+      "WebFetch(domain:cmux.app)",
+      "WebFetch(domain:gist.githubusercontent.com)",
+      "WebFetch(domain:www.trynia.ai)",
+      "WebFetch(domain:fastmcp.me)",
+      "WebFetch(domain:www.pulsemcp.com)",
+      "WebFetch(domain:skywork.ai)"
     ],
     "deny": [],
     "ask": []

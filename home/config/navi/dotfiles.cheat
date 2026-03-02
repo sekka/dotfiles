@@ -15,6 +15,9 @@ fshow
 # コミット範囲を選択して difit で差分確認
 gifit
 
+# カレントリポジトリのGit差分をdifitで表示（ブランチ文脈を自動判定）
+difit-here.sh
+
 # ブランチを作成してチェックアウト
 git checkout -b <branch-name>
 

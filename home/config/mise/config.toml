@@ -110,6 +110,10 @@ run = "difit"
 description = "コードレビューをTUIで開く"
 run = "difit --tui"
 
+[tasks.git-util-difit-here]
+description = "カレントリポジトリのGit差分をdifitで表示"
+run = "difit-here.sh"
+
 [tasks.git-util-hbr]
 description = "リポジトリをブラウザで開く"
 run = "hub browse $(ghq list | fzf | cut -d '/' -f 2,3)"
