@@ -98,25 +98,14 @@ validate_cache_completeness() {
   return 0 # 完全
 }
 
-# JSON injection テスト用の危険な入力
-get_malicious_inputs() {
-  cat <<'EOF'
-'; rm -rf /tmp/test; echo '
-$(whoami)
-`id`
-\"; malicious_code(); echo \"
-{"key": "value\"}
-EOF
-}
-
 # ログファイルのJSON形式検証
 validate_log_json() {
   local log_file="$1"
 
   # 各行がJSONとして有効か検証（jqを使用）
   if ! command -v jq >/dev/null 2>&1; then
-    echo "WARNING: jq not found, skipping JSON validation" >&2
-    return 0
+    echo "ERROR: jq is required for JSON validation but not found" >&2
+    return 1
   fi
 
   while IFS= read -r line; do
