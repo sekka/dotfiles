@@ -6,6 +6,7 @@
 - **手を抜かない**：根本原因を見つける。一時的な修正は避ける
 - **影響を最小化する**：変更は必要な箇所のみ。バグを新たに引き込まない
 - **検証を忘れない**：動作を証明できるまでタスクを完了とマークしない
+- **コンテキスト節約**：メインエージェントのコンテキストは貴重なリソース。調査・実装・レビューは外部AIまたはサブエージェントに委譲し、メインは指揮と統合に専念する
 
 ---
 
@@ -21,26 +22,7 @@
 集中して実行するために、サブエージェント1つにつき1タスクを割り当てる。
 メインのコンテキストウィンドウをクリーンに保つためにサブエージェントを積極的に活用する。
 
-**Research タスク → researcher サブエージェント**
-- コードベース調査と技術ドキュメント検索
-- 優先順位: ローカル検索 → 公式ドキュメント → Web検索
-
-**Implementation タスク → implementer / codex-implementer サブエージェント**
-- コード作成・編集、ファイル生成、テスト実行
-- Codex利用可能時は無条件で codex-implementer を優先
-
-**Review タスク → reviewer サブエージェント**
-- コードレビュー、品質チェック、セキュリティ監査
-
-**環境適応ルーティング:**
-
-| 環境変数 | タスク | エージェント |
-|---------|-------|------------|
-| AI_HAS_GEMINI | Research | gemini-researcher |
-| AI_HAS_CODEX | Implementation | codex-implementer |
-| AI_HAS_COPILOT | Review | copilot-reviewer |
-| AI_HAS_CODERABBIT | Review（セキュリティ） | coderabbit:code-reviewer |
-| 複数利用可能 | Review | parallel-reviewer |
+サブエージェントの種類（researcher / implementer / reviewer）と外部AIルーティングはセクション4を参照。
 
 **並列 vs 逐次実行:**
 - 並列: ファイル重複なし、依存関係なし、独立ドメイン
@@ -79,15 +61,44 @@
 
 ---
 
-## 4. メインエージェント責務
+## 4. コンテキスト節約のための強制ルーティング
 
-**実行する:** タスク分解・優先順位付け、サブエージェントへのルーティング、進捗統合と報告、ユーザーへの質問
+メインエージェントのコンテキストウィンドウは有限かつ高コスト。**作業の実行**ではなく**作業の指揮**に専念する。
 
-**実行しない（委譲先）:**
-- 情報収集（Read, Glob, Grep）→ researcher
-- 実装作業（Write, Edit）→ implementer
-- レビュー・品質チェック → reviewer
-- Bash実行 → implementer
+### メインエージェントが直接実行してよい操作（ホワイトリスト）
+
+- ユーザーへの質問（AskUserQuestion）
+- TodoWrite による進捗管理
+- サブエージェント起動（Agent tool）
+- 環境変数の確認（`echo $AI_HAS_*` 等、1行のBash）
+- git commit / push（ユーザー指示時のみ）
+- 既に把握しているファイルへの軽微な1箇所の編集（3行以内）
+
+### メインエージェントが直接実行してはならない操作（MUST delegate）
+
+以下の操作をメインエージェントが直接行うことを**禁止**する。必ずサブエージェントに委譲すること:
+
+| 操作 | 委譲先 | 外部AI優先条件 |
+|------|--------|---------------|
+| ファイル探索（Glob, Grep, 複数Read） | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
+| コード実装（Write, Edit, 複数Bash） | implementer | `AI_HAS_CODEX=1` → codex-implementer |
+| レビュー・品質チェック | reviewer | 複数AI利用可能 → parallel-reviewer |
+| テスト実行・ビルド | implementer | `AI_HAS_CODEX=1` → codex-implementer |
+| Web調査・ドキュメント検索 | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
+
+### ルーティング手順
+
+タスクを受けたら**ツールを使う前に**: 分類（調査/実装/レビュー）→ ホワイトリスト確認 → 上記テーブルで委譲先決定 → Agent tool で起動。
+
+### アンチパターン
+
+- ❌ メインが `Grep→Read→Edit→Bash` と連鎖実行 → ✅ implementer に一括委譲
+- ❌ 「まず確認」で自分が `Read→Edit` → ✅ researcher で調査 → implementer で実装
+- ❌ `AI_HAS_CODEX=1` なのに内蔵 implementer を使用 → ✅ codex-implementer を使用
+
+### 例外（メインが直接実行してよいケース）
+
+既知パスへの3行以内の編集 / ユーザーの明示指示 / サブエージェント失敗時のフォールバック（1回）/ 1コマンドで完結する操作
 
 ---
 
