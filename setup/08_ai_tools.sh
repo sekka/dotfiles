@@ -82,6 +82,14 @@ else
   log_warn "agent-browser が見つかりません。mise install を実行してください（npm:agent-browser）"
 fi
 
+# --- pinchtab ---
+
+if is_installed pinchtab; then
+  log_skip "pinchtab はインストール済み（$(pinchtab --version 2>/dev/null || echo 'version unknown')）"
+else
+  log_warn "pinchtab が見つかりません。mise install を実行してください（npm:pinchtab）"
+fi
+
 # --- サマリー ---
 
 log_section "08: 完了"
