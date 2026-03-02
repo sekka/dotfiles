@@ -175,7 +175,10 @@
       "WebFetch(domain:help.apiyi.com)",
       "Bash(mgrep coderabbit:*)",
       "Bash(oxfmt:*)",
-      "WebFetch(domain:blog.jxck.io)"
+      "WebFetch(domain:blog.jxck.io)",
+      "WebFetch(domain:efcl.info)",
+      "WebFetch(domain:pinchtab.com)",
+      "Bash(pinchtab:*)"
     ],
     "deny": [],
     "ask": []
