@@ -37,8 +37,7 @@ window-padding-x = 10
 window-padding-y = 10
 background-opacity = 0.80
 background-blur-radius = 20
-
-# unfocused-split-opacity = 0.80
+unfocused-split-opacity = 1
 
 # # Spacing around the equals sign does not matter.
 # # All of these are identical:
