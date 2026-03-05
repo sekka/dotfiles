@@ -16,12 +16,18 @@ fi
 
 # --- Xcode ライセンス同意 ---
 
-if xcodebuild -license check &>/dev/null; then
-  log_skip "Xcode ライセンスは承認済み"
+_xcode_dev_dir="$(xcode-select -p 2>/dev/null)"
+if [[ $_xcode_dev_dir == /Applications/Xcode.app* ]]; then
+  if xcodebuild -license check &>/dev/null; then
+    log_skip "Xcode ライセンスは承認済み"
+  else
+    log_info "Xcode ライセンスに同意しています..."
+    sudo xcodebuild -license accept
+  fi
 else
-  log_info "Xcode ライセンスに同意しています..."
-  sudo xcodebuild -license accept
+  log_skip "xcode-select が CLT を指定中 — ライセンス同意不要"
 fi
+unset _xcode_dev_dir
 
 # --- Rosetta 2 ---
 
