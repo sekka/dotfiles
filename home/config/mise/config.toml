@@ -541,6 +541,9 @@ pnpm = "latest"
 "npm:oxfmt" = "latest"                # Formatter
 "npm:oxlint" = "latest"               # Linter
 
+# === メディア ===
+yt-dlp = { version = "latest", rename_exe = "yt-dlp" }
+
 # === 画像処理 ===
 "npm:imageoptim-cli" = "latest"       # 画像最適化
 "npm:svgo" = "latest"                 # SVG 最適化
