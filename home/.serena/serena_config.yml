@@ -116,6 +116,10 @@ default_modes:
 # list of paths to ignore across all projects.
 # Same syntax as gitignore, so you can use * and **.
 # These patterns are merged additively with each project's own ignored_paths.
+
+# list of paths to ignore across all projects.
+# Same syntax as gitignore, so you can use * and **.
+# These patterns are merged additively with each project's own ignored_paths.
 ignored_paths: []
 
 # time budget (seconds) for requests when tools request symbol info (currently
@@ -133,12 +137,9 @@ symbol_info_budget: 10.0
 # Global memories are stored in ~/.serena/memories/global/ and shared across all projects.
 # Set to false to protect global memories from accidental modification by agents.
 # Note: We recommend tracking global memories with git.
-edit_global_memories: true
-
-# template for the location of the per-project .serena data folder (memories, caches, etc.).
-# Supports the following placeholders:
-#   $projectDir         - the absolute path to the project root directory
-#   $projectFolderName  - the name of the project directory
-# Default: "$projectDir/.serena" (data stored inside the project directory)
-# Example for a central location: "/projects-metadata/$projectFolderName/.serena"
 project_serena_folder_location: $projectDir/.serena
+
+# list of regex patterns which, when matched, mark a memory entry as read‑only.
+# For example, "global/.*" will mark all global memories as read-only.
+# You can extend the list on a per-project basis in the project.yml configuration file.
+read_only_memory_patterns: []
