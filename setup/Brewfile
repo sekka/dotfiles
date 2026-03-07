@@ -128,7 +128,6 @@ tap "teamookla/speedtest"
 brew "teamookla/speedtest/speedtest"  # https://github.com/teamookla/homebrew-speedtest  # Ookla公式スピードテストCLI
 
 # === Saas ===
-brew "awscli"             # https://formulae.brew.sh/formula/awscli           # AWSコマンドラインツール
 
 # === Python ===
 brew "uv"                 # https://formulae.brew.sh/formula/uv               # Python環境管理ツール

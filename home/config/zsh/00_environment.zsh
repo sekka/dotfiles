@@ -123,8 +123,6 @@ add_to_path "$HOME/.rd/bin" append
 # Google Cloud SDK
 add_to_path "$HOME/google-cloud-sdk/bin" append
 
-# AWS CLI
-add_to_path "$HOME/.local/aws-cli/v2/current/bin" append
 
 # ===========================================
 # コア機能

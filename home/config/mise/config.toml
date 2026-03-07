@@ -518,6 +518,9 @@ pnpm = "latest"
 "npm:ui-skills" = "latest"            # https://www.ui-skills.com/
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
 
+# === クラウドツール ===
+awscli = "latest"
+
 # === デプロイ/クラウド ===
 "npm:firebase-tools" = "latest"
 "npm:heroku" = "latest"
