@@ -1,7 +1,7 @@
 ---
 description: Figma デザインに基づいてコンポーネントをスタイリング
 argument-hint: [Figma ノード URL]
-allowed-tools: mcp__figma-desktop__get_design_context, mcp__figma-desktop__get_screenshot, mcp__figma-desktop__get_variable_defs, Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_code_connect_map, mcp__figma__get_metadata, Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Figma デザインに基づくコンポーネントスタイリング
@@ -16,17 +16,20 @@ $ARGUMENTS
 
 ### 1. Figma デザインの分析
 
-- `mcp__figma-desktop__get_design_context` でデザインコンテキストを取得
-- `mcp__figma-desktop__get_screenshot` でスクリーンショットを取得して視覚的に確認
+- `mcp__figma__get_design_context` でデザインコンテキストを取得
+- `mcp__figma__get_screenshot` でスクリーンショットを取得して視覚的に確認
+- 大規模デザインの場合: `mcp__figma__get_metadata` で構造を先に把握してから対象ノードのみ `get_design_context`
 
 ### 2. 既存コンポーネントの特定
 
+- `mcp__figma__get_code_connect_map` でFigmaノード↔コードコンポーネントのマッピングを確認
+- Code Connectマッピング済みのコンポーネントは最優先で再利用
 - プロジェクト内で該当するコンポーネントを検索
 - 現在の実装を確認
 
 ### 3. デザイントークンの更新
 
-- `mcp__figma-desktop__get_variable_defs` ツールを使用して Figma 変数を取得
+- `mcp__figma__get_variable_defs` ツールを使用して Figma 変数を取得
 - Tailwind クラスまたはプロジェクトのデザイントークンに変換
 
 ### 4. マークアップの実装
