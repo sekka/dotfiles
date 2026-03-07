@@ -1,106 +1,149 @@
 ---
 name: working-with-figma
-description: FigmaデザインをMCPツールで取得し、既存コードベースへ正確に実装します。デザイン情報の取得から実装までを一貫して支援します。Figmaデザインとの作業が必要なときに使用してください。
-allowed-tools: Read, Write, Bash, Glob
-disable-model-invocation: true
+description: FigmaデザインをコードへHigh-fidelityに実装します。Figmaファイル・フレーム・コンポーネントの実装依頼、「Figmaのデザイン通りに」「このFigmaを実装して」「デザインカンプ通りに」などのキーワードで起動します。Figma MCPツールが利用可能な場合は積極的に活用します。
+disable-model-invocation: false
 ---
 
-# Figma デザインワークフロー
+# Figmaデザイン実装スキル
 
 ## 概要
 
-Figmaデザインの参照から実装までを統合的に支援するスキルです。2つの主要機能を提供:
+FigmaデザインをHigh-fidelityでコード実装するスキル。
+Sub Agentパターンでトークン効率を最大化しながら、デザインの意図を正確に再現します。
 
-1. **デザイン情報取得**: Figma MCPでデザイン仕様を正確に取得
-2. **実装**: 取得した情報を既存コードベースへ正確に反映
+## 前提確認
 
-## Quick Start
+実装前に以下を確認する:
 
-### デザイン情報取得モード
-
-1. Figma URLを受け取る
-2. Figma MCPでデザイン情報を取得
-3. 実測値を整理して共有
-
-### 実装モード
-
-1. デザイン情報を確認
-2. 既存コードベースの設計体系を把握
-3. コンポーネント設計 → 実装 → 検証
+1. **Figma MCP** が利用可能か確認（`figma` ツールが存在するか）
+2. **対象フレーム/コンポーネント** のノードID または URL
+3. **実装先のフレームワーク**（React/Vue/HTML+CSS等）
+4. **Design System** の有無（Tailwind、Panda CSS、独自CSS等）
 
 ## 実行フロー
 
-### Phase 1: デザイン情報の取得
+### Step 1: Sub Agentでデザインデータ取得
 
-**ツール:**
+**重要: Figma APIレスポンスは膨大なトークンを消費する。必ずSub Agentに委譲し、メインセッションには要約のみ返させる。**
 
-- `mcp__figma-desktop__get_design_context` - 構造とプロパティ取得
-- `mcp__figma-desktop__get_screenshot` - ビジュアル確認
+Sub Agentへの指示テンプレート:
+```
+以下のFigmaノードを段階的に取得し、実装に必要な情報のみ要約して返してください。
 
-**抽出する情報:**
+ノード: [NODE_ID]
 
-- 配色（カラートークン、HEX値）
-- タイポグラフィ（サイズ、行高、ウェイト）
-- スペーシング（余白、gap、padding）
-- レイアウト（constraints、autolayout）
-- 角丸・影（border-radius、box-shadow）
-- バリアント（prop名と値）
+取得手順:
+1. depth=1で全体構造を把握
+2. 主要コンポーネントをdepth=3で詳細取得
+3. 画面全体の場合はdepth=4
+4. トークンエラー時は自動リトライ（depth-1）
 
-詳細は [FETCHING.md](./FETCHING.md) を参照。
+返却形式:
+- レイアウト構造（フレックス/グリッド/絶対配置）
+- タイポグラフィ（フォント名、サイズ、ウェイト、行間）
+- カラー（HEX値またはデザイントークン参照名）
+- スペーシング（padding/margin/gap）
+- コンポーネント一覧と階層
+- SVG/画像アセットのノードID一覧
 
-### Phase 2: 実装
+生データは返さないこと。必ず要約形式で返すこと。
+```
 
-**ステップ:**
+詳細: `references/sub-agent-pattern.md`
 
-1. **設計確認**
-   - 既存のレイアウト/コンポーネント構造確認
-   - props・state・variant整理
+### Step 2: デザイントークンの解決
 
-2. **実装**
-   - デザイントークンに沿って適用
-   - アクセシビリティ確保
-   - 状態管理（default/hover/focus/active/disabled）
+- Figma APIが返すのは参照名（例: `color/primary/500`）のみ
+- プロジェクトのDesign Token定義と照合して実際の値に変換
+- 対応表が不明な場合はユーザーに確認
 
-3. **検証**
-   - ブレークポイントごとの表示確認
-   - ビルド・テスト・リント実行
+詳細: `references/typography-extraction.md`
 
-詳細は [IMPLEMENTING.md](./IMPLEMENTING.md) を参照。
+### Step 3: アセット取得
+
+- SVGアイコン・画像はMCPのdownload機能で取得
+- メタデータからSVGパスを推測しない（必ず実ファイルを取得）
+- 詳細: `references/asset-handling.md`
+
+### Step 4: System UI要素の除外判断
+
+iOSホームインジケーター・Androidナビゲーションバー等のOS描画要素は実装しない。
+詳細: `references/system-ui-exclusion.md`
+
+### Step 5: コード実装
+
+取得した情報をもとにコンポーネントを実装:
+
+```
+実装優先度:
+1. レイアウト構造（flex/grid配置）
+2. スペーシング（padding/margin/gap）
+3. タイポグラフィ（font-size, line-height, font-weight）
+4. カラー（背景色、テキスト色、ボーダー）
+5. インタラクション（hover, focus, active状態）
+6. アニメーション（transition, animation）
+```
+
+### Step 6: 視覚差分確認（オプション）
+
+Chrome DevTools MCPまたはPlaywright MCPで実装結果をスクリーンショット取得し、Figmaデザインと比較する。
 
 ## 実装ガイドライン
 
-### スタイル適用の優先順位
+### レイアウト実装
 
-1. 既存のデザイントークンを使用
-2. 既存コンポーネントを再利用/拡張
-3. 新規作成は最小限に
+```css
+/* Figma Auto Layout → CSS Flexbox */
+direction: horizontal → flex-direction: row
+direction: vertical   → flex-direction: column
+spacing: 16           → gap: 1rem
+padding: [8, 16, 8, 16] → padding: 0.5rem 1rem
 
-### 出力フォーマット
-
-```markdown
-## デザイン情報
-
-- **対象**: [URL]（ページ/ノード、デバイス、テーマ）
-- **配色**: primary/500: `#0A84FF`
-- **タイポグラフィ**: Heading/LG: 28px/34px, weight 700
-
-## 実装結果
-
-### 変更ファイル
-- `src/components/Button.tsx`: variant追加
-
-### テスト結果
-- ビルド: OK
-- リント: OK
+/* Figma Constraints */
+Fill container → flex: 1 または width: 100%
+Fixed width    → width: [px]
+Hug contents   → width: fit-content
 ```
 
-## 注意事項
+### タイポグラフィ実装
 
-- 推測せず、必ずFigma MCPの結果を根拠にする
-- 取得できない場合は「どのノード/権限が不足しているか」を具体的に伝える
-- 変更範囲を最小化し、影響範囲が広い場合は理由とリスクを明示
+```css
+/* Figmaの値をそのままCSSへ */
+font-size: [Figma値]px
+line-height: [Figma値]px → calc([値]px / [font-size]px)でem換算推奨
+font-weight: [Figmaウェイト]
+letter-spacing: [Figma値]px
+```
 
-## 関連ファイル
+### カラー実装
 
-- [FETCHING.md](./FETCHING.md) - デザイン情報取得の詳細ガイド
-- [IMPLEMENTING.md](./IMPLEMENTING.md) - 実装の詳細ガイド
+Design Systemがある場合はトークン変数を優先:
+```css
+/* 良い例 */
+color: var(--color-primary-500);
+background: var(--color-gray-100);
+
+/* Design Tokenがない場合はHEX直書き */
+color: #3b82f6;
+```
+
+## 品質チェックリスト
+
+- [ ] スペーシング: Figma値とpx単位が一致しているか
+- [ ] タイポグラフィ: フォントファミリー、サイズ、ウェイトが正確か
+- [ ] カラー: HEX値またはトークンが正しいか
+- [ ] レイアウト: flex/gridの方向・配置が一致しているか
+- [ ] レスポンシブ: 固定サイズとフレキシブルサイズの判断が正しいか
+- [ ] アセット: SVG/画像が実ファイルから取得されているか
+- [ ] System UI: OS描画要素を実装していないか
+
+## 依頼者向けガイド
+
+精度の高い実装依頼に必要な情報（URL・スタック・Design Token・スコープ等）:
+`references/request-guide.md`
+
+## 関連スキル
+
+- **designing-ui**: コンポーネント仕様定義、デザイン意図の補完
+- **developing-frontend**: 実装技術の詳細（React/Vue/CSS）
+- **managing-frontend-knowledge**: モダンCSS技術の参照

@@ -184,7 +184,8 @@
       "WebFetch(domain:www.trynia.ai)",
       "WebFetch(domain:fastmcp.me)",
       "WebFetch(domain:www.pulsemcp.com)",
-      "WebFetch(domain:skywork.ai)"
+      "WebFetch(domain:skywork.ai)",
+      "mcp__filesystem__write_file"
     ],
     "deny": [],
     "ask": []
