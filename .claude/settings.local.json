@@ -185,7 +185,8 @@
       "WebFetch(domain:fastmcp.me)",
       "WebFetch(domain:www.pulsemcp.com)",
       "WebFetch(domain:skywork.ai)",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "WebFetch(domain:t.co)"
     ],
     "deny": [],
     "ask": []
