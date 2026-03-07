@@ -17,9 +17,6 @@ personality = true
 [projects."~/dotfiles"]
 trust_level = "trusted"
 
-[projects."~/src/github.com/sekka/diary"]
-trust_level = "trusted"
-
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
 
@@ -27,16 +24,7 @@ trust_level = "trusted"
 status_line = [
   "model-with-reasoning",
   "context-remaining",
-  "current-dir",
-  "model-name",
-  "project-root",
-  "git-branch",
   "context-used",
   "five-hour-limit",
   "weekly-limit",
-  "codex-version",
-  "context-window-size",
-  "used-tokens",
-  "total-input-tokens",
-  "total-output-tokens",
 ]
