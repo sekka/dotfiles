@@ -49,7 +49,6 @@ import { getGitStatus } from "./statusline/git.ts";
 import {
 	getContextTokens,
 	getSessionElapsedTime,
-	getCompactCount,
 	saveSessionTokens,
 } from "./statusline/tokens.ts";
 
@@ -106,7 +105,6 @@ function buildFirstLine(
 	costDisplay: string,
 	inputTokens: number,
 	outputTokens: number,
-	compactCount: number,
 	config: StatuslineConfig,
 ): string {
 	let result = `${colors.cyan(model)} ${label("PRJ")}${colors.white(dirName)}${gitPart ? ` ${label("BR")}${gitPart}` : ""}`;
@@ -168,7 +166,6 @@ async function buildMetricsLine(
 	costDisplay: string,
 	inputTokens: number,
 	outputTokens: number,
-	compactCount: number,
 	data: HookInput,
 ): Promise<string> {
 	const parts: Array<{ label: string; text: string }> = [];
@@ -192,13 +189,10 @@ async function buildMetricsLine(
 	}
 
 	// IO metrics (always enabled, moved after token display)
-	if (config.tokens.showInputOutput || config.tokens.showCompactCount) {
+	if (config.tokens.showInputOutput) {
 		const ioText = renderIO(
-			{
-				showInputOutput: config.tokens.showInputOutput,
-				showCompactCount: config.tokens.showCompactCount,
-			},
-			{ inputTokens, outputTokens, compactCount },
+			{ showInputOutput: config.tokens.showInputOutput },
+			{ inputTokens, outputTokens },
 		);
 		if (ioText) {
 			parts.push({ label: "io", text: ioText });
@@ -363,9 +357,6 @@ async function buildStatusline(
 			sessionTimeDisplay = await getSessionElapsedTime(data.transcript_path);
 		}
 
-		// Get compact count
-		const compactCount = data.session_id ? await getCompactCount(data.session_id) : 0;
-
 		debug(`usageLimits: ${JSON.stringify(usageLimits)}`, "basic");
 
 		// Build status lines
@@ -378,7 +369,6 @@ async function buildStatusline(
 			costDisplay,
 			inputTokens,
 			outputTokens,
-			compactCount,
 			config,
 		);
 		const metricsLine = await buildMetricsLine(
@@ -391,7 +381,6 @@ async function buildStatusline(
 			costDisplay,
 			inputTokens,
 			outputTokens,
-			compactCount,
 			data,
 		);
 

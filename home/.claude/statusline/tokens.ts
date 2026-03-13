@@ -269,38 +269,6 @@ export async function getContextTokens(
 	return { tokens: 0, percentage: 0, inputTokens: 0, outputTokens: 0 };
 }
 
-/**
- * セッションの圧縮実行回数を取得
- * ~/.claude/data/compact-counts.json から該当セッションの圧縮回数を読み取ります。
- *
- * @param {string} sessionId - セッションID
- * @returns {Promise<number>} 圧縮実行回数（ファイルが存在しない、またはセッションIDが見つからない場合は 0）
- *
- * @remarks
- * - ファイルが存在しない場合は 0 を返す
- * - JSON パースエラーは 0 を返す
- * - セッションIDが見つからない場合は 0 を返す
- *
- * @example
- * const count = await getCompactCount("abc123");
- * console.log(`Compact count: ${count}`);
- */
-export async function getCompactCount(sessionId: string): Promise<number> {
-	try {
-		const countsPath = join(HOME, ".claude", "data", "compact-counts.json");
-		const file = Bun.file(countsPath);
-
-		const exists = await file.exists();
-		if (!exists) {
-			return 0;
-		}
-
-		const data = await file.json();
-		return data[sessionId] || 0;
-	} catch {
-		return 0;
-	}
-}
 
 /**
  * トランスクリプトファイルの作成時刻から現在までの経過時間を取得

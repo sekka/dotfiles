@@ -76,8 +76,7 @@ export const LABEL_KEYS = {
 	IO: "io",
 	INPUT: "input",
 	OUTPUT: "output",
-	COMPACT: "compact",
-	LIMIT: "limit",
+LIMIT: "limit",
 	DAILY: "daily",
 	WEEKLY: "weekly",
 	WEEKLY_SONNET: "weekly_sonnet",
@@ -267,26 +266,16 @@ export function formatResetDateOnly(resetsAt: string): string {
 
 import type { StatuslineConfig } from "./api.js";
 
-/** I/O メトリクス（入力/出力トークン・圧縮回数）を描画 */
+/** I/O メトリクス（入力/出力トークン）を描画 */
 export function renderIO(
-	config: { showInputOutput: boolean; showCompactCount: boolean },
-	data: { inputTokens: number; outputTokens: number; compactCount: number },
+	config: { showInputOutput: boolean },
+	data: { inputTokens: number; outputTokens: number },
 ): string | null {
-	const parts: string[] = [];
+	if (!config.showInputOutput) return null;
 
-	if (config.showInputOutput) {
-		const inStr = formatTokensK(data.inputTokens);
-		const outStr = formatTokensK(data.outputTokens);
-		parts.push(
-			`${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`,
-		);
-	}
-
-	if (config.showCompactCount) {
-		parts.push(`${label("CMP")}${colors.white(data.compactCount.toString())}`);
-	}
-
-	return parts.length > 0 ? parts.join(" ") : null;
+	const inStr = formatTokensK(data.inputTokens);
+	const outStr = formatTokensK(data.outputTokens);
+	return `${label("IN")}${colors.white(inStr)}${colors.gray("K")} ${label("OUT")}${colors.white(outStr)}${colors.gray("K")}`;
 }
 
 /** セッション時間を描画 */

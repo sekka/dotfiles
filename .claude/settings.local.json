@@ -188,7 +188,8 @@
       "mcp__filesystem__write_file",
       "WebFetch(domain:t.co)",
       "mcp__brave-search__brave_web_search",
-      "WebFetch(domain:dev.henry.jp)"
+      "WebFetch(domain:dev.henry.jp)",
+      "WebFetch(domain:www.builder.io)"
     ],
     "deny": [],
     "ask": []

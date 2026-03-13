@@ -17,8 +17,7 @@
 	},
 	"tokens": {
 		"showContextUsage": true,
-		"showInputOutput": true,
-		"showCompactCount": true
+		"showInputOutput": true
 	},
 	"session": {
 		"showSessionId": false,
