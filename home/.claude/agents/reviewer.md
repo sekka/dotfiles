@@ -79,4 +79,3 @@ permissionMode: default
 - **Glob**: ファイルパターン検索
 - **Grep**: コード内容の検索
 - **Bash**: 静的解析ツールの実行（eslint, prettier, etc.）
-- **fossil MCP**: デッドコード検出（`analyze_dead_code`）・コール解析（`scan_all`, `fossil_inspect`）
