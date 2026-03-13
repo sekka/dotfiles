@@ -467,15 +467,11 @@ def deduplicate_fuzzy_match(exact_deduplicated: List[Finding]) -> List[Finding]:
 # ========================================
 
 def calculate_priority_from_count(reviewer_count: int) -> str:
-    """レビュアー数から優先度を計算"""
-    if reviewer_count >= 4:
-        return 'Critical'
-    elif reviewer_count >= 3:
+    """レビュアー数から優先度を計算（2レビュアー構成: Codex + Gemini）"""
+    if reviewer_count >= 2:
         return 'High'
-    elif reviewer_count >= 2:
-        return 'Medium'
     else:
-        return 'Low'
+        return 'Medium'
 
 
 def escalate_security_priority(finding: Finding) -> Finding:
@@ -559,7 +555,7 @@ def generate_report(findings: List[Finding], failed_reviewers: List[str] = None)
         for finding in by_priority[priority_level]:
             report.append(f"### [{finding.file}:{finding.line}] {finding.description}\n")
             report.append(f"**カテゴリ**: {finding.category}\n")
-            report.append(f"**指摘したレビュアー**: {', '.join(finding.reviewers)} ({len(finding.reviewers)}/4)\n")
+            report.append(f"**指摘したレビュアー**: {', '.join(finding.reviewers)} ({len(finding.reviewers)}/2)\n")
             report.append("")
 
     # カテゴリ別分析
@@ -585,8 +581,6 @@ def generate_report(findings: List[Finding], failed_reviewers: List[str] = None)
 def main():
     parser = argparse.ArgumentParser(description='並列AIレビューの統合処理')
     parser.add_argument('--codex', help='Codexの出力ファイル')
-    parser.add_argument('--coderabbit', help='CodeRabbitの出力ファイル')
-    parser.add_argument('--copilot', help='Copilotの出力ファイル')
     parser.add_argument('--gemini', help='Geminiの出力ファイル')
     parser.add_argument('--output', help='出力ファイルパス', default='integrated-report.md')
     parser.add_argument(
@@ -605,8 +599,6 @@ def main():
 
     ai_results = {
         'codex': args.codex,
-        'coderabbit': args.coderabbit,
-        'copilot': args.copilot,
         'gemini': args.gemini,
     }
 

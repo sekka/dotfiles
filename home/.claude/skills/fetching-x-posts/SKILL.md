@@ -14,21 +14,25 @@ X投稿URLからJSONデータを抽出する。Node.js CLI（Playwright）を優
 
 ### Step 1: Node.js CLI方式（優先）
 
+heredocで実行する（`node -e "..."` は `!` のbash history expansion と Node.js v24 TypeScriptパーサーの問題で失敗するため）。
+
 ```bash
-PLAYWRIGHT_ROOT=$(npm root -g)/playwright node -e "
-const { chromium } = require(process.env.PLAYWRIGHT_ROOT);
+node - <<'NODEEOF'
+const { execFileSync } = require('child_process');
+const npmRoot = execFileSync('npm', ['root', '-g']).toString().trim();
+const { chromium } = require(`${npmRoot}/playwright`);
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ userAgent: UA });
   try {
     await page.goto('https://x.com/username/status/TWEET_ID', { waitUntil: 'domcontentloaded', timeout: 30000 }); // ← URLを置き換える
-    await page.waitForSelector('[data-testid=\"tweetText\"]', { timeout: 15000 }).catch(() => null);
+    await page.waitForSelector('[data-testid="tweetText"]', { timeout: 15000 }).catch(() => null);
     const data = await page.evaluate(() => {
       const article = document.querySelector('article');
       if (!article) return { error: 'article not found' };
-      const textEl = article.querySelector('[data-testid=\"tweetText\"]');
-      const userEl = article.querySelector('[data-testid=\"User-Name\"]');
+      const textEl = article.querySelector('[data-testid="tweetText"]');
+      const userEl = article.querySelector('[data-testid="User-Name"]');
       const timeEl = article.querySelector('time');
       const userLines = userEl?.innerText.split('\n') ?? [];
       return {
@@ -38,23 +42,23 @@ const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (
         timestamp: timeEl?.getAttribute('datetime') || '',
         displayTime: timeEl?.innerText || '',
         engagement: {
-          replies: article.querySelector('[data-testid=\"reply\"]')?.getAttribute('aria-label') || '',
-          retweets: article.querySelector('[data-testid=\"retweet\"]')?.getAttribute('aria-label') || '',
-          likes: article.querySelector('[data-testid=\"like\"]')?.getAttribute('aria-label') || '',
+          replies: article.querySelector('[data-testid="reply"]')?.getAttribute('aria-label') || '',
+          retweets: article.querySelector('[data-testid="retweet"]')?.getAttribute('aria-label') || '',
+          likes: article.querySelector('[data-testid="like"]')?.getAttribute('aria-label') || '',
         },
         media: {
-          type: article.querySelector('[data-testid=\"videoPlayer\"]') ? 'video'
-              : article.querySelector('[data-testid=\"tweetPhoto\"]') ? 'image' : 'none',
+          type: article.querySelector('[data-testid="videoPlayer"]') ? 'video'
+              : article.querySelector('[data-testid="tweetPhoto"]') ? 'image' : 'none',
         }
       };
     });
-    if (data.media?.type === 'image') {
+    if (data.media && data.media.type === 'image') {
       await page.locator('article').first().screenshot({ path: '/tmp/x_post_image.png' });
     }
     console.log(JSON.stringify(data, null, 2));
   } finally { await browser.close(); }
 })();
-" 2>&1
+NODEEOF
 ```
 
 ### Step 2: MCP方式（フォールバック）

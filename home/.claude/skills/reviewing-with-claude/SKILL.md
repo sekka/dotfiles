@@ -25,9 +25,7 @@ disable-model-invocation: false
 ### 外部AIレビュー
 
 - **review-with-codex**: OpenAI Codexによる詳細レビュー
-- **review-with-copilot**: GitHub Copilotによるレビュー
 - **review-with-gemini**: Google Geminiによるレビュー
-- **review-with-coderabbit**: CodeRabbitによる構造化レビュー
 
 重要な変更の多角的検証や、特定のAIの強みを活かしたい場合に使用。
 
@@ -132,7 +130,6 @@ Read、Grep、Globツールで対象コードを取得
 重要な変更の場合、以下の外部AIレビューも検討：
 
 - /review-with-codex - OpenAI Codexの視点
-- /review-with-copilot - GitHub Copilotの視点
 - /review-with-gemini - Google Geminiの視点
 
 ## 使用例

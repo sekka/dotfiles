@@ -6,15 +6,13 @@
 
 このアルゴリズムは以下の外部Pythonスクリプトとして実装します：
 
-**スクリプトパス**: `~/.claude/skills/review-parallel/parallel-review-merge.py`
+**スクリプトパス**: `~/.claude/skills/reviewing-parallel/parallel-review-merge.py`
 
 SKILL.md Phase 4からの呼び出し：
 
 ```bash
-python ~/.claude/skills/review-parallel/parallel-review-merge.py \
+python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
   --codex codex-output.md \
-  --coderabbit coderabbit-output.md \
-  --copilot copilot-output.md \
   --gemini gemini-output.md \
   --output integrated-report.md
 ```
@@ -430,7 +428,7 @@ def detect_conflicts(finding):
 ## 📊 サマリー
 
 - **レビュー対象**: [target description]
-- **起動したレビュアー**: Codex ✅ | CodeRabbit ✅ | Copilot ✅ | Gemini ✅
+- **起動したレビュアー**: Codex ✅ | Gemini ✅
 - **検出問題総数**: {total_count}件
   - 🔴 Critical: {critical_count}
   - 🟡 High: {high_count}
@@ -489,12 +487,6 @@ def detect_conflicts(finding):
 
 ### Codexの独自見解
 {codex only findings}
-
-### CodeRabbitの独自見解
-{coderabbit only findings}
-
-### Copilotの独自見解
-{copilot only findings}
 
 ### Geminiの独自見解
 {gemini only findings}
@@ -583,5 +575,3 @@ Generated: {timestamp}
 |----|------|-------------|
 | Codex | ロジック・エッジケース | feasibility, completeness |
 | Gemini | 設計整合性・スケーラビリティ | architecture, dependencies |
-| Copilot | 実装実用性・工数 | scope, feasibility |
-| CodeRabbit | セキュリティ・リスク | risk, dependencies |

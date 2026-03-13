@@ -1,13 +1,13 @@
 ---
 name: reviewing-parallel
-description: 複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、結果を統合処理して単一のレポートを生成します。重複排除、優先度付け、カテゴリ分類を自動化します。包括的なコードレビュー、多角的な視点での品質評価、複数AIの強みを活かしたレビューが必要な場合に使用してください。
+description: 複数のAIレビュアー（Codex、Gemini）を並列実行し、結果を統合処理して単一のレポートを生成します。重複排除、優先度付け、カテゴリ分類を自動化します。包括的なコードレビュー、多角的な視点での品質評価、複数AIの強みを活かしたレビューが必要な場合に使用してください。
 allowed-tools: Task, Bash, Read, Grep, Glob
 disable-model-invocation: true
 ---
 
 # 並列AIレビュー実行スキル
 
-このスキルは4つの専門AIレビュアーを並列実行し、結果を統合処理して包括的なコードレビューレポートを生成します。
+このスキルは2つの専門AIレビュアー（Codex、Gemini）を並列実行し、結果を統合処理して包括的なコードレビューレポートを生成します。
 
 ## Phase 0: 前提条件確認
 
@@ -18,8 +18,6 @@ disable-model-invocation: true
 ```bash
 # 各CLIツールが利用可能か確認
 command -v codex || echo "⚠️ codex CLI not found"
-command -v coderabbit || echo "⚠️ coderabbit CLI not found"
-command -v copilot || echo "⚠️ copilot CLI not found"
 command -v gemini || echo "⚠️ gemini CLI not found"
 ```
 
@@ -28,8 +26,7 @@ command -v gemini || echo "⚠️ gemini CLI not found"
 ```bash
 # 各ツールの認証状態確認
 codex whoami 2>/dev/null || echo "⚠️ codex not authenticated"
-coderabbit auth status 2>/dev/null || echo "⚠️ coderabbit not authenticated"
-# copilot and gemini auth check
+# gemini auth check
 ```
 
 ### 0.3 Python環境確認
@@ -120,13 +117,13 @@ git_stat=$(git diff HEAD --stat)
 branch=$(git rev-parse --abbrev-ref HEAD)
 ```
 
-## Phase 2: 4レビュアーの並列起動
+## Phase 2: 2レビュアーの並列起動
 
-4つのレビュアーを並列（同時）に起動します。
+2つのレビュアーを並列（同時）に起動します。
 
 ### 2.1 並列実行の要件
 
-- **4つのレビュアー**: Codex、CodeRabbit、Copilot、Gemini
+- **2つのレビュアー**: Codex、Gemini
 - **同時実行**: 各レビュアーは並列で起動
 - **同じ入力**: 全レビュアーに同じgit diff出力を渡す
 - **非同期実行**: backgroundモードで実行
@@ -137,8 +134,6 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 | レビュアー | コードレビュー専門 | プランレビュー専門 | Agent | Focus |
 |-----------|----------------|----------------|-------|-------|
 | **Codex** | コード品質、ベストプラクティス、深い推論 | 実現可能性・エッジケース | @agent-codex-reviewer | Code Quality Analysis |
-| **CodeRabbit** | セキュリティ脆弱性、パフォーマンス、OWASP | セキュリティリスク・データ保護 | coderabbit:code-reviewer | Security & Performance |
-| **Copilot** | GitHub統合、CI/CD最適化、実践的改善 | 実装実用性・工数 | @agent-copilot-reviewer | GitHub Workflow Integration |
 | **Gemini** | アーキテクチャ分析、システム設計、SOLID原則 | 設計整合性・スケーラビリティ | @agent-gemini-reviewer | Architecture Analysis |
 
 ### 2.3 並列実行方法
@@ -168,8 +163,6 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 # 疑似コード
 results = {
     'codex': get_reviewer_output('codex-reviewer'),
-    'coderabbit': get_reviewer_output('coderabbit:code-reviewer'),
-    'copilot': get_reviewer_output('copilot-reviewer'),
     'gemini': get_reviewer_output('gemini-reviewer')
 }
 ```
@@ -188,26 +181,14 @@ if len(successful_reviewers) == 0:
     raise Error("全てのレビュアーが失敗しました。実行環境と認証設定を確認してください。")
 ```
 
-### 3.3 セキュリティレビュアー失敗時の特別処理
-
-CodeRabbit（セキュリティ専門）が失敗した場合、セキュリティカテゴリの問題は優先度を自動昇格：
-
-```python
-if 'coderabbit' in failed_reviewers:
-    # OWASP関連のセキュリティ問題の優先度を昇格
-    for finding in findings:
-        if finding['category'] == 'security':
-            finding['priority'] = escalate_priority(finding['priority'])
-```
-
-### 3.4 失敗レビュアーの警告生成
+### 3.3 失敗レビュアーの警告生成
 
 失敗したレビュアーがある場合、レポート冒頭に警告を追加：
 
 ```markdown
 ⚠️ 以下のレビュアーが失敗しました：
-- CodeRabbit: セキュリティ観点が不足している可能性があります
-  → 手動でのセキュリティレビューを推奨します
+- [reviewer]: 該当の観点が不足している可能性があります
+  → 手動でのレビューを推奨します
 ```
 
 ## Phase 4: 統合処理
@@ -219,10 +200,8 @@ if 'coderabbit' in failed_reviewers:
 統合処理は外部Pythonスクリプトで実行されます。詳細はALGORITHMS.mdを参照。
 
 ```bash
-python ~/.claude/skills/review-parallel/parallel-review-merge.py \
+python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
   --codex <(echo "$codex_output") \
-  --coderabbit <(echo "$coderabbit_output") \
-  --copilot <(echo "$copilot_output") \
   --gemini <(echo "$gemini_output") \
   --output integrated-findings.md
 ```
@@ -233,8 +212,6 @@ python parallel-review-merge.py \
   --type plan \
   --plan-file "<plan-file>" \
   --codex <(echo "$codex_output") \
-  --coderabbit <(echo "$coderabbit_output") \
-  --copilot <(echo "$copilot_output") \
   --gemini <(echo "$gemini_output") \
   --output integrated-findings.md
 ```
@@ -250,10 +227,8 @@ python parallel-review-merge.py \
    - Fuzzy Matching: ±2行以内で同一問題と判定
 
 3. **優先度付け**: レビュアー数ベースで優先度を計算
-   - 4つ全て: Critical
-   - 3つ: High
-   - 2つ: Medium
-   - 1つ: Low
+   - 2つ全て: High
+   - 1つ: Medium
    - セキュリティ脆弱性: 自動的にCriticalに昇格
 
 4. **カテゴリ分類**: キーワードベースで分類
@@ -273,7 +248,7 @@ python parallel-review-merge.py \
 
 ## 📊 サマリー
 - レビュー対象: [git情報]
-- 起動したレビュアー: [成功したもの] ([数]/4)
+- 起動したレビュアー: [成功したもの] ([数]/2)
 - 検出問題総数: [X]件
 
 ## 🔴 Critical（即座に対応すべき）
@@ -339,15 +314,13 @@ python parallel-review-merge.py \
 #### [{file_path}:{line_number}] {short_description}
 
 **カテゴリ**: {category}
-**指摘したレビュアー**: {reviewers} ({count}/4)
+**指摘したレビュアー**: {reviewers} ({count}/2)
 
 **問題**:
 {unified_description}
 
 **各レビュアーの視点**:
 - **Codex**: {comment}
-- **CodeRabbit**: {comment}
-- **Copilot**: {comment}
 - **Gemini**: {comment}
 
 **推奨アクション**:
