@@ -1,6 +1,6 @@
 ---
 name: parallel-reviewer
-description: コードレビュー（git diff）とプランレビュー（Markdownファイル）の両方に対応した並列AIレビューオーケストレーター。複数のAIレビュアー（Codex、CodeRabbit、Copilot、Gemini）を並列実行し、統合レポートを生成。重複排除、優先度付け、カテゴリ分類を自動化。
+description: コードレビュー（git diff）とプランレビュー（Markdownファイル）の両方に対応した並列AIレビューオーケストレーター。複数のAIレビュアー（Codex、Gemini）を並列実行し、統合レポートを生成。重複排除、優先度付け、カテゴリ分類を自動化。
 tools: All tools
 model: haiku
 permissionMode: default
@@ -65,24 +65,6 @@ You are a parallel code review orchestrator that coordinates multiple specialize
        ai_available[codex]=0
    fi
 
-   # Copilot (GitHub CLI経由)
-   if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-       if command -v copilot >/dev/null 2>&1; then
-           ai_available[copilot]=1
-       else
-           ai_available[copilot]=0
-       fi
-   else
-       ai_available[copilot]=0
-   fi
-
-   # CodeRabbit
-   if command -v coderabbit >/dev/null 2>&1; then
-       ai_available[coderabbit]=1
-   else
-       ai_available[coderabbit]=0
-   fi
-
    # Gemini (API key確認)
    if [[ -n "$GEMINI_API_KEY" ]] || command -v gemini >/dev/null 2>&1; then
        ai_available[gemini]=1
@@ -100,7 +82,7 @@ You are a parallel code review orchestrator that coordinates multiple specialize
 
    # Step 3: デバッグ出力（オプション）
    echo "[parallel-reviewer] Available AI services: $total_available" >&2
-   for ai in codex copilot coderabbit gemini; do
+   for ai in codex gemini; do
        echo "  - $ai: ${ai_available[$ai]:-0}" >&2
    done
    ```
@@ -112,7 +94,7 @@ You are a parallel code review orchestrator that coordinates multiple specialize
 
    **タイムアウト戦略:**
    - 各レビュアー: 5分（300秒）でタイムアウト
-   - 全体で最大20分（4レビュアー×5分）で完了保証
+   - 全体で最大10分（2レビュアー×5分）で完了保証
    - タイムアウト時は部分結果を返す
    - 2つ以上失敗時はClaude内蔵reviewerでフォールバック
 
@@ -122,12 +104,6 @@ You are a parallel code review orchestrator that coordinates multiple specialize
    reviewers_to_launch=()
 
    [[ ${ai_available[codex]:-0} == "1" ]] && reviewers_to_launch+=("codex-reviewer")
-   [[ ${ai_available[copilot]:-0} == "1" ]] && reviewers_to_launch+=("copilot-reviewer")
-   if [[ "$review_type" == "plan" ]]; then
-       [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit-reviewer")
-   else
-       [[ ${ai_available[coderabbit]:-0} == "1" ]] && reviewers_to_launch+=("coderabbit:code-reviewer")
-   fi
    [[ ${ai_available[gemini]:-0} == "1" ]] && reviewers_to_launch+=("gemini-reviewer")
 
    # タイムアウト付き並列起動
@@ -278,8 +254,6 @@ python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
   --plan-file "<plan-file-path>" \
   --codex /tmp/codex-plan-review.md \
   --gemini /tmp/gemini-plan-review.md \
-  --copilot /tmp/copilot-plan-review.md \
-  --coderabbit /tmp/coderabbit-plan-review.md \
   --output /tmp/parallel-plan-review-final.md
 ```
 
@@ -293,8 +267,8 @@ python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
 
 - **Target Identification**: Parse user request to determine review scope (uncommitted, branch comparison, etc.)
 - **Dynamic Reviewer Selection**: Only launch available AI reviewers based on CLI presence
-- **Parallel Orchestration**: Launch 1-4 reviewers simultaneously with timeout protection
-- **Timeout Management**: Enforce 5-minute limit per reviewer, 20-minute total maximum
+- **Parallel Orchestration**: Launch 1-2 reviewers simultaneously with timeout protection
+- **Timeout Management**: Enforce 5-minute limit per reviewer, 10-minute total maximum
 - **Graceful Degradation**: Handle partial failures and provide fallback to Claude reviewer
 - **Result Integration**: Aggregate and deduplicate findings from successful reviewers only
 - **Priority Calculation**: Combine reviewer counts with security severity for proper prioritization
