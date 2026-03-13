@@ -21,12 +21,10 @@
       "Bash(bunx:*)",
       "Bash(cat:*)",
       "Bash(claude:*)",
-      "Bash(coderabbit:*)",
       "Bash(codesign:*)",
       "Bash(codex:*)",
       "Bash(command -v:*)",
       "Bash(command brew bundle)",
-      "Bash(copilot:*)",
       "Bash(defaults read:*)",
       "Bash(dprint fmt:*)",
       "Bash(echo:*)",
@@ -47,7 +45,6 @@
       "Bash(ls:*)",
       "Bash(lsof:*)",
       "Bash(mdfind:*)",
-      "Bash(mgrep --web --answer:*)",
       "Bash(mise:*)",
       "Bash(mkdir:*)",
       "Bash(mlx_audio.tts.generate:*)",
@@ -75,7 +72,6 @@
       "Bash(yazi:*)",
       "Bash(difit-here.sh)",
       "Bash(zoxide:*)",
-      "Skill(asking-peer)",
       "Skill(difit-here)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
@@ -85,18 +81,12 @@
       "Skill(review-parallel)",
       "Skill(review-pr)",
       "Skill(review-with-claude)",
-      "Skill(review-with-coderabbit)",
-      "Skill(review-with-codex)",
-      "Skill(review-with-copilot)",
-      "Skill(review-with-gemini)",
-      "Skill(review-with-multi-ai)",
       "Skill(reviewing-with-claude)",
       "WebSearch",
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
-      "mcp__plugin_context7_context7__*",
-      "mcp__sequential-thinking__*"
+      "mcp__plugin_context7_context7__*"
     ],
     "deny": [
       "Bash(do:*)",
@@ -173,10 +163,6 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/dotfiles/scripts/development/sort-permissions.sh --file $FILE_PATH"
           }
         ]
       }
@@ -198,16 +184,6 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/.claude/hooks/compact-counter.ts"
           }
         ]
       }
@@ -239,46 +215,28 @@
     "frontend-design@claude-plugins-official": true,
     "playwright@claude-plugins-official": false,
     "pr-review-toolkit@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": false,
     "serena@claude-plugins-official": false,
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
     "Notion@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
-    "example-skills@anthropic-agent-skills": true,
-    "code-simplifier@claude-plugins-official": true,
-    "ask-claude@hiropon-plugins": true,
-    "ask-codex@hiropon-plugins": true,
-    "ask-gemini@hiropon-plugins": true,
-    "peer@hiropon-plugins": true,
-    "mgrep@Mixedbread-Grep": true,
-    "playground@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": false,
+    "code-simplifier@claude-plugins-official": false,
+    "ask-claude@hiropon-plugins": false,
+    "ask-codex@hiropon-plugins": false,
+    "ask-gemini@hiropon-plugins": false,
+    "peer@hiropon-plugins": false,
+    "mgrep@Mixedbread-Grep": false,
+    "playground@claude-plugins-official": false,
+    "ralph-loop@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "php-lsp@claude-plugins-official": true,
-    "coderabbit@claude-plugins-official": true
+    "php-lsp@claude-plugins-official": false,
+    "coderabbit@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": true
   },
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
-    "hiropon-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "hiroro-work/claude-plugins"
-      }
-    },
-    "Mixedbread-Grep": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/mixedbread-ai/mgrep.git"
-      }
-    }
-  },
+  "extraKnownMarketplaces": {},
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./plans"

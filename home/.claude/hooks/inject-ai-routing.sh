@@ -3,7 +3,7 @@
 set -euo pipefail
 
 available=""
-for ai in CODEX GEMINI COPILOT CODERABBIT; do
+for ai in CODEX GEMINI; do
   var="AI_HAS_${ai}"
   if [[ "${!var:-0}" == "1" ]]; then
     name="$(echo "$ai" | tr '[:upper:]' '[:lower:]')"
