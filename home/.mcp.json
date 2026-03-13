@@ -23,28 +23,9 @@
       "command": "npx",
       "args": ["-y", "@drawio/mcp@latest"]
     },
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem"],
-      "env": {
-        "ALLOWED_DIRECTORIES": "${HOME}/dotfiles:${HOME}/src:${HOME}/pjm"
-      }
-    },
-    "fossil": {
-      "command": "fossil-mcp",
-      "args": ["mcp"]
-    },
-    "grepai": {
-      "command": "grepai",
-      "args": ["mcp-serve"]
-    },
     "markitdown": {
       "command": "uvx",
       "args": ["--python", "3.13", "markitdown-mcp"]
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
   }
 }

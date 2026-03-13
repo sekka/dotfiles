@@ -23,10 +23,9 @@ else
     _timeout_cmd=""
 fi
 
-# _detect_ai_availability で使用する認証情報（codex, coderabbit のみ）
+# _detect_ai_availability で使用する認証情報
 typeset -A _ai_auth_files
 _ai_auth_files[codex]="$HOME/.codex/auth.json"
-_ai_auth_files[coderabbit]="$HOME/.coderabbit/auth.json|$HOME/.coderabbit/config.json|$HOME/.coderabbit/auth.token"
 
 # パフォーマンス最適化: 30分キャッシュ
 _ai_cache_file="${XDG_CACHE_HOME:-$HOME/.cache}/ai-availability.cache"
@@ -43,7 +42,7 @@ if [[ -f "$_ai_cache_file" ]]; then
     rm -f "$_ai_cache_file"
 fi
 
-# AI検出の共通ロジック（codex, coderabbit 用）
+# AI検出の共通ロジック（codex 用）
 # CLI存在確認 → CLI応答性 → 認証ファイルの順でチェック
 _detect_ai_availability() {
     local ai_name="$1"
@@ -112,45 +111,6 @@ else
     export AI_HAS_GEMINI=0
 fi
 
-# Copilot - GitHub CLI認証チェック
-_gh_ok=0
-if [[ -n "$_timeout_cmd" ]]; then
-    $_timeout_cmd 5 gh auth status >/dev/null 2>&1 && _gh_ok=1
-else
-    gh auth status >/dev/null 2>&1 && _gh_ok=1
-fi
-
-if (( _gh_ok )); then
-    # Copilot CLI自体の存在と応答性を確認
-    if ! command -v copilot >/dev/null 2>&1; then
-        export AI_HAS_COPILOT=0
-    else
-        _copilot_ok=0
-        if [[ -n "$_timeout_cmd" ]]; then
-            $_timeout_cmd 2 copilot --version >/dev/null 2>&1 && _copilot_ok=1
-        else
-            copilot --version >/dev/null 2>&1 && _copilot_ok=1
-        fi
-
-        if (( _copilot_ok )); then
-            export AI_HAS_COPILOT=1
-            _ai_models+=("copilot")
-        else
-            export AI_HAS_COPILOT=0
-        fi
-    fi
-else
-    export AI_HAS_COPILOT=0
-fi
-
-# CodeRabbit - 認証ファイル + CLI応答性
-if _detect_ai_availability "coderabbit" "${_ai_auth_files[coderabbit]}"; then
-    export AI_HAS_CODERABBIT=1
-    _ai_models+=("coderabbit")
-else
-    export AI_HAS_CODERABBIT=0
-fi
-
 # AI利用可能リストをエクスポート
 export AI_AVAILABLE_MODELS="${(j:,:)_ai_models}"
 
@@ -159,9 +119,7 @@ mkdir -p "$(dirname "$_ai_cache_file")"
 {
     echo "export AI_HAS_CODEX='${AI_HAS_CODEX}'"
     echo "export AI_HAS_GEMINI='${AI_HAS_GEMINI}'"
-    echo "export AI_HAS_COPILOT='${AI_HAS_COPILOT}'"
-    echo "export AI_HAS_CODERABBIT='${AI_HAS_CODERABBIT}'"
     echo "export AI_AVAILABLE_MODELS='${AI_AVAILABLE_MODELS}'"
 } >| "$_ai_cache_file" 2>/dev/null || echo "WARNING: Failed to write AI availability cache" >&2
 
-unset _ai_models _ai_cache_file _ai_cache_ttl _copilot_ok _gh_ok _ai_auth_files _gemini_available _timeout_cmd
+unset _ai_models _ai_cache_file _ai_cache_ttl _ai_auth_files _gemini_available _timeout_cmd

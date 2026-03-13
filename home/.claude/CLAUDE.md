@@ -90,8 +90,6 @@
 
 - Web開発知識ベース: `managing-frontend-knowledge`
 - 軽量レビュー: `/reviewing-with-claude` / 包括的レビュー: `/reviewing-parallel`
-- 設計相談: `/ask-peer` / 技術選定: `/evaluating-tools`
-- AI最適化ルーティング: `/multi-ai-dispatch`
 
 ---
 

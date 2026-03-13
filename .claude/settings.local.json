@@ -186,7 +186,9 @@
       "WebFetch(domain:www.pulsemcp.com)",
       "WebFetch(domain:skywork.ai)",
       "mcp__filesystem__write_file",
-      "WebFetch(domain:t.co)"
+      "WebFetch(domain:t.co)",
+      "mcp__brave-search__brave_web_search",
+      "WebFetch(domain:dev.henry.jp)"
     ],
     "deny": [],
     "ask": []
