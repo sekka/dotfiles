@@ -97,6 +97,54 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 **用途**: UIデザイン、コンポーネント設計、デザインシステム構築
 **使用場面**: ワイヤーフレーム、レイアウト設計、レスポンシブデザイン、インタラクションパターン
 
+### Designer Skills Collection（`@designer-skills`）
+
+[Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills) — 8プラグイン・63スキル・27コマンド
+
+#### コマンド一覧
+
+| コマンド                                 | 用途                                             |
+| ---------------------------------------- | ------------------------------------------------ |
+| `/design-research:discover`              | ペルソナ・エンパシーマップ・ジャーニーマップ生成 |
+| `/design-research:interview`             | インタビュースクリプト作成                       |
+| `/design-research:synthesize`            | 調査データの親和図・JTBD分析                     |
+| `/design-research:test-plan`             | ユーザビリティテスト計画                         |
+| `/design-systems:create-component`       | コンポーネント仕様書生成                         |
+| `/design-systems:tokenize`               | デザイントークン定義                             |
+| `/design-systems:audit-system`           | デザインシステム監査                             |
+| `/ux-strategy:frame-problem`             | 問題定義・機会フレームワーク                     |
+| `/ux-strategy:strategize`                | UX戦略・北極星ビジョン策定                       |
+| `/ux-strategy:benchmark`                 | 競合UX分析・ベンチマーク                         |
+| `/ui-design:color-palette`               | カラーパレット・カラーシステム生成               |
+| `/ui-design:type-system`                 | タイポグラフィスケール定義                       |
+| `/ui-design:design-screen`               | 画面レイアウト・グリッド設計                     |
+| `/ui-design:responsive-audit`            | レスポンシブデザイン監査                         |
+| `/interaction-design:design-interaction` | マイクロインタラクション仕様                     |
+| `/interaction-design:map-states`         | 状態機械・UIステート定義                         |
+| `/interaction-design:error-flow`         | エラーハンドリングUX設計                         |
+| `/prototyping-testing:prototype-plan`    | プロトタイプ戦略立案                             |
+| `/prototyping-testing:evaluate`          | ヒューリスティック評価                           |
+| `/prototyping-testing:experiment`        | A/Bテスト設計                                    |
+| `/prototyping-testing:test-plan`         | アクセシビリティテスト計画                       |
+| `/design-ops:handoff`                    | デベロッパーへのハンドオフ仕様書                 |
+| `/design-ops:plan-sprint`                | デザインスプリント計画                           |
+| `/design-ops:setup-workflow`             | チームワークフロー・レビュープロセス設計         |
+| `/designer-toolkit:write-case-study`     | ケーススタディ構成                               |
+| `/designer-toolkit:build-presentation`   | デザインプレゼン資料                             |
+| `/designer-toolkit:write-rationale`      | デザイン意思決定の根拠文書                       |
+
+#### クイック逆引き
+
+| やりたいこと             | コマンド                           |
+| ------------------------ | ---------------------------------- |
+| ユーザーを理解する       | `/design-research:discover`        |
+| カラーを決める           | `/ui-design:color-palette`         |
+| フォントを決める         | `/ui-design:type-system`           |
+| 競合を分析する           | `/ux-strategy:benchmark`           |
+| コンポーネント仕様を書く | `/design-systems:create-component` |
+| ハンドオフ資料を作る     | `/design-ops:handoff`              |
+| エラーUXを設計する       | `/interaction-design:error-flow`   |
+
 ### `/working-with-figma`
 
 **用途**: FigmaデザインをMCPツールで取得し、既存コードベースへ実装
@@ -274,5 +322,5 @@ Claude が内部で使用する専門エージェント:
 
 ---
 
-**最終更新**: 2026-02-27
+**最終更新**: 2026-03-14
 **管理**: このファイルは定期的にメンテナンスされます。新機能追加時は随時更新。
