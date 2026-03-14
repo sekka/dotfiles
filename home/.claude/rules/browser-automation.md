@@ -17,7 +17,7 @@
 | トークン効率重視の操作（大量ページ巡回、スクレイピング） | **pinchtab** | compact format で最小トークン消費 |
 | 変更前後の視覚比較・回帰テスト | **agent-browser** | `snapshot diff` / `screenshot diff` |
 | AI向けスクリーンショット注釈 | **agent-browser** | `screenshot --annotate` |
-| 既存Chromeタブの検査・DevTools | **chrome-devtools MCP** | 開いているタブへの接続 |
+| 既存Chromeタブの検査・DevTools（ヘッドレス） | **chrome-devtools MCP** (`--headless`) | 開いているタブへの接続、UIなし |
 | Playwright テストランナー・codegen | **Playwright MCP** | テスト統合 |
 | ログイン済みセッションでの操作 | **chrome-devtools MCP** (`--autoConnect`) | Chrome 144+、ライブセッションに接続 |
 | Node.jsスクリプトからの操作 | **Playwright（ヘッドレス）** → MCP fallback | スキル等のスクリプト内使用、MCPはフォールバック |
@@ -52,14 +52,21 @@ agent-browser screenshot         # 結果を視覚的に確認
 agent-browser close              # 必ず閉じる
 ```
 
-## chrome-devtools MCP（`--autoConnect`）
+## chrome-devtools MCP
 
-Chrome 144+のリモートデバッグ経由でライブセッションに接続。
+**ヘッドレスモードを使用すること。** chrome-devtools MCPを使う際は、UIが不要な場合（URL閲覧、スクレイピング、スナップショット取得等）は必ずヘッドレスで起動する。
+
+**セットアップ（ヘッドレス・デフォルト）:**
+```bash
+claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest --headless
+```
+
+**ライブセッション接続（`--autoConnect`）:**
+Chrome 144+のリモートデバッグ経由でログイン済みセッションに接続する場合のみ。
 
 **有効化:**
 `chrome://inspect/#remote-debugging` → "Allow remote debugging" を有効化
 
-**セットアップ:**
 ```bash
 claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest --autoConnect
 ```
