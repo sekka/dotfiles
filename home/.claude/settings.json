@@ -11,7 +11,6 @@
   "permissions": {
     "allow": [
       "Bash(agent-browser:*)",
-      "Bash(pinchtab:*)",
       "Bash(ai-refresh)",
       "Bash(alias:*)",
       "Bash(basename:*)",
@@ -26,6 +25,7 @@
       "Bash(command -v:*)",
       "Bash(command brew bundle)",
       "Bash(defaults read:*)",
+      "Bash(difit-here.sh)",
       "Bash(dprint fmt:*)",
       "Bash(echo:*)",
       "Bash(env)",
@@ -51,6 +51,7 @@
       "Bash(navi *)",
       "Bash(npx tsc:*)",
       "Bash(oxlint:*)",
+      "Bash(pinchtab:*)",
       "Bash(printenv:*)",
       "Bash(ps:*)",
       "Bash(pstree:*)",
@@ -70,17 +71,15 @@
       "Bash(wc:*)",
       "Bash(xargs:*)",
       "Bash(yazi:*)",
-      "Bash(difit-here.sh)",
       "Bash(zoxide:*)",
-      "Skill(difit-here)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
+      "Skill(difit-here)",
       "Skill(generating-skills-from-logs)",
       "Skill(managing-frontend-knowledge)",
       "Skill(review-parallel)",
       "Skill(review-pr)",
-      "Skill(review-with-claude)",
       "Skill(reviewing-with-claude)",
       "WebSearch",
       "mcp__chrome-devtools__*",
@@ -91,12 +90,12 @@
     "deny": [
       "Bash(do:*)",
       "Bash(for:*)",
-      "Bash(until:*)",
-      "Bash(while:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
       "Bash(rm -rf:*)",
       "Bash(sudo:*)",
+      "Bash(until:*)",
+      "Bash(while:*)",
       "Read(**/*.key)",
       "Read(**/*.pem)",
       "Read(**/*secret*)",
@@ -116,7 +115,7 @@
     ],
     "defaultMode": "plan"
   },
-  "model": "opusplan",
+  "model": "sonnet[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -232,9 +231,24 @@
     "superpowers@claude-plugins-official": true,
     "php-lsp@claude-plugins-official": false,
     "coderabbit@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "design-research@designer-skills": true,
+    "design-systems@designer-skills": true,
+    "ux-strategy@designer-skills": true,
+    "ui-design@designer-skills": true,
+    "interaction-design@designer-skills": true,
+    "prototyping-testing@designer-skills": true,
+    "design-ops@designer-skills": true,
+    "designer-toolkit@designer-skills": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "designer-skills": {
+      "source": {
+        "source": "github",
+        "repo": "Owl-Listener/designer-skills"
+      }
+    }
+  },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./plans"
