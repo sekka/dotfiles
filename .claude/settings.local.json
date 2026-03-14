@@ -191,7 +191,13 @@
       "WebFetch(domain:dev.henry.jp)",
       "WebFetch(domain:www.builder.io)",
       "WebFetch(domain:developer.chrome.com)",
-      "WebFetch(domain:webmcp.link)"
+      "WebFetch(domain:webmcp.link)",
+      "WebFetch(domain:superset.sh)",
+      "WebFetch(domain:nurijanian.substack.com)",
+      "WebFetch(domain:www.prodmgmt.world)",
+      "WebFetch(domain:www.verdent.ai)",
+      "WebFetch(domain:www.xda-developers.com)",
+      "WebFetch(domain:haimaker.ai)"
     ],
     "deny": [],
     "ask": []

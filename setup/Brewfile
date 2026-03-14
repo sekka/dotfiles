@@ -221,6 +221,7 @@ brew "carlocab/personal/unrar"  # https://formulae.brew.sh/formula/unrar      # 
 #cask "cursor"
 #cask "kiro"
 #cask "osaurus"
+#cask "superset"               # AI エージェントオーケストレーションターミナル（並列実行・Worktree分離）
 
 # === エンタメ ===
 #cask "alcom"
