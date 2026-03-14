@@ -229,7 +229,6 @@
     "peer@hiropon-plugins": false,
     "mgrep@Mixedbread-Grep": false,
     "playground@claude-plugins-official": false,
-    "ralph-loop@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
     "php-lsp@claude-plugins-official": false,
     "coderabbit@claude-plugins-official": false,

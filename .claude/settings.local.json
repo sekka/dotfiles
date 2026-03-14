@@ -197,7 +197,8 @@
       "WebFetch(domain:www.prodmgmt.world)",
       "WebFetch(domain:www.verdent.ai)",
       "WebFetch(domain:www.xda-developers.com)",
-      "WebFetch(domain:haimaker.ai)"
+      "WebFetch(domain:haimaker.ai)",
+      "WebFetch(domain:snyk.io)"
     ],
     "deny": [],
     "ask": []
