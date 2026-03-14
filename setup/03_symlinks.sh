@@ -139,11 +139,6 @@ done
 ensure_dir "$HOME/.local/share/navi/cheats/dotfiles"
 link_item "$HOME/dotfiles/home/config/navi/dotfiles.cheat" "$HOME/.local/share/navi/cheats/dotfiles/dotfiles.cheat" "dotfiles.cheat"
 
-# --- Serena 設定 ---
-
-ensure_dir "$HOME/.serena"
-link_item "$HOME/dotfiles/home/.serena/serena_config.yml" "$HOME/.serena/serena_config.yml" "serena_config.yml"
-
 # --- codex 設定 ---
 
 ensure_dir "$HOME/.codex"

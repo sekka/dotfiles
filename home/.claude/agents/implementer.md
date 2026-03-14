@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: MUST BE USED for all implementation and coding tasks including file creation, code editing, test execution, build operations, git operations, and any file system modifications
-tools: Read, Write, Edit, Glob, Grep, Bash, mcp__plugin_serena_serena__replace_symbol_body, mcp__plugin_serena_serena__insert_after_symbol, mcp__plugin_serena_serena__insert_before_symbol
+tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 permissionMode: default
 ---
@@ -53,4 +53,3 @@ permissionMode: default
 - **Glob**: ファイルパターン検索
 - **Grep**: コード内容の検索
 - **Bash**: コマンド実行
-- **Serena**: シンボルレベルの編集

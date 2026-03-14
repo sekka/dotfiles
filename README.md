@@ -14,7 +14,7 @@
 ./setup/02_brew.sh
 
 # 3. 全設定ファイルのシンボリックリンク作成
-# (dotfiles, .config, Claude, Serena等すべて含む)
+# (dotfiles, .config, Claude等すべて含む)
 ./setup/03_symlinks.sh
 
 # 4. Claude Code公式版のインストール
@@ -172,8 +172,6 @@ mise run lint        # 全ファイル形式のチェック
 mise run format      # 全ファイル形式の整形
 
 # LLM関連タスク
-mise run llm-serena  # serena-mcp-serverを起動
-
 # Git hooks設定済みの場合、commit時に自動実行
 git commit -m "変更内容"
 ```
