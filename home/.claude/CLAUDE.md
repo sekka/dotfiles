@@ -5,7 +5,7 @@
 - **シンプル第一**：変更をできる限りシンプルにする。影響するコードを最小限にする
 - **手を抜かない**：根本原因を見つける。一時的な修正は避ける
 - **影響を最小化する**：変更は必要な箇所のみ。バグを新たに引き込まない
-- **検証を忘れない**：動作を証明できるまでタスクを完了とマークしない
+- **検証を忘れない**：動作を証明できるまでタスクを完了とマークしない。**実装後は必ずブラウザ/ツールで実際に動作確認してから「完了」を報告すること。理屈と勘だけで「できました」と報告してはならない。**
 - **コンテキスト節約**：メインエージェントのコンテキストは貴重なリソース。調査・実装・レビューは外部AIまたはサブエージェントに委譲し、メインは指揮と統合に専念する
 
 ---
@@ -84,12 +84,26 @@
 | テスト実行・ビルド | implementer | `AI_HAS_CODEX=1` → codex-implementer |
 | Web調査・ドキュメント検索 | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
 
+### 自動実行されるhooks
+
+hooks は `~/.claude/hooks/` で定義。主要なもの:
+- **rtk-rewrite** (PreToolUse/Bash): コマンドをrtkプロキシ経由に書き換え（トークン節約）
+- **protect-sensitive** (PreToolUse/Edit|Write|Read): 機密ファイルの誤編集を防止
+- **inject-ai-routing** (SessionStart): AI可用性の環境変数（AI_HAS_CODEX等）を注入
+- **check-marketplace-health** (SessionStart): Claude Marketplace接続チェック
+
 ---
 
 ## 5. スキル活用
 
-- Web開発知識ベース: `managing-frontend-knowledge`
-- 軽量レビュー: `/reviewing-with-claude` / 包括的レビュー: `/reviewing-parallel`
+| カテゴリ | スキル |
+|---------|--------|
+| レビュー | `/reviewing-with-claude`（軽量）, `/review-parallel`（包括的・複数AI） |
+| フロントエンド | `developing-frontend`, `designing-ui`, `managing-frontend-knowledge` |
+| Figma連携 | `working-with-figma`, `figma-style` |
+| UI/UX | `ui-ux-pro-max`, `analyzing-websites`, `analyzing-animations` |
+| 調査 | `researching-creative-cases`, `evaluating-references` |
+| Claude管理 | `creating-hooks`, `generating-skills-from-logs` |
 
 ---
 

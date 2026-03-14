@@ -2,6 +2,35 @@
 
 このファイルは dotfiles プロジェクト固有の行動指針を定義します。グローバル CLAUDE.md の内容を補完し、矛盾する場合はこのファイルが優先されます。
 
+## コマンド
+
+```bash
+mise run setup:all          # フルセットアップ実行
+mise run macos:check        # macOS defaults変更検出
+mise run macos:apply        # macOS設定適用
+bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
+```
+
+## ディレクトリ構造
+
+```
+home/             # デプロイ元テンプレート → ~/ へ symlink
+  .claude/        # Claude Code設定テンプレート（agents, rules, skills, hooks）
+  config/         # XDG設定（ghostty, nvim, yazi, zsh等）
+setup/            # 番号付きセットアップスクリプト（01〜09、順序通りに実行）
+scripts/          # 開発・運用ツール（TypeScript/Bun）
+.claude/          # 実行時状態（セッション、メモリ、プラン）※gitignore対象
+```
+
+## ツールチェーン
+
+- **Runtime:** Bun
+- **タスクランナー:** mise
+- **Lint:** oxlint (TS/JS), shellcheck (shell)
+- **Format:** dprint (MD/YAML/TOML) + shfmt (shell)
+- **Zsh プラグイン:** sheldon
+- **パッケージ:** Homebrew (Brewfile)
+
 ## プロジェクト特性
 
 ### macOS専用
@@ -85,34 +114,8 @@ CI/CD互換性が必要な場合のみ cross-platform helpers を維持（既存
 
 ### 対応する脅威（公開dotfiles標準レベル）
 
-**1. JSON injection**
-```bash
-# DO: 基本的なサニタイズ
-safe_value="${value//[^a-zA-Z0-9_-]/}"
-
-# DON'T: 複雑なエスケープライブラリ導入
-```
-
-**2. コマンドインジェクション**
-```bash
-# DO: 基本的なサニタイズ + 安全な変数展開
-local safe_name="${name//[^a-zA-Z0-9_-]/}"
-command --arg="$safe_name"
-
-# DON'T: 完全なインジェクション防御フレームワーク
-```
-
-**3. 認証情報の意図しない公開**
-```bash
-# DO: .gitignore設定 + 安全な権限
-.env*
-*.key
-secrets/
-
-# ファイル作成時
-(umask 077; touch "$auth_file")
-chmod 600 "$auth_file"
-```
+- **JSON injection / コマンドインジェクション**: 基本的なサニタイズ（`${value//[^a-zA-Z0-9_-]/}`）で十分。複雑なフレームワーク不要
+- **認証情報の公開防止**: .gitignore + `chmod 600` + `umask 077`
 
 ### 対応しない脅威（過剰対策）
 
