@@ -189,7 +189,9 @@
       "WebFetch(domain:t.co)",
       "mcp__brave-search__brave_web_search",
       "WebFetch(domain:dev.henry.jp)",
-      "WebFetch(domain:www.builder.io)"
+      "WebFetch(domain:www.builder.io)",
+      "WebFetch(domain:developer.chrome.com)",
+      "WebFetch(domain:webmcp.link)"
     ],
     "deny": [],
     "ask": []
