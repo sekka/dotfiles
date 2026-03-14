@@ -9,6 +9,8 @@
 | AI向けスクリーンショット注釈 | **agent-browser** | `screenshot --annotate` |
 | 既存Chromeタブの検査・DevTools | **chrome-devtools MCP** | 開いているタブへの接続 |
 | Playwright テストランナー・codegen | **Playwright MCP** | テスト統合 |
+| ログイン済みセッションでの操作 | **chrome-devtools MCP** (`--autoConnect`) | Chrome 144+、ライブセッションに接続 |
+| Node.jsスクリプトからの操作 | **Playwright（ヘッドレス）** → MCP fallback | スキル等のスクリプト内使用、MCPはフォールバック |
 
 迷ったら **pinchtab** を使う（トークン効率が高い）。
 
@@ -38,6 +40,33 @@ agent-browser click @e1          # ref指定で操作
 agent-browser snapshot -i        # DOM変更後は必ず再取得
 agent-browser screenshot         # 結果を視覚的に確認
 agent-browser close              # 必ず閉じる
+```
+
+## chrome-devtools MCP（`--autoConnect`）
+
+Chrome 144+のリモートデバッグ経由でライブセッションに接続。
+
+**有効化:**
+`chrome://inspect/#remote-debugging` → "Allow remote debugging" を有効化
+
+**セットアップ:**
+```bash
+claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest --autoConnect
+```
+
+## Node.jsスクリプト内でのブラウザ操作
+
+Playwright（ヘッドレス）を優先。`require('playwright')` が利用不可の場合はMCPにフォールバック。
+
+```javascript
+// Playwright ヘッドレス（優先）
+const { chromium } = require('playwright');
+const browser = await chromium.launch({ headless: true });
+// ... 操作 ...
+await browser.close();
+
+// MCP フォールバック（Playwright利用不可時）
+// mcp__plugin_playwright_playwright__browser_navigate を使用
 ```
 
 ## 共通の注意
