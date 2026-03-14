@@ -34,6 +34,12 @@ alias rg="rg --smart-case --stats --pretty"
 alias vp="vim +PlugInstall +qall"
 
 # ======================
+# qmd フロントエンドナレッジ検索
+# ======================
+
+alias qmd-fe='INDEX_PATH="$QMD_FRONTEND_INDEX" qmd'
+
+# ======================
 # Semantic Search (grepai)
 # ======================
 

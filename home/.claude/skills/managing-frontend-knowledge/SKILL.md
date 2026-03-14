@@ -503,3 +503,26 @@ knowledge/
 - カテゴリファイルが存在しない場合はエラーにせず、ある情報で回答
 - 出典URLがある場合は必ず記載
 - コード例は実用的なものを優先
+
+---
+
+## qmd による検索（セマンティック検索）
+
+ファイルを直接読む代わりに qmd セマンティック検索を使うとトークンを大幅削減できる。
+
+```bash
+# インデックス未作成の場合（初回・新規マシン）
+~/dotfiles/scripts/setup-qmd.sh
+
+# セマンティック検索（推奨）
+qmd-fe query "CSS animation performance"
+
+# キーワード検索（高速）
+qmd-fe search "Grid layout"
+
+# git pull でナレッジが更新されたとき
+qmd-fe embed   # 差分のみ再埋め込み
+
+# ナレッジを削除・大幅整理したとき（完全再構築）
+rm "$QMD_FRONTEND_INDEX" && ~/dotfiles/scripts/setup-qmd.sh
+```

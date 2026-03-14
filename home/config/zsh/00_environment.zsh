@@ -123,6 +123,11 @@ add_to_path "$HOME/.rd/bin" append
 # Google Cloud SDK
 add_to_path "$HOME/google-cloud-sdk/bin" append
 
+# ===========================================
+# qmd フロントエンドナレッジ
+# ===========================================
+export QMD_FRONTEND_INDEX="$HOME/.local/share/qmd/frontend.sqlite"
+
 
 # ===========================================
 # コア機能

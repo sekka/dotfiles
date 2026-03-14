@@ -198,7 +198,8 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:zoewave.medium.com)",
       "mcp__brave-search__brave_web_search",
-      "mcp__filesystem__write_file"
+      "mcp__filesystem__write_file",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []
