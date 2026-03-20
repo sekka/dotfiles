@@ -9,32 +9,19 @@ disable-model-invocation: true
 
 このスキルは2つの専門AIレビュアー（Codex、Gemini）を並列実行し、結果を統合処理して包括的なコードレビューレポートを生成します。
 
-## Phase 0: 前提条件確認
+## Phase 0: 前提条件チェック
 
-実装を開始する前に、必要なツールと環境を確認します。
-
-### 0.1 CLIツールの確認
+`precheck.sh` を実行して環境を確認する。このスクリプトが全前提条件（Python 3.8+、AI CLI認証）を検証し、利用可能なレビュアー一覧を stdout に出力する。
 
 ```bash
-# 各CLIツールが利用可能か確認
-command -v codex || echo "⚠️ codex CLI not found"
-command -v gemini || echo "⚠️ gemini CLI not found"
+available_reviewers=$(bash ~/.claude/skills/reviewing-parallel/precheck.sh)
+if [[ $? -ne 0 ]]; then
+  echo "前提条件を満たしていません。エラーメッセージを確認してください。"
+  exit 1
+fi
 ```
 
-### 0.2 認証状態確認
-
-```bash
-# 各ツールの認証状態確認
-codex whoami 2>/dev/null || echo "⚠️ codex not authenticated"
-# gemini auth check
-```
-
-### 0.3 Python環境確認
-
-統合スクリプト用のPython 3.8以上が必要：
-```bash
-python3 --version
-```
+失敗時は `precheck.sh` のエラー出力に従って対処する。手動での個別確認は不要。
 
 ## Phase 0.5: レビュータイプ判定
 
@@ -138,18 +125,17 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 
 ### 2.3 並列実行方法
 
-**実装方法の選択**: 以下のいずれかの方法をAgentが選択します。
+**推奨: 複数Task呼び出しの並列実行**
 
-**オプション1: 複数Task呼び出しの並列実行**
-- 各レビュアーに対して個別のTask呼び出しを実行
-- TaskOutputで全体の完了を待機
+各レビュアーに対して個別のAgent（Task）呼び出しを `run_in_background: true` で実行し、TaskOutputで完了を待機する。
 
-**オプション2: Bashバックグラウンドジョブ**
-- Bash内で複数のレビュアー呼び出しをバックグラウンドで実行
-- waitコマンドで全ジョブの完了を待機
+```bash
+# precheck.sh の出力から利用可能なレビュアーを確認
+# codex が含まれていれば → codex-reviewer Agent を起動
+# gemini が含まれていれば → gemini-reviewer Agent を起動
+```
 
-**オプション3: その他Agentが判断した方法**
-- Agentの判断で最適な並列化方法を選択
+利用可能なレビュアーのみ起動する（precheck.sh の stdout を参照）。
 
 ## Phase 3: 結果収集とエラーハンドリング
 

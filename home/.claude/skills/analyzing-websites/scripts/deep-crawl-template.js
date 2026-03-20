@@ -2,8 +2,9 @@
  * Playwright MCP の browser_run_code に渡すコード (改善版)
  *
  * 使い方:
- * 1. baseUrl, maxDepth, knownPages を編集
- * 2. このファイル全体を mcp__plugin_playwright_playwright__browser_run_code に渡す
+ * 1. 環境変数で設定: CRAWL_BASE_URL, CRAWL_MAX_DEPTH, CRAWL_TARGET_DOMAIN, CRAWL_KNOWN_PAGES_JSON
+ * 2. または、スクリプト内の設定セクションを直接編集
+ * 3. このファイル全体を mcp__plugin_playwright_playwright__browser_run_code に渡す
  * 3. または、Claude Codeで Read してから実行
  *
  * 改善点:
@@ -15,40 +16,34 @@
 
 async (page) => {
 	// ========================================
-	// 設定（ここを編集）
+	// 設定（引数 or 環境変数から読み込み）
 	// ========================================
 
-	const baseUrl = "https://aux-mobility.co.jp";
-	const maxDepth = 5;
-	const targetDomain = "sompoaux.sakura.ne.jp"; // 探したい外部ドメイン（不要ならnull）
+	// 使い方:
+	// 環境変数で設定:
+	//   CRAWL_BASE_URL=https://example.com
+	//   CRAWL_MAX_DEPTH=5  (デフォルト: 5)
+	//   CRAWL_TARGET_DOMAIN=external.com  (オプション)
+	//   CRAWL_KNOWN_PAGES_JSON='[{"url":"https://example.com","depth":0},{"url":"https://example.com/about","depth":1}]'
+	//
+	// または、以下の変数を直接編集:
+
+	const baseUrl = (typeof process !== 'undefined' && process.env?.CRAWL_BASE_URL) || "https://example.com";
+	const maxDepth = parseInt((typeof process !== 'undefined' && process.env?.CRAWL_MAX_DEPTH) || "5", 10);
+	const targetDomain = (typeof process !== 'undefined' && process.env?.CRAWL_TARGET_DOMAIN) || null;
+
+	if (baseUrl === "https://example.com") {
+		console.warn("⚠️ baseUrl がデフォルト値です。CRAWL_BASE_URL 環境変数またはスクリプト内で設定してください。");
+	}
 
 	// クロール対象ページリスト（階層情報付き）
-	const knownPages = [
+	// 環境変数 CRAWL_KNOWN_PAGES_JSON から JSON 配列で渡すか、直接編集
+	const knownPagesJson = (typeof process !== 'undefined' && process.env?.CRAWL_KNOWN_PAGES_JSON) || "";
+	const knownPages = knownPagesJson ? JSON.parse(knownPagesJson) : [
 		{ url: baseUrl, depth: 0 },
-		{ url: `${baseUrl}/business`, depth: 1 },
-		{ url: `${baseUrl}/projects`, depth: 1 },
-		{ url: `${baseUrl}/company`, depth: 1 },
-		{ url: `${baseUrl}/recruit`, depth: 1 },
-		{ url: `${baseUrl}/news`, depth: 1 },
-		{ url: `${baseUrl}/contact`, depth: 1 },
-		// 第2階層
-		{ url: `${baseUrl}/recruit/interview/auction-managemant-i`, depth: 2 },
-		{ url: `${baseUrl}/recruit/interview/customer-service-m`, depth: 2 },
-		{ url: `${baseUrl}/recruit/interview/system-n`, depth: 2 },
-		{ url: `${baseUrl}/news/category/media`, depth: 2 },
-		{ url: `${baseUrl}/news/category/notice`, depth: 2 },
-		{ url: `${baseUrl}/news/category/press`, depth: 2 },
-		{ url: `${baseUrl}/news/category-1/2025`, depth: 2 },
-		{ url: `${baseUrl}/news/category-1/2024`, depth: 2 },
-		{ url: `${baseUrl}/news/category-1/2023`, depth: 2 },
-		{ url: `${baseUrl}/news/CAN7suuX`, depth: 2 },
-		{ url: `${baseUrl}/news/mY3h_ezw`, depth: 2 },
-		{ url: `${baseUrl}/news/VW8OE1Kg`, depth: 2 },
-		{ url: `${baseUrl}/terms/auction`, depth: 2 },
-		{ url: `${baseUrl}/terms/kobutsu`, depth: 2 },
-		{ url: `${baseUrl}/terms/tokushoho`, depth: 2 },
-		{ url: `${baseUrl}/terms/privacy`, depth: 2 },
-		{ url: `${baseUrl}/terms/security`, depth: 2 },
+		// 第1階層の例:
+		// { url: `${baseUrl}/about`, depth: 1 },
+		// { url: `${baseUrl}/contact`, depth: 1 },
 	];
 
 	// ========================================

@@ -8,26 +8,40 @@
  * - 階層別統計の強化
  *
  * 使い方:
- * 1. baseUrl, maxDepth を編集
- * 2. 必要に応じて startUrls を編集（既知のURLリスト）
+ * 1. 環境変数で設定: CRAWL_BASE_URL, CRAWL_MAX_DEPTH, CRAWL_TARGET_DOMAIN, CRAWL_KNOWN_PAGES
+ * 2. または、スクリプト内の設定セクションを直接編集
  * 3. このファイル全体を mcp__plugin_playwright_playwright__browser_run_code に渡す
  * 4. または、Claude Codeで Read してから実行
  */
 
 async (page) => {
 	// ========================================
-	// 設定（ここを編集）
+	// 設定（引数 or 環境変数から読み込み）
 	// ========================================
 
-	const baseUrl = "https://example.com";
-	const maxDepth = 3;
-	const targetDomain = null; // 探したい外部ドメイン（不要ならnull）
+	// 使い方:
+	// 環境変数で設定:
+	//   CRAWL_BASE_URL=https://example.com
+	//   CRAWL_MAX_DEPTH=3  (デフォルト: 3)
+	//   CRAWL_TARGET_DOMAIN=external.com  (オプション)
+	//   CRAWL_KNOWN_PAGES=https://example.com/about,https://example.com/contact  (カンマ区切り、オプション)
+	//
+	// または、以下の変数を直接編集:
+
+	const baseUrl = (typeof process !== 'undefined' && process.env?.CRAWL_BASE_URL) || "https://example.com";
+	const maxDepth = parseInt((typeof process !== 'undefined' && process.env?.CRAWL_MAX_DEPTH) || "3", 10);
+	const targetDomain = (typeof process !== 'undefined' && process.env?.CRAWL_TARGET_DOMAIN) || null;
+
+	if (baseUrl === "https://example.com") {
+		console.warn("⚠️ baseUrl がデフォルト値です。CRAWL_BASE_URL 環境変数またはスクリプト内で設定してください。");
+	}
 
 	// 開始URL（通常はトップページのみでOK）
 	const startUrls = [baseUrl];
 
-	// 既知のページがある場合はここに追加（オプション）
-	const knownPages = [
+	// 既知のページがある場合（環境変数からカンマ区切りで渡すか、直接編集）
+	const knownPagesEnv = (typeof process !== 'undefined' && process.env?.CRAWL_KNOWN_PAGES) || "";
+	const knownPages = knownPagesEnv ? knownPagesEnv.split(",").map(u => u.trim()).filter(Boolean) : [
 		// `${baseUrl}/about`,
 		// `${baseUrl}/contact`,
 	];
