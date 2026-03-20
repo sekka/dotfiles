@@ -1,0 +1,59 @@
+category: live-regions
+description: "ライブリージョン・動的コンテンツチェック"
+
+rules:
+  - id: alert-has-role
+    name: "アラートにrole=alertまたはaria-live=assertiveがあること"
+    severity: error
+    wcag: "4.1.2"
+    selector: ".alert, .error-message, .notification"
+    check: custom
+    function: check-alert-role
+    why: "動的に追加されたアラートがスクリーンリーダーに通知されない"
+
+  - id: status-has-role
+    name: "ステータスにrole=statusまたはaria-live=politeがあること"
+    severity: warning
+    wcag: "4.1.2"
+    selector: ".status, .toast, .snackbar"
+    check: custom
+    function: check-status-role
+    why: "ステータス更新がスクリーンリーダーに通知されない"
+
+  - id: aria-live-valid-value
+    name: "aria-live属性値の妥当性"
+    severity: error
+    wcag: "4.1.2"
+    selector: "[aria-live]"
+    check: attribute-valid-value
+    attribute: aria-live
+    values: ["off", "polite", "assertive"]
+    why: "無効な値はライブリージョンが機能しない"
+
+  - id: aria-atomic-on-live
+    name: "ライブリージョンのaria-atomic指定"
+    severity: info
+    wcag: "4.1.2"
+    selector: "[aria-live]"
+    check: custom
+    function: suggest-aria-atomic
+    why: "aria-atomicがないと変更部分のみ読み上げられ文脈が失われることがある"
+
+  - id: aria-relevant-valid
+    name: "aria-relevant属性値の妥当性"
+    severity: warning
+    wcag: "4.1.2"
+    selector: "[aria-relevant]"
+    check: attribute-valid-value
+    attribute: aria-relevant
+    values: ["additions", "removals", "text", "all", "additions text"]
+    why: "無効な値はライブリージョンの通知が正しく機能しない"
+
+  - id: live-region-not-empty
+    name: "ライブリージョンが空でないこと"
+    severity: warning
+    wcag: "4.1.2"
+    selector: "[role='alert'], [role='status'], [aria-live]"
+    check: custom
+    function: check-live-region-content
+    why: "空のライブリージョンは通知すべき内容がない"

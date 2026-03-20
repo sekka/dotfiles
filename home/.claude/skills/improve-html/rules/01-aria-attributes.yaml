@@ -1,0 +1,130 @@
+category: aria-attributes
+description: "ARIA属性の妥当性・完全性チェック"
+
+rules:
+  - id: aria-labelledby-valid
+    name: "aria-labelledby参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-labelledby]"
+    check: id-ref-exists
+    attribute: aria-labelledby
+    why: "参照先が存在しないとアクセシブルネームが空になる"
+
+  - id: aria-describedby-valid
+    name: "aria-describedby参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-describedby]"
+    check: id-ref-exists
+    attribute: aria-describedby
+    why: "参照先が存在しないと補足説明が伝わらない"
+
+  - id: aria-controls-valid
+    name: "aria-controls参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-controls]"
+    check: id-ref-exists
+    attribute: aria-controls
+    why: "参照先が存在しないと制御関係が不明になる"
+
+  - id: aria-owns-valid
+    name: "aria-owns参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-owns]"
+    check: id-ref-exists
+    attribute: aria-owns
+    why: "参照先が存在しないと所有関係が不明になる"
+
+  - id: aria-activedescendant-valid
+    name: "aria-activedescendant参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-activedescendant]"
+    check: id-ref-exists
+    attribute: aria-activedescendant
+    why: "参照先が存在しないとアクティブな子孫が不明になる"
+
+  - id: aria-label-labelledby-conflict
+    name: "aria-labelとaria-labelledbyの重複"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "[aria-label][aria-labelledby]"
+    check: element-not-exists
+    why: "両方指定するとaria-labelledbyが優先されaria-labelは無視される"
+
+  - id: aria-label-static-content
+    name: "非対話要素へのaria-label使用"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "div[aria-label]:not([role]), span[aria-label]:not([role]), p[aria-label]:not([role])"
+    check: element-not-exists
+    why: "aria-labelは対話要素やランドマークにのみ効果的"
+
+  - id: aria-required-attr
+    name: "ARIA roleに必須属性が揃っているか"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role]"
+    check: role-required-attrs
+    why: "必須属性が欠けると支援技術がウィジェットの状態を伝えられない"
+
+  - id: aria-attr-valid-value
+    name: "ARIA属性値が仕様の許可値か"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[aria-checked], [aria-expanded], [aria-selected], [aria-current], [aria-live], [aria-haspopup], [aria-autocomplete], [aria-orientation], [aria-sort], [aria-invalid]"
+    check: attribute-valid-value
+    why: "無効な値は支援技術に誤情報を伝える"
+
+  - id: aria-roles-valid
+    name: "ARIA role値が有効か"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role]"
+    check: role-valid
+    attribute: role
+    why: "無効なroleは支援技術に完全に無視される"
+
+  - id: aria-prohibited-attr
+    name: "roleに対して禁止属性がないか"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "[role]"
+    check: custom
+    function: check-prohibited-attrs
+    why: "禁止属性は仕様違反であり将来のブラウザで無視される可能性がある"
+
+  - id: aria-deprecated-role
+    name: "非推奨ARIA roleの使用"
+    severity: warning
+    wcag: "BP"
+    selector: "[role='directory'], [role='doc-biblioentry'], [role='doc-endnote']"
+    check: element-not-exists
+    why: "非推奨roleは将来サポートが打ち切られる可能性がある"
+
+  - id: aria-hidden-focusable
+    name: "aria-hidden=trueがフォーカス可能要素にないこと"
+    severity: error
+    wcag: "4.1.2"
+    selector: "[aria-hidden='true'] a, [aria-hidden='true'] button, [aria-hidden='true'] input, [aria-hidden='true'] [tabindex]"
+    check: element-not-exists
+    why: "スクリーンリーダーで非表示なのにフォーカスが当たると混乱する"
+
+  - id: aria-hidden-body
+    name: "bodyへのaria-hidden禁止"
+    severity: error
+    wcag: "4.1.2"
+    selector: "body[aria-hidden='true']"
+    check: element-not-exists
+    why: "ページ全体がスクリーンリーダーから隠れる"
+
+  - id: aria-role-redundant
+    name: "ネイティブ要素と冗長なrole"
+    severity: info
+    wcag: "BP"
+    selector: "nav[role='navigation'], main[role='main'], header[role='banner'], footer[role='contentinfo'], aside[role='complementary'], form[role='form'], a[role='link'], button[role='button']"
+    check: element-not-exists
+    why: "ネイティブ要素には暗黙のroleがあり明示的に指定する必要はない"

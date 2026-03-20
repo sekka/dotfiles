@@ -1,0 +1,383 @@
+# ARIA Role → 属性マッピング (WAI-ARIA 1.2)
+
+roles:
+  alert:
+    required: []
+    supported: [aria-atomic, aria-busy, aria-live]
+    prohibited: []
+    parent: null
+    children: []
+  alertdialog:
+    required: []
+    supported: [aria-modal]
+    prohibited: []
+    parent: null
+    children: []
+  button:
+    required: []
+    supported: [aria-disabled, aria-expanded, aria-haspopup, aria-pressed]
+    prohibited: []
+    parent: null
+    children: []
+  checkbox:
+    required: [aria-checked]
+    supported: [aria-disabled, aria-readonly, aria-required]
+    prohibited: []
+    parent: null
+    children: []
+  combobox:
+    required: [aria-expanded]
+    supported: [aria-activedescendant, aria-autocomplete, aria-controls, aria-disabled, aria-readonly, aria-required]
+    prohibited: []
+    parent: null
+    children: [listbox, tree, grid, dialog]
+  dialog:
+    required: []
+    supported: [aria-modal]
+    prohibited: []
+    parent: null
+    children: []
+  grid:
+    required: []
+    supported: [aria-activedescendant, aria-colcount, aria-disabled, aria-multiselectable, aria-readonly, aria-rowcount]
+    prohibited: []
+    parent: null
+    children: [row, rowgroup]
+  gridcell:
+    required: []
+    supported: [aria-colindex, aria-colspan, aria-disabled, aria-readonly, aria-required, aria-rowindex, aria-rowspan, aria-selected]
+    prohibited: []
+    parent: [row]
+    children: []
+  heading:
+    required: [aria-level]
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  img:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  link:
+    required: []
+    supported: [aria-disabled, aria-expanded]
+    prohibited: []
+    parent: null
+    children: []
+  list:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: [listitem]
+  listbox:
+    required: []
+    supported: [aria-activedescendant, aria-disabled, aria-multiselectable, aria-orientation, aria-readonly, aria-required]
+    prohibited: []
+    parent: null
+    children: [option]
+  listitem:
+    required: []
+    supported: [aria-level, aria-posinset, aria-setsize]
+    prohibited: []
+    parent: [list]
+    children: []
+  log:
+    required: []
+    supported: [aria-live]
+    prohibited: []
+    parent: null
+    children: []
+  menu:
+    required: []
+    supported: [aria-activedescendant, aria-disabled, aria-orientation]
+    prohibited: []
+    parent: null
+    children: [menuitem, menuitemcheckbox, menuitemradio]
+  menubar:
+    required: []
+    supported: [aria-activedescendant, aria-disabled, aria-orientation]
+    prohibited: []
+    parent: null
+    children: [menuitem, menuitemcheckbox, menuitemradio]
+  menuitem:
+    required: []
+    supported: [aria-disabled, aria-haspopup, aria-expanded]
+    prohibited: []
+    parent: [menu, menubar]
+    children: []
+  menuitemcheckbox:
+    required: [aria-checked]
+    supported: [aria-disabled]
+    prohibited: []
+    parent: [menu, menubar]
+    children: []
+  menuitemradio:
+    required: [aria-checked]
+    supported: [aria-disabled, aria-posinset, aria-setsize]
+    prohibited: []
+    parent: [menu, menubar]
+    children: []
+  navigation:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  option:
+    required: [aria-selected]
+    supported: [aria-checked, aria-disabled, aria-posinset, aria-setsize]
+    prohibited: []
+    parent: [listbox]
+    children: []
+  progressbar:
+    required: [aria-valuenow, aria-valuemin, aria-valuemax]
+    supported: [aria-valuetext]
+    prohibited: []
+    parent: null
+    children: []
+  radio:
+    required: [aria-checked]
+    supported: [aria-disabled, aria-posinset, aria-setsize]
+    prohibited: []
+    parent: [radiogroup]
+    children: []
+  radiogroup:
+    required: []
+    supported: [aria-disabled, aria-readonly, aria-required, aria-orientation]
+    prohibited: []
+    parent: null
+    children: [radio]
+  region:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  row:
+    required: []
+    supported: [aria-colindex, aria-disabled, aria-expanded, aria-level, aria-rowindex, aria-selected]
+    prohibited: []
+    parent: [grid, rowgroup, table, treegrid]
+    children: [cell, columnheader, gridcell, rowheader]
+  rowgroup:
+    required: []
+    supported: []
+    prohibited: []
+    parent: [grid, table, treegrid]
+    children: [row]
+  scrollbar:
+    required: [aria-controls, aria-valuenow, aria-valuemin, aria-valuemax]
+    supported: [aria-disabled, aria-orientation, aria-valuetext]
+    prohibited: []
+    parent: null
+    children: []
+  search:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  searchbox:
+    required: []
+    supported: [aria-activedescendant, aria-autocomplete, aria-disabled, aria-multiline, aria-placeholder, aria-readonly, aria-required]
+    prohibited: []
+    parent: null
+    children: []
+  separator:
+    required: []
+    supported: [aria-disabled, aria-orientation, aria-valuenow, aria-valuemin, aria-valuemax, aria-valuetext]
+    prohibited: []
+    parent: null
+    children: []
+  slider:
+    required: [aria-valuenow, aria-valuemin, aria-valuemax]
+    supported: [aria-disabled, aria-orientation, aria-readonly, aria-valuetext]
+    prohibited: []
+    parent: null
+    children: []
+  spinbutton:
+    required: [aria-valuenow, aria-valuemin, aria-valuemax]
+    supported: [aria-disabled, aria-readonly, aria-required, aria-valuetext]
+    prohibited: []
+    parent: null
+    children: []
+  status:
+    required: []
+    supported: [aria-atomic, aria-live]
+    prohibited: []
+    parent: null
+    children: []
+  switch:
+    required: [aria-checked]
+    supported: [aria-disabled, aria-readonly]
+    prohibited: []
+    parent: null
+    children: []
+  tab:
+    required: [aria-selected]
+    supported: [aria-controls, aria-disabled]
+    prohibited: []
+    parent: [tablist]
+    children: []
+  table:
+    required: []
+    supported: [aria-colcount, aria-rowcount]
+    prohibited: []
+    parent: null
+    children: [row, rowgroup]
+  tablist:
+    required: []
+    supported: [aria-activedescendant, aria-multiselectable, aria-orientation]
+    prohibited: []
+    parent: null
+    children: [tab]
+  tabpanel:
+    required: []
+    supported: [aria-labelledby]
+    prohibited: []
+    parent: null
+    children: []
+  textbox:
+    required: []
+    supported: [aria-activedescendant, aria-autocomplete, aria-disabled, aria-multiline, aria-placeholder, aria-readonly, aria-required]
+    prohibited: []
+    parent: null
+    children: []
+  timer:
+    required: []
+    supported: [aria-live]
+    prohibited: []
+    parent: null
+    children: []
+  toolbar:
+    required: []
+    supported: [aria-activedescendant, aria-disabled, aria-orientation]
+    prohibited: []
+    parent: null
+    children: []
+  tooltip:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  tree:
+    required: []
+    supported: [aria-activedescendant, aria-disabled, aria-multiselectable, aria-orientation, aria-required]
+    prohibited: []
+    parent: null
+    children: [treeitem, group]
+  treegrid:
+    required: []
+    supported: [aria-activedescendant, aria-colcount, aria-disabled, aria-multiselectable, aria-readonly, aria-rowcount]
+    prohibited: []
+    parent: null
+    children: [row, rowgroup]
+  treeitem:
+    required: []
+    supported: [aria-checked, aria-expanded, aria-level, aria-posinset, aria-selected, aria-setsize]
+    prohibited: []
+    parent: [tree, treeitem, group]
+    children: [treeitem, group]
+  # Landmark roles
+  banner:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  complementary:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  contentinfo:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  form:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  main:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  # Structure roles
+  article:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  cell:
+    required: []
+    supported: [aria-colindex, aria-colspan, aria-rowindex, aria-rowspan]
+    prohibited: []
+    parent: [row]
+    children: []
+  columnheader:
+    required: []
+    supported: [aria-colindex, aria-colspan, aria-disabled, aria-readonly, aria-required, aria-rowindex, aria-rowspan, aria-selected, aria-sort]
+    prohibited: []
+    parent: [row]
+    children: []
+  definition:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  figure:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  group:
+    required: []
+    supported: [aria-activedescendant, aria-disabled]
+    prohibited: []
+    parent: null
+    children: []
+  note:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []
+  presentation:
+    required: []
+    supported: []
+    prohibited: [aria-label, aria-labelledby]
+    parent: null
+    children: []
+  none:
+    required: []
+    supported: []
+    prohibited: [aria-label, aria-labelledby]
+    parent: null
+    children: []
+  rowheader:
+    required: []
+    supported: [aria-colindex, aria-colspan, aria-disabled, aria-readonly, aria-required, aria-rowindex, aria-rowspan, aria-selected, aria-sort]
+    prohibited: []
+    parent: [row]
+    children: []
+  term:
+    required: []
+    supported: []
+    prohibited: []
+    parent: null
+    children: []

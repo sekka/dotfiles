@@ -1,0 +1,109 @@
+category: aria-widgets
+description: "ARIAウィジェットパターンの正確性チェック"
+
+rules:
+  - id: tablist-has-tabs
+    name: "tablistにtabが含まれること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='tablist']"
+    check: has-child
+    child: "[role='tab']"
+    why: "tablistは子にtabを持つ必要がある"
+
+  - id: tab-controls-panel
+    name: "tabがaria-controlsでtabpanelを参照すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='tab']"
+    check: has-attribute
+    attribute: aria-controls
+    why: "tabとtabpanelの関連付けがないとパネルに移動できない"
+
+  - id: tabpanel-has-label
+    name: "tabpanelにaria-labelledbyがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='tabpanel']"
+    check: has-attribute
+    attribute: aria-labelledby
+    why: "tabpanelのラベルがないと何のパネルか伝えられない"
+
+  - id: tab-has-selected
+    name: "tab要素にaria-selectedがあること"
+    severity: error
+    wcag: "4.1.2"
+    selector: "[role='tab']"
+    check: has-attribute
+    attribute: aria-selected
+    why: "選択状態がないとアクティブなタブを伝えられない"
+
+  - id: combobox-aria-expanded
+    name: "comboboxにaria-expandedがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='combobox']"
+    check: has-attribute
+    attribute: aria-expanded
+    why: "リストの展開状態が伝わらない"
+
+  - id: listbox-option-selected
+    name: "listboxのoptionにaria-selectedがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='listbox'] [role='option']"
+    check: has-attribute
+    attribute: aria-selected
+    why: "選択状態の伝達に必須"
+
+  - id: radiogroup-has-label
+    name: "radiogroupにアクセシブルネームがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='radiogroup']"
+    check: has-accessible-name
+    why: "グループの目的が伝わらない"
+
+  - id: menu-has-label
+    name: "menu/menubarにアクセシブルネームがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='menu'], [role='menubar']"
+    check: has-accessible-name
+    why: "メニューの目的が伝わらない"
+
+  - id: accordion-aria-expanded
+    name: "アコーディオンボタンにaria-expandedがあること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "button[aria-controls]:not([role='tab'])"
+    check: has-attribute
+    attribute: aria-expanded
+    why: "開閉状態が伝わらない"
+
+  - id: accordion-aria-controls
+    name: "アコーディオンボタンにaria-controlsがあること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "button[aria-expanded]:not([role='tab'])"
+    check: has-attribute
+    attribute: aria-controls
+    why: "制御対象のパネルとの関連付けがない"
+
+  - id: tree-item-expanded
+    name: "展開可能treeitemにaria-expandedがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='treeitem']"
+    check: custom
+    function: check-expandable-treeitem
+    why: "ツリー展開状態が伝わらない"
+
+  - id: tooltip-describedby
+    name: "ツールチップトリガーにaria-describedbyがあること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "[role='tooltip']"
+    check: custom
+    function: check-tooltip-trigger
+    why: "ツールチップとトリガーの関連付けがない"

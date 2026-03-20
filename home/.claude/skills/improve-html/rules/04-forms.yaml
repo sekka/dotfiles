@@ -1,0 +1,91 @@
+category: forms
+description: "フォームアクセシビリティチェック"
+
+rules:
+  - id: aria-invalid-on-error
+    name: "エラー入力にaria-invalid=trueがあること"
+    severity: error
+    wcag: "3.3.1"
+    selector: "input, select, textarea"
+    check: custom
+    function: check-error-state-marking
+    why: "スクリーンリーダーがエラー状態を伝えられない"
+
+  - id: aria-describedby-error
+    name: "エラー入力にaria-describedbyでエラーメッセージ参照"
+    severity: error
+    wcag: "3.3.1"
+    selector: "[aria-invalid='true']"
+    check: has-attribute
+    attribute: aria-describedby
+    why: "エラー内容が伝わらない"
+
+  - id: required-field-marked
+    name: "必須フィールドにrequired/aria-requiredがあること"
+    severity: warning
+    wcag: "3.3.2"
+    selector: "input:not([type='hidden']):not([type='submit']):not([type='button']), select, textarea"
+    check: custom
+    function: check-required-marking
+    why: "必須であることが伝わらない"
+
+  - id: autocomplete-valid
+    name: "autocomplete属性値の妥当性"
+    severity: warning
+    wcag: "1.3.5"
+    selector: "[autocomplete]"
+    check: attribute-valid-value
+    attribute: autocomplete
+    values: ["off", "on", "name", "given-name", "family-name", "email", "username", "new-password", "current-password", "one-time-code", "organization", "street-address", "address-line1", "address-line2", "address-level1", "address-level2", "country", "country-name", "postal-code", "tel", "url"]
+    why: "自動補完が正しく機能しない"
+
+  - id: checkbox-radio-label
+    name: "チェックボックス/ラジオにラベルがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "input[type='checkbox'], input[type='radio']"
+    check: has-accessible-name
+    why: "選択肢の内容が伝わらない"
+
+  - id: fieldset-legend
+    name: "グループにfieldset+legendがあること"
+    severity: warning
+    wcag: "1.3.1"
+    check: custom
+    function: check-fieldset-grouping
+    why: "グループの目的が伝わらない"
+
+  - id: input-type-semantic
+    name: "入力タイプのセマンティック妥当性"
+    severity: info
+    wcag: "1.3.1"
+    selector: "input[type='text']"
+    check: custom
+    function: check-input-type-semantic
+    why: "適切なinput typeでモバイルキーボードが最適化される"
+
+  - id: select-default-option
+    name: "selectにデフォルトオプションがあること"
+    severity: info
+    wcag: "3.3.2"
+    selector: "select:not([multiple])"
+    check: custom
+    function: check-select-default
+    why: "初期状態が不明確"
+
+  - id: form-has-name
+    name: "formにアクセシブルネームがあること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "form"
+    check: has-accessible-name
+    why: "フォームの目的が伝わらない"
+
+  - id: form-submit-keyboard
+    name: "フォーム送信のキーボード操作性"
+    severity: error
+    wcag: "2.1.1"
+    selector: "form"
+    check: custom
+    function: check-form-submit
+    why: "キーボードでフォーム送信できない"

@@ -1,0 +1,141 @@
+# ARIA属性の有効値リスト (WAI-ARIA 1.2)
+
+attributes:
+  aria-activedescendant:
+    type: id-ref
+  aria-atomic:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-autocomplete:
+    type: token
+    values: ["none", "inline", "list", "both"]
+    default: "none"
+  aria-busy:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-checked:
+    type: token
+    values: ["true", "false", "mixed"]
+  aria-colcount:
+    type: integer
+  aria-colindex:
+    type: integer
+  aria-colspan:
+    type: integer
+  aria-controls:
+    type: id-ref-list
+  aria-current:
+    type: token
+    values: ["page", "step", "location", "date", "time", "true", "false"]
+    default: "false"
+  aria-describedby:
+    type: id-ref-list
+  aria-description:
+    type: string
+  aria-details:
+    type: id-ref-list
+  aria-disabled:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-dropeffect:
+    type: token-list
+    values: ["copy", "execute", "link", "move", "none", "popup"]
+    deprecated: true
+  aria-errormessage:
+    type: id-ref
+  aria-expanded:
+    type: token
+    values: ["true", "false"]
+  aria-flowto:
+    type: id-ref-list
+  aria-grabbed:
+    type: token
+    values: ["true", "false"]
+    deprecated: true
+  aria-haspopup:
+    type: token
+    values: ["true", "false", "menu", "listbox", "tree", "grid", "dialog"]
+    default: "false"
+  aria-hidden:
+    type: token
+    values: ["true", "false"]
+  aria-invalid:
+    type: token
+    values: ["true", "false", "grammar", "spelling"]
+    default: "false"
+  aria-keyshortcuts:
+    type: string
+  aria-label:
+    type: string
+  aria-labelledby:
+    type: id-ref-list
+  aria-level:
+    type: integer
+  aria-live:
+    type: token
+    values: ["off", "polite", "assertive"]
+    default: "off"
+  aria-modal:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-multiline:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-multiselectable:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-orientation:
+    type: token
+    values: ["horizontal", "vertical"]
+  aria-owns:
+    type: id-ref-list
+  aria-placeholder:
+    type: string
+  aria-posinset:
+    type: integer
+  aria-pressed:
+    type: token
+    values: ["true", "false", "mixed"]
+  aria-readonly:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-relevant:
+    type: token-list
+    values: ["additions", "removals", "text", "all", "additions text"]
+    default: "additions text"
+  aria-required:
+    type: token
+    values: ["true", "false"]
+    default: "false"
+  aria-roledescription:
+    type: string
+  aria-rowcount:
+    type: integer
+  aria-rowindex:
+    type: integer
+  aria-rowspan:
+    type: integer
+  aria-selected:
+    type: token
+    values: ["true", "false"]
+  aria-setsize:
+    type: integer
+  aria-sort:
+    type: token
+    values: ["ascending", "descending", "none", "other"]
+    default: "none"
+  aria-valuemax:
+    type: number
+  aria-valuemin:
+    type: number
+  aria-valuenow:
+    type: number
+  aria-valuetext:
+    type: string

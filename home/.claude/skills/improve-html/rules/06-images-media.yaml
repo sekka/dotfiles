@@ -1,0 +1,74 @@
+category: images-media
+description: "画像・メディア代替テキストチェック"
+
+rules:
+  - id: image-alt
+    name: "img要素にalt属性があること"
+    severity: error
+    wcag: "1.1.1"
+    selector: "img"
+    check: has-attribute
+    attribute: alt
+    why: "スクリーンリーダーがファイル名を読み上げてしまう"
+
+  - id: image-alt-quality
+    name: "非記述的altテキスト検出"
+    severity: warning
+    wcag: "1.1.1"
+    selector: "img[alt]"
+    check: custom
+    function: check-alt-quality
+    patterns: ["image", "photo", "picture", "画像", "写真", "img", "icon", "graphic", "banner", "logo"]
+    why: "意味のないaltテキストは画像の内容を伝えない"
+
+  - id: image-alt-filename
+    name: "ファイル名がaltに使われていないか"
+    severity: warning
+    wcag: "1.1.1"
+    selector: "img[alt]"
+    check: custom
+    function: check-alt-not-filename
+    why: "ファイル名は画像の内容を説明しない"
+
+  - id: svg-accessible-name
+    name: "SVGにアクセシブルネームがあること"
+    severity: error
+    wcag: "1.1.1"
+    selector: "svg:not([aria-hidden='true'])"
+    check: has-accessible-name
+    why: "SVGの内容がスクリーンリーダーに伝わらない"
+
+  - id: svg-labelledby-valid
+    name: "SVGのaria-labelledby参照先が存在すること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "svg[aria-labelledby]"
+    check: id-ref-exists
+    attribute: aria-labelledby
+    why: "参照先が存在しないとアクセシブルネームが空になる"
+
+  - id: decorative-image-hidden
+    name: "装飾画像にalt=空またはaria-hiddenがあること"
+    severity: info
+    wcag: "1.1.1"
+    check: custom
+    function: check-decorative-images
+    why: "装飾画像を読み上げるとノイズになる"
+
+  - id: video-has-captions
+    name: "video要素にtrack(captions)があること"
+    severity: warning
+    wcag: "1.2.2"
+    selector: "video"
+    check: has-child
+    child: "track[kind='captions']"
+    why: "聴覚障害のあるユーザーが動画の内容を理解できない"
+
+  - id: audio-has-transcript
+    name: "audio要素に字幕/文字起こしリンクがあること"
+    severity: info
+    wcag: "1.2.1"
+    selector: "audio"
+    check: custom
+    function: check-audio-transcript
+    why: "聴覚障害のあるユーザーが音声の内容を理解できない"

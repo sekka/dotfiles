@@ -1,0 +1,47 @@
+category: performance
+description: "パフォーマンスチェック"
+
+rules:
+  - id: lazy-loading
+    name: "below-fold画像にloading=lazyがあること"
+    severity: info
+    wcag: "BP"
+    selector: "img"
+    check: custom
+    function: check-lazy-loading
+    why: "初期ロード時間の短縮"
+
+  - id: fetchpriority-lcp
+    name: "LCP画像にfetchpriority=highがあること"
+    severity: info
+    wcag: "BP"
+    selector: "img"
+    check: custom
+    function: check-fetchpriority
+    why: "LCP改善"
+
+  - id: decoding-async
+    name: "画像にdecoding属性があること"
+    severity: info
+    wcag: "BP"
+    selector: "img:not([decoding])"
+    check: custom
+    function: suggest-decoding-async
+    why: "メインスレッドのブロッキング軽減"
+
+  - id: script-defer-async
+    name: "scriptにdefer/asyncがあること"
+    severity: warning
+    wcag: "BP"
+    selector: "script[src]:not([defer]):not([async]):not([type='module'])"
+    check: element-not-exists
+    why: "レンダリングブロッキングの回避"
+
+  - id: preload-critical
+    name: "クリティカルリソースのpreload"
+    severity: info
+    wcag: "BP"
+    selector: "head"
+    check: custom
+    function: check-preload-hints
+    why: "クリティカルリソースの早期取得"

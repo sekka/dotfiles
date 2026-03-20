@@ -1,0 +1,57 @@
+# 非推奨・廃止HTML要素リスト
+
+elements:
+  - element: center
+    alternative: "CSS text-align: center"
+    deprecated_since: "HTML4"
+  - element: font
+    alternative: "CSS font-family, font-size, color"
+    deprecated_since: "HTML4"
+  - element: marquee
+    alternative: "CSS animation"
+    deprecated_since: "HTML5"
+  - element: blink
+    alternative: "なし（使用非推奨）"
+    deprecated_since: "HTML5"
+  - element: big
+    alternative: "CSS font-size"
+    deprecated_since: "HTML5"
+  - element: strike
+    alternative: "del or s 要素"
+    deprecated_since: "HTML5"
+  - element: tt
+    alternative: "code, kbd, samp 要素"
+    deprecated_since: "HTML5"
+  - element: acronym
+    alternative: "abbr 要素"
+    deprecated_since: "HTML5"
+  - element: applet
+    alternative: "object or embed 要素"
+    deprecated_since: "HTML5"
+  - element: basefont
+    alternative: "CSS"
+    deprecated_since: "HTML5"
+  - element: dir
+    alternative: "ul 要素"
+    deprecated_since: "HTML5"
+  - element: frame
+    alternative: "iframe 要素"
+    deprecated_since: "HTML5"
+  - element: frameset
+    alternative: "CSS レイアウト"
+    deprecated_since: "HTML5"
+  - element: isindex
+    alternative: "form + input 要素"
+    deprecated_since: "HTML5"
+  - element: noframes
+    alternative: "不要（frameset廃止のため）"
+    deprecated_since: "HTML5"
+  - element: xmp
+    alternative: "pre + code 要素"
+    deprecated_since: "HTML5"
+  - element: listing
+    alternative: "pre + code 要素"
+    deprecated_since: "HTML5"
+  - element: plaintext
+    alternative: "pre 要素"
+    deprecated_since: "HTML5"

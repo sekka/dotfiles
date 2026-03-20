@@ -1,0 +1,46 @@
+category: language
+description: "言語・国際化チェック（日本語固有ルール含む）"
+
+rules:
+  - id: html-has-lang
+    name: "htmlにlang属性があること"
+    severity: error
+    wcag: "3.1.1"
+    selector: "html"
+    check: has-attribute
+    attribute: lang
+    why: "lang属性がないとスクリーンリーダーが正しい言語で読み上げられない"
+
+  - id: lang-valid-value
+    name: "lang属性値の妥当性"
+    severity: error
+    wcag: "3.1.1"
+    selector: "[lang]"
+    check: custom
+    function: check-valid-lang
+    why: "無効な言語コードは音声合成エンジンが誤った言語で読み上げる"
+
+  - id: lang-change-marked
+    name: "言語切替部分にlang属性があること"
+    severity: info
+    wcag: "3.1.2"
+    check: custom
+    function: detect-lang-change
+    why: "言語が切り替わる部分にlangがないとスクリーンリーダーが誤った発音で読み上げる"
+
+  - id: ja-ruby-usage
+    name: "難読漢字にruby要素推奨"
+    severity: info
+    wcag: "3.1.6"
+    check: custom
+    function: suggest-ruby-usage
+    why: "難読漢字の読みが伝わらない可能性がある"
+
+  - id: ja-writing-mode-a11y
+    name: "縦書き時のアクセシビリティ考慮"
+    severity: info
+    wcag: "1.3.4"
+    check: css-property-check
+    property: writing-mode
+    pattern: "vertical"
+    why: "縦書きモードはスクリーンリーダーの読み上げ順序に影響する可能性がある"

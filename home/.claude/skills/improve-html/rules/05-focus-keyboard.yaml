@@ -1,0 +1,92 @@
+category: focus-keyboard
+description: "フォーカス管理・キーボード操作性チェック"
+
+rules:
+  - id: no-positive-tabindex
+    name: "tabindex > 0 の禁止"
+    severity: error
+    wcag: "2.4.3"
+    selector: "[tabindex]"
+    check: custom
+    function: check-positive-tabindex
+    why: "フォーカス順序が予測不能になる"
+
+  - id: focus-visible
+    name: "outline: none の検出"
+    severity: error
+    wcag: "2.4.7"
+    check: css-property-check
+    property: outline
+    pattern: "none|0"
+    why: "キーボードユーザーがフォーカス位置を見失う"
+
+  - id: interactive-keyboard
+    name: "対話要素のキーボード操作性"
+    severity: error
+    wcag: "2.1.1"
+    selector: "[onclick]:not(button):not(a):not(input):not(select):not(textarea)"
+    check: custom
+    function: check-keyboard-accessible
+    why: "マウスイベントのみではキーボードユーザーが操作できない"
+
+  - id: dialog-focus-trap
+    name: "ダイアログのフォーカストラップ"
+    severity: warning
+    wcag: "2.4.3"
+    selector: "dialog, [role='dialog']"
+    check: custom
+    function: check-focus-trap-hint
+    why: "フォーカスがダイアログ外に出ると混乱する"
+
+  - id: modal-aria-modal
+    name: "モーダルにaria-modal=trueがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='dialog']"
+    check: has-attribute
+    attribute: aria-modal
+    why: "aria-modalがないと背景コンテンツにアクセスしてしまう"
+
+  - id: skip-link-exists
+    name: "スキップリンクの存在"
+    severity: warning
+    wcag: "2.4.1"
+    check: custom
+    function: check-skip-link
+    why: "キーボードユーザーが毎回ナビゲーションを通過する必要がある"
+
+  - id: skip-link-target-valid
+    name: "スキップリンクのターゲット妥当性"
+    severity: error
+    wcag: "2.4.1"
+    selector: "a[href^='#']"
+    check: custom
+    function: check-skip-link-target
+    why: "スキップリンクが機能しない"
+
+  - id: custom-interactive-tabindex
+    name: "カスタム対話要素にtabindex=0があること"
+    severity: error
+    wcag: "2.1.1"
+    selector: "[role='button']:not(button), [role='link']:not(a), [role='checkbox']:not(input), [role='radio']:not(input)"
+    check: has-attribute
+    attribute: tabindex
+    why: "カスタム対話要素にフォーカスが当たらない"
+
+  - id: contenteditable-keyboard
+    name: "contenteditable要素にroleがあること"
+    severity: warning
+    wcag: "2.1.1"
+    selector: "[contenteditable='true']"
+    check: has-attribute
+    attribute: role
+    why: "roleがないと支援技術が編集可能であることを伝えられない"
+
+  - id: focus-order-logical
+    name: "tabindex>0検出"
+    severity: warning
+    wcag: "2.4.3"
+    selector: "[tabindex]"
+    check: custom
+    function: check-positive-tabindex
+    why: "tabindex>0はフォーカス順序を壊す"

@@ -1,0 +1,47 @@
+category: tables
+description: "テーブルアクセシビリティチェック"
+
+rules:
+  - id: table-has-headers
+    name: "テーブルにth要素があること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "table:not([role='presentation']):not([role='none'])"
+    check: has-child
+    child: "th"
+    why: "thがないとスクリーンリーダーがヘッダーとデータの関係を伝えられない"
+
+  - id: th-has-scope
+    name: "thにscope属性があること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "th"
+    check: has-attribute
+    attribute: scope
+    why: "scopeがないと複雑なテーブルでヘッダーとデータの関連が曖昧になる"
+
+  - id: table-has-caption
+    name: "テーブルにcaption/aria-labelがあること"
+    severity: warning
+    wcag: "1.3.1"
+    selector: "table:not([role='presentation']):not([role='none'])"
+    check: has-accessible-name
+    why: "テーブルの目的が伝わらない"
+
+  - id: table-headers-valid
+    name: "headers属性の参照先が妥当であること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[headers]"
+    check: id-ref-exists
+    attribute: headers
+    why: "参照先が存在しないとヘッダー関連付けが壊れる"
+
+  - id: layout-table-no-role
+    name: "レイアウトテーブルにrole=presentationがあること"
+    severity: info
+    wcag: "1.3.1"
+    selector: "table"
+    check: custom
+    function: check-layout-table
+    why: "レイアウト目的のテーブルにrole=presentationがないとデータテーブルとして解釈される"

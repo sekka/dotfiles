@@ -1,0 +1,71 @@
+category: accessible-names
+description: "アクセシブルネームの存在・品質チェック"
+
+rules:
+  - id: button-name
+    name: "ボタンにアクセシブルネームがあること"
+    severity: error
+    wcag: "4.1.2"
+    selector: "button"
+    check: has-accessible-name
+    why: "スクリーンリーダーが「ボタン」としか読み上げられない"
+
+  - id: link-name
+    name: "リンクにアクセシブルネームがあること"
+    severity: error
+    wcag: "2.4.4"
+    selector: "a[href]"
+    check: has-accessible-name
+    why: "スクリーンリーダーが「リンク」としか読み上げられない"
+
+  - id: link-text-quality
+    name: "非具体的リンクテキストの検出"
+    severity: warning
+    wcag: "2.4.4"
+    selector: "a[href]"
+    check: custom
+    function: check-link-text-quality
+    patterns: ["こちら", "ここをクリック", "click here", "here", "read more", "詳細", "more"]
+    why: "リンク一覧表示でリンク先が判別できない"
+
+  - id: form-field-name
+    name: "フォーム入力にラベルがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "input:not([type='hidden']):not([type='submit']):not([type='button']):not([type='reset']):not([type='image']), select, textarea"
+    check: has-accessible-name
+    why: "入力欄の目的が伝わらない"
+
+  - id: dialog-name
+    name: "ダイアログにアクセシブルネームがあること"
+    severity: error
+    wcag: "4.1.2"
+    selector: "dialog, [role='dialog'], [role='alertdialog']"
+    check: has-accessible-name
+    why: "ダイアログが開いた時に何のダイアログか伝わらない"
+
+  - id: heading-has-text
+    name: "見出しにテキストコンテンツがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "h1, h2, h3, h4, h5, h6"
+    check: text-content
+    why: "空の見出しは文書構造を壊す"
+
+  - id: heading-has-level
+    name: "role=headingにaria-levelがあること"
+    severity: error
+    wcag: "1.3.1"
+    selector: "[role='heading']"
+    check: has-attribute
+    attribute: aria-level
+    why: "見出しレベルがないと文書構造が不明"
+
+  - id: icon-button-name
+    name: "アイコンのみボタンにアクセシブルネームがあること"
+    severity: error
+    wcag: "1.1.1"
+    selector: "button:not(:empty)"
+    check: custom
+    function: check-icon-only-button
+    why: "アイコンのみのボタンはスクリーンリーダーでは意味が伝わらない"

@@ -1,0 +1,81 @@
+category: css-a11y
+description: "CSS起因アクセシビリティ問題チェック"
+
+rules:
+  - id: css-outline-none
+    name: "outline: none/0がfocus-visible代替なしで使用"
+    severity: error
+    wcag: "2.4.7"
+    check: css-property-check
+    property: outline
+    pattern: "none|0"
+    selector: "*"
+    why: "キーボードユーザーがフォーカス位置を見失う"
+
+  - id: css-display-none-aria
+    name: "display:noneとaria-hidden=falseの矛盾"
+    severity: error
+    wcag: "4.1.2"
+    selector: "[aria-hidden='false']"
+    check: css-a11y-conflict
+    css_property: display
+    css_value: none
+    aria_attr: aria-hidden
+    aria_value: "false"
+    why: "CSSで非表示なのにARIAで表示扱いは矛盾する"
+
+  - id: css-visibility-hidden-focus
+    name: "visibility:hiddenがフォーカス可能要素に適用"
+    severity: warning
+    wcag: "2.4.7"
+    selector: "a, button, input, select, textarea, [tabindex]"
+    check: css-property-check
+    property: visibility
+    pattern: "hidden"
+    why: "フォーカスは当たるが見えないため混乱する"
+
+  - id: css-pointer-events-none
+    name: "pointer-events:noneがフォーカス可能要素に適用"
+    severity: warning
+    wcag: "2.1.1"
+    selector: "a, button, input, select, textarea, [tabindex]"
+    check: css-property-check
+    property: pointer-events
+    pattern: "none"
+    why: "クリックできないがフォーカスは当たるため混乱する"
+
+  - id: css-content-image
+    name: "CSS content:url()が代替テキストなし"
+    severity: warning
+    wcag: "1.1.1"
+    check: css-property-check
+    property: content
+    pattern: "url\\("
+    why: "CSSで挿入された画像にはalt属性がない"
+
+  - id: css-user-select-none
+    name: "user-select:noneがテキストコンテンツに適用"
+    severity: info
+    wcag: "1.3.2"
+    selector: "*"
+    check: css-property-check
+    property: user-select
+    pattern: "none"
+    why: "テキスト選択が無効化されるとコピーや支援技術での操作が制限される"
+
+  - id: css-text-indent-hide
+    name: "text-indent:-9999pxの検出"
+    severity: info
+    wcag: "BP"
+    check: css-property-check
+    property: text-indent
+    pattern: "-\\d{4,}"
+    why: "text-indentによる非表示はvisually-hiddenクラスを使うべき"
+
+  - id: css-forced-colors
+    name: "forced-colors-mode未対応の装飾的CSS"
+    severity: info
+    wcag: "1.4.1"
+    check: custom
+    function: check-forced-colors-support
+    why: "ハイコントラストモードで装飾が消えて情報が失われる可能性がある"

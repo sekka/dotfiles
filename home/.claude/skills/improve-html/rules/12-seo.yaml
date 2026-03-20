@@ -1,0 +1,48 @@
+category: seo
+description: "SEO基本チェック"
+
+rules:
+  - id: title-present
+    name: "title要素の存在と内容"
+    severity: error
+    wcag: "BP"
+    selector: "head"
+    check: custom
+    function: check-title-element
+    why: "title要素がないとブラウザタブやSEOに影響"
+
+  - id: meta-description
+    name: "meta descriptionの存在"
+    severity: warning
+    wcag: "BP"
+    selector: "head"
+    check: custom
+    function: check-meta-description
+    why: "検索結果のスニペットに影響"
+
+  - id: canonical-url
+    name: "canonical URLの指定"
+    severity: info
+    wcag: "BP"
+    selector: "head"
+    check: custom
+    function: check-canonical-url
+    why: "重複コンテンツ問題の回避"
+
+  - id: og-tags
+    name: "OGPタグの存在"
+    severity: info
+    wcag: "BP"
+    selector: "head"
+    check: custom
+    function: check-og-tags
+    why: "SNS共有時の表示最適化"
+
+  - id: image-dimensions
+    name: "img要素にwidth/heightがあること"
+    severity: warning
+    wcag: "BP"
+    selector: "img"
+    check: custom
+    function: check-image-dimensions
+    why: "CLS（Cumulative Layout Shift）の防止"
