@@ -4,8 +4,8 @@
  * HTML セマンティクス・アクセシビリティチェッカー
  *
  * 使用方法:
- *   bun scripts/development/check-html.ts <file-or-glob> [options]
- *   cat index.html | bun scripts/development/check-html.ts --stdin [options]
+ *   bun ~/.claude/skills/improve-html/scripts/check-html.ts <file-or-glob> [options]
+ *   cat index.html | bun ~/.claude/skills/improve-html/scripts/check-html.ts --stdin [options]
  *
  * オプション:
  *   --format=json|text       出力形式 (デフォルト: text)
@@ -287,9 +287,28 @@ function hasAccessibleName(el: Element): boolean {
 	if (el.getAttribute("aria-labelledby")?.trim()) return true;
 	// title
 	if (el.getAttribute("title")?.trim()) return true;
-	// alt (for img)
+	// alt (for img — 要素自身)
 	if (el.tagName.toLowerCase() === "img" && el.getAttribute("alt") !== null) {
 		return el.getAttribute("alt")?.trim() !== "";
+	}
+	// alt (for img — 子孫要素の img alt からネーム継承)
+	const childImg = el.querySelector("img[alt]");
+	if (childImg && childImg.getAttribute("alt")?.trim()) return true;
+	// label[for] による関連付け（フォーム要素）
+	const id = el.getAttribute("id");
+	if (id) {
+		const label = el.ownerDocument.querySelector(`label[for="${id}"]`);
+		if (label?.textContent?.trim()) return true;
+	}
+	return false;
+}
+
+/** 祖先に aria-hidden="true" を持つ要素かどうか */
+function isAriaHidden(el: Element): boolean {
+	let current: Element | null = el;
+	while (current) {
+		if (current.getAttribute("aria-hidden") === "true") return true;
+		current = current.parentElement;
 	}
 	return false;
 }
@@ -493,7 +512,7 @@ function checkTextContent(document: Document, rule: RuleDefinition, category: st
 	const violations: Violation[] = [];
 	for (const el of Array.from(document.querySelectorAll(rule.selector))) {
 		const element = el as Element;
-		if (!element.textContent?.trim()) {
+		if (!element.textContent?.trim() && !hasAccessibleName(element)) {
 			violations.push(violation(rule, category, `${rule.name}: テキストコンテンツがない`, element));
 		}
 	}
@@ -509,6 +528,8 @@ function checkHasAccessibleName(
 	const violations: Violation[] = [];
 	for (const el of Array.from(document.querySelectorAll(rule.selector))) {
 		const element = el as Element;
+		// aria-hidden="true" の祖先内にある要素はスキップ（装飾的要素）
+		if (isAriaHidden(element)) continue;
 		if (!hasAccessibleName(element)) {
 			violations.push(violation(rule, category, `${rule.name}: アクセシブルネームがない`, element));
 		}
@@ -770,7 +791,7 @@ async function main(): Promise<void> {
 
 	// ルールディレクトリのパス（スクリプトからの相対パス）
 	const scriptDir = import.meta.dir;
-	const rulesDir = resolve(scriptDir, "../../home/.claude/skills/improve-html/rules");
+	const rulesDir = resolve(scriptDir, "../rules");
 
 	if (!existsSync(rulesDir)) {
 		console.error(`ルールディレクトリが見つかりません: ${rulesDir}`);
