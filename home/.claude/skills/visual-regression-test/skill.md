@@ -103,4 +103,9 @@ bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
 
 # ベースライン強制再撮影
 VRT_FORCE_BASELINE=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
+
+# ベースラインのみ撮影（git stash なし、diff なし）
+# 現在の表示状態をそのままベースラインとして保存する。
+# 変更前にベースラインだけ先に取りたい場合に使う。
+VRT_BASELINE_ONLY=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
 ```
