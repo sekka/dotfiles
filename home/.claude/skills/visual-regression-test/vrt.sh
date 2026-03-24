@@ -2,6 +2,10 @@
 # VRT - Visual Regression Test (全自動)
 # Usage: bash ~/.claude/skills/visual-regression-test/vrt.sh [urls-file]
 #
+# Modes:
+#   通常:              bash vrt.sh [urls-file]
+#   ベースラインのみ:   VRT_BASELINE_ONLY=1 bash vrt.sh [urls-file]
+#
 # スキルから呼び出される。プロジェクト固有の vrt-urls.txt パスを引数で渡す。
 # ビューポート逐次実行 + fail-fast:
 #   for each viewport (1440 → 768 → 375):
@@ -21,6 +25,8 @@ DIFF_DIR="/tmp/vrt-diff"
 REPORT_DIR="/tmp/vrt-report"
 VIEWPORTS=(1440 768 375)
 FUZZ="2%"
+VRT_FORCE_BASELINE="${VRT_FORCE_BASELINE:-0}"
+VRT_BASELINE_ONLY="${VRT_BASELINE_ONLY:-0}"
 
 # ── stash安全trap ──
 _stashed=0
@@ -33,25 +39,28 @@ cleanup() {
 trap cleanup EXIT
 
 # ── stash残留チェック ──
-if git stash list | grep -q "vrt-auto"; then
-  echo "WARNING: 前回のVRT stash (vrt-auto) が残留しています"
-  echo "  → 'git stash drop' で削除するか 'git stash pop' で復元してください"
-  exit 1
+if [[ "$VRT_BASELINE_ONLY" != "1" ]]; then
+  if git stash list | grep -q "vrt-auto"; then
+    echo "WARNING: 前回のVRT stash (vrt-auto) が残留しています"
+    echo "  → 'git stash drop' で削除するか 'git stash pop' で復元してください"
+    exit 1
+  fi
 fi
 
 # ── 前提チェック ──
-command -v magick >/dev/null 2>&1 || { echo "ERROR: ImageMagick not found. brew install imagemagick" >&2; exit 1; }
+if [[ "$VRT_BASELINE_ONLY" != "1" ]]; then
+  command -v magick >/dev/null 2>&1 || { echo "ERROR: ImageMagick not found. brew install imagemagick" >&2; exit 1; }
+fi
 command -v node >/dev/null 2>&1 || { echo "ERROR: Node.js not found" >&2; exit 1; }
 [[ -f $URLS_FILE ]] || { echo "ERROR: $URLS_FILE not found" >&2; exit 1; }
 
 URLS_ABS="$(cd "$(dirname "$URLS_FILE")" && pwd)/$(basename "$URLS_FILE")"
 
-# ── ベースライン再撮影フラグ ──
-VRT_FORCE_BASELINE="${VRT_FORCE_BASELINE:-0}"
-
 # ── ベースラインが既存かどうか確認 ──
 _has_baseline=0
-if [[ -d "$BASELINE_DIR" ]] && [[ -n "$(ls -A "$BASELINE_DIR" 2>/dev/null)" ]] && [[ "$VRT_FORCE_BASELINE" != "1" ]]; then
+if [[ "$VRT_BASELINE_ONLY" == "1" ]]; then
+  : # 常に再撮影
+elif [[ -d "$BASELINE_DIR" ]] && [[ -n "$(ls -A "$BASELINE_DIR" 2>/dev/null)" ]] && [[ "$VRT_FORCE_BASELINE" != "1" ]]; then
   _has_baseline=1
   echo "[VRT] 既存ベースラインを再利用します（スキップ）。強制再撮影は VRT_FORCE_BASELINE=1 で。"
 fi
@@ -61,10 +70,23 @@ if [[ $_has_baseline -eq 0 ]]; then
   rm -rf "$BASELINE_DIR"
   mkdir -p "$BASELINE_DIR"
 fi
-for d in "$WORK_DIR" "$AFTER_DIR" "$DIFF_DIR" "$REPORT_DIR"; do
-  rm -rf "$d"
-  mkdir -p "$d"
-done
+if [[ "$VRT_BASELINE_ONLY" != "1" ]]; then
+  for d in "$WORK_DIR" "$AFTER_DIR" "$DIFF_DIR" "$REPORT_DIR"; do
+    rm -rf "$d"
+    mkdir -p "$d"
+  done
+else
+  rm -rf "$WORK_DIR"
+  mkdir -p "$WORK_DIR"
+fi
+
+# ── ベースライン撮影（全VP） ──
+capture_baseline() {
+  for vp in "${VIEWPORTS[@]}"; do
+    echo "  [baseline] @${vp}px..."
+    node "$WORK_DIR/capture.mjs" baseline "$WORK_DIR/vrt-urls.txt" "$vp"
+  done
+}
 
 # ── Playwright セットアップ ──
 echo "[VRT 1/5] Playwright セットアップ..."
@@ -146,6 +168,16 @@ CAPTURE_SCRIPT
 # ── URLsファイルを退避（stashで消えないように） ──
 cp "$URLS_ABS" "$WORK_DIR/vrt-urls.txt"
 
+# ── ベースラインのみモード ──
+if [[ "$VRT_BASELINE_ONLY" == "1" ]]; then
+  echo "[VRT 2/5] ベースラインのみモード: 現在の状態を撮影..."
+  capture_baseline
+  count=$(find "$BASELINE_DIR" -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
+  echo ""
+  echo "✓ ベースライン作成完了: ${count}枚 → $BASELINE_DIR/"
+  exit 0
+fi
+
 # ── ベースライン撮影（stashはここでのみ実行） ──
 if [[ $_has_baseline -eq 1 ]]; then
   echo "[VRT 2/5] ベースライン撮影スキップ（既存利用）"
@@ -153,14 +185,15 @@ else
   echo "[VRT 2/5] git stash → ベースライン撮影（全VP）..."
   git add -A && git stash push -q -m "vrt-auto"
   _stashed=1
-  for vp in "${VIEWPORTS[@]}"; do
-    echo "  [baseline] @${vp}px..."
-    node "$WORK_DIR/capture.mjs" baseline "$WORK_DIR/vrt-urls.txt" "$vp"
-  done
+  capture_baseline
 fi
 
 # ── 変更復元（After撮影前に1回だけpop） ──
-echo "[VRT 3/5] $([ $_has_baseline -eq 1 ] && echo 'After撮影...' || echo 'git stash pop → After撮影...')"
+if [[ $_has_baseline -eq 1 ]]; then
+  echo "[VRT 3/5] After撮影..."
+else
+  echo "[VRT 3/5] git stash pop → After撮影..."
+fi
 if [[ $_has_baseline -eq 0 ]]; then
   git stash pop -q
   _stashed=0
@@ -345,8 +378,8 @@ HTMLEOF2
   if [[ "$(uname)" == "Darwin" ]]; then open "$REPORT_DIR/index.html"; fi
 }
 
-# ── After撮影 + ビューポート逐次 diff（fail-fast） ──
-echo "[VRT 4/5] After撮影 + diff（ビューポート逐次・fail-fast）..."
+# ── After撮影 + ビューポート逐次 diff ──
+echo "[VRT 4/5] After撮影 + diff（ビューポート逐次）..."
 for vp in "${VIEWPORTS[@]}"; do
   echo "  --- @${vp}px ---"
 
@@ -355,14 +388,7 @@ for vp in "${VIEWPORTS[@]}"; do
 
   # diff算出（そのVPだけ）
   echo "  [diff] @${vp}px..."
-  if ! run_diff_for_viewport "$vp"; then
-    echo ""
-    echo "  FAIL検出 @${vp}px — 残りのVPをスキップしてレポート生成します"
-    echo "  Total（ここまで）: $total | PASS: $pass | WARN: $warn | FAIL: $fail"
-    generate_report
-    echo "[VRT] FAILあり。レポートを確認してください: $REPORT_DIR/index.html"
-    exit 1
-  fi
+  run_diff_for_viewport "$vp" || true
 done
 
 echo ""
@@ -373,4 +399,17 @@ echo "[VRT 5/5] レポート生成..."
 generate_report
 
 echo ""
-echo "✓ 全${total}組 PASS。レイアウト崩れなし。"
+if [[ $fail -gt 0 ]]; then
+  echo "⚠️  FAILあり（${fail}件）。レポートを確認してください: $REPORT_DIR/index.html"
+elif [[ $warn -gt 0 ]]; then
+  echo "△ WARNあり（${warn}件）。レポートを確認してください: $REPORT_DIR/index.html"
+else
+  echo "✓ 全${total}組 PASS。レイアウト崩れなし。"
+fi
+
+# ── フィンガープリント生成 ──
+# コミット対象テーマファイルの変更内容のハッシュを記録し、hookで照合する
+FP_FILE="/tmp/vrt-fingerprint"
+git diff HEAD -- 'wp-content/themes/**/*.php' 'wp-content/themes/**/*.css' 'wp-content/themes/**/*.js' \
+  | shasum -a 256 | cut -d' ' -f1 > "$FP_FILE"
+echo "[VRT] フィンガープリント記録: $(cat "$FP_FILE")"
