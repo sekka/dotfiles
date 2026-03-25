@@ -250,5 +250,6 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
-  "plansDirectory": "./plans"
+  "plansDirectory": "./plans",
+  "skipAutoPermissionPrompt": true
 }
