@@ -5,6 +5,7 @@
 # Modes:
 #   通常:              bash vrt.sh [urls-file]
 #   ベースラインのみ:   VRT_BASELINE_ONLY=1 bash vrt.sh [urls-file]
+#   ベースライン昇格:   VRT_PROMOTE=1 bash vrt.sh [urls-file]
 #
 # スキルから呼び出される。プロジェクト固有の vrt-urls.txt パスを引数で渡す。
 # ビューポート逐次実行 + fail-fast:
@@ -27,6 +28,27 @@ VIEWPORTS=(1440 768 375)
 FUZZ="2%"
 VRT_FORCE_BASELINE="${VRT_FORCE_BASELINE:-0}"
 VRT_BASELINE_ONLY="${VRT_BASELINE_ONLY:-0}"
+VRT_PROMOTE="${VRT_PROMOTE:-0}"
+
+# ── Promoteモード: after → baseline に昇格 ──
+if [[ "$VRT_PROMOTE" == "1" ]]; then
+  if [[ ! -d "$AFTER_DIR" ]] || [[ -z "$(ls -A "$AFTER_DIR" 2>/dev/null)" ]]; then
+    echo "ERROR: $AFTER_DIR が存在しないか空です。先に vrt:compare を実行してください。" >&2
+    exit 1
+  fi
+  count=$(find "$AFTER_DIR" -name '*.png' 2>/dev/null | wc -l | tr -d ' ')
+  rm -rf "$BASELINE_DIR"
+  mkdir -p "$BASELINE_DIR"
+  cp "$AFTER_DIR"/*.png "$BASELINE_DIR/"
+  rm -rf "$DIFF_DIR" "$REPORT_DIR"
+  FP_FILE="/tmp/vrt-fingerprint"
+  git diff HEAD -- 'wp-content/themes/**/*.php' 'wp-content/themes/**/*.css' 'wp-content/themes/**/*.js' \
+    | shasum -a 256 | cut -d' ' -f1 > "$FP_FILE"
+  echo "✓ ${count}枚をベースラインに昇格: $AFTER_DIR/ → $BASELINE_DIR/"
+  echo "  次回の vrt:compare はこのベースラインを基準に比較します。"
+  echo "[VRT] フィンガープリント更新: $(cat "$FP_FILE")"
+  exit 0
+fi
 
 # ── stash安全trap ──
 _stashed=0
@@ -112,6 +134,7 @@ const urls = readFileSync(urlsFile, 'utf8')
   .filter(l => l.trim() && !l.startsWith('#'))
   .map(url => {
     let name = url.replace(/https?:\/\/[^/]*\//, '').replace(/\/$/, '').replace(/\//g, '-');
+    name = name.replace(/[^a-zA-Z0-9._-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
     if (!name) name = 'top';
     return { name, url };
   });
