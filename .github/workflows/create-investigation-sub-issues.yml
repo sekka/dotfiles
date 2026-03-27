@@ -1,0 +1,266 @@
+name: Create Sub-Issues for Investigation #20
+
+on:
+  push:
+    paths:
+      - '.github/workflows/create-investigation-sub-issues.yml'
+      - 'docs/investigation/*.md'
+  workflow_dispatch:
+
+jobs:
+  create-sub-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: sekka/dotfiles
+      PARENT_ISSUE: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create sub-issue 1 - googleworkspace/cli
+        id: issue1
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: googleworkspace/cli (gws) - Google Workspace CLI" \
+            --body-file "docs/investigation/01-googleworkspace-cli.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 2 - tomoaki_imai tweet
+        id: issue2
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @tomoaki_imai のポスト (2030061902295093466)" \
+            --body-file "docs/investigation/02-tomoaki_imai-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 3 - pouhiroshi tweet
+        id: issue3
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @pouhiroshi のポスト (2030071072968871977)" \
+            --body-file "docs/investigation/03-pouhiroshi-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 4 - azu_re tweet
+        id: issue4
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @azu_re のポスト (2029936988670021940)" \
+            --body-file "docs/investigation/04-azu_re-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 5 - tom_doerr tweet
+        id: issue5
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @tom_doerr のポスト (2030040275079368847)" \
+            --body-file "docs/investigation/05-tom_doerr-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 6 - coworkpowers
+        id: issue6
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: nabeelhyatt/coworkpowers - Claude Code ナレッジワークプラグイン" \
+            --body-file "docs/investigation/06-coworkpowers.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 7 - playcanvas editor
+        id: issue7
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: playcanvas/editor - WebGL/WebGPU/WebXR ビジュアルエディタ" \
+            --body-file "docs/investigation/07-playcanvas-editor.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 8 - opensourceprojects post
+        id: issue8
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: opensourceprojects.dev の投稿 (993c493f)" \
+            --body-file "docs/investigation/08-opensourceprojects-post.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 9 - yoshiko_pg difit
+        id: issue9
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @yoshiko_pg のポスト - difit (GitHub スタイルのローカル diff ビューア)" \
+            --body-file "docs/investigation/09-yoshiko_pg-difit.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 10 - claudex
+        id: issue10
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: EdamAme-x/claudex - Claude Code を OpenAI 互換エンドポイントで実行" \
+            --body-file "docs/investigation/10-claudex.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 11 - fresh terminal editor
+        id: issue11
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: getfresh.dev - Fresh ターミナルベース IDE・テキストエディタ" \
+            --body-file "docs/investigation/11-fresh-terminal-editor.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 12 - suin tweet
+        id: issue12
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @suin のポスト (2025525553823191550)" \
+            --body-file "docs/investigation/12-suin-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 13 - ctatedev agent-browser
+        id: issue13
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @ctatedev のポスト - Vercel agent-browser (AI エージェント用ブラウザ CLI)" \
+            --body-file "docs/investigation/13-ctatedev-agent-browser.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 14 - amagitakayosi tweet
+        id: issue14
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @amagitakayosi のポスト (2028979494984499577)" \
+            --body-file "docs/investigation/14-amagitakayosi-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 15 - oikon48 tweet
+        id: issue15
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @oikon48 のポスト (2030171170885321056)" \
+            --body-file "docs/investigation/15-oikon48-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 16 - ryoppippi ccusage
+        id: issue16
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @ryoppippi のポスト - ccusage (Claude Code 使用量追跡 CLI)" \
+            --body-file "docs/investigation/16-ryoppippi-ccusage.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Create sub-issue 17 - kmizu tweet
+        id: issue17
+        run: |
+          URL=$(gh issue create --repo "$REPO" \
+            --title "調査: @kmizu のポスト (2028446966997569933)" \
+            --body-file "docs/investigation/17-kmizu-tweet.md")
+          NUM=$(echo "$URL" | grep -oP '(?<=/issues/)\d+')
+          ID=$(gh issue view "$NUM" --repo "$REPO" --json id --jq '.id')
+          echo "num=$NUM" >> $GITHUB_OUTPUT
+          echo "id=$ID" >> $GITHUB_OUTPUT
+
+      - name: Link sub-issues to parent issue #20 via GitHub sub-issues API
+        run: |
+          for ID in \
+            "${{ steps.issue1.outputs.id }}" \
+            "${{ steps.issue2.outputs.id }}" \
+            "${{ steps.issue3.outputs.id }}" \
+            "${{ steps.issue4.outputs.id }}" \
+            "${{ steps.issue5.outputs.id }}" \
+            "${{ steps.issue6.outputs.id }}" \
+            "${{ steps.issue7.outputs.id }}" \
+            "${{ steps.issue8.outputs.id }}" \
+            "${{ steps.issue9.outputs.id }}" \
+            "${{ steps.issue10.outputs.id }}" \
+            "${{ steps.issue11.outputs.id }}" \
+            "${{ steps.issue12.outputs.id }}" \
+            "${{ steps.issue13.outputs.id }}" \
+            "${{ steps.issue14.outputs.id }}" \
+            "${{ steps.issue15.outputs.id }}" \
+            "${{ steps.issue16.outputs.id }}" \
+            "${{ steps.issue17.outputs.id }}"; do
+            if [ -n "$ID" ]; then
+              gh api \
+                --method POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "/repos/$REPO/issues/$PARENT_ISSUE/sub_issues" \
+                -F sub_issue_id="$ID" \
+                && echo "Linked issue ID $ID as sub-issue" \
+                || echo "Warning: Could not link issue ID $ID as sub-issue"
+            fi
+          done
+
+      - name: Update parent issue #20 with sub-issue links
+        run: |
+          python3 docs/investigation/generate-parent-body.py \
+            "${{ steps.issue1.outputs.num }}" \
+            "${{ steps.issue2.outputs.num }}" \
+            "${{ steps.issue3.outputs.num }}" \
+            "${{ steps.issue4.outputs.num }}" \
+            "${{ steps.issue5.outputs.num }}" \
+            "${{ steps.issue6.outputs.num }}" \
+            "${{ steps.issue7.outputs.num }}" \
+            "${{ steps.issue8.outputs.num }}" \
+            "${{ steps.issue9.outputs.num }}" \
+            "${{ steps.issue10.outputs.num }}" \
+            "${{ steps.issue11.outputs.num }}" \
+            "${{ steps.issue12.outputs.num }}" \
+            "${{ steps.issue13.outputs.num }}" \
+            "${{ steps.issue14.outputs.num }}" \
+            "${{ steps.issue15.outputs.num }}" \
+            "${{ steps.issue16.outputs.num }}" \
+            "${{ steps.issue17.outputs.num }}" \
+            > /tmp/parent_body.md
+          gh issue edit "$PARENT_ISSUE" --repo "$REPO" --body-file /tmp/parent_body.md
+          echo "Updated parent issue #$PARENT_ISSUE with sub-issue links"
