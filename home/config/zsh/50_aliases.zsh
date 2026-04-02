@@ -39,15 +39,6 @@ alias vp="vim +PlugInstall +qall"
 
 alias qmd-fe='INDEX_PATH="$QMD_FRONTEND_INDEX" qmd'
 
-# ======================
-# Static Analysis (fossil-mcp)
-# ======================
-
-alias fsl="fossil-mcp"
-alias fsls="fossil-mcp scan"
-alias fsld="fossil-mcp dead-code"
-alias fslc="fossil-mcp clones"
-
 # mise/npm/yarnスクリプト実行用関数
 # シェルインジェクションを防ぐため、関数として定義しクォート処理
 

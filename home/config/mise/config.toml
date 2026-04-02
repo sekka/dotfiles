@@ -493,8 +493,6 @@ pnpm = "latest"
 "npm:node-gyp" = "latest"
 
 # === AI/LLM ツール ===
-"npm:agent-browser" = "latest"        # https://github.com/vercel-labs/agent-browser  AIエージェント用ブラウザ自動化CLI
-"npm:pinchtab" = "latest"             # https://github.com/pinchtab/pinchtab  AIエージェント用ブラウザ自動化（トークン効率重視）
 "npm:@antiwork/shortest" = "latest"   # https://github.com/antiwork/shortest
 "npm:@github/copilot" = "latest"
 "npm:@google/gemini-cli" = "latest"

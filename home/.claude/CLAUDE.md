@@ -57,7 +57,7 @@
 - 新機能依頼時は実装前にインタビューで要件を明確化する（詳細: `.claude/rules/interview-first.md`）
 - 曖昧な要件は AskUserQuestion で必ず確認してから作業開始
 - 機密情報（APIキー、環境変数、顧客データ、社内URL）を外部ツールに送信しない
-- ブラウザ自動化はURLを受け取ったら躊躇わず使用する。提案ではなく実行する（詳細: `.claude/rules/browser-automation.md`）
+- ブラウザ自動化はURLを受け取ったら躊躇わず使用する。提案ではなく実行する。chrome MCP（claude-in-chrome / chrome-devtools）を使い、外部ツールにフォールバックしない
 - 実装前にテストを書く（TDD）。テスト失敗は先送りせず即座に対応
 
 ---

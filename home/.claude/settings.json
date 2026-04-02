@@ -10,7 +10,6 @@
   },
   "permissions": {
     "allow": [
-      "Bash(agent-browser:*)",
       "Bash(ai-refresh)",
       "Bash(alias:*)",
       "Bash(basename:*)",
@@ -51,7 +50,6 @@
       "Bash(navi *)",
       "Bash(npx tsc:*)",
       "Bash(oxlint:*)",
-      "Bash(pinchtab:*)",
       "Bash(printenv:*)",
       "Bash(ps:*)",
       "Bash(pstree:*)",

@@ -93,7 +93,7 @@ add_to_path "$GOPATH/bin" append
 # Rust
 add_to_path "$HOME/.cargo/bin" append
 
-# Local binaries (Claude Code, fossil-mcp etc.)
+# Local binaries (Claude Code etc.)
 add_to_path "$HOME/.local/bin" append
 
 # --- 開発ツール ---

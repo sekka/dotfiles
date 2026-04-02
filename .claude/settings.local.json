@@ -3,9 +3,6 @@
     "allow": [
       "Bash(mgrep coderabbit:*)",
       "Bash(oxfmt:*)",
-      "Bash(pinchtab tabs:*)",
-      "Bash(pinchtab:*)",
-      "WebFetch(domain:agent-browser.dev)",
       "WebFetch(domain:agentnativedev.medium.com)",
       "WebFetch(domain:alceo.simplex.inc)",
       "WebFetch(domain:alexop.dev)",
@@ -111,7 +108,6 @@
       "WebFetch(domain:oraios.github.io)",
       "WebFetch(domain:photoshopvip.net)",
       "WebFetch(domain:phpspot.org)",
-      "WebFetch(domain:pinchtab.com)",
       "WebFetch(domain:pypi.org)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -225,7 +221,6 @@
     "deepwiki",
     "drawio",
     "filesystem",
-    "fossil",
     "markitdown",
     "sequential-thinking",
     "vibe_kanban"

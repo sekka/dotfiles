@@ -1,5 +1,5 @@
 #!/bin/bash
-# AI ツールのセットアップ（Ollama、fossil-mcp）
+# AI ツールのセットアップ（Ollama）
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
@@ -23,63 +23,6 @@ if is_installed ollama; then
   log_info "Ollama モデルの準備が完了しました"
 else
   log_warn "ollama が見つかりません。先に Brewfile からインストールしてください"
-fi
-
-# --- fossil-mcp ---
-
-if is_installed fossil-mcp; then
-  log_skip "fossil-mcp はインストール済み（$(fossil-mcp --version 2>/dev/null || echo 'version unknown')）"
-else
-  log_info "fossil-mcp をインストールしています..."
-  FOSSIL_DIR="$HOME/.local/bin"
-  mkdir -p "$FOSSIL_DIR"
-
-  OS_NAME="macos"
-  ARCH=$(uname -m)
-  case "$ARCH" in
-  arm64) ARCH_NAME="aarch64" ;;
-  x86_64) ARCH_NAME="x86_64" ;;
-  *)
-    log_warn "非対応のアーキテクチャです: $ARCH"
-    ARCH_NAME=""
-    ;;
-  esac
-
-  if [[ -n $ARCH_NAME ]]; then
-    ASSET="fossil-mcp-${OS_NAME}-${ARCH_NAME}.tar.gz"
-    DOWNLOAD_URL="https://github.com/yfedoseev/fossil-mcp/releases/latest/download/${ASSET}"
-
-    curl -fsSL "$DOWNLOAD_URL" | tar -xz -C "$FOSSIL_DIR"
-
-    if [[ -f "$FOSSIL_DIR/fossil-mcp" ]]; then
-      chmod +x "$FOSSIL_DIR/fossil-mcp"
-      log_info "fossil-mcp をインストールしました"
-    else
-      log_warn "インストールに失敗しました（展開後にバイナリが見つかりません）"
-    fi
-  fi
-fi
-
-# --- agent-browser ---
-
-if is_installed agent-browser; then
-  log_skip "agent-browser はインストール済み（$(agent-browser --version 2>/dev/null || echo 'version unknown')）"
-  log_info "agent-browser のブラウザをセットアップしています..."
-  if agent-browser install; then
-    log_info "agent-browser の準備が完了しました"
-  else
-    log_error "agent-browser install に失敗しました。手動で実行してください: agent-browser install"
-  fi
-else
-  log_warn "agent-browser が見つかりません。mise install を実行してください（npm:agent-browser）"
-fi
-
-# --- pinchtab ---
-
-if is_installed pinchtab; then
-  log_skip "pinchtab はインストール済み（$(pinchtab --version 2>/dev/null || echo 'version unknown')）"
-else
-  log_warn "pinchtab が見つかりません。mise install を実行してください（npm:pinchtab）"
 fi
 
 # --- サマリー ---
