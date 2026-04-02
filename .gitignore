@@ -157,6 +157,9 @@ package-lock.json
 
 .sqlite
 
+# Nix
+nix/result
+
 # Firebase
 firebase-debug.log
 
