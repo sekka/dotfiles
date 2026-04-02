@@ -70,11 +70,15 @@ fi
 INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
 NIX_MANAGED_BREWS=(
   # common.nix の environment.systemPackages と対応
-  bandwhich bat btop diff-so-fancy direnv dprint emojify exiftool
-  eza fd ffmpeg fzf gitui glow hgrep htop imagemagick jq lazygit
-  libavif libwebp lnav navi neovim ouch poppler procs ripgrep
-  sheldon shellcheck shfmt silicon starship superfile tailspin
-  tig tmux tree vim walk wget xh yazi zoxide
+  ag aria2 bandwhich bat btop cabextract cdrtools
+  diff-so-fancy diffnav direnv dprint dstp emojify exiftool
+  eza fd ffmpeg fpp fzf gawk gh ghq gibo git gitui glow
+  gnupg2 hgrep htop httpstat imagemagick jq lazygit
+  libavif libwebp lnav mactop mas mediainfo mise navi neovim
+  nkf ollama ouch poppler pre-commit procs pstree pt
+  ripgrep sevenzip sheldon shellcheck shfmt silicon snitch starship
+  superfile tailspin terminal-notifier tig tmux tree uv vim walk
+  wget wimlib xh yamllint yazi zenith zoxide
 )
 
 for pkg in "${NIX_MANAGED_BREWS[@]}"; do

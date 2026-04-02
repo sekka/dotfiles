@@ -16,45 +16,85 @@
     starship        # https://github.com/starship/starship        # クロスシェルプロンプト
     # ターミナル強化
     fzf             # https://github.com/junegunn/fzf             # 汎用ファジーファインダー
+    fpp             # https://github.com/facebook/PathPicker      # パスピッカー
     navi            # https://github.com/denisidoro/navi          # インタラクティブチートシート
     tailspin        # https://github.com/bensadeh/tailspin        # ログハイライト付きtail
+    terminal-notifier # https://github.com/julienXX/terminal-notifier # macOS通知ツール
     tree            # https://github.com/Old-Man-Programmer/tree  # ディレクトリツリー表示
+    # ターミナル（テキスト処理）
+    coreutils       # https://www.gnu.org/software/coreutils      # GNU基本ツール（gtimeout等）
+    gawk            # https://www.gnu.org/software/gawk           # GNU Awk（macOS互換性）
+    nkf             # https://osdn.net/projects/nkf               # 文字コード変換ツール
+    pstree          # https://github.com/FredHucht/pstree         # psをツリーで表示
+    silver-searcher # https://github.com/ggreer/the_silver_searcher # 高速コード検索（ag）
     # ファイルマネージャ
     superfile       # https://github.com/yorukot/superfile        # TUIファイルマネージャ
     walk            # https://github.com/antonmedv/walk           # TUIファイルナビゲータ
     yazi            # https://github.com/sxyazi/yazi              # 非同期TUIファイルマネージャ
     glow            # https://github.com/charmbracelet/glow       # ターミナルMarkdownビューワ
+    # git
+    git             # https://git-scm.com                         # バージョン管理システム
+    github-cli      # https://github.com/cli/cli                  # GitHub CLI（gh）
+    ghq             # https://github.com/x-motemen/ghq            # git clone管理
+    gibo            # https://github.com/simonwhitaker/gibo       # gitignore生成
     # git TUI・ビューア
     delta           # https://github.com/dandavison/delta         # git diff + シンタックスハイライト
     diff-so-fancy   # https://github.com/so-fancy/diff-so-fancy   # git diff 整形
+    diffnav         # https://github.com/dlvhdr/diffnav           # delta連携diff ナビゲータ
     gitui           # https://github.com/extrawurst/gitui         # 高速git TUI（Rust製）
     lazygit         # https://github.com/jesseduffield/lazygit    # git TUI（Go製）
     tig             # https://github.com/jonas/tig                # git テキストUI
     # システムモニタ
     btop            # https://github.com/aristocratos/btop        # リソースモニタ（C++製）
     htop            # https://github.com/htop-dev/htop            # プロセスビューワ
+    mactop          # https://github.com/context-labs/mactop      # macOS専用プロセスビューワ
+    zenith          # https://github.com/bvaisvil/zenith          # ターミナルシステムモニタ
     # 開発ツール
     direnv          # https://github.com/direnv/direnv            # ディレクトリ別環境変数
     dprint          # https://github.com/dprint/dprint            # 高速コードフォーマッタ
     hgrep           # https://github.com/rhysd/hgrep              # grep + シンタックスハイライト
     jq              # https://github.com/jqlang/jq                # JSONプロセッサ
+    mise            # https://github.com/jdx/mise                 # タスクランナー・バージョン管理
     neovim          # https://github.com/neovim/neovim            # モダンVim
+    pre-commit      # https://pre-commit.com                      # Gitフック管理ツール
     shellcheck      # https://github.com/koalaman/shellcheck      # シェルスクリプトリンター
     shfmt           # https://github.com/mvdan/sh                 # シェルスクリプトフォーマッタ
     vim             # https://github.com/vim/vim                  # テキストエディタ
     xh              # https://github.com/ducaale/xh               # HTTPクライアント（Rust製）
+    yamllint        # https://github.com/adrienverge/yamllint     # YAMLリンター
+    # Python
+    uv              # https://github.com/astral-sh/uv             # Python環境管理ツール（高速）
     # ファイル・メディア処理
     exiftool        # https://github.com/exiftool/exiftool        # 画像・音声メタデータ取得
     ffmpeg          # https://github.com/FFmpeg/FFmpeg             # 動画・音声変換
     imagemagick     # https://github.com/ImageMagick/ImageMagick  # 画像処理ツール
     libavif         # https://github.com/AOMediaCodec/libavif     # AVIF画像処理
     libwebp         # https://github.com/webmproject/libwebp      # WebP画像処理
+    mediainfo       # https://mediaarea.net/en/MediaInfo          # メディアファイル情報取得（yazi用）
     ouch            # https://github.com/ouch-org/ouch            # 圧縮・展開（自動形式判別）
     poppler-utils   # https://gitlab.freedesktop.org/poppler      # PDF処理CLIツール（pdftotext等）
     silicon         # https://github.com/Aloxaf/silicon           # コード画像生成
+    # アーカイブ
+    _7zz            # https://7-zip.org                           # 7zアーカイブ（yazi用）
+    cabextract      # https://www.cabextract.org.uk               # CABアーカイブ展開ツール
+    cdrtools        # https://cdrtools.sourceforge.net            # ISO作成ツール（mkisofs等）
+    gnupg           # https://gnupg.org                          # 署名ツール
+    wimlib          # https://wimlib.net                          # WIMアーカイブ展開ツール
     # ネットワーク
+    aria2           # https://aria2.github.io                     # 分割ダウンロードツール
     bandwhich       # https://github.com/imsnif/bandwhich         # ネットワークトラフィック監視
+    dstp            # https://github.com/ycd/dstp                 # ネットワーク調査ツール
+    httpstat        # https://github.com/reorx/httpstat           # cURLの統計情報表示
+    snitch          # https://github.com/nicholasgasior/snitch    # ネットワーク監視ツール
     wget            # https://www.gnu.org/software/wget           # HTTP/FTPダウンローダ
+    # ウェブ開発
+    mycli           # https://mycli.net                           # MySQL便利ツール（オートコンプリート）
+    # AI
+    ollama          # https://github.com/ollama/ollama            # ローカルLLM実行環境
+    # 検索
+    platinum-searcher # https://github.com/monochromegane/the_platinum_searcher # 高速コード検索（pt）
+    # OS
+    mas             # https://github.com/mas-cli/mas              # Mac App Store CLIツール
     # その他
     emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換
     lnav            # https://github.com/tstack/lnav              # ログファイルビューア
