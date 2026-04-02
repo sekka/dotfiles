@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, config, ... }: {
 
   # --- Nix で管理する CLI ツール ---
   # Brewfile から移行した Rust/Go 製ツール
@@ -14,7 +14,7 @@
   ];
 
   # =============================================
-  # macOS defaults（setup/04_macos.sh から移行）
+  # macOS defaults
   # =============================================
 
   system.defaults = {
@@ -29,7 +29,7 @@
       NSAutomaticQuoteSubstitutionEnabled = false;   # スマート引用符を無効化
       NSAutomaticDashSubstitutionEnabled = false;    # スマートダッシュを無効化
       NSNavPanelExpandedStateForSaveMode = true;     # 保存ダイアログを常に展開表示
-      NSNavPanelExpandedStateForSaveMode2 = true;    # 同上（新形式）
+      NSNavPanelExpandedStateForSaveMode2 = true;    # 同上（新API）
       "com.apple.mouse.tapBehavior" = 1;             # タップでクリック
       "com.apple.trackpad.scaling" = 3.0;            # トラックパッド速度（最速）
     };
@@ -78,16 +78,17 @@
         DSDontWriteUSBStores = true;      # USB ボリュームに .DS_Store を作らない
       };
       "com.apple.frameworks.diskimages" = {
-        skip-verify = false;         # ディスクイメージ検証を有効（セキュリティ）
-        skip-verify-locked = false;  # 同上（ロック済み）
-        skip-verify-remote = false;  # 同上（リモート）
+        skip-verify = false;         # ディスクイメージ検証を有効（通常）
+        skip-verify-locked = false;  # 同上（ロック済みイメージ）
+        skip-verify-remote = false;  # 同上（リモートイメージ）
       };
       "com.apple.CrashReporter" = {
         DialogType = "none";  # クラッシュレポートダイアログを非表示
       };
       NSGlobalDomain = {
+        # nix-darwin の NSGlobalDomain モジュールに未定義のキー
         PMPrintingExpandedStateForPrint = true;   # 印刷ダイアログを常に展開表示
-        PMPrintingExpandedStateForPrint2 = true;  # 同上（新形式）
+        PMPrintingExpandedStateForPrint2 = true;  # 同上（新API）
       };
       "com.apple.TextEdit" = {
         RichText = 0;                   # プレーンテキストモードをデフォルトに
@@ -102,25 +103,27 @@
 
   # --- nix-darwin の defaults 機構では対応できない設定 ---
   # defaults -currentHost write が必要 / サンドボックス保護ドメイン
-  system.activationScripts.postActivation.text = ''
+  system.activationScripts.postActivation.text = let
+    user = config.system.primaryUser;
+  in ''
     # メニューバーアイテム間隔（-currentHost が必要）
-    sudo -u kei defaults -currentHost write -globalDomain NSStatusItemSpacing -int 8 2>/dev/null || true
-    sudo -u kei defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6 2>/dev/null || true
+    sudo -u ${user} defaults -currentHost write -globalDomain NSStatusItemSpacing -int 8 2>/dev/null || true
+    sudo -u ${user} defaults -currentHost write -globalDomain NSStatusItemSelectionPadding -int 6 2>/dev/null || true
 
-    # Bluetooth トラックパッド tap-to-click
-    sudo -u kei defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true 2>/dev/null || true
+    # Bluetooth トラックパッド tap-to-click（trackpad.Clicking とは別ドメイン）
+    sudo -u ${user} defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true 2>/dev/null || true
 
     # メニューバー時計のカスタム日本語フォーマット（例: 4月2日(水) 12:30:00）
-    sudo -u kei defaults write com.apple.menuextra.clock DateFormat -string 'M\u6708d\u65e5(EEE) H:mm:ss' 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.menuextra.clock DateFormat -string 'M\u6708d\u65e5(EEE) H:mm:ss' 2>/dev/null || true
 
     # タイトルバーにアイコン表示（保護ドメイン）
-    sudo -u kei defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.universalaccess showWindowTitlebarIcons -bool true 2>/dev/null || true
 
     # Safari 開発者ツール（サンドボックス保護ドメイン）
-    sudo -u kei defaults write com.apple.Safari IncludeDevelopMenu -bool true 2>/dev/null || true
-    sudo -u kei defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true 2>/dev/null || true
-    sudo -u kei defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true 2>/dev/null || true
-    sudo -u kei defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.Safari IncludeDevelopMenu -bool true 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true 2>/dev/null || true
+    sudo -u ${user} defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null || true
   '';
 
   # darwin-rebuild を実行するプライマリユーザー
