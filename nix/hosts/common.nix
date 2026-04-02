@@ -1,16 +1,64 @@
 { pkgs, config, ... }: {
 
   # --- Nix で管理する CLI ツール ---
-  # Brewfile から移行した Rust/Go 製ツール
+  # Homebrew から移行。OS深部に関わらない純粋な CLI のみ対象
   environment.systemPackages = with pkgs; [
-    bat             # すごいcat
-    eza             # すごいls
-    fd              # すごいfind
-    hexyl           # すごいod
-    procs           # すごいps
-    ripgrep         # すごいgrep
-    starship        # プロンプト
-    zoxide          # すごいcd
+    # コマンド代替（モダン版 coreutils）
+    bat             # https://github.com/sharkdp/bat              # cat + シンタックスハイライト
+    eza             # https://github.com/eza-community/eza        # ls + Git/アイコン対応
+    fd              # https://github.com/sharkdp/fd               # find + 高速・直感的
+    hexyl           # https://github.com/sharkdp/hexyl            # hexdump + カラー表示
+    procs           # https://github.com/dalance/procs            # ps + カラー・ツリー表示
+    ripgrep         # https://github.com/BurntSushi/ripgrep       # grep + 高速・.gitignore対応
+    zoxide          # https://github.com/ajeetdsouza/zoxide       # cd + 学習型ジャンプ
+    # シェル・プロンプト
+    sheldon         # https://github.com/rossmacarthur/sheldon    # Zshプラグインマネージャ
+    starship        # https://github.com/starship/starship        # クロスシェルプロンプト
+    # ターミナル強化
+    fzf             # https://github.com/junegunn/fzf             # 汎用ファジーファインダー
+    navi            # https://github.com/denisidoro/navi          # インタラクティブチートシート
+    tailspin        # https://github.com/bensadeh/tailspin        # ログハイライト付きtail
+    tree            # https://github.com/Old-Man-Programmer/tree  # ディレクトリツリー表示
+    # ファイルマネージャ
+    superfile       # https://github.com/yorukot/superfile        # TUIファイルマネージャ
+    walk            # https://github.com/antonmedv/walk           # TUIファイルナビゲータ
+    yazi            # https://github.com/sxyazi/yazi              # 非同期TUIファイルマネージャ
+    glow            # https://github.com/charmbracelet/glow       # ターミナルMarkdownビューワ
+    # git TUI・ビューア
+    delta           # https://github.com/dandavison/delta         # git diff + シンタックスハイライト
+    diff-so-fancy   # https://github.com/so-fancy/diff-so-fancy   # git diff 整形
+    gitui           # https://github.com/extrawurst/gitui         # 高速git TUI（Rust製）
+    lazygit         # https://github.com/jesseduffield/lazygit    # git TUI（Go製）
+    tig             # https://github.com/jonas/tig                # git テキストUI
+    # システムモニタ
+    btop            # https://github.com/aristocratos/btop        # リソースモニタ（C++製）
+    htop            # https://github.com/htop-dev/htop            # プロセスビューワ
+    # 開発ツール
+    direnv          # https://github.com/direnv/direnv            # ディレクトリ別環境変数
+    dprint          # https://github.com/dprint/dprint            # 高速コードフォーマッタ
+    hgrep           # https://github.com/rhysd/hgrep              # grep + シンタックスハイライト
+    jq              # https://github.com/jqlang/jq                # JSONプロセッサ
+    neovim          # https://github.com/neovim/neovim            # モダンVim
+    shellcheck      # https://github.com/koalaman/shellcheck      # シェルスクリプトリンター
+    shfmt           # https://github.com/mvdan/sh                 # シェルスクリプトフォーマッタ
+    vim             # https://github.com/vim/vim                  # テキストエディタ
+    xh              # https://github.com/ducaale/xh               # HTTPクライアント（Rust製）
+    # ファイル・メディア処理
+    exiftool        # https://github.com/exiftool/exiftool        # 画像・音声メタデータ取得
+    ffmpeg          # https://github.com/FFmpeg/FFmpeg             # 動画・音声変換
+    imagemagick     # https://github.com/ImageMagick/ImageMagick  # 画像処理ツール
+    libavif         # https://github.com/AOMediaCodec/libavif     # AVIF画像処理
+    libwebp         # https://github.com/webmproject/libwebp      # WebP画像処理
+    ouch            # https://github.com/ouch-org/ouch            # 圧縮・展開（自動形式判別）
+    poppler-utils   # https://gitlab.freedesktop.org/poppler      # PDF処理CLIツール（pdftotext等）
+    silicon         # https://github.com/Aloxaf/silicon           # コード画像生成
+    # ネットワーク
+    bandwhich       # https://github.com/imsnif/bandwhich         # ネットワークトラフィック監視
+    wget            # https://www.gnu.org/software/wget           # HTTP/FTPダウンローダ
+    # その他
+    emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換
+    lnav            # https://github.com/tstack/lnav              # ログファイルビューア
+    tmux            # https://github.com/tmux/tmux                # ターミナルマルチプレクサ
   ];
 
   # =============================================

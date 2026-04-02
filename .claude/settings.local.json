@@ -210,7 +210,9 @@
       "Bash(/run/current-system/sw/bin/bat --version)",
       "Bash(/run/current-system/sw/bin/rg --version)",
       "Bash(/run/current-system/sw/bin/starship --version)",
-      "Bash(/run/current-system/sw/bin/eza --version)"
+      "Bash(/run/current-system/sw/bin/eza --version)",
+      "WebFetch(domain:mynixos.com)",
+      "Bash(nix search:*)"
     ],
     "deny": [],
     "ask": []

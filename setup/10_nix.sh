@@ -35,11 +35,11 @@ log_info "ホスト名: $HOSTNAME"
 
 # このホスト用の .nix ファイルがなければ自動作成
 HOST_NIX="$NIX_DIR/hosts/$HOSTNAME.nix"
-if [[ -f "$HOST_NIX" ]]; then
+if [[ -f $HOST_NIX ]]; then
   log_skip "ホスト設定ファイルは既に存在: hosts/$HOSTNAME.nix"
 else
   log_info "ホスト設定ファイルを作成しています: hosts/$HOSTNAME.nix"
-  cat > "$HOST_NIX" << EOF
+  cat >"$HOST_NIX" <<EOF
 { ... }: {
   # $HOSTNAME 固有の設定
   # マシン固有のパッケージや設定はここに追加
@@ -68,12 +68,19 @@ fi
 # ※ このリストは nix/hosts/common.nix の environment.systemPackages と対応
 
 INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
-NIX_MANAGED_BREWS=(bat eza fd hexyl procs ripgrep starship zoxide)
+NIX_MANAGED_BREWS=(
+  # common.nix の environment.systemPackages と対応
+  bandwhich bat btop diff-so-fancy direnv dprint emojify exiftool
+  eza fd ffmpeg fzf gitui glow hgrep htop imagemagick jq lazygit
+  libavif libwebp lnav navi neovim ouch poppler procs ripgrep
+  sheldon shellcheck shfmt silicon starship superfile tailspin
+  tig tmux tree vim walk wget xh yazi zoxide
+)
 
 for pkg in "${NIX_MANAGED_BREWS[@]}"; do
-  if grep -q "^${pkg}$" <<< "$INSTALLED_BREWS"; then
+  if grep -q "^${pkg}$" <<<"$INSTALLED_BREWS"; then
     log_info "$pkg を Homebrew からアンインストールしています（Nix で管理）..."
-    brew uninstall "$pkg"
+    brew uninstall --ignore-dependencies "$pkg"
   fi
 done
 
