@@ -199,7 +199,18 @@
       "WebFetch(domain:zoewave.medium.com)",
       "mcp__brave-search__brave_web_search",
       "mcp__filesystem__write_file",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "WebFetch(domain:blog.ayjc.net)",
+      "WebFetch(domain:natelandau.com)",
+      "WebFetch(domain:www.daytona.io)",
+      "WebFetch(domain:evantravers.com)",
+      "WebFetch(domain:drmowinckels.io)",
+      "Bash(bat --version)",
+      "Bash(starship --version)",
+      "Bash(/run/current-system/sw/bin/bat --version)",
+      "Bash(/run/current-system/sw/bin/rg --version)",
+      "Bash(/run/current-system/sw/bin/starship --version)",
+      "Bash(/run/current-system/sw/bin/eza --version)"
     ],
     "deny": [],
     "ask": []
@@ -218,5 +229,18 @@
     "markitdown",
     "sequential-thinking",
     "vibe_kanban"
-  ]
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
+          }
+        ]
+      }
+    ]
+  }
 }
