@@ -47,7 +47,7 @@
     # システムモニタ
     btop            # https://github.com/aristocratos/btop        # リソースモニタ（C++製）
     htop            # https://github.com/htop-dev/htop            # プロセスビューワ
-    mactop          # https://github.com/context-labs/mactop      # macOS専用プロセスビューワ
+    (mactop.overrideAttrs (old: { doCheck = false; }))  # https://github.com/context-labs/mactop  # macOS専用プロセスビューワ（テストがNixサンドボックスで失敗するため無効化）
     zenith          # https://github.com/bvaisvil/zenith          # ターミナルシステムモニタ
     # 開発ツール
     direnv          # https://github.com/direnv/direnv            # ディレクトリ別環境変数
