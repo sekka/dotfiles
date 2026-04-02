@@ -154,12 +154,6 @@ elif echo "$MATCH_CMD" | grep -qE '^kubectl[[:space:]]'; then
     ;;
   esac
 
-# --- Network ---
-elif echo "$MATCH_CMD" | grep -qE '^curl[[:space:]]+'; then
-  REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^curl /rtk curl /')"
-elif echo "$MATCH_CMD" | grep -qE '^wget[[:space:]]+'; then
-  REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^wget /rtk wget /')"
-
 # --- pnpm package management ---
 elif echo "$MATCH_CMD" | grep -qE '^pnpm[[:space:]]+(list|ls|outdated)([[:space:]]|$)'; then
   REWRITTEN="${ENV_PREFIX}$(echo "$CMD_BODY" | sed 's/^pnpm /rtk pnpm /')"
