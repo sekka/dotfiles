@@ -9,6 +9,11 @@ mise run setup:all          # フルセットアップ実行
 mise run macos:check        # macOS defaults変更検出
 mise run macos:apply        # macOS設定適用
 bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
+
+# Nix（パッケージ管理）
+cd nix && darwin-rebuild switch --flake .   # Nix パッケージ適用
+cd nix && nix flake update                  # nixpkgs 更新（flake.lock 更新）
+cd nix && darwin-rebuild switch --rollback  # ロールバック
 ```
 
 ## ディレクトリ構造
@@ -17,6 +22,10 @@ bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
 home/             # デプロイ元テンプレート → ~/ へ symlink
   .claude/        # Claude Code設定テンプレート（agents, rules, skills, hooks）
   config/         # XDG設定（ghostty, nvim, yazi, zsh等）
+nix/              # Nix パッケージ管理（nix-darwin + flakes）
+  flake.nix       # エントリポイント
+  flake.lock      # バージョン固定（自動生成、gitコミット対象）
+  hosts/          # ホスト別設定
 setup/            # 番号付きセットアップスクリプト（01〜09、順序通りに実行）
 scripts/          # 開発・運用ツール（TypeScript/Bun）
 .claude/          # 実行時状態（セッション、メモリ、プラン）※gitignore対象
@@ -29,7 +38,7 @@ scripts/          # 開発・運用ツール（TypeScript/Bun）
 - **Lint:** oxlint (TS/JS), shellcheck (shell)
 - **Format:** dprint (MD/YAML/TOML) + shfmt (shell)
 - **Zsh プラグイン:** sheldon
-- **パッケージ:** Homebrew (Brewfile)
+- **パッケージ:** Nix (nix-darwin, CLIツール) + Homebrew (Brewfile, GUI/Nix未移行分)
 
 ## プロジェクト特性
 
