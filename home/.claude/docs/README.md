@@ -139,7 +139,6 @@ home/.claude/
 ### 内部ドキュメント
 
 - TDD ワークフロー: `../rules/tdd-workflow.md`
-- セマンティック検索: `../rules/semantic-search.md`
 - 技術調査ガイド: `../rules/tech-research.md`
 - レビューワークフロー: `../rules/code-review-workflow.md`
 - フロントエンドナレッジ: `../rules/frontend-knowledge.md`

@@ -191,7 +191,6 @@
       "WebFetch(domain:x.com)",
       "WebFetch(domain:yag.xyz)",
       "WebFetch(domain:yazi-rs.github.io)",
-      "WebFetch(domain:yoanbernabeu.github.io)",
       "WebFetch(domain:yugop.com)",
       "WebFetch(domain:yuheiy.com)",
       "WebFetch(domain:yuto-takahashi.com)",
@@ -227,7 +226,6 @@
     "drawio",
     "filesystem",
     "fossil",
-    "grepai",
     "markitdown",
     "sequential-thinking",
     "vibe_kanban"

@@ -40,15 +40,6 @@ alias vp="vim +PlugInstall +qall"
 alias qmd-fe='INDEX_PATH="$QMD_FRONTEND_INDEX" qmd'
 
 # ======================
-# Semantic Search (grepai)
-# ======================
-
-alias gai="grepai"
-alias gais="grepai search"
-alias gait="grepai trace"
-alias gaiw="grepai watch"
-
-# ======================
 # Static Analysis (fossil-mcp)
 # ======================
 

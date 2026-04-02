@@ -342,7 +342,6 @@ git worktree list
 ### 内部ドキュメント
 
 - TDD ワークフロー: `.claude/rules/tdd-workflow.md`
-- セマンティック検索: `.claude/rules/semantic-search.md`
 - 技術調査ガイド: `.claude/rules/tech-research.md`
 - レビューワークフロー: `.claude/rules/code-review-workflow.md`
 - フロントエンドナレッジ: `.claude/rules/frontend-knowledge.md`

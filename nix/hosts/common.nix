@@ -89,11 +89,14 @@
     wget            # https://www.gnu.org/software/wget           # HTTP/FTPダウンローダ
     # ウェブ開発
     mycli           # https://mycli.net                           # MySQL便利ツール（オートコンプリート）
+    # Docker
+    lazydocker      # https://github.com/jesseduffield/lazydocker # Docker管理TUI（Go製）
     # AI
     ollama          # https://github.com/ollama/ollama            # ローカルLLM実行環境
     # 検索
     platinum-searcher # https://github.com/monochromegane/the_platinum_searcher # 高速コード検索（pt）
     # OS
+    m-cli           # https://github.com/rgcr/m-cli               # macOS設定CLI（Swiss Army Knife）
     mas             # https://github.com/mas-cli/mas              # Mac App Store CLIツール
     # その他
     emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換

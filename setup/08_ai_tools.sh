@@ -1,5 +1,5 @@
 #!/bin/bash
-# AI ツールのセットアップ（Ollama、grepai、fossil-mcp）
+# AI ツールのセットアップ（Ollama、fossil-mcp）
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
@@ -23,14 +23,6 @@ if is_installed ollama; then
   log_info "Ollama モデルの準備が完了しました"
 else
   log_warn "ollama が見つかりません。先に Brewfile からインストールしてください"
-fi
-
-# --- grepai ---
-
-if is_installed grepai; then
-  log_info "grepai の準備が完了しました"
-else
-  log_warn "grepai が見つかりません。先に Brewfile からインストールしてください"
 fi
 
 # --- fossil-mcp ---
@@ -93,4 +85,4 @@ fi
 # --- サマリー ---
 
 log_section "08: 完了"
-log_info "次のステップ: cd /path/to/project && grepai init && grepai watch"
+log_info "セットアップが完了しました"
