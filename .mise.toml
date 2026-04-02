@@ -10,8 +10,8 @@ description = "現在のmacOS設定がデフォルトから変更されている
 run = "scripts/system/macos/check-defaults.sh"
 
 [tasks."macos:apply"]
-description = "メジャーなmacOS設定を適用（setup/04_macos.sh）"
-run = "setup/04_macos.sh"
+description = "macOS設定を適用（nix-darwin経由）"
+run = "cd nix && sudo /run/current-system/sw/bin/darwin-rebuild switch --flake ."
 
 [tasks."macos:snapshot-before"]
 description = "設定変更前のスナップショットを取得（pdef用）"
