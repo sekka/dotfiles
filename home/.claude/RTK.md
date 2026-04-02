@@ -27,3 +27,11 @@ All other commands are automatically rewritten by the Claude Code hook.
 Example: `git status` → `rtk git status` (transparent, 0 tokens overhead)
 
 Refer to CLAUDE.md for full command reference.
+
+## Important: Output Filtering
+
+rtkプロキシ経由の出力はトークン節約のためにフィルタリング・圧縮される。
+**出力が通常より短い・形式が異なるのはrtkの正常動作であり、ページ破損やエラーではない。**
+
+- 生の出力が必要な場合: `rtk proxy <cmd>` を使う
+- hook対象外のコマンド（curl, wget等）は素のまま実行される
