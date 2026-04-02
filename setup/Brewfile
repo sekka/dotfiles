@@ -12,27 +12,22 @@ brew "k1LoW/tap/tcmux"        # https://github.com/k1LoW/tcmux              # tm
 
 # === ターミナル ===
 brew "ag"                 # https://formulae.brew.sh/formula/the_silver_searcher    # 超すごいgrep
-brew "bat"                # https://formulae.brew.sh/formula/bat              # すごいcat
+# bat, eza, fd, hexyl, procs, ripgrep → Nix で管理（nix/hosts/common.nix）
 brew "coreutils"          # https://formulae.brew.sh/formula/coreutils        # GNU基本ツール（gtimeout等 for AI検出）
-brew "eza"                # https://formulae.brew.sh/formula/eza              # すごいls
-brew "fd"                 # https://formulae.brew.sh/formula/fd               # すごいfind
 brew "fpp"                # https://formulae.brew.sh/formula/fpp              # パスピッカー
 brew "gawk"               # https://formulae.brew.sh/formula/gawk             # GNU Awk（macOS互換性）
-brew "hexyl"              # https://formulae.brew.sh/formula/hexyl            # すごいod
 brew "hgrep"              # https://formulae.brew.sh/formula/hgrep            # すごいgrep
 brew "nkf"                # https://formulae.brew.sh/formula/nkf              # 文字コード変換ツール
-brew "procs"              # https://formulae.brew.sh/formula/procs            # すごいps
 brew "pstree"             # https://formulae.brew.sh/formula/pstree           # psをツリーで表示
-brew "ripgrep"            # https://formulae.brew.sh/formula/ripgrep          # すごいgrep
 brew "rtk"               # https://github.com/rtk-ai/rtk                    # LLMトークン消費を60-90%削減するCLIプロキシ
 brew "sheldon"            # https://formulae.brew.sh/formula/sheldon          # 高速zshプラグイン管理（Rust製）
-brew "starship"           # https://formulae.brew.sh/formula/starship         # すごいプロンプト表示
+# starship → Nix で管理
 brew "tailspin"           # https://formulae.brew.sh/formula/tailspin         # 高性能tailコマンド
 brew "terminal-notifier"  # https://formulae.brew.sh/formula/terminal-notifier # macOS通知ツール
 brew "tree"               # https://formulae.brew.sh/formula/tree             # ディレクトリツリー表示
 brew "yazi"               # https://formulae.brew.sh/formula/yazi             # Rust製高速ファイルマネージャー
 brew "glow"               # https://formulae.brew.sh/formula/glow             # Markdownビューワ（yazi用）
-brew "zoxide"             # https://formulae.brew.sh/formula/zoxide           # すごいcd（ディレクトリジャンプ）
+# zoxide → Nix で管理
 
 # === システムモニタ ===
 brew "btop"               # https://formulae.brew.sh/formula/btop             # プロセスビューワ
