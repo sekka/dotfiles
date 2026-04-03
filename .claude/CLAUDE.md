@@ -5,7 +5,7 @@
 ## コマンド
 
 ```bash
-mise run setup:all          # フルセットアップ実行
+./setup/setup.sh            # フルセットアップ実行
 mise run macos:check        # macOS defaults変更検出
 mise run macos:apply        # macOS設定適用
 bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
