@@ -5,13 +5,6 @@
 source "$(dirname "$0")/lib/common.sh"
 log_section "07: Yazi plugins setup"
 
-# --- 前提条件 ---
-
-if ! is_installed ya; then
-  log_error "'ya' コマンドが見つかりません。先に yazi をインストールしてください（brew install yazi）"
-  exit 1
-fi
-
 # --- ヘルパー関数 ---
 
 install_plugin() {
@@ -27,17 +20,6 @@ install_plugin() {
     else
       log_warn "インストールに失敗しました: $plugin"
     fi
-  fi
-}
-
-check_dependency() {
-  local cmd="$1"
-  local required_by="$2"
-  if is_installed "$cmd"; then
-    log_info "依存ツール確認: $cmd"
-  else
-    log_warn "$cmd がインストールされていません（$required_by が必要）"
-    log_warn "  インストール: brew install $cmd"
   fi
 }
 
@@ -60,14 +42,6 @@ install_plugin yazi-rs/plugins:jump-to-char
 install_plugin ndtoan96/ouch
 install_plugin KKV9/compress
 install_plugin Sonico98/exifaudio.yazi:exifaudio
-
-# --- 依存パッケージ確認 ---
-
-check_dependency glow "glow.yazi"
-check_dependency mediainfo "mediainfo.yazi"
-check_dependency ffmpeg "mediainfo.yazi"
-check_dependency ouch "ouch.yazi"
-check_dependency exiftool "exifaudio.yazi"
 
 # --- サマリー ---
 

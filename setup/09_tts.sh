@@ -5,20 +5,6 @@
 source "$(dirname "$0")/lib/common.sh"
 log_section "09: TTS setup"
 
-# --- 前提条件 ---
-
-if ! is_installed uv; then
-  log_error "uv が見つかりません（brew install uv）"
-  exit 1
-fi
-log_info "uv の準備が完了しました"
-
-if ! is_installed ffmpeg; then
-  log_error "ffmpeg が見つかりません（brew install ffmpeg）"
-  exit 1
-fi
-log_info "ffmpeg の準備が完了しました"
-
 # --- mlx-audio インストール ---
 
 if uv tool list | grep -q mlx-audio; then
