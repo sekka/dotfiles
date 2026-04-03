@@ -485,10 +485,6 @@ deno = "latest"
 bun = "latest"
 # npm = "latest"
 
-# === パッケージマネージャー ===
-yarn = "latest"
-pnpm = "latest"
-
 # === ビルドツール ===
 "npm:node-gyp" = "latest"
 
@@ -517,15 +513,6 @@ pnpm = "latest"
 "npm:ui-skills" = "latest"            # https://www.ui-skills.com/
 "npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
 
-# === クラウドツール ===
-awscli = "latest"
-
-# === デプロイ/クラウド ===
-"npm:firebase-tools" = "latest"
-"npm:heroku" = "latest"
-"npm:netlify-cli" = "latest"
-"npm:vercel" = "latest"
-
 # === 開発ツール ===
 "npm:caniuse-cmd" = "latest"          # ブラウザ互換性チェック
 "npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
@@ -534,7 +521,6 @@ awscli = "latest"
 "npm:fixpack" = "latest"              # package.json整理
 "npm:git-cz" = "latest"               # Git commit支援
 "npm:git-diff-archive" = "latest"     # Git差分アーカイブ
-"npm:http-server" = "latest"          # ローカル HTTP サーバー
 "npm:lighthouse" = "latest"           # パフォーマンス測定
 "npm:unlighthouse" = "latest"         # サイト全体のLighthouseスキャン
 "npm:markdownlint-cli" = "latest"     # Markdown リンター
@@ -542,16 +528,10 @@ awscli = "latest"
 "npm:npm-check-updates" = "latest"    # npm更新チェック
 "npm:oxfmt" = "latest"                # Formatter
 "npm:oxlint" = "latest"               # Linter
-
-# === メディア ===
-yt-dlp = { version = "latest", rename_exe = "yt-dlp" }
+"npm:vercel" = "latest"               # Vercel CLI
 
 # === 画像処理 ===
 "npm:imageoptim-cli" = "latest"       # 画像最適化
-"npm:svgo" = "latest"                 # SVG 最適化
-
-# === システムモニタ ===
-"npm:gtop" = "latest"                 # システムモニタ（htop/btop 代替）
 
 # === Rust ===
 rust = "stable"

@@ -62,6 +62,8 @@
     vim             # https://github.com/vim/vim                  # テキストエディタ
     xh              # https://github.com/ducaale/xh               # HTTPクライアント（Rust製）
     yamllint        # https://github.com/adrienverge/yamllint     # YAMLリンター
+    pnpm            # https://github.com/pnpm/pnpm                # 高速パッケージマネージャ
+    yarn            # https://github.com/yarnpkg/yarn             # パッケージマネージャ（Classic）
     # Python
     uv              # https://github.com/astral-sh/uv             # Python環境管理ツール（高速）
     # ファイル・メディア処理
@@ -74,6 +76,7 @@
     ouch            # https://github.com/ouch-org/ouch            # 圧縮・展開（自動形式判別）
     poppler-utils   # https://gitlab.freedesktop.org/poppler      # PDF処理CLIツール（pdftotext等）
     silicon         # https://github.com/Aloxaf/silicon           # コード画像生成
+    yt-dlp          # https://github.com/yt-dlp/yt-dlp            # 動画ダウンローダー
     # アーカイブ
     _7zz            # https://7-zip.org                           # 7zアーカイブ（yazi用）
     cabextract      # https://www.cabextract.org.uk               # CABアーカイブ展開ツール
@@ -87,8 +90,15 @@
     httpstat        # https://github.com/reorx/httpstat           # cURLの統計情報表示
     snitch          # https://github.com/nicholasgasior/snitch    # ネットワーク監視ツール
     wget            # https://www.gnu.org/software/wget           # HTTP/FTPダウンローダ
+    # クラウド・デプロイ
+    awscli2         # https://github.com/aws/aws-cli              # AWS CLI v2
+    firebase-tools  # https://github.com/firebase/firebase-tools  # Firebase CLI
+    heroku          # https://github.com/heroku/cli               # Heroku CLI
+    netlify-cli     # https://github.com/netlify/cli              # Netlify CLI
     # ウェブ開発
+    http-server     # https://github.com/http-party/http-server   # ローカルHTTPサーバー
     mycli           # https://mycli.net                           # MySQL便利ツール（オートコンプリート）
+    svgo            # https://github.com/svg/svgo                 # SVG最適化ツール
     # Docker
     lazydocker      # https://github.com/jesseduffield/lazydocker # Docker管理TUI（Go製）
     # AI

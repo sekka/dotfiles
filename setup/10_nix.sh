@@ -53,6 +53,10 @@ EOF
   log_info "作成しました: hosts/$HOSTNAME.nix"
 fi
 
+# --- nixpkgs 更新（2週間遅延） ---
+log_info "nixpkgs を更新しています（2週間遅延）..."
+bash "$NIX_DIR/update-nixpkgs.sh"
+
 # 初回ビルド（darwin-rebuild がまだない場合）
 if ! is_installed darwin-rebuild; then
   log_info "nix-darwin を初回ビルドしています..."
@@ -70,15 +74,15 @@ fi
 INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
 NIX_MANAGED_BREWS=(
   # common.nix の environment.systemPackages と対応
-  ag aria2 bandwhich bat btop cabextract cdrtools
+  ag aria2 awscli bandwhich bat btop cabextract cdrtools
   diff-so-fancy diffnav direnv dprint dstp emojify exiftool
   eza fd ffmpeg fpp fzf gawk gh ghq gibo git gitui glow
   gnupg2 hgrep htop httpstat imagemagick jq lazygit
   libavif libwebp lnav mactop mas mediainfo mise navi neovim
-  nkf ollama ouch poppler pre-commit procs pstree pt
+  nkf ollama ouch pnpm poppler pre-commit procs pstree pt
   ripgrep sevenzip sheldon shellcheck shfmt silicon snitch starship
   superfile tailspin terminal-notifier tig tmux tree uv vim walk
-  wget wimlib xh yamllint yazi zenith zoxide
+  wget wimlib xh yamllint yarn yazi yt-dlp zenith zoxide
 )
 
 for pkg in "${NIX_MANAGED_BREWS[@]}"; do
@@ -92,4 +96,4 @@ done
 
 log_section "10: 完了"
 log_info "Nix 管理パッケージは nix/hosts/common.nix で定義されています"
-log_info "更新: cd nix && nix flake update && sudo darwin-rebuild switch --flake ."
+log_info "更新: cd nix && ./update-nixpkgs.sh && darwin-rebuild switch --flake ."
