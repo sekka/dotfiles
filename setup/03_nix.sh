@@ -3,7 +3,7 @@
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-log_section "10: Nix setup"
+log_section "03: Nix setup"
 
 NIX_DIR="$(cd "$(dirname "$0")/.." && pwd)/nix"
 

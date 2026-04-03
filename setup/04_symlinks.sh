@@ -3,7 +3,7 @@
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-log_section "03: Symlinks setup"
+log_section "04: Symlinks setup"
 
 created=0
 skipped=0

@@ -12,7 +12,7 @@
   outputs = { self, nixpkgs, nix-darwin, ... }:
     let
       # ホスト名のリスト: hosts/<hostname>.nix があれば自動検出
-      # 新しいマシンは setup/10_nix.sh が自動で hosts/<hostname>.nix を作成する
+      # 新しいマシンは setup/03_nix.sh が自動で hosts/<hostname>.nix を作成する
       hostFiles = builtins.filter
         (name: name != "common.nix" && builtins.match ".*\\.nix" name != null)
         (builtins.attrNames (builtins.readDir ./hosts));

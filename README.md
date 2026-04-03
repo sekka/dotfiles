@@ -15,7 +15,7 @@
 
 # 3. 全設定ファイルのシンボリックリンク作成
 # (dotfiles, .config, Claude等すべて含む)
-./setup/03_symlinks.sh
+./setup/04_symlinks.sh
 
 # 4. Claude Code公式版のインストール
 ./setup/06_claude.sh
@@ -57,7 +57,7 @@ mise run format    # 全ファイル形式の整形（oxfmt, dprint, shfmt）
 
 - `home/` 内のファイルを直接編集
 - シンボリックリンクにより自動反映
-- 新規ファイル追加時は `./setup/03_symlinks.sh` を再実行
+- 新規ファイル追加時は `./setup/04_symlinks.sh` を再実行
 
 ## 🍎 macOS設定管理
 

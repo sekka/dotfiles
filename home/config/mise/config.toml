@@ -314,7 +314,7 @@ echo "✅ Setup complete!"
 [tasks.setup-home-symlink]
 alias = "sds"
 description = "homeのシンボリックリンクを作成"
-run = "bash ~/dotfiles/setup/03_symlinks.sh"
+run = "bash ~/dotfiles/setup/04_symlinks.sh"
 
 # --------------------------------------
 # Docker/Container
