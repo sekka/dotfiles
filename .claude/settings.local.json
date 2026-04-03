@@ -5,7 +5,11 @@
       "Bash(darwin-rebuild switch:*)",
       "Bash(darwin-rebuild build:*)",
       "WebFetch(domain:github.com)",
-      "Bash(shellcheck:*)"
+      "Bash(shellcheck:*)",
+      "WebFetch(domain:x.com)",
+      "mcp__plugin_playwright_playwright__*",
+      "WebFetch(domain:playwright.dev)",
+      "Bash(claude mcp:*)"
     ],
     "deny": [],
     "ask": []
