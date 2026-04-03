@@ -4,303 +4,194 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ---
 
-## 📋 コード品質 & レビュー
+## コード品質 & レビュー
 
-### `/review [ファイル]`
-
-**用途**: 指定ファイルのコードレビュー
-**使用場面**: 単一ファイルの品質チェック、リファクタリング候補の特定
-
-### `/review-and-improve`
-
-**用途**: コードレビュー＋改善実行
-**使用場面**: 変更の品質チェック、セキュリティ確認、検出した問題のその場での修正
-
-### `/refactor [ファイル]`
-
-**用途**: 指定コードのリファクタリング
-**使用場面**: レガシーコードの改善、可読性向上、技術的負債の解消
+| スキル                                | 説明                                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `/review-and-improve`                 | コードをレビューし、検出した問題をその場で修正。セッション内の変更確認・品質チェック・セキュリティ確認に使用 |
+| `/superpowers:requesting-code-review` | コードレビューを依頼するための準備・フォーマット                                                             |
+| `/superpowers:receiving-code-review`  | コードレビューのフィードバックを受け取り、対応する                                                           |
+| `/code-review:code-review`            | コードレビュー実行                                                                                           |
+| `/pr-review-toolkit:review-pr`        | PR総合レビュー（差分・影響範囲・品質チェック）                                                               |
+| `/improve-html`                       | HTMLのセマンティクス・アクセシビリティ・ARIA属性を網羅的にチェックし改善提案                                 |
+| `/visual-regression-test`             | コード変更前後のスクリーンショットをImageMagickで差分比較するビジュアル回帰テスト                            |
 
 ---
 
-## 🔧 Git & バージョン管理
+## Git & バージョン管理
 
-### `/commit`
-
-**用途**: 関連する変更をまとめてコミット（署名なし）
-**使用場面**: 作業単位でのコミット作成、適切なコミットメッセージ生成
-
-### `/pr`
-
-**用途**: Pull Request作成
-**使用場面**: ブランチからのPR作成、レビュー依頼の準備
-
----
-
-## 🐛 開発 & デバッグ
-
-### `/debug`
-
-**用途**: エラーの原因調査と修正提案
-**使用場面**: バグ発生時、スタックトレース解析、根本原因の特定
-
-### `/migrate`
-
-**用途**: ライブラリ/フレームワークのバージョンアップ対応
-**使用場面**: 依存関係の更新、破壊的変更の対応、非推奨APIの置き換え
-
-### `/generating-tests`
-
-**用途**: ユニット/統合/E2Eテストコード生成
-**使用場面**: テストカバレッジ拡大、テスト設計、AAA パターン実装
-
-### `/apex`
-
-**用途**: APEX方法論（Analyze-Plan-Execute-eXamine）による体系的実装
-**使用場面**: 複雑な機能実装、段階的アプローチが必要な開発
+| スキル                                        | 説明                                                       |
+| --------------------------------------------- | ---------------------------------------------------------- |
+| `/commit`                                     | 変更を論理単位で分析し、適切に分割してコミット             |
+| `/commit-commands:commit`                     | gitコミット実行                                            |
+| `/commit-commands:commit-push-pr`             | commit + push + PR作成を一括実行                           |
+| `/commit-commands:clean_gone`                 | リモートで削除された（gone）ブランチをローカルから一括削除 |
+| `/superpowers:finishing-a-development-branch` | ブランチのレビュー・マージ・クリーンアップまでを完了させる |
+| `/superpowers:using-git-worktrees`            | git worktreeで隔離作業環境を構築                           |
 
 ---
 
-## 💻 フロントエンド & バックエンド開発
+## 開発ワークフロー
 
-### `/developing-frontend`
-
-**用途**: React/Vue/Next.jsでのUI実装、パフォーマンス最適化
-**使用場面**: フロントエンド機能開発、アクセシビリティ対応、Web アプリ構築
-
-### `/developing-backend`
-
-**用途**: バックエンドAPI実装、認証・認可、キャッシング戦略
-**使用場面**: REST/GraphQL API開発、セキュアな実装、テスト戦略設計
-
-### `/managing-frontend-knowledge`
-
-**用途**: フロントエンド技術（CSS、JavaScript、HTML）のナレッジベース管理
-**使用場面**: Web開発の実装タスク、ベストプラクティス参照、技術情報の蓄積
-
----
-
-## 🎨 デザイン & UI/UX
-
-### `/designing-ui`
-
-**用途**: UIデザイン、コンポーネント設計、デザインシステム構築
-**使用場面**: ワイヤーフレーム、レイアウト設計、レスポンシブデザイン、インタラクションパターン
-
-### Designer Skills Collection（`@designer-skills`）
-
-[Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills) — 8プラグイン・63スキル・27コマンド
-
-#### コマンド一覧
-
-| コマンド                                 | 用途                                             |
-| ---------------------------------------- | ------------------------------------------------ |
-| `/design-research:discover`              | ペルソナ・エンパシーマップ・ジャーニーマップ生成 |
-| `/design-research:interview`             | インタビュースクリプト作成                       |
-| `/design-research:synthesize`            | 調査データの親和図・JTBD分析                     |
-| `/design-research:test-plan`             | ユーザビリティテスト計画                         |
-| `/design-systems:create-component`       | コンポーネント仕様書生成                         |
-| `/design-systems:tokenize`               | デザイントークン定義                             |
-| `/design-systems:audit-system`           | デザインシステム監査                             |
-| `/ux-strategy:frame-problem`             | 問題定義・機会フレームワーク                     |
-| `/ux-strategy:strategize`                | UX戦略・北極星ビジョン策定                       |
-| `/ux-strategy:benchmark`                 | 競合UX分析・ベンチマーク                         |
-| `/ui-design:color-palette`               | カラーパレット・カラーシステム生成               |
-| `/ui-design:type-system`                 | タイポグラフィスケール定義                       |
-| `/ui-design:design-screen`               | 画面レイアウト・グリッド設計                     |
-| `/ui-design:responsive-audit`            | レスポンシブデザイン監査                         |
-| `/interaction-design:design-interaction` | マイクロインタラクション仕様                     |
-| `/interaction-design:map-states`         | 状態機械・UIステート定義                         |
-| `/interaction-design:error-flow`         | エラーハンドリングUX設計                         |
-| `/prototyping-testing:prototype-plan`    | プロトタイプ戦略立案                             |
-| `/prototyping-testing:evaluate`          | ヒューリスティック評価                           |
-| `/prototyping-testing:experiment`        | A/Bテスト設計                                    |
-| `/prototyping-testing:test-plan`         | アクセシビリティテスト計画                       |
-| `/design-ops:handoff`                    | デベロッパーへのハンドオフ仕様書                 |
-| `/design-ops:plan-sprint`                | デザインスプリント計画                           |
-| `/design-ops:setup-workflow`             | チームワークフロー・レビュープロセス設計         |
-| `/designer-toolkit:write-case-study`     | ケーススタディ構成                               |
-| `/designer-toolkit:build-presentation`   | デザインプレゼン資料                             |
-| `/designer-toolkit:write-rationale`      | デザイン意思決定の根拠文書                       |
-
-#### クイック逆引き
-
-| やりたいこと             | コマンド                           |
-| ------------------------ | ---------------------------------- |
-| ユーザーを理解する       | `/design-research:discover`        |
-| カラーを決める           | `/ui-design:color-palette`         |
-| フォントを決める         | `/ui-design:type-system`           |
-| 競合を分析する           | `/ux-strategy:benchmark`           |
-| コンポーネント仕様を書く | `/design-systems:create-component` |
-| ハンドオフ資料を作る     | `/design-ops:handoff`              |
-| エラーUXを設計する       | `/interaction-design:error-flow`   |
-
-### `/working-with-figma`
-
-**用途**: FigmaデザインをMCPツールで取得し、既存コードベースへ実装
-**使用場面**: Figmaデザインとの作業、デザイン情報取得から実装まで
-
-### `/figma:implement-design`
-
-**用途**: Figmaデザインから本番コード生成（1:1ビジュアル忠実度）
-**使用場面**: FigmaファイルからのUI実装、コンポーネント生成
-
-### `/figma:code-connect-components`
-
-**用途**: FigmaデザインコンポーネントとコードのCode Connect作成
-**使用場面**: デザインとコードのマッピング、コンポーネント連携
-
-### `/figma:create-design-system-rules`
-
-**用途**: カスタムデザインシステムルール生成
-**使用場面**: プロジェクト固有のコンベンション確立、Figma-to-codeワークフロー
+| スキル                                        | 説明                                                 |
+| --------------------------------------------- | ---------------------------------------------------- |
+| `/superpowers:brainstorming`                  | 実装前に意図・要件・設計を創造的に探索               |
+| `/superpowers:writing-plans`                  | 仕様から実装計画を作成                               |
+| `/superpowers:executing-plans`                | 実装計画をレビューチェックポイント付きで実行         |
+| `/superpowers:test-driven-development`        | TDDフロー（Red→Green→Refactor）                      |
+| `/superpowers:systematic-debugging`           | 体系的デバッグ（仮説立案→検証→根本原因特定）         |
+| `/superpowers:verification-before-completion` | 完了前に実装が要件を満たしているか検証               |
+| `/superpowers:dispatching-parallel-agents`    | 独立タスクを並列サブエージェントに割り当てて同時実行 |
+| `/superpowers:subagent-driven-development`    | サブエージェント駆動で大規模タスクを分割実行         |
+| `/feature-dev:feature-dev`                    | ガイド付き機能開発（要件定義から実装まで）           |
+| `/superpowers:writing-skills`                 | 新しいスキルを作成・編集                             |
+| `/generating-skills-from-logs`                | セッション履歴を分析してスキルを自動生成             |
+| `/claude-md-management:revise-claude-md`      | CLAUDE.mdを更新                                      |
+| `/claude-md-management:claude-md-improver`    | CLAUDE.mdを監査・改善                                |
 
 ---
 
-## 🏗️ アーキテクチャ & 設計
+## フロントエンド開発
 
-### `/designing-architecture`
-
-**用途**: システムアーキテクチャと技術スタック設計
-**使用場面**: モノリス/マイクロサービス判定、クラウドアーキテクチャ、スケーラビリティ設計
-
----
-
-## 🔍 リサーチ & 分析
-
-### `/analyzing-websites`
-
-**用途**: 既存ウェブサイトを分析し、サイトマップとワイヤーフレーム作成
-**使用場面**: URL渡してページ構造解析、コンテンツ分析、ページ目的要約
-
-### `/reviewing-site-structures`
-
-**用途**: ワイヤーフレーム・サイトマップから構造分析・改善提案
-**使用場面**: 情報アーキテクチャレビュー、ユーザーフロー評価、コンテンツギャップ特定
-
-### `/researching-creative-cases`
-
-**用途**: 日本の最新クリエイティブ事例調査（Web、広告、プロダクト等）
-**使用場面**: デザインインスピレーション、トレンド把握、アワード事例参照
+| スキル                         | 説明                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| `/developing-frontend`         | React/Vue/Next.jsでのUI実装、パフォーマンス最適化、アクセシビリティ対応 |
+| `/managing-frontend-knowledge` | CSS・JavaScript・HTMLのナレッジベース管理と参照                         |
+| `/ui-ux-pro-max`               | UI/UXデザインの知識データベース（パターン・原則・実装例）               |
 
 ---
 
-## ⚡ 最適化 & 監査
+## デザイン & Figma
 
-### `/optimizing-performance`
+| スキル                                    | 説明                                                                  |
+| ----------------------------------------- | --------------------------------------------------------------------- |
+| `/designing-ui`                           | UIデザイン・コンポーネント設計・レイアウト設計・レスポンシブデザイン  |
+| `/working-with-figma`                     | FigmaデザインをMCP経由で取得し、既存コードベースへHigh-fidelityに実装 |
+| `/figma:figma-implement-design`           | FigmaデザインノードからUIコードを生成（1:1ビジュアル忠実度）          |
+| `/figma:figma-use`                        | Figma Plugin APIを実行                                                |
+| `/figma:figma-generate-design`            | 既存Webページ → Figmaデザインに変換                                   |
+| `/figma:figma-generate-library`           | デザインシステム・コンポーネントライブラリをFigma上に構築             |
+| `/figma:figma-code-connect`               | FigmaコンポーネントとコードのCode Connect管理                         |
+| `/figma:figma-create-design-system-rules` | プロジェクト固有のFigma-to-codeルールを生成                           |
 
-**用途**: Web/モバイル/バックエンド全体のパフォーマンス最適化
-**使用場面**: Core Web Vitals改善、データベースクエリ最適化、インフラリソース最適化
+### Designer Skills Collection（プラグイン）
 
-### `/auditing-security`
+[Owl-Listener/designer-skills](https://github.com/Owl-Listener/designer-skills) — 8プラグイン・多数のスキル
 
-**用途**: セキュリティ監査と脆弱性対策
-**使用場面**: OWASP Top 10チェック、コード分析、リスク評価、セキュアコーディング
-
-### `/auditing-accessibility`
-
-**用途**: WCAG 2.1/2.2準拠のアクセシビリティ監査
-**使用場面**: アクセシビリティチェック、スクリーンリーダーテスト、WCAG準拠確認
-
----
-
-## 🤖 自動化 & AI
-
-### `/generating-skills-from-logs`
-
-**用途**: セッション履歴からパターン抽出してスキルを自動生成
-**使用場面**: ワークフロー自動化、反復タスクのスキル化
-
-### `/learn`
-
-**用途**: セッションから知識を抽出してスキル化
-**使用場面**: 繰り返し使うパターンの永続化
-
-### `/claude-code-setup:claude-automation-recommender`
-
-**用途**: コードベース分析してClaude Code自動化推奨
-**使用場面**: 初回セットアップ、hooks/subagents/skills/plugins/MCPサーバーの推奨取得
+| カテゴリ                 | 代表コマンド                                                  | 用途                                                                 |
+| ------------------------ | ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `/design-research:*`     | `discover` / `interview` / `synthesize` / `test-plan`         | ユーザーリサーチ（ペルソナ、インタビュー、親和図、テスト計画）       |
+| `/design-systems:*`      | `tokenize` / `audit-system` / `create-component`              | デザインシステム（トークン定義、監査、コンポーネント仕様書）         |
+| `/ux-strategy:*`         | `strategize` / `benchmark` / `frame-problem`                  | UX戦略（北極星ビジョン、競合分析、問題定義）                         |
+| `/ui-design:*`           | `type-system` / `color-palette` / `design-screen`             | UIデザイン（タイポグラフィ、カラーシステム、画面レイアウト）         |
+| `/interaction-design:*`  | `design-interaction` / `map-states` / `error-flow`            | インタラクション設計（マイクロインタラクション、状態機械、エラーUX） |
+| `/prototyping-testing:*` | `prototype-plan` / `experiment` / `evaluate`                  | プロトタイピング（戦略立案、A/Bテスト設計、ヒューリスティック評価）  |
+| `/design-ops:*`          | `plan-sprint` / `setup-workflow` / `handoff`                  | デザインオペレーション（スプリント計画、ワークフロー、ハンドオフ）   |
+| `/designer-toolkit:*`    | `write-case-study` / `build-presentation` / `write-rationale` | デザイナーツール（ケーススタディ、プレゼン資料、意思決定根拠文書）   |
 
 ---
 
-## 🌐 その他ユーティリティ
+## リサーチ & 分析
 
-### `/ask-peer`
-
-**用途**: ピアエンジニアに設計・実装・問題解決を相談
-**使用場面**: 実装前の設計判断、コードレビュー、セカンドオピニオン、見落とし確認
-
-### `/ask-claude`
-
-**用途**: 他のAI CLIに質問してコーディング支援
-**使用場面**: セカンドオピニオン、コード生成、デバッグ
+| スキル                        | 説明                                                                                              |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| `/analyzing-websites`         | URLを渡すとページ構造を解析し、サイトマップとワイヤーフレームを生成                               |
+| `/analyzing-animations`       | Webサイトのアニメーション・インタラクションを技術的に解析し、実装方針と技術スタックを提供         |
+| `/researching-creative-cases` | アワード・トレンドから日本の最新クリエイティブ事例（Web、広告、プロダクト等）を調査・レポート生成 |
+| `/evaluating-references`      | URL/記事/ツールの参考評価と採用判断                                                               |
 
 ---
 
-## 🛠️ サブエージェント（Task tool）
+## サブエージェント
 
-Claude が内部で使用する専門エージェント:
+Claude が内部で起動する専門エージェント（`home/.claude/agents/` で定義）:
 
-- **Explore**: コードベース探索（構造把握、エラーハンドリング箇所特定など）
-- **Plan**: 実装計画設計（ステップバイステップ、クリティカルファイル特定）
-- **Bash**: Bashコマンド実行専門（git操作、ターミナルタスク）
-- **general-purpose**: 複雑な質問のリサーチ、複数試行が必要な検索
-- **code-simplifier**: コード簡潔化・リファクタリング（機能保持）
-- **peer**: 作業計画レビュー、実装アプローチ議論、ブレインストーミング
-- その他: statusline-setup、claude-code-guide、explore-codebase、レビュアー系など
+| エージェント    | モデル | 担当領域                                                       | 使用ツール                                      |
+| --------------- | ------ | -------------------------------------------------------------- | ----------------------------------------------- |
+| **researcher**  | haiku  | 調査・情報収集（コードベース探索、ドキュメント検索、Web調査）  | Read, Glob, Grep, WebSearch, WebFetch, Context7 |
+| **implementer** | sonnet | 実装（ファイル作成・編集、テスト実行、ビルド、Git操作）        | Read, Write, Edit, Glob, Grep, Bash             |
+| **reviewer**    | haiku  | レビュー・品質チェック（セキュリティ監査、パフォーマンス分析） | Read, Glob, Grep, Bash                          |
 
-**使用方法**: Claudeが自動的に適切なサブエージェントを選択・起動
+**委譲ルール**: コードベース調査 → researcher、実装・Bash操作 → implementer、レビュー → reviewer
 
 ---
 
-## 🔌 MCPプラグイン
+## MCP プラグイン
 
 外部ツール連携:
 
-- **Context7**: ライブラリ公式ドキュメント、最新コード例取得
-- **Playwright**: ブラウザ自動化（スクリーンショット、フォーム操作、E2Eテスト）
-- **Chrome DevTools**: Chrome連携（パフォーマンス分析、ネットワーク監視）
-- **DeepWiki**: Wiki構造・内容読取、質問応答
-- **Sequential Thinking**: 段階的思考プロセス支援
-
-**使用方法**: `ToolSearch`で検索後、必要なツールを呼び出し
-
----
-
-## 🧰 組み込みツール
-
-基本ファイル操作ツール:
-
-- **Read**: ファイル内容読取（画像、PDF、Jupyter notebook対応）
-- **Edit**: ファイル内の文字列置換（正確なマッチング必須）
-- **Write**: 新規ファイル作成・既存ファイル上書き
-- **Bash**: コマンド実行（git、npm、docker等のターミナル操作）
-- **Grep**: コンテンツ検索（ripgrep、正規表現、ファイルフィルタ）
-- **Glob**: ファイルパターンマッチング（`**/*.js`等のglob pattern）
-
-**原則**: 専用ツール優先。Bashは実際のシステムコマンド・ターミナル操作にのみ使用
+| プラグイン           | 用途                                                             |
+| -------------------- | ---------------------------------------------------------------- |
+| **Context7**         | ライブラリ公式ドキュメント・最新コード例の取得                   |
+| **Chrome DevTools**  | ブラウザ開発者ツール操作（パフォーマンス分析、ネットワーク監視） |
+| **Claude in Chrome** | ブラウザ自動化（スクリーンショット、フォーム操作）               |
+| **DeepWiki**         | GitHubリポジトリのドキュメント参照・質問応答                     |
+| **Figma**            | Figmaデザインの読み書き                                          |
+| **markitdown**       | URI → Markdown変換                                               |
+| **draw.io**          | ダイアグラム・フローチャート作成                                 |
 
 ---
 
-## 🎯 クイックリファレンス: 使用場面別
+## Hooks（自動実行）
 
-| やりたいこと           | 使うコマンド              |
-| ---------------------- | ------------------------- |
-| コミット作成           | `/commit`                 |
-| PR作成                 | `/pr`                     |
-| コードレビュー＋改善   | `/review-and-improve`     |
-| コードレビュー（包括） | `/review-pr`              |
-| バグ修正               | `/debug`                  |
-| リファクタリング       | `/refactor`               |
-| テスト作成             | `/generating-tests`       |
-| UI設計                 | `/designing-ui`           |
-| Figma実装              | `/figma:implement-design` |
-| パフォーマンス改善     | `/optimizing-performance` |
-| セキュリティチェック   | `/auditing-security`      |
-| アクセシビリティ監査   | `/auditing-accessibility` |
-| 相談                   | `/ask-peer`               |
+| Hook                         | タイミング   | 役割                                                                     |
+| ---------------------------- | ------------ | ------------------------------------------------------------------------ |
+| **RTK (Rust Token Killer)**  | PreToolUse   | Bashコマンドを自動プロキシして出力をフィルタリング・圧縮（トークン節約） |
+| **protect-sensitive**        | PreToolUse   | 機密ファイルへの誤操作を保護（Edit/Write/Read）                          |
+| **validate-command**         | PreToolUse   | 実行Bashコマンドの検証                                                   |
+| **claude-notify**            | Stop / 通知  | タスク完了・権限確認等の通知                                             |
+| **check-marketplace-health** | SessionStart | マーケットプレイスの健全性チェック                                       |
 
 ---
 
-**最終更新**: 2026-03-14
+## 組み込みツール
+
+| ツール        | 用途                                                  |
+| ------------- | ----------------------------------------------------- |
+| **Read**      | ファイル内容読取（画像、PDF、Jupyter notebook対応）   |
+| **Edit**      | 既存ファイルの文字列置換（正確なマッチング必須）      |
+| **Write**     | 新規ファイル作成・既存ファイル上書き                  |
+| **Bash**      | コマンド実行（git、npm等のターミナル操作）            |
+| **Grep**      | コンテンツ検索（ripgrep、正規表現、ファイルフィルタ） |
+| **Glob**      | ファイルパターンマッチング（`**/*.js`等）             |
+| **WebFetch**  | Webページ取得                                         |
+| **WebSearch** | Web検索                                               |
+| **Agent**     | サブエージェント起動                                  |
+
+**原則**: 専用ツール優先（ファイル探索はGlob/Grep、ファイル読取はRead）。Bashはシステムコマンドや専用ツールで代替できない操作にのみ使用。
+
+---
+
+## クイックリファレンス: やりたいこと別
+
+| やりたいこと           | 使うスキル/ツール                                            |
+| ---------------------- | ------------------------------------------------------------ |
+| コミット作成           | `/commit`                                                    |
+| commit + push + PR     | `/commit-commands:commit-push-pr`                            |
+| コードレビュー + 修正  | `/review-and-improve`                                        |
+| PRレビュー             | `/pr-review-toolkit:review-pr`                               |
+| TDDで実装              | `/superpowers:test-driven-development`                       |
+| バグを体系的に調査     | `/superpowers:systematic-debugging`                          |
+| 実装計画を立てる       | `/superpowers:writing-plans`                                 |
+| 実装計画を実行する     | `/superpowers:executing-plans`                               |
+| 並列で複数タスクを処理 | `/superpowers:dispatching-parallel-agents`                   |
+| UI実装（React等）      | `/developing-frontend`                                       |
+| Figmaデザインを実装    | `/working-with-figma` または `/figma:figma-implement-design` |
+| UI設計                 | `/designing-ui`                                              |
+| HTMLのa11y改善         | `/improve-html`                                              |
+| アニメーション技術解析 | `/analyzing-animations`                                      |
+| Webサイト構造分析      | `/analyzing-websites`                                        |
+| クリエイティブ事例調査 | `/researching-creative-cases`                                |
+| URL/記事の評価         | `/evaluating-references`                                     |
+| スキルを新規作成       | `/superpowers:writing-skills`                                |
+| CLAUDE.mdを改善        | `/claude-md-management:claude-md-improver`                   |
+| ビジュアル回帰テスト   | `/visual-regression-test`                                    |
+| カラーシステム設計     | `/ui-design:color-palette`                                   |
+| タイポグラフィ設計     | `/ui-design:type-system`                                     |
+| ユーザーリサーチ       | `/design-research:discover`                                  |
+| ハンドオフ資料作成     | `/design-ops:handoff`                                        |
+
+---
+
+**最終更新**: 2026-04-03
 **管理**: このファイルは定期的にメンテナンスされます。新機能追加時は随時更新。

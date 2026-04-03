@@ -37,7 +37,7 @@
 5. 制約や依存関係
 
 ### 自己改善ループ
-- ユーザーから修正を受けたら `tasks/lessons.md` にパターンを記録する
+- ユーザーから修正を受けたらメモリシステム（`~/.claude/projects/*/memory/`）にパターンを記録する
 - 同じミスを繰り返さないように、自分へのルールを書く
 
 ### エレガントさを追求する（バランスよく）
@@ -69,7 +69,7 @@
 ### メインエージェントが直接実行してよい操作
 
 - ユーザーへの質問（AskUserQuestion）
-- TodoWrite による進捗管理
+- TaskCreate / TaskUpdate による進捗管理
 - サブエージェント起動（Agent tool）
 - 環境変数の確認（1行のBash）
 - git commit / push（ユーザー指示時のみ）
@@ -93,7 +93,7 @@
 
 ## 5. スキル活用
 
-`~/.claude/skills/` の各 SKILL.md description で自動マッチング。主要なもの: `/review-and-improve`（レビュー＋改善）、`developing-frontend`（フロントエンド）、`working-with-figma`（Figma連携）。
+自作スキル（`~/.claude/skills/`）とプラグインスキルはそれぞれの SKILL.md description で自動マッチング。明示的に呼び出す場合はスラッシュコマンドで指定（例: `/review-and-improve`、`/commit`、`/developing-frontend`）。全スキル一覧は `docs/claude-code-cheatsheet.md` を参照。
 
 ---
 
@@ -101,5 +101,6 @@
 
 - セキュリティ方針: `.claude/rules/security.md`
 - サブエージェント定義: `.claude/agents/`
+- スキル一覧・使い方: `docs/claude-code-cheatsheet.md`
 
 @RTK.md

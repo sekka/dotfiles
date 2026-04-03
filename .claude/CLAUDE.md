@@ -26,9 +26,13 @@ home/             # デプロイ元テンプレート → ~/ へ symlink
 nix/              # Nix パッケージ管理（nix-darwin + flakes）
   flake.nix       # エントリポイント
   flake.lock      # バージョン固定（自動生成、gitコミット対象）
-  hosts/          # ホスト別設定
-setup/            # 番号付きセットアップスクリプト（01〜09、順序通りに実行）
+  hosts/          # ホスト別設定（common.nix + ホスト固有）
+setup/            # 番号付きセットアップスクリプト（01〜08、順序通りに実行）
 scripts/          # 開発・運用ツール（TypeScript/Bun）
+  development/    # lint-format, compare-dirs 等
+  git/            # カスタムgitコマンド群
+  media/          # 画像・動画変換ツール
+  system/         # macOS設定・SSH・ZIP等
 .claude/          # 実行時状態（セッション、メモリ、プラン）※gitignore対象
 ```
 
