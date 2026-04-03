@@ -4,7 +4,8 @@
       "Bash(nix search:*)",
       "Bash(darwin-rebuild switch:*)",
       "Bash(darwin-rebuild build:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(shellcheck:*)"
     ],
     "deny": [],
     "ask": []
