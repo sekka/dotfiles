@@ -22,6 +22,6 @@ allowed-tools: Bash(difit-here.sh)
 
 ## 実行手順
 
-1. `difit-here.sh` をバックグラウンドで実行する（`run_in_background: true`）
+1. `~/dotfiles/scripts/git/difit-here.sh` をバックグラウンドで実行する（`run_in_background: true`）
 2. ユーザーに「差分ビューアを開きました」と伝える
 3. ブラウザを閉じると自動でサーバーが終了する旨を伝える
