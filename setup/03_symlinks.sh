@@ -144,11 +144,6 @@ link_item "$HOME/dotfiles/home/config/navi/dotfiles.cheat" "$HOME/.local/share/n
 ensure_dir "$HOME/.codex"
 link_item "$HOME/dotfiles/home/codex/config.toml" "$HOME/.codex/config.toml" "config.toml"
 
-# --- LaunchAgents ---
-
-ensure_dir "$HOME/Library/LaunchAgents"
-link_item "$HOME/dotfiles/home/Library/LaunchAgents/com.ollama.serve.plist" "$HOME/Library/LaunchAgents/com.ollama.serve.plist" "Ollama LaunchAgent"
-
 # --- Git hooks ---
 
 DOTFILES_HOOKS_DIR="$HOME/dotfiles/.githooks"

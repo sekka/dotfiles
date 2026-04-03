@@ -5,14 +5,15 @@
 source "$(dirname "$0")/lib/common.sh"
 log_section "08: AI tools setup"
 
-# --- Ollama LaunchAgent ---
+# --- Ollama LaunchAgent 移行（手動 plist → Nix 管理） ---
 
-if [[ -f "$HOME/Library/LaunchAgents/com.ollama.serve.plist" ]]; then
-  launchctl load "$HOME/Library/LaunchAgents/com.ollama.serve.plist" 2>/dev/null || true
-  log_info "Ollama LaunchAgent をロードしました"
-  sleep 2
+OLD_PLIST="$HOME/Library/LaunchAgents/com.ollama.serve.plist"
+if [[ -e $OLD_PLIST ]] || [[ -L $OLD_PLIST ]]; then
+  launchctl unload "$OLD_PLIST" 2>/dev/null || true
+  rm -f "$OLD_PLIST"
+  log_info "旧 Ollama LaunchAgent を削除しました（Nix 管理に移行済み）"
 else
-  log_warn "Ollama LaunchAgent が見つかりません。先に 03_symlinks.sh を実行してください"
+  log_skip "旧 Ollama LaunchAgent はありません"
 fi
 
 # --- Ollama 埋め込みモデル ---

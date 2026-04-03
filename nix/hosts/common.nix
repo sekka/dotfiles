@@ -112,6 +112,8 @@
     emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換
     lnav            # https://github.com/tstack/lnav              # ログファイルビューア
     tmux            # https://github.com/tmux/tmux                # ターミナルマルチプレクサ
+    tmuxPlugins.tmux-sessionx  # https://github.com/omerxx/tmux-sessionx  # セッション選択・作成TUI
+    tmuxPlugins.tmux-fzf       # https://github.com/sainnhe/tmux-fzf     # fzfでtmux操作
   ];
 
   # =============================================
@@ -226,6 +228,18 @@
     sudo -u ${user} defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true 2>/dev/null || true
     sudo -u ${user} defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null || true
   '';
+
+  # --- LaunchAgents ---
+
+  launchd.user.agents.ollama = {
+    command = "${pkgs.ollama}/bin/ollama serve";
+    serviceConfig = {
+      KeepAlive = true;
+      RunAtLoad = true;
+      StandardOutPath = "/tmp/ollama.stdout.log";
+      StandardErrorPath = "/tmp/ollama.stderr.log";
+    };
+  };
 
   # darwin-rebuild を実行するプライマリユーザー
   system.primaryUser = "kei";
