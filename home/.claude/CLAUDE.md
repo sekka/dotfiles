@@ -17,7 +17,7 @@
 - 3ステップ以上またはアーキテクチャに関わるタスクは必ずPlanモードで開始する
 - 途中でうまくいかなくなったら、無理に進めずすぐに立ち止まって再計画する
 - 実装前に詳細な仕様を書き、チェック可能な計画として記録する
-- ExitPlanMode後は `/reviewing-with-claude` でプランレビューを提案する
+- ExitPlanMode後は `/review-and-improve` でプランレビューを提案する
 
 ### サブエージェント戦略
 集中して実行するために、サブエージェント1つにつき1タスクを割り当てる。
@@ -93,7 +93,7 @@
 
 ## 5. スキル活用
 
-`~/.claude/skills/` の各 SKILL.md description で自動マッチング。主要なもの: `/reviewing-with-claude`（レビュー）、`developing-frontend`（フロントエンド）、`working-with-figma`（Figma連携）。
+`~/.claude/skills/` の各 SKILL.md description で自動マッチング。主要なもの: `/review-and-improve`（レビュー＋改善）、`developing-frontend`（フロントエンド）、`working-with-figma`（Figma連携）。
 
 ---
 

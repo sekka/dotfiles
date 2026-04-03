@@ -17,7 +17,7 @@
 | **バグを修正したい** | `/implement-with-review "..."` | 同上 |
 | **コードをリファクタリングしたい** | `/implement-with-review "..."` | 同上 |
 | **複数タスクを並列で進めたい** | `/worktree-manager create <branch>` | worktree 作成 |
-| **レビューしたい** | `/reviewing-with-claude` | コードレビュー |
+| **レビューしたい** | `/review-and-improve` | レビュー＋改善 |
 | **コミットを作成したい** | `/commit` | 変更をまとめてコミット |
 
 ---
@@ -49,7 +49,7 @@
 実装中
   ↓
 不安な箇所がある？
-  YES → /reviewing-with-claude でクイックレビュー
+  YES → /review-and-improve でレビュー＋改善
   NO  → 実装継続
   ↓
 テストは通っている？
@@ -67,7 +67,7 @@
 実装完了
   ↓
 レビューが必要？
-  YES → /reviewing-with-claude でレビュー
+  YES → /review-and-improve でレビュー＋改善
   ↓
 コミット作成
   ↓
@@ -254,7 +254,7 @@ claude
 ### 実装中
 
 - [ ] テストを先に書いたか？（TDD）
-- [ ] 不安な箇所をレビューしたか？（/reviewing-with-claude）
+- [ ] 不安な箇所をレビューしたか？（/review-and-improve でレビュー＋改善）
 - [ ] テストは全て通っているか？
 - [ ] 実環境で動作確認したか？
 
@@ -369,14 +369,14 @@ claude
 
 ---
 
-### /reviewing-with-claude
+### /review-and-improve
 
-**用途:** クイックレビュー（軽量）
+**用途:** レビュー＋改善
 
 **構文:**
 
 ```bash
-/reviewing-with-claude
+/review-and-improve
 ```
 
 **タイミング:**
