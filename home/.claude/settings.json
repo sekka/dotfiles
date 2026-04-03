@@ -10,67 +10,9 @@
   },
   "permissions": {
     "allow": [
-      "Bash(alias:*)",
-      "Bash(basename:*)",
-      "Bash(bats:*)",
-      "Bash(brew:*)",
-      "Bash(bun:*)",
-      "Bash(bunx:*)",
-      "Bash(cat:*)",
-      "Bash(claude:*)",
-      "Bash(codesign:*)",
-      "Bash(codex:*)",
-      "Bash(command -v:*)",
-      "Bash(command brew bundle)",
-      "Bash(defaults read:*)",
-      "Bash(difit-here.sh)",
-      "Bash(dprint fmt:*)",
-      "Bash(echo:*)",
-      "Bash(env)",
-      "Bash(eza:*)",
-      "Bash(fd:*)",
-      "Bash(find:*)",
-      "Bash(fuser:*)",
-      "Bash(fzf:*)",
-      "Bash(gemini:*)",
-      "Bash(gh:*)",
-      "Bash(git:*)",
-      "Bash(gpg:*)",
-      "Bash(gpgconf:*)",
-      "Bash(grep:*)",
-      "Bash(head:*)",
-      "Bash(keifu:*)",
-      "Bash(ls:*)",
-      "Bash(lsof:*)",
-      "Bash(mdfind:*)",
-      "Bash(mise:*)",
-      "Bash(mkdir:*)",
-      "Bash(mlx_audio.tts.generate:*)",
-      "Bash(navi *)",
-      "Bash(npx tsc:*)",
-      "Bash(oxlint:*)",
-      "Bash(printenv:*)",
-      "Bash(ps:*)",
-      "Bash(pstree:*)",
-      "Bash(rg:*)",
-      "Bash(rtk:*)",
-      "Bash(shellcheck:*)",
-      "Bash(tcmux:*)",
-      "Bash(test:*)",
-      "Bash(timeout:*)",
-      "Bash(tmux:*)",
-      "Bash(tree:*)",
-      "Bash(tts-clone:*)",
-      "Bash(tts:*)",
-      "Bash(unset:*)",
-      "Bash(uv:*)",
-      "Bash(wait:*)",
-      "Bash(wc:*)",
-      "Bash(xargs:*)",
-      "Bash(yazi:*)",
-      "Bash(zoxide:*)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
+      "Skill(creating-hooks)",
       "Skill(difit-here)",
       "Skill(generating-skills-from-logs)",
       "Skill(managing-frontend-knowledge)",
@@ -118,6 +60,10 @@
           {
             "type": "command",
             "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/rtk-rewrite.sh"
           }
         ]
       },
@@ -138,15 +84,6 @@
             "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
           }
         ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/Users/kei/.claude/hooks/rtk-rewrite.sh"
-          }
-        ]
       }
     ],
     "Stop": [
@@ -154,7 +91,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts",
+            "async": true
           }
         ]
       }
@@ -165,7 +103,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts"
+            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts",
+            "async": true
           }
         ]
       }
@@ -175,7 +114,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
+            "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts",
+            "async": true
           }
         ]
       }
