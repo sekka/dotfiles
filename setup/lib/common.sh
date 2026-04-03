@@ -16,3 +16,10 @@ log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
 log_section() { echo -e "\n${BLUE}===== $* =====${NC}"; }
 
 is_installed() { command -v "$1" &>/dev/null; }
+
+source_nix_daemon() {
+  if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+    # shellcheck source=/dev/null
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  fi
+}

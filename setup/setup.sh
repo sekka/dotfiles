@@ -58,14 +58,17 @@ else
 fi
 
 # 実行
-failed_step=""
 for script in "${target_scripts[@]}"; do
   echo ""
-  if ! bash "$script"; then
-    failed_step=$(basename "$script")
+  if ! /bin/bash "$script"; then
     echo ""
-    echo "[ERROR] ステップが失敗しました: $failed_step" >&2
+    echo "[ERROR] ステップが失敗しました: $(basename "$script")" >&2
     exit 1
+  fi
+
+  # Nix セットアップ後、Nix 管理バイナリを以降のステップで使えるようにする
+  if [[ $(basename "$script") == 03_* ]] && [[ -d /run/current-system/sw/bin ]]; then
+    export PATH="/run/current-system/sw/bin:$PATH"
   fi
 done
 

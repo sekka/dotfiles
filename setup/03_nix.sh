@@ -7,6 +7,8 @@ log_section "03: Nix setup"
 
 NIX_DIR="$(cd "$(dirname "$0")/.." && pwd)/nix"
 
+source_nix_daemon
+
 # --- Nix インストール ---
 
 if is_installed nix; then
@@ -14,13 +16,8 @@ if is_installed nix; then
 else
   log_info "Nix をインストールしています（Determinate Systems installer）..."
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+  source_nix_daemon
   log_info "Nix をインストールしました"
-fi
-
-# nix-daemon のプロファイルを読み込み（このスクリプト内で nix コマンドを使うため）
-if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
-  # shellcheck source=/dev/null
-  . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 fi
 
 # --- nix-darwin 適用 ---
@@ -60,12 +57,12 @@ bash "$NIX_DIR/update-nixpkgs.sh"
 # 初回ビルド（darwin-rebuild がまだない場合）
 if ! is_installed darwin-rebuild; then
   log_info "nix-darwin を初回ビルドしています..."
-  nix build "$NIX_DIR#darwinConfigurations.$HOSTNAME.system"
+  nix build "$NIX_DIR#darwinConfigurations.$HOSTNAME.system" --out-link "$NIX_DIR/result"
   log_info "nix-darwin を適用しています（sudo が必要です）..."
-  sudo "$NIX_DIR/result/sw/bin/darwin-rebuild" switch --flake "$NIX_DIR"
+  sudo "$NIX_DIR/result/sw/bin/darwin-rebuild" switch --flake "$NIX_DIR#$HOSTNAME"
 else
   log_info "nix-darwin を適用しています（sudo が必要です）..."
-  sudo darwin-rebuild switch --flake "$NIX_DIR"
+  sudo darwin-rebuild switch --flake "$NIX_DIR#$HOSTNAME"
 fi
 
 # --- Homebrew から Nix 移行済みパッケージの削除 ---
