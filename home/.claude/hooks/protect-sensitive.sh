@@ -16,13 +16,6 @@ fi
 
 # 保護対象パターン
 PROTECTED_PATTERNS=(
-  ".env"
-  ".env."
-  "secrets/"
-  "*.pem"
-  "*.key"
-  "id_rsa"
-  "id_ed25519"
   "*.p12"
   "*.pfx"
 )

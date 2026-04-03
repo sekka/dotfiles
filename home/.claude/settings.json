@@ -147,7 +147,7 @@
     "mgrep@Mixedbread-Grep": false,
     "playground@claude-plugins-official": false,
     "superpowers@claude-plugins-official": true,
-    "php-lsp@claude-plugins-official": true,
+    "php-lsp@claude-plugins-official": false,
     "coderabbit@claude-plugins-official": false,
     "claude-md-management@claude-plugins-official": true,
     "design-research@designer-skills": true,

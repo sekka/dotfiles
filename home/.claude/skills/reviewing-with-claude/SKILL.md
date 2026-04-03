@@ -13,7 +13,7 @@ disable-model-invocation: false
 
 - 小規模な変更の確認
 - コーディング中のリアルタイムチェック
-- 外部AIレビュー前の事前確認
+- 他のレビュー手段を使う前の事前確認
 - コンテキストを保持したまま継続的にレビュー
 
 ## 他のレビュー手段との使い分け
@@ -21,13 +21,6 @@ disable-model-invocation: false
 ### review-with-claude（本skill）
 
 現在のセッション内でクイックレビュー。軽微な変更やリアルタイムチェック向け。
-
-### 外部AIレビュー
-
-- **review-with-codex**: OpenAI Codexによる詳細レビュー
-- **review-with-gemini**: Google Geminiによるレビュー
-
-重要な変更の多角的検証や、特定のAIの強みを活かしたい場合に使用。
 
 ### code-reviewer agent
 
@@ -125,13 +118,6 @@ Read、Grep、Globツールで対象コードを取得
 2. [次に対応すべき項目]
 3. [改善推奨項目]
 
-### 🔄 次のステップ
-
-重要な変更の場合、以下の外部AIレビューも検討：
-
-- /review-with-codex - OpenAI Codexの視点
-- /review-with-gemini - Google Geminiの視点
-
 ## 使用例
 
 ### 特定ファイルのレビュー
@@ -150,4 +136,3 @@ git diffの結果を基に未コミット変更をレビュー
 
 - 現在のセッションのコンテキストを利用するため、事前にコードを読み込んでいる場合は効率的
 - 大規模な変更の場合は code-reviewer agent の使用を検討
-- 重要な変更は複数のAIレビューを併用することを推奨
