@@ -3,7 +3,8 @@
     "allow": [
       "Bash(nix search:*)",
       "Bash(darwin-rebuild switch:*)",
-      "Bash(darwin-rebuild build:*)"
+      "Bash(darwin-rebuild build:*)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []
@@ -17,6 +18,11 @@
     "markitdown",
     "sequential-thinking"
   ],
+  "disabledMcpjsonServers": [
+    "better-icons",
+    "brave-search",
+    "drawio"
+  ],
   "hooks": {
     "PostToolUse": [
       {
@@ -29,10 +35,5 @@
         ]
       }
     ]
-  },
-  "disabledMcpjsonServers": [
-    "better-icons",
-    "brave-search",
-    "drawio"
-  ]
+  }
 }
