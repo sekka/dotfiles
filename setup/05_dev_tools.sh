@@ -1,31 +1,9 @@
 #!/bin/bash
-# 開発ツール追加セットアップ（GitHub CLI 拡張機能、CotEditor）
+# 開発ツール追加セットアップ（CotEditor、mise）
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
 log_section "05: Dev tools setup"
-
-# --- GitHub CLI 拡張機能 ---
-
-if ! is_installed gh; then
-  log_warn "gh がインストールされていません"
-else
-  install_gh_extension() {
-    local ext="$1"
-    local ext_list
-    ext_list=$(gh extension list 2>/dev/null)
-    if echo "$ext_list" | grep -q "${ext##*/}"; then
-      log_skip "gh extension: $ext (既にインストール済み)"
-    else
-      log_info "gh extension をインストールしています: $ext"
-      gh extension install "$ext"
-    fi
-  }
-
-  install_gh_extension him0/gh-sync
-  install_gh_extension dlvhdr/gh-dash
-  install_gh_extension mislav/gh-branch
-fi
 
 # --- CotEditor コマンドラインツール ---
 

@@ -228,6 +228,47 @@
     sudo -u ${user} defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null || true
   '';
 
+  # --- Yazi プラグイン ---
+
+  system.activationScripts.yaziPlugins.text = let
+    user = config.system.primaryUser;
+    ya = "${pkgs.yazi}/bin/ya";
+    plugins = [
+      # Tier 1: 必須
+      "yazi-rs/plugins:git"
+      "yazi-rs/plugins:full-border"
+      "yazi-rs/plugins:smart-enter"
+      "dedukun/bookmarks"
+      # Tier 2: 開発者向け
+      "Reledia/glow"
+      "boydaihungst/mediainfo.yazi:mediainfo"
+      "yazi-rs/plugins:chmod"
+      "yazi-rs/plugins:jump-to-char"
+      # Tier 3: 特定用途
+      "ndtoan96/ouch"
+      "KKV9/compress"
+      "Sonico98/exifaudio.yazi:exifaudio"
+    ];
+    installCmd = builtins.concatStringsSep "\n" (map (p:
+      ''sudo -u ${user} ${ya} pkg add "${p}" || true''
+    ) plugins);
+  in installCmd;
+
+  # --- GitHub CLI 拡張機能 ---
+
+  system.activationScripts.ghExtensions.text = let
+    user = config.system.primaryUser;
+    gh = "${pkgs.github-cli}/bin/gh";
+    extensions = [
+      "him0/gh-sync"
+      "dlvhdr/gh-dash"
+      "mislav/gh-branch"
+    ];
+    installCmd = builtins.concatStringsSep "\n" (map (ext:
+      ''sudo -u ${user} ${gh} extension install "${ext}" || true''
+    ) extensions);
+  in installCmd;
+
   # --- LaunchAgents ---
 
   launchd.user.agents.ollama = {
