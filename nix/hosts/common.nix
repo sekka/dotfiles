@@ -36,7 +36,6 @@
     git             # https://git-scm.com                         # バージョン管理システム
     github-cli      # https://github.com/cli/cli                  # GitHub CLI（gh）
     ghq             # https://github.com/x-motemen/ghq            # git clone管理
-    gibo            # https://github.com/simonwhitaker/gibo       # gitignore生成
     # git TUI・ビューア
     delta           # https://github.com/dandavison/delta         # git diff + シンタックスハイライト
     diff-so-fancy   # https://github.com/so-fancy/diff-so-fancy   # git diff 整形

@@ -76,7 +76,7 @@ NIX_MANAGED_BREWS=(
   # common.nix の environment.systemPackages と対応
   aria2 awscli bandwhich bat btop cabextract cdrtools coreutils
   diff-so-fancy diffnav direnv dprint dstp emojify exiftool
-  eza fd ffmpeg fpp fzf gawk gh ghq gibo git gitui glow
+  eza fd ffmpeg fpp fzf gawk gh ghq git gitui glow
   gnupg2 hgrep htop httpstat imagemagick jq lazygit
   libavif libwebp lnav mactop mas media-info mise mycli navi neovim
   nkf ollama ouch pnpm poppler pre-commit procs pstree
@@ -95,6 +95,6 @@ done
 
 # --- サマリー ---
 
-log_section "10: 完了"
+log_section "03: 完了"
 log_info "Nix 管理パッケージは nix/hosts/common.nix で定義されています"
 log_info "更新: cd nix && ./update-nixpkgs.sh && darwin-rebuild switch --flake ."

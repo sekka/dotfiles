@@ -1,5 +1,5 @@
 #!/bin/bash
-# 開発ツール追加セットアップ（GitHub CLI 拡張機能、gibo、CotEditor）
+# 開発ツール追加セットアップ（GitHub CLI 拡張機能、CotEditor）
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
@@ -8,7 +8,7 @@ log_section "05: Dev tools setup"
 # --- GitHub CLI 拡張機能 ---
 
 if ! is_installed gh; then
-  log_warn "gh がインストールされていません。Brewfile から先にインストールしてください"
+  log_warn "gh がインストールされていません"
 else
   install_gh_extension() {
     local ext="$1"
@@ -25,15 +25,6 @@ else
   install_gh_extension him0/gh-sync
   install_gh_extension dlvhdr/gh-dash
   install_gh_extension mislav/gh-branch
-fi
-
-# --- gibo (.gitignore 生成ツール) ---
-
-if ! is_installed gibo; then
-  log_warn "gibo がインストールされていません。Brewfile から先にインストールしてください"
-else
-  log_info "gibo テンプレートを更新しています..."
-  gibo update
 fi
 
 # --- CotEditor コマンドラインツール ---
