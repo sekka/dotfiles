@@ -17,8 +17,7 @@
 | **バグを修正したい** | `/implement-with-review "..."` | 同上 |
 | **コードをリファクタリングしたい** | `/implement-with-review "..."` | 同上 |
 | **複数タスクを並列で進めたい** | `/worktree-manager create <branch>` | worktree 作成 |
-| **クイックレビューしたい** | `/reviewing-with-claude` | 軽量レビュー |
-| **包括的レビューしたい** | `/reviewing-parallel` | 複数AIで並列レビュー |
+| **レビューしたい** | `/reviewing-with-claude` | コードレビュー |
 | **コミットを作成したい** | `/commit` | 変更をまとめてコミット |
 
 ---
@@ -67,9 +66,8 @@
 ```
 実装完了
   ↓
-重要な変更？（セキュリティ、決済等）
-  YES → /reviewing-parallel で包括レビュー
-  NO  → /reviewing-with-claude で軽量レビュー
+レビューが必要？
+  YES → /reviewing-with-claude でレビュー
   ↓
 コミット作成
   ↓
@@ -136,7 +134,7 @@ claude
 
 ```bash
 # Step 1: エラーの原因調査（必要に応じて）
-/debug "ログイン時にセッションが切れる"
+# エラーの原因調査はメインエージェントまたはサブエージェントで実施
 ```
 
 #### 修正
@@ -389,21 +387,6 @@ claude
 
 ---
 
-### /reviewing-parallel
-
-**用途:** 包括的レビュー（複数AIで並列）
-
-**構文:**
-
-```bash
-/reviewing-parallel
-```
-
-**タイミング:**
-
-- 実装完了後
-- PR作成前
-- 重要な変更（セキュリティ、決済等）
 
 ---
 
@@ -449,7 +432,7 @@ ls ~/.claude/skills/implement-with-review/skill.json
 1. エラーメッセージを精読
 2. スタックトレースを確認
 3. デバッガーで変数の中身を確認
-4. `/debug` スキルで原因調査
+4. サブエージェントで原因調査
 5. 原因が分からない場合はユーザーに相談
 
 ---

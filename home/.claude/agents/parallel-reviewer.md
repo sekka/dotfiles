@@ -261,7 +261,7 @@ python ~/.claude/skills/reviewing-parallel/parallel-review-merge.py \
 
 ## 実装の詳細
 
-詳細な実装アルゴリズムはreview-parallelスキル（SKILL.md、ALGORITHMS.md）を参照してください。
+詳細な実装アルゴリズムは本エージェント定義に従ってください。
 
 ## Key Responsibilities
 

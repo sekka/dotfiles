@@ -199,8 +199,7 @@ git worktree list
 /worktree-manager [create|list|switch|delete|status] [<args>]
 
 # 既存スキル
-/reviewing-with-claude  # クイックレビュー
-/reviewing-parallel     # 並列レビュー
+/reviewing-with-claude  # コードレビュー
 /commit                 # コミット作成
 ```
 

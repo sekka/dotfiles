@@ -17,7 +17,7 @@
 - 3ステップ以上またはアーキテクチャに関わるタスクは必ずPlanモードで開始する
 - 途中でうまくいかなくなったら、無理に進めずすぐに立ち止まって再計画する
 - 実装前に詳細な仕様を書き、チェック可能な計画として記録する
-- ExitPlanMode後は `/review-parallel <plan-file>` でプランレビューを提案する
+- ExitPlanMode後は `/reviewing-with-claude` でプランレビューを提案する
 
 ### サブエージェント戦略
 集中して実行するために、サブエージェント1つにつき1タスクを割り当てる。
@@ -99,7 +99,7 @@ hooks は `~/.claude/hooks/` で定義。主要なもの:
 
 | カテゴリ | スキル |
 |---------|--------|
-| レビュー | `/reviewing-with-claude`（軽量）, `/review-parallel`（包括的・複数AI） |
+| レビュー | `/reviewing-with-claude` |
 | フロントエンド | `developing-frontend`, `designing-ui`, `managing-frontend-knowledge` |
 | Figma連携 | `working-with-figma`, `figma-style` |
 | UI/UX | `ui-ux-pro-max`, `analyzing-websites`, `analyzing-animations` |
