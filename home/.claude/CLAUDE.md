@@ -23,7 +23,7 @@
 集中して実行するために、サブエージェント1つにつき1タスクを割り当てる。
 メインのコンテキストウィンドウをクリーンに保つためにサブエージェントを積極的に活用する。
 
-サブエージェントの種類（researcher / implementer / reviewer）と外部AIルーティングはセクション4を参照。
+サブエージェントの種類（researcher / implementer / reviewer）の委譲ルールはセクション4を参照。
 
 **並列 vs 逐次実行:**
 - 並列: ファイル重複なし、依存関係なし、独立ドメイン
@@ -77,20 +77,19 @@
 
 ### 上記以外はサブエージェントに委譲する
 
-| 操作 | 委譲先 | 外部AI優先条件 |
-|------|--------|---------------|
-| ファイル探索（Glob, Grep, 複数Read） | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
-| コード実装（Write, Edit, 複数Bash） | implementer | `AI_HAS_CODEX=1` → codex-implementer |
-| レビュー・品質チェック | reviewer | 複数AI利用可能 → parallel-reviewer |
-| テスト実行・ビルド | implementer | `AI_HAS_CODEX=1` → codex-implementer |
-| Web調査・ドキュメント検索 | researcher | `AI_HAS_GEMINI=1` → gemini-researcher |
+| 操作 | 委譲先 |
+|------|--------|
+| ファイル探索（Glob, Grep, 複数Read） | researcher |
+| コード実装（Write, Edit, 複数Bash） | implementer |
+| レビュー・品質チェック | reviewer |
+| テスト実行・ビルド | implementer |
+| Web調査・ドキュメント検索 | researcher |
 
 ### 自動実行されるhooks
 
 hooks は `~/.claude/hooks/` で定義。主要なもの:
 - **rtk-rewrite** (PreToolUse/Bash): コマンドをrtkプロキシ経由に書き換え（トークン節約）。curl/wget等は対象外
 - **protect-sensitive** (PreToolUse/Edit|Write|Read): 機密ファイルの誤編集を防止
-- **inject-ai-routing** (SessionStart): AI可用性の環境変数（AI_HAS_CODEX等）を注入
 - **check-marketplace-health** (SessionStart): Claude Marketplace接続チェック
 
 ---
@@ -101,10 +100,10 @@ hooks は `~/.claude/hooks/` で定義。主要なもの:
 |---------|--------|
 | レビュー | `/reviewing-with-claude` |
 | フロントエンド | `developing-frontend`, `designing-ui`, `managing-frontend-knowledge` |
-| Figma連携 | `working-with-figma`, `figma-style` |
+| Figma連携 | `working-with-figma` |
 | UI/UX | `ui-ux-pro-max`, `analyzing-websites`, `analyzing-animations` |
 | 調査 | `researching-creative-cases`, `evaluating-references` |
-| Claude管理 | `creating-hooks`, `generating-skills-from-logs` |
+| Claude管理 | `generating-skills-from-logs` |
 
 ---
 
@@ -112,6 +111,5 @@ hooks は `~/.claude/hooks/` で定義。主要なもの:
 
 - セキュリティ方針: `.claude/rules/security.md`
 - サブエージェント定義: `.claude/agents/`
-- AI統合インターフェース: `.claude/rules/ai-interface.md`
 
 @RTK.md

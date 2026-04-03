@@ -10,7 +10,6 @@
   },
   "permissions": {
     "allow": [
-      "Bash(ai-refresh)",
       "Bash(alias:*)",
       "Bash(basename:*)",
       "Bash(bats:*)",
@@ -72,7 +71,6 @@
       "Bash(zoxide:*)",
       "Skill(commit)",
       "Skill(commit-commands:*)",
-      "Skill(creating-hooks)",
       "Skill(difit-here)",
       "Skill(generating-skills-from-logs)",
       "Skill(managing-frontend-knowledge)",
@@ -178,10 +176,6 @@
           {
             "type": "command",
             "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts"
-          },
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/inject-ai-routing.sh"
           }
         ]
       }
