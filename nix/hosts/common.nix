@@ -109,6 +109,7 @@
     mas             # https://github.com/mas-cli/mas              # Mac App Store CLIツール
     # その他
     emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換
+    liteparse       # https://github.com/run-llama/liteparse       # PDF/PPTX/DOCXパーサー（lit）
     lnav            # https://github.com/tstack/lnav              # ログファイルビューア
     tmux            # https://github.com/tmux/tmux                # ターミナルマルチプレクサ
     tmuxPlugins.tmux-sessionx  # https://github.com/omerxx/tmux-sessionx  # セッション選択・作成TUI
