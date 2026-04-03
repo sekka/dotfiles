@@ -273,53 +273,63 @@ interface Credentials {
 	};
 }
 
+async function readKeychainCredentials(): Promise<string> {
+	const proc = Bun.spawn({
+		cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+		stdout: "pipe",
+		stderr: "pipe",
+	});
+	const [stdout, stderr, exitCode] = await Promise.all([
+		new Response(proc.stdout).text(),
+		new Response(proc.stderr).text(),
+		proc.exited,
+	]);
+	if (exitCode !== 0) {
+		debug(`Keychain lookup failed (exit ${exitCode}): ${stderr.trim()}`, "error");
+		return "";
+	}
+	return stdout.trim();
+}
+
+function parseCredentials(raw: string): Credentials | null {
+	if (!raw.startsWith("{")) {
+		debug(`Invalid credential format`, "error");
+		return null;
+	}
+	try {
+		const creds: Credentials = JSON.parse(raw);
+		if (!creds.claudeAiOauth) return null;
+		return creds;
+	} catch (e) {
+		debug(`Failed to parse credentials: ${errorMessage(e)}`, "error");
+		return null;
+	}
+}
+
 async function getClaudeApiToken(): Promise<string | null> {
 	try {
 		// ~/.claude/.credentials.json から直接読み込む
 		// security コマンドは 4030 hex chars でバイナリデータを切り詰めるため使用しない
 		const credFile = Bun.file(`${process.env.HOME}/.claude/.credentials.json`);
-		let trimmedOutput: string;
 
-		// アトミック読み込み: exists() + text() の TOCTOU を避け、直接読んで例外で分岐
+		let credentials: Credentials | null = null;
 		try {
-			trimmedOutput = await credFile.text();
+			credentials = parseCredentials(await credFile.text());
 		} catch (fileErr) {
-			// .code プロパティで判定（文字列マッチより確実）
 			const code = (fileErr as NodeJS.ErrnoException).code;
-			if (code === "ENOENT") {
-				// ファイルなし → Keychain フォールバック
-				const proc = Bun.spawn({
-					cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
-					stdout: "pipe",
-					stderr: "pipe",
-				});
-				trimmedOutput = (await new Response(proc.stdout).text()).trim();
-			} else {
-				// EACCES 等は明示的に失敗
+			if (code !== "ENOENT") {
 				debug(`Cannot read credentials file: ${errorMessage(fileErr)}`, "error");
 				return null;
 			}
 		}
 
-		// 基本的な形式チェック
-		if (!trimmedOutput.startsWith("{")) {
-			debug(`Invalid credential format from Keychain`, "error");
-			return null;
-		}
-
-		let credentials: Credentials;
-		try {
-			credentials = JSON.parse(trimmedOutput);
-		} catch (e) {
-			const errorMsg = errorMessage(e);
-			debug(`Failed to parse credentials: ${errorMsg}`, "error");
-			return null;
-		}
-
-		// 構造バリデーション
-		if (typeof credentials !== "object" || !credentials.claudeAiOauth) {
-			debug(`Invalid credentials structure from Keychain`, "error");
-			return null;
+		if (!credentials) {
+			debug(`Falling back to Keychain`, "verbose");
+			credentials = parseCredentials(await readKeychainCredentials());
+			if (!credentials) {
+				debug(`Keychain fallback failed`, "error");
+				return null;
+			}
 		}
 
 		const token = credentials.claudeAiOauth.accessToken;
