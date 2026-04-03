@@ -87,23 +87,13 @@
 
 ### 自動実行されるhooks
 
-hooks は `~/.claude/hooks/` で定義。主要なもの:
-- **rtk-rewrite** (PreToolUse/Bash): コマンドをrtkプロキシ経由に書き換え（トークン節約）。curl/wget等は対象外
-- **protect-sensitive** (PreToolUse/Edit|Write|Read): 機密ファイルの誤編集を防止
-- **check-marketplace-health** (SessionStart): Claude Marketplace接続チェック
+`/hooks` コマンドで確認可能。RTK.md にrtk-rewriteの詳細あり。
 
 ---
 
 ## 5. スキル活用
 
-| カテゴリ | スキル |
-|---------|--------|
-| レビュー | `/reviewing-with-claude` |
-| フロントエンド | `developing-frontend`, `designing-ui`, `managing-frontend-knowledge` |
-| Figma連携 | `working-with-figma` |
-| UI/UX | `ui-ux-pro-max`, `analyzing-websites`, `analyzing-animations` |
-| 調査 | `researching-creative-cases`, `evaluating-references` |
-| Claude管理 | `generating-skills-from-logs` |
+`~/.claude/skills/` の各 SKILL.md description で自動マッチング。主要なもの: `/reviewing-with-claude`（レビュー）、`developing-frontend`（フロントエンド）、`working-with-figma`（Figma連携）。
 
 ---
 
