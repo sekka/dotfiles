@@ -3,7 +3,7 @@
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-log_section "09: TTS setup"
+log_section "08: TTS setup"
 
 # --- mlx-audio インストール ---
 
@@ -46,5 +46,5 @@ fi
 
 # --- サマリー ---
 
-log_section "09: 完了"
+log_section "08: 完了"
 log_info "TTS 実行例: mlx_audio.tts.generate --model mlx-community/Qwen3-TTS-12Hz-0.6B-Base-bf16 --text 'Hello' --play"
