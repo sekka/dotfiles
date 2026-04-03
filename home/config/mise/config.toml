@@ -555,7 +555,6 @@ rust = "stable"
 "cargo:rtop" = "latest"         # システムモニタリング
 
 # === Go ===
-# ※ fzf、gh、ghq、gibo、hub、lazygit、wtp、lazydocker、colima、dockmate、
-#    navi、pt、mactop、direnv、shfmt、dstp、pget、ollama は Homebrew で管理
+# ※ Go製CLIツールの多くは Nix (nix/hosts/common.nix) で管理
 go = "latest"  # Go本体
 "go:github.com/d-kuro/gwq/cmd/gwq" = "latest"  # Git worktree管理
