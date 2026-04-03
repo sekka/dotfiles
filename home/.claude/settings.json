@@ -203,7 +203,6 @@
     "security-guidance@claude-plugins-official": false,
     "slack@claude-plugins-official": false,
     "vercel@claude-plugins-official": false,
-    "Notion@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": false,
     "feature-dev@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": false,

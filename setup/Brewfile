@@ -1,7 +1,6 @@
 cask_args appdir: "/Applications"
 
 # === tmux ===
-brew "tpm"                # https://formulae.brew.sh/formula/tpm              # tmuxプラグインマネージャ
 tap "k1LoW/tap"
 brew "k1LoW/tap/tcmux"   # https://github.com/k1LoW/tcmux                   # tmuxウィンドウのAIエージェントステータス表示
 
@@ -21,7 +20,7 @@ brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # 
 brew "mole"               # https://formulae.brew.sh/formula/mole             # macOSディープクリーン最適化ツール
 
 # === ターミナル（cask） ===
-tap "manaflow-ai/cmux"
+#tap "manaflow-ai/cmux"
 #cask "cmux"                        # https://www.cmux.dev/                                     # Ghosttyベースマルチタスクターミナル
 #cask "ghostty"                     # https://formulae.brew.sh/cask/ghostty                     # ターミナルエミュレータ
 #cask "iterm2"                      # https://formulae.brew.sh/cask/iterm2                      # ターミナルエミュレータ

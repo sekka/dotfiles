@@ -74,14 +74,15 @@ fi
 INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
 NIX_MANAGED_BREWS=(
   # common.nix の environment.systemPackages と対応
-  ag aria2 awscli bandwhich bat btop cabextract cdrtools
+  aria2 awscli bandwhich bat btop cabextract cdrtools coreutils
   diff-so-fancy diffnav direnv dprint dstp emojify exiftool
   eza fd ffmpeg fpp fzf gawk gh ghq gibo git gitui glow
   gnupg2 hgrep htop httpstat imagemagick jq lazygit
-  libavif libwebp lnav mactop mas mediainfo mise navi neovim
-  nkf ollama ouch pnpm poppler pre-commit procs pstree pt
+  libavif libwebp lnav mactop mas media-info mise mycli navi neovim
+  nkf ollama ouch pnpm poppler pre-commit procs pstree
   ripgrep sevenzip sheldon shellcheck shfmt silicon snitch starship
-  superfile tailspin terminal-notifier tig tmux tree uv vim walk
+  superfile tailspin terminal-notifier the_platinum_searcher the_silver_searcher
+  tig tmux tpm tree uv vim walk
   wget wimlib xh yamllint yarn yazi yt-dlp zenith zoxide
 )
 
