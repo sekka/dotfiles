@@ -12,7 +12,8 @@
       "Bash(claude mcp:*)",
       "Bash(brew deps:*)",
       "Bash(brew list:*)",
-      "WebFetch(domain:search.nixos.org)"
+      "WebFetch(domain:search.nixos.org)",
+      "Skill(schedule)"
     ],
     "deny": [],
     "ask": []

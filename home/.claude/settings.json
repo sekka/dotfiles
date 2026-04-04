@@ -95,14 +95,6 @@
             "async": true
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "セッション終了です。このセッションで実質的な作業（コード変更、設計議論、調査など）がなかった場合はサマリー保存をスキップしてください。\n\n作業があった場合は以下の手順でサマリーを保存:\n1. .claude/sessions/ ディレクトリがなければ作成\n2. `git diff --name-only` で変更ファイル一覧を取得\n3. 以下の形式で .claude/sessions/YYYY-MM-DD-HHmm.md に保存（現在時刻を使用）\n\nフォーマット:\n```\n# Session Summary - YYYY-MM-DD HH:mm\n\n## やったこと\n（このセッションで取り組んだタスクの要約、2-5行）\n\n## 変更ファイル\n（git diff --name-only の結果をリスト化。変更がなければ「なし」）\n\n## 決定事項\n（セッション中に下した設計・方針の判断。なければ「なし」）\n\n## 未解決事項\n（残タスク、保留中の問題、次セッションで対応すべきこと。なければ「なし」）\n```\n\n簡潔に、次セッションの自分が読んで即座にコンテキスト復元できる粒度で書いてください。ファイル保存後は「セッションサマリーを保存しました」と一言だけ報告してください。"
-          }
-        ]
       }
     ],
     "Notification": [
@@ -123,6 +115,15 @@
           {
             "type": "command",
             "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts",
+            "async": true
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/check-memory-health.ts",
             "async": true
           }
         ]
