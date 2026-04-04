@@ -9,7 +9,10 @@
       "WebFetch(domain:x.com)",
       "mcp__plugin_playwright_playwright__*",
       "WebFetch(domain:playwright.dev)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(brew deps:*)",
+      "Bash(brew list:*)",
+      "WebFetch(domain:search.nixos.org)"
     ],
     "deny": [],
     "ask": []
