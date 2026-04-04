@@ -64,12 +64,28 @@ heredocで実行する（`node -e` は `!` のbash history expansion問題で失
 
 ```bash
 node - <<'NODEEOF'
-let chromium;
-try { ({ chromium } = require('playwright')); } catch {
-  const { execFileSync } = require('child_process');
+const { execFileSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// which playwright → realpath → package.json探索でモジュールルートを動的解決
+// mise等のバージョンマネージャ経由でも正しく動作する
+function findPlaywright() {
+  try { return require('playwright'); } catch {}
   const bin = execFileSync('which', ['playwright']).toString().trim();
-  ({ chromium } = require(require('path').resolve(bin, '../../lib/node_modules/playwright')));
+  let dir = path.dirname(fs.realpathSync(bin));
+  while (dir !== '/') {
+    try {
+      if (JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8')).name === 'playwright') {
+        return require(dir);
+      }
+    } catch {}
+    dir = path.dirname(dir);
+  }
+  throw new Error('playwright module not found');
 }
+
+const { chromium } = findPlaywright();
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36';
 (async () => {
   const browser = await chromium.launch({ headless: true });
