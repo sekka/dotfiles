@@ -99,6 +99,8 @@
     mycli           # https://mycli.net                           # MySQL便利ツール（オートコンプリート）
     svgo            # https://github.com/svg/svgo                 # SVG最適化ツール
     # Docker
+    colima          # https://github.com/abiosoft/colima           # macOS用コンテナランタイム（Lima backend）
+    docker-client   # https://github.com/moby/moby                # Docker CLI（compose v2 + buildx 同梱）
     lazydocker      # https://github.com/jesseduffield/lazydocker # Docker管理TUI（Go製）
     # AI
     ollama          # https://github.com/ollama/ollama            # ローカルLLM実行環境
@@ -109,7 +111,6 @@
     mas             # https://github.com/mas-cli/mas              # Mac App Store CLIツール
     # その他
     emojify         # https://github.com/mrowa44/emojify          # テキスト→絵文字変換
-    liteparse       # https://github.com/run-llama/liteparse       # PDF/PPTX/DOCXパーサー（lit）
     lnav            # https://github.com/tstack/lnav              # ログファイルビューア
     tmux            # https://github.com/tmux/tmux                # ターミナルマルチプレクサ
     tmuxPlugins.tmux-sessionx  # https://github.com/omerxx/tmux-sessionx  # セッション選択・作成TUI

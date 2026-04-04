@@ -7,11 +7,6 @@ brew "k1LoW/tap/tcmux"   # https://github.com/k1LoW/tcmux                   # tm
 # === ターミナル ===
 brew "rtk"                # https://github.com/rtk-ai/rtk                    # LLMトークン消費を60-90%削減するCLIプロキシ
 
-# === Docker ===
-brew "docker"             # https://formulae.brew.sh/formula/docker           # コンテナ管理CLI
-brew "docker-compose"     # https://formulae.brew.sh/formula/docker-compose   # 複数コンテナ管理
-brew "colima"             # https://formulae.brew.sh/formula/colima           # Docker環境
-
 # === ウェブ開発 ===
 # brew "productdevbook/tap/pk"  #https://github.com/productdevbook/port-killer/issues/48  # ポート解放ツール
 
