@@ -7,7 +7,7 @@
       "WebFetch(domain:github.com)",
       "Bash(shellcheck:*)",
       "WebFetch(domain:x.com)",
-      "mcp__plugin_playwright_playwright__*",
+      "mcp__playwright__*",
       "WebFetch(domain:playwright.dev)",
       "Bash(claude mcp:*)",
       "Bash(brew deps:*)",
