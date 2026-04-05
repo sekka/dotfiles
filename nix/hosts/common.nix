@@ -75,7 +75,6 @@
     ouch            # https://github.com/ouch-org/ouch            # 圧縮・展開（自動形式判別）
     poppler-utils   # https://gitlab.freedesktop.org/poppler      # PDF処理CLIツール（pdftotext等）
     silicon         # https://github.com/Aloxaf/silicon           # コード画像生成
-    yt-dlp          # https://github.com/yt-dlp/yt-dlp            # 動画ダウンローダー
     # アーカイブ
     _7zz            # https://7-zip.org                           # 7zアーカイブ（yazi用）
     cabextract      # https://www.cabextract.org.uk               # CABアーカイブ展開ツール

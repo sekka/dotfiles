@@ -13,8 +13,8 @@ mise run macos:apply        # macOS設定適用
 bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
 
 # Nix（パッケージ管理）
-cd nix && ./update-nixpkgs.sh            # nixpkgs 更新（2週間遅延、安定版取得）
-cd nix && ./update-nixpkgs.sh --days 7   # 遅延日数を変更する場合
+cd nix && ./update-nixpkgs.sh            # nixpkgs 更新（1週間遅延、安定版取得）
+cd nix && ./update-nixpkgs.sh --days 14  # 遅延日数を変更する場合
 cd nix && darwin-rebuild switch --flake . # Nix パッケージ適用
 cd nix && darwin-rebuild switch --rollback # ロールバック
 ```

@@ -6,7 +6,7 @@ set -euo pipefail
 
 export PATH="/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:$PATH"
 
-DAYS=14
+DAYS=7
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
