@@ -13,7 +13,12 @@
       "Bash(brew deps:*)",
       "Bash(brew list:*)",
       "WebFetch(domain:search.nixos.org)",
-      "Skill(schedule)"
+      "Skill(schedule)",
+      "WebFetch(domain:agent-browser.io)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:mynixos.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(agent-browser navigate:*)"
     ],
     "deny": [],
     "ask": []

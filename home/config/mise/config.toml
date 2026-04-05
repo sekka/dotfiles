@@ -497,6 +497,8 @@ bun = "latest"
 # "npm:@byterover/cipher" = "latest"    # https://github.com/campfirein/cipher
 "npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
 # "npm:@letta-ai/letta-code" = "latest" # https://github.com/letta-ai/letta-code
+"npm:agent-browser" = "latest"        # https://github.com/vercel-labs/agent-browser  # AIエージェント向けブラウザ自動化CLI
+yt-dlp = { version = "latest", rename_exe = "yt-dlp" }  # https://github.com/yt-dlp/yt-dlp  # 動画ダウンローダー
 "npm:@playwright/mcp" = "latest"      # https://github.com/microsoft/playwright-mcp/
 "npm:@playwright/cli" = "latest"      # https://github.com/microsoft/playwright-cli
 "npm:playwright" = "latest"            # Playwright core library (for Node.js headless scripts)
