@@ -36,3 +36,13 @@ title: 記事タイトル
 
 - このディレクトリは `qmd embed` の対象**外**（未整理データのノイズ防止）
 - `_inbox/` が肥大化したら処理が停滞しているサイン
+
+## 状態確認
+
+```bash
+# 未処理件数
+ls ~/.claude/skills/user-managing-frontend-knowledge/raw/_inbox/*.md 2>/dev/null | wc -l
+
+# アーカイブ件数
+ls ~/.claude/skills/user-managing-frontend-knowledge/raw/_archived/*.md 2>/dev/null | wc -l
+```
