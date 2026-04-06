@@ -271,3 +271,29 @@ done
 
 log_section "06: 完了"
 log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件"
+
+# --- qmd インデックス（フロントエンドナレッジのセマンティック検索） ---
+
+QMD_INDEX_PATH="${QMD_FRONTEND_INDEX:-$HOME/.local/share/qmd/frontend.sqlite}"
+
+# qmd CLI のインストール確認
+if ! is_installed qmd; then
+  log_info "qmd CLI をインストールしています..."
+  if is_installed bun; then
+    bun install -g @tobilu/qmd || log_warn "qmd インストールに失敗しました（続行します）"
+  elif is_installed npm; then
+    npm install -g @tobilu/qmd || log_warn "qmd インストールに失敗しました（続行します）"
+  else
+    log_warn "bun / npm が見つかりません。qmd インストールをスキップします"
+  fi
+fi
+
+# インデックス構築（冪等。setup-qmd.sh が処理）
+if is_installed qmd; then
+  if [[ -f $QMD_INDEX_PATH ]]; then
+    log_skip "qmd インデックスは既に存在します: $QMD_INDEX_PATH"
+  else
+    log_info "qmd インデックスを構築しています..."
+    "$HOME/dotfiles/scripts/setup-qmd.sh" || log_warn "qmd インデックス構築に失敗しました（続行します）"
+  fi
+fi
