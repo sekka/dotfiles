@@ -60,9 +60,33 @@ disable-model-invocation: false
 
 ## 収集フロー
 
-### Step 1: コンテンツ取得
+### Step 1: 原文を raw/_inbox/ に保存
 
-URLが渡された場合は `WebFetch` で内容を取得。
+URLが渡された場合、`WebFetch` で内容を取得し、**そのまま** `raw/_inbox/YYYY-MM-DD-{slug}.md` として保存する。
+
+ファイルフォーマット:
+
+```markdown
+---
+url: [取得元URL]
+fetched_at: [YYYY-MM-DD]
+title: [記事タイトル]
+---
+
+[本文または重要部分の抜粋]
+```
+
+**重要**: この段階では knowledge/ には書き込まない。要約・分類・統合は「コンパイルモード」で別途実施する。
+
+報告:
+
+```
+✅ raw/_inbox/ に保存しました
+📁 raw/_inbox/2026-04-06-{slug}.md
+🔗 出典: [URL]
+
+「inbox 処理して」と依頼すると knowledge/ に統合されます。
+```
 
 ### Step 2: 要約・構造化
 
