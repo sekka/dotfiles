@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { validateCommand } from "./validate-command";
+import { validateCommand } from "../validate-command";
 
 describe("validateCommand", () => {
 	describe("安全なコマンド → isValid: true", () => {

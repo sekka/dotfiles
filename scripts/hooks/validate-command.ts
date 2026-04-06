@@ -1,12 +1,5 @@
 #!/usr/bin/env bun
 
-/**
- * Command chain validator for Claude Code's PreToolUse hook
- *
- * 禁止コマンド（sed/awk/git add -A 等）と危険なコマンドチェーンパターンを検出する。
- * settings.json の deny ルールを補完し、チェーン内に隠れた操作も検知する。
- */
-
 interface HookInput {
 	tool_name: string;
 	tool_input: {
@@ -39,6 +32,14 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 		pattern: /\bgit\s+add\s+(-A\b|--all\b|\.(?:\s|$))/,
 		reason:
 			"git add -A/--all/. は禁止されています。機密ファイルの意図しないステージングを防ぐため、ファイルを個別に指定してください。例: git add specific-file.ts",
+	},
+	{
+		pattern: /\bgit\s+push\s+[^&|;]*--force(?:-with-lease)?\b/,
+		reason: "git push --force は禁止されています。リモートの変更を上書きする危険があります。",
+	},
+	{
+		pattern: /\bgit\s+reset\s+--hard\b/,
+		reason: "git reset --hard は禁止されています。コミットされていない変更が失われます。",
 	},
 ];
 
@@ -174,7 +175,6 @@ function main() {
 	}
 }
 
-// スクリプトが直接実行された場合のみ main() を呼び出す
 if (import.meta.main) {
 	main();
 }
