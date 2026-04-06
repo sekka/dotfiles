@@ -12,6 +12,7 @@
 	path = ~/.gitconfig_private
 [diff]
 	tool = diffnav
+	wordRegex = "[a-zA-Z0-9_]+|[ぁ-ん]+|[ァ-ヶー]+|[一-龥々〇〆]+|."
 [difftool "diffnav"]
 	cmd = diffnav \"$LOCAL\" \"$REMOTE\"
 [difftool "sourcetree"]

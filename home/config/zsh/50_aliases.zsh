@@ -113,7 +113,7 @@ alias smu="git submodule foreach 'git checkout master; git pull'"
 
 # 差分表示
 alias gstt="git status -uno"
-alias gdiff="git diff --word-diff"
+alias gdiff="git diff --color-words"
 
 # fzf連携（scripts/に移動済み、Bun/TypeScript）
 alias fshow="git-fzf-show.ts"
