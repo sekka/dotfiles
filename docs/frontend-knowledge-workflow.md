@@ -29,7 +29,7 @@ git pull
 ./setup/06_claude.sh
 ```
 
-`06_claude.sh` が `scripts/setup-qmd.sh` を呼び出し:
+`06_claude.sh` が `setup/setup-qmd.sh` を呼び出し:
 
 - qmd CLI インストール（bun経由、未インストールの場合）
 - `frontend` コレクション登録
@@ -162,20 +162,20 @@ qmd ls frontend | wc -l    # インデックス済みファイル数
 
 ## 8. トラブルシューティング
 
-| 症状                     | 対処                                                                      |
-| ------------------------ | ------------------------------------------------------------------------- |
-| `qmd: command not found` | `bun install -g @tobilu/qmd` / zsh 再起動                                 |
-| 検索結果が古い           | `qmd update && qmd embed`                                                 |
-| 完全リセット             | `qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh`       |
-| インデックス破損疑い     | `qmd cleanup && ~/dotfiles/scripts/setup-qmd.sh`                          |
-| `_inbox/` 肥大化         | 処理停滞サイン。「inbox 処理して」を Claude に依頼                        |
-| 埋め込み生成途中で失敗   | `scripts/setup-qmd.sh` が自動でコレクション削除。再度 `setup-qmd.sh` 実行 |
+| 症状                     | 対処                                                                 |
+| ------------------------ | -------------------------------------------------------------------- |
+| `qmd: command not found` | `bun install -g @tobilu/qmd` / zsh 再起動                            |
+| 検索結果が古い           | `qmd update && qmd embed`                                            |
+| 完全リセット             | `qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh`    |
+| インデックス破損疑い     | `qmd cleanup && ~/dotfiles/setup/setup-qmd.sh`                       |
+| `_inbox/` 肥大化         | 処理停滞サイン。「inbox 処理して」を Claude に依頼                   |
+| 埋め込み生成途中で失敗   | `~/dotfiles/setup/setup-qmd.sh` を再実行（差分のみ再生成、復旧可能） |
 
 ---
 
 ## 関連ドキュメント
 
-- `scripts/setup-qmd.md` — qmd セットアップの詳細・コマンドリファレンス
+- `setup/setup-qmd.md` — qmd セットアップの詳細・コマンドリファレンス
 - `home/.claude/skills/user-managing-frontend-knowledge/SKILL.md` — Claude セッション内のモード定義（収集/コンパイル/整理）
 - `home/.claude/skills/user-managing-frontend-knowledge/raw/README.md` — raw/ 層の構造・命名規則
 - `docs/superpowers/specs/2026-04-06-llm-wiki-knowledge-base-design.md` — 設計思想（Karpathy 式 LLM Wiki パターン）
