@@ -26,7 +26,12 @@
       "Bash(agent-browser eval:*)",
       "Bash(agent-browser screenshot:*)",
       "Bash(agent-browser close:*)",
-      "Bash(rtk proxy:*)"
+      "Bash(rtk proxy:*)",
+      "WebFetch(domain:docs.claude.com)",
+      "Bash(gh repo:*)",
+      "Bash(mise install:*)",
+      "Bash(mise tasks:*)",
+      "Bash(ports --version)"
     ],
     "deny": [],
     "ask": []
