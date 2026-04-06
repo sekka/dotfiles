@@ -20,7 +20,13 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(agent-browser navigate:*)",
       "WebFetch(domain:zenn.dev)",
-      "WebFetch(domain:qiita.com)"
+      "WebFetch(domain:qiita.com)",
+      "Bash(agent-browser open:*)",
+      "Bash(agent-browser wait:*)",
+      "Bash(agent-browser eval:*)",
+      "Bash(agent-browser screenshot:*)",
+      "Bash(agent-browser close:*)",
+      "Bash(rtk proxy:*)"
     ],
     "deny": [],
     "ask": []
