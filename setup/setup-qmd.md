@@ -28,7 +28,7 @@ bun の global bin (`~/.cache/.bun/bin`) は `home/config/zsh/00_environment.zsh
 ## セットアップ（初回 / 新規マシン）
 
 ```bash
-~/dotfiles/scripts/setup-qmd.sh
+~/dotfiles/setup/setup-qmd.sh
 ```
 
 - 既に `frontend` コレクションが登録済みなら自動スキップ（冪等）
@@ -68,7 +68,7 @@ qmd update      # 差分インデックス
 qmd embed       # 差分埋め込み
 
 # ナレッジを大幅削除・再編成したとき（完全再構築）
-qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh
+qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh
 ```
 
 ---
@@ -86,9 +86,9 @@ qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh
 | 症状                       | 対処                                                                          |
 | -------------------------- | ----------------------------------------------------------------------------- |
 | `qmd: command not found`   | `bun install -g @tobilu/qmd` を実行。`~/.cache/.bun/bin` が PATH にあるか確認 |
-| 埋め込み生成が途中で失敗   | スクリプトが自動でコレクションを削除するので再度 `setup-qmd.sh` を実行        |
+| 埋め込み生成が途中で失敗   | `~/dotfiles/setup/setup-qmd.sh` を再実行（差分のみ再生成、復旧可能）          |
 | 検索結果が古い             | `qmd update && qmd embed` で差分更新                                          |
-| インデックスを完全リセット | `qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh`           |
+| インデックスを完全リセット | `qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh`             |
 | 全コレクションをリセット   | `qmd cleanup` でキャッシュクリア後、再セットアップ                            |
 
 ---
