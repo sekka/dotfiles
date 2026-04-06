@@ -36,8 +36,10 @@ alias vp="vim +PlugInstall +qall"
 # ======================
 # qmd フロントエンドナレッジ検索
 # ======================
+# qmd v2 では統一インデックスを使用し、コレクション名で論理分離する
+# qmd-fe <query> でセマンティック検索（frontend コレクション限定）
 
-alias qmd-fe='INDEX_PATH="$QMD_FRONTEND_INDEX" qmd'
+alias qmd-fe='qmd query -c frontend'
 
 # mise/npm/yarnスクリプト実行用関数
 # シェルインジェクションを防ぐため、関数として定義しクォート処理

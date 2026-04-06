@@ -60,9 +60,33 @@ disable-model-invocation: false
 
 ## 収集フロー
 
-### Step 1: コンテンツ取得
+### Step 1: 原文を raw/_inbox/ に保存
 
-URLが渡された場合は `WebFetch` で内容を取得。
+URLが渡された場合、`WebFetch` で内容を取得し、**そのまま** `raw/_inbox/YYYY-MM-DD-{slug}.md` として保存する。
+
+ファイルフォーマット:
+
+```markdown
+---
+url: [取得元URL]
+fetched_at: [YYYY-MM-DD]
+title: [記事タイトル]
+---
+
+[本文または重要部分の抜粋]
+```
+
+**重要**: この段階では knowledge/ には書き込まない。要約・分類・統合は「コンパイルモード」で別途実施する。
+
+報告:
+
+```
+✅ raw/_inbox/ に保存しました
+📁 raw/_inbox/2026-04-06-{slug}.md
+🔗 出典: [URL]
+
+「inbox 処理して」と依頼すると knowledge/ に統合されます。
+```
 
 ### Step 2: 要約・構造化
 
@@ -312,6 +336,66 @@ css-animation.md:
 
 ---
 
+## コンパイルモード
+
+`raw/_inbox/` に溜まった原文を knowledge/ に統合する。
+
+### トリガー
+
+- 「inbox 処理して」「コンパイルして」「ナレッジ統合して」
+- 「raw を整理して」
+
+### コンパイルフロー
+
+1. **inbox の一覧取得**
+
+   ```bash
+   ls -la ~/.claude/skills/user-managing-frontend-knowledge/raw/_inbox/*.md 2>/dev/null
+   ```
+
+   ファイルが0件の場合: 「inbox は空です」と報告して終了。
+
+2. **各ファイルを順次処理**
+
+   `_inbox/` 内の各 `.md` ファイルに対して以下を実行:
+
+   a. ファイルを Read
+   b. **Step 2: 要約・構造化**（既存ロジック）を適用
+   c. **Step 3: カテゴリ判定**（既存ロジック）を適用
+   d. **Step 4: 重複チェックと処理方針の決定**（既存ロジック）を適用
+   e. **Step 5: ファイル更新**（既存ロジック）で knowledge/ に統合
+   f. 元ファイルを `_archived/` に移動
+
+   ```bash
+   mv raw/_inbox/{filename}.md raw/_archived/{filename}.md
+   ```
+
+3. **完了報告**
+
+   ```
+   ✅ コンパイル完了
+
+   処理: N 件
+   📁 統合先カテゴリ:
+      - css/layout/: 2 件
+      - cross-cutting/accessibility/: 1 件
+   📦 raw/_archived/ に移動: N 件
+   ```
+
+### 注意事項
+
+- **自動コンパイルしない**。必ずユーザー依頼で起動する
+- カテゴリ判定に迷ったら AskUserQuestion で確認
+- 1ファイルが複数カテゴリにまたがる場合は既存の「複数カテゴリにまたがる記事の場合」ルールを適用
+- 統合後は qmd embed を促す:
+
+  ```
+  💡 knowledge/ が更新されました。検索インデックスを更新するには:
+     qmd embed
+  ```
+
+---
+
 ## 整理モード
 
 「ナレッジを整理して」「重複チェックして」等で発動。
@@ -363,6 +447,70 @@ css-animation.md:
 - コード例の書式統一
 - セクション構造の統一
 - 不足情報（ユースケース、注意点）の補完提案
+
+#### 5. ドリフトチェック（raw 原文と wiki の乖離検出）
+
+`raw/_archived/` の原文と `knowledge/` の対応エントリを比較し、原文には書いてあるが wiki に反映されていない情報を発見する。
+
+**手順**:
+
+1. `raw/_archived/` の各ファイルを順に確認
+2. ファイル内の URL から、knowledge/ で同じ URL を出典とするエントリを検索
+   ```bash
+   grep -r "出典: {URL}" knowledge/
+   ```
+3. 原文と既存 wiki エントリを比較し、以下を抽出:
+   - 原文にあるが wiki に書かれていない技術ポイント
+   - 原文ではブラウザサポートが更新されているが wiki が古い
+   - 原文に追記されたサンプルコードがある
+4. 提案リストとして報告（自動で書き込まない）
+
+**報告例**:
+
+```
+🔍 ドリフトチェック結果（3件の乖離を検出）
+
+1. raw/_archived/2026-03-15-grid-masonry.md
+   ↔ knowledge/css/layout/grid-masonry.md
+   📌 原文に Safari 18 対応情報の追記あり（wiki は Safari 17 のまま）
+
+2. ...
+
+更新を進めますか？ [y/N]
+```
+
+**重要**: 提案のみ。ユーザー承認なしに wiki を書き換えない。
+
+#### 6. 欠損補完候補
+
+knowledge/ 内の TBD・「不明」・空セクションを検出し、補完候補を提案する。
+
+**手順**:
+
+1. 以下のパターンで knowledge/ 全体を検索:
+   ```bash
+   grep -rn "TBD\|TODO\|不明\|XXX\|要確認" knowledge/
+   ```
+2. 各ヒットについて、対応する `raw/_archived/` 原文があれば該当箇所を抽出
+3. 補完候補を提案リストとして報告
+
+**重要**: 提案のみ、自動補完しない。
+
+#### 7. 新記事候補の発見
+
+`raw/_archived/` のうち knowledge/ に未統合のトピックを再評価する。
+
+**手順**:
+
+1. `_archived/` 内の各ファイルについて、wiki 統合済みかチェック
+   - 出典 URL で knowledge/ を grep
+   - ヒットしなければ「未統合」
+2. 未統合の理由を推定:
+   - スコープ外で意図的にスキップ → 何もしない
+   - カテゴリ不明で保留 → 候補として提示
+3. 候補リストを報告し、ユーザーに統合可否を問う
+
+**重要**: 自動で knowledge/ に追加しない。
 
 ### 整理フロー
 
@@ -416,6 +564,18 @@ css-animation.md:
 # パート2: ナレッジ参照（実装時・回答時）
 
 ## 使い方
+
+### 検索の優先順位
+
+ナレッジ参照は以下の順序で行う:
+
+1. **`qmd-fe "..."` を最優先で使う**（セマンティック検索、トークン効率最大）
+2. キーワード検索が必要なら `qmd search -c frontend "..."`
+3. 上記で見つからない、または特定ファイル全体の文脈が必要な場合のみ Read で直読み
+
+**Read 直読みは最終手段**。297MD・17万語規模のナレッジを Read で総当たりするとトークンを大量消費する。
+
+検索結果のスニペットだけで判断できれば Read 不要。必要な場合のみ `qmd get <file>` で該当ファイルを取得する。
 
 ### 実装タスク時の自発的参照（推奨）
 
@@ -514,20 +674,30 @@ knowledge/
 ## qmd による検索（セマンティック検索）
 
 ファイルを直接読む代わりに qmd セマンティック検索を使うとトークンを大幅削減できる。
+qmd v2 は統一インデックス（`~/.cache/qmd/index.sqlite`）に複数コレクションを保持する設計。
+フロントエンドナレッジは `frontend` コレクションとして登録されている。
 
 ```bash
-# インデックス未作成の場合（初回・新規マシン）
+# コレクション未登録の場合（初回・新規マシン）
 ~/dotfiles/scripts/setup-qmd.sh
 
-# セマンティック検索（推奨）
-qmd-fe query "CSS animation performance"
+# セマンティック検索（推奨。qmd-fe = qmd query -c frontend のエイリアス）
+qmd-fe "CSS animation performance"
 
-# キーワード検索（高速）
-qmd-fe search "Grid layout"
+# キーワード検索（BM25、高速）
+qmd search -c frontend "Grid layout"
 
-# git pull でナレッジが更新されたとき
-qmd-fe embed   # 差分のみ再埋め込み
+# 単一ファイルの取得
+qmd get knowledge/css/layout/container-query.md
 
-# ナレッジを削除・大幅整理したとき（完全再構築）
-rm "$QMD_FRONTEND_INDEX" && ~/dotfiles/scripts/setup-qmd.sh
+# ナレッジが更新されたとき（差分インデックス + 埋め込み更新）
+qmd update
+qmd embed
+
+# 完全再構築
+qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh
+
+# インデックスの状態確認
+qmd status
+qmd collection list
 ```
