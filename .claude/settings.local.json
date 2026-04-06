@@ -19,7 +19,8 @@
       "WebFetch(domain:mynixos.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(agent-browser navigate:*)",
-      "WebFetch(domain:zenn.dev)"
+      "WebFetch(domain:zenn.dev)",
+      "WebFetch(domain:qiita.com)"
     ],
     "deny": [],
     "ask": []
@@ -45,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/lint-format.ts --mode=fix --file=$FILE_PATH"
+            "command": "bun $HOME/dotfiles/scripts/hooks/auto-lint-hook.ts"
           }
         ]
       }
