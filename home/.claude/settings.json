@@ -11,14 +11,14 @@
   },
   "permissions": {
     "allow": [
-      "Skill(commit)",
+      "Skill(user-commit)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(difit-here)",
-      "Skill(generating-skills-from-logs)",
-      "Skill(managing-frontend-knowledge)",
+      "Skill(user-generating-skills-from-logs)",
+      "Skill(user-managing-frontend-knowledge)",
       "Skill(review-pr)",
-      "Skill(review-and-improve)",
+      "Skill(user-review-and-improve)",
       "WebSearch",
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
