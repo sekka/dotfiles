@@ -59,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/validate-command.ts"
+            "command": "bun $HOME/dotfiles/scripts/hooks/validate-command.ts"
           },
           {
             "type": "command",
@@ -91,7 +91,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts",
+            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
             "async": true
           }
         ]
@@ -103,7 +103,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/development/claude-notify.ts",
+            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
             "async": true
           }
         ]
