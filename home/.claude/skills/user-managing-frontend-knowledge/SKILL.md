@@ -336,6 +336,66 @@ css-animation.md:
 
 ---
 
+## コンパイルモード
+
+`raw/_inbox/` に溜まった原文を knowledge/ に統合する。
+
+### トリガー
+
+- 「inbox 処理して」「コンパイルして」「ナレッジ統合して」
+- 「raw を整理して」
+
+### コンパイルフロー
+
+1. **inbox の一覧取得**
+
+   ```bash
+   ls -la ~/.claude/skills/user-managing-frontend-knowledge/raw/_inbox/*.md 2>/dev/null
+   ```
+
+   ファイルが0件の場合: 「inbox は空です」と報告して終了。
+
+2. **各ファイルを順次処理**
+
+   `_inbox/` 内の各 `.md` ファイルに対して以下を実行:
+
+   a. ファイルを Read
+   b. **Step 2: 要約・構造化**（既存ロジック、line 67 以降）を適用
+   c. **Step 3: カテゴリ判定**（既存ロジック）を適用
+   d. **Step 4: 重複チェックと処理方針の決定**（既存ロジック）を適用
+   e. **Step 5: ファイル更新**（既存ロジック）で knowledge/ に統合
+   f. 元ファイルを `_archived/` に移動
+
+   ```bash
+   mv raw/_inbox/{filename}.md raw/_archived/{filename}.md
+   ```
+
+3. **完了報告**
+
+   ```
+   ✅ コンパイル完了
+
+   処理: N 件
+   📁 統合先カテゴリ:
+      - css/layout/: 2 件
+      - cross-cutting/accessibility/: 1 件
+   📦 raw/_archived/ に移動: N 件
+   ```
+
+### 注意事項
+
+- **自動コンパイルしない**。必ずユーザー依頼で起動する
+- カテゴリ判定に迷ったら AskUserQuestion で確認
+- 1ファイルが複数カテゴリにまたがる場合は既存の「複数カテゴリにまたがる記事の場合」ルールを適用
+- 統合後は qmd embed を促す:
+
+  ```
+  💡 knowledge/ が更新されました。検索インデックスを更新するには:
+     qmd embed
+  ```
+
+---
+
 ## 整理モード
 
 「ナレッジを整理して」「重複チェックして」等で発動。
