@@ -50,6 +50,21 @@ alias = "bl"
 description = "Browserslist更新"
 run = "npx browserslist@latest --update-db"
 
+# --------------------------------------
+# dev: port-whisperer (ports CLI)
+# --------------------------------------
+[tasks.dev-ports]
+description = "リッスン中のポート一覧（dev serverのみ・色付き表）"
+run = "ports"
+
+[tasks.dev-ports-all]
+description = "全リッスンポート（system含む）"
+run = "ports --all"
+
+[tasks.dev-ports-clean]
+description = "孤児/zombie devプロセスを掃除"
+run = "ports clean"
+
 [tasks.gh-list-deploy]
 description = "デプロイの実行履歴を表示する"
 run = """
@@ -541,6 +556,7 @@ yt-dlp = { version = "latest", rename_exe = "yt-dlp" }  # https://github.com/yt-
 "npm:npm-check-updates" = "latest"    # npm更新チェック
 "npm:oxfmt" = "latest"                # Formatter
 "npm:oxlint" = "latest"               # Linter
+"npm:port-whisperer" = "latest"       # https://github.com/LarsenCundric/port-whisperer  # ports/whoisonport CLI
 "npm:vercel" = "latest"               # Vercel CLI
 
 # === 画像処理 ===
