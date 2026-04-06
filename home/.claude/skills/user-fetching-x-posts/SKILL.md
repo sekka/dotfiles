@@ -7,6 +7,10 @@ description: Use when an X (Twitter) post URL is shared and content extraction i
 
 X投稿URLからデータを抽出する。agent-browser CLI を優先し、失敗時のみ Playwright MCP にフォールバック。
 
+## Iron Law
+
+1. ポストが取得できなかった場合に内容を推測しない
+
 ## 実行フロー
 
 ```dot

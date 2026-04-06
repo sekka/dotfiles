@@ -9,6 +9,10 @@ allowed-tools: Bash(lit:*), Bash(npx:*), Read, Write
 
 PDF、PPTX、DOCX、XLSX をテキストに変換して Claude Code で扱えるようにする。
 
+## Iron Law
+
+1. バイナリファイルを直接読もうとしない
+
 ## 使い方
 
 ユーザーからドキュメントファイル（PDF/PPTX/DOCX/XLSX）を読むよう依頼されたら、以下の手順で処理する。

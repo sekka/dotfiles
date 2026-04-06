@@ -8,6 +8,10 @@ allowed-tools: Bash, Read, Edit, Glob
 
 format → lint → typecheck を自動で実行し、失敗時は修正して再実行するループ。
 
+## Iron Law
+
+1. 自動修正で既存ロジックを変更しない
+
 ## フロー
 
 ```

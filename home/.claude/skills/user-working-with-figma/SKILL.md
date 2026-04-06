@@ -11,6 +11,11 @@ disable-model-invocation: false
 FigmaデザインをHigh-fidelityでコード実装するスキル。
 公式Figma MCPサーバーのツール群を活用してトークン効率を最大化しながら、デザインの意図を正確に再現します。
 
+## Iron Law
+
+1. Figmaデータなしに「デザイン通り」を主張しない
+2. レート制限を無視しない
+
 ## 利用可能なMCPツール
 
 | ツール | 用途 |

@@ -31,6 +31,10 @@ disable-model-invocation: false
 - 目次、分野別カテゴリ内訳、トレンド分析を含むMarkdownファイルを生成
 </quick_start>
 
+## Iron Law
+
+1. アクセスできないサイトの情報を推測で補完しない
+
 <success_criteria>
 **完全性:**
 - 目標件数の事例を収集（デフォルト: 20件）

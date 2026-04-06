@@ -8,6 +8,11 @@ allowed-tools: Read, Grep, Glob, Edit, Bash
 
 コードをレビューし、問題があればその場で修正する。
 
+## Iron Law
+
+1. diff外のコードだけで判断しない
+2. 推測による指摘禁止
+
 ## フロー
 
 ```

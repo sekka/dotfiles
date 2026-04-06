@@ -10,6 +10,11 @@ disable-model-invocation: false
 
 フロントエンド開発、React/Vue/Next.js実装、TypeScript型設計、パフォーマンス最適化を包括的に支援するスキルです。
 
+## Iron Law
+
+1. 既存コンポーネントの破壊的変更を無断で行わない
+2. アクセシビリティを悪化させない
+
 ## 実行フロー
 
 ### Step 1: プロジェクトセットアップ
