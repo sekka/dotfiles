@@ -220,7 +220,54 @@ while read -r plugin; do
   fi
 done < <(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' "$SETTINGS_FILE")
 
+# --- サードパーティスキル管理 ---
+
+# "リポジトリ スキル名" の形式で宣言
+THIRD_PARTY_SKILLS=(
+  "yoshiko-pg/difit difit-review"
+)
+
+is_skill_installed() {
+  [[ -d "$HOME/.claude/skills/$1" ]]
+}
+
+ensure_skill() {
+  local repo="$1"
+  local skill="$2"
+
+  if is_skill_installed "$skill"; then
+    if [[ $UPDATE_MODE == "true" ]]; then
+      log_info "スキル '$skill' を更新しています..."
+      if ! npx -y skills add "$repo" --skill "$skill" -a claude-code -g -y 2>/dev/null; then
+        log_warn "スキルの更新に失敗しました: $skill（続行します）"
+      else
+        log_info "スキルを更新しました: $skill"
+      fi
+    else
+      log_skip "スキル '$skill' はインストール済み"
+    fi
+  else
+    log_info "スキル '$skill' をインストールしています..."
+    if ! npx -y skills add "$repo" --skill "$skill" -a claude-code -g -y 2>/dev/null; then
+      log_warn "スキルのインストールに失敗しました: $skill（続行します）"
+    else
+      log_info "スキルをインストールしました: $skill"
+    fi
+  fi
+}
+
+skill_count=0
+
+log_info "サードパーティスキルをセットアップしています..."
+for entry in "${THIRD_PARTY_SKILLS[@]}"; do
+  read -r repo skill <<<"$entry"
+  if [[ -n $repo ]] && [[ -n $skill ]]; then
+    ensure_skill "$repo" "$skill"
+    skill_count=$((skill_count + 1)) || true
+  fi
+done
+
 # --- サマリー ---
 
 log_section "06: 完了"
-log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件"
+log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件"
