@@ -4,7 +4,7 @@ source "$(dirname "$0")/../setup/lib/common.sh"
 
 INDEX_PATH="${QMD_FRONTEND_INDEX:-$HOME/.local/share/qmd/frontend.sqlite}"
 INDEX_DIR="$(dirname "$INDEX_PATH")"
-SKILL_DIR="$HOME/.claude/skills/managing-frontend-knowledge"
+SKILL_DIR="$HOME/.claude/skills/user-managing-frontend-knowledge"
 
 # qmd インストール確認
 if ! is_installed qmd; then
