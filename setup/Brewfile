@@ -39,6 +39,7 @@ brew "mole"               # https://formulae.brew.sh/formula/mole             # 
 #cask "tower"                       # https://formulae.brew.sh/cask/tower                       # Gitクライアント
 #cask "transmit"                    # https://formulae.brew.sh/cask/transmit                    # FTP/SFTPクライアント
 #cask "visual-studio-code"          # https://formulae.brew.sh/cask/visual-studio-code          # コードエディタ
+#cask "zed"                         # https://formulae.brew.sh/cask/zed                         # 高速コードエディタ
 
 # === AI ===
 #cask "antigravity"                 # https://formulae.brew.sh/cask/antigravity                 # AIアシスタント
