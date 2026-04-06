@@ -28,3 +28,6 @@ status_line = [
   "five-hour-limit",
   "weekly-limit",
 ]
+
+[plugins."github@openai-curated"]
+enabled = true
