@@ -257,6 +257,25 @@ npx unlighthouse --site "$UNLIGHTHOUSE_SITE" --build-static
 """
 
 # --------------------------------------
+# OGP プレビュー
+# --------------------------------------
+[tasks.ogp]
+alias = "ogp"
+description = "URLのOGPメタタグをブラウザでプレビュー表示"
+run = """
+url="${1:-}"
+if [ -z "$url" ]; then
+  printf "URL: "
+  read -r url
+  if [ -z "$url" ]; then
+    echo "URLが入力されませんでした"
+    exit 1
+  fi
+fi
+npx github:syuya2036/ogp-preview "$url"
+"""
+
+# --------------------------------------
 # Lint & Format (統合スクリプト経由)
 # --------------------------------------
 # 全ファイルチェック
