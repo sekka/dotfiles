@@ -43,14 +43,6 @@ trusted_config_paths = ["~/dotfiles", "~/src/**", "~/projects/**"]
 node.verify = false
 
 # --------------------------------------
-# AWS関連
-# --------------------------------------
-[tasks.aws-login]
-alias = "al"
-description = "AWS SSOログイン"
-run = "aws sso login"
-
-# --------------------------------------
 # GitHub/開発ツール
 # --------------------------------------
 [tasks.browserslist]
