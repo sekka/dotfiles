@@ -273,24 +273,5 @@ log_section "06: 完了"
 log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件"
 
 # --- qmd インデックス（フロントエンドナレッジのセマンティック検索） ---
-# qmd v2 では統一インデックス（~/.cache/qmd/index.sqlite）にコレクションを登録する
-
-# qmd CLI のインストール確認（bun bin が PATH にない可能性があるので明示的に拡張）
-export PATH="$HOME/.cache/.bun/bin:$PATH"
-
-if ! is_installed qmd; then
-  log_info "qmd CLI をインストールしています..."
-  if is_installed bun; then
-    bun install -g @tobilu/qmd || log_warn "qmd インストールに失敗しました（続行します）"
-  elif is_installed npm; then
-    npm install -g @tobilu/qmd || log_warn "qmd インストールに失敗しました（続行します）"
-  else
-    log_warn "bun / npm が見つかりません。qmd インストールをスキップします"
-  fi
-fi
-
-# コレクション登録と埋め込み生成（setup-qmd.sh が冪等性を担保）
-if is_installed qmd; then
-  log_info "qmd フロントエンドコレクションをセットアップしています..."
-  "$HOME/dotfiles/scripts/setup-qmd.sh" || log_warn "qmd セットアップに失敗しました（続行します）"
-fi
+log_info "qmd フロントエンドコレクションをセットアップしています..."
+"$(dirname "$0")/setup-qmd.sh" || log_warn "qmd セットアップに失敗しました（続行します）"
