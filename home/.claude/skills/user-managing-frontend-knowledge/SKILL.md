@@ -417,6 +417,18 @@ css-animation.md:
 
 ## 使い方
 
+### 検索の優先順位
+
+ナレッジ参照は以下の順序で行う:
+
+1. **`qmd-fe "..."` を最優先で使う**（セマンティック検索、トークン効率最大）
+2. キーワード検索が必要なら `qmd search -c frontend "..."`
+3. 上記で見つからない、または特定ファイル全体の文脈が必要な場合のみ Read で直読み
+
+**Read 直読みは最終手段**。297MD・17万語規模のナレッジを Read で総当たりするとトークンを大量消費する。
+
+検索結果のスニペットだけで判断できれば Read 不要。必要な場合のみ `qmd get <file>` で該当ファイルを取得する。
+
 ### 実装タスク時の自発的参照（推奨）
 
 Web開発の実装タスクやコーディング作業を行う際、以下の流れで自発的にナレッジベースを参照する：
@@ -514,20 +526,30 @@ knowledge/
 ## qmd による検索（セマンティック検索）
 
 ファイルを直接読む代わりに qmd セマンティック検索を使うとトークンを大幅削減できる。
+qmd v2 は統一インデックス（`~/.cache/qmd/index.sqlite`）に複数コレクションを保持する設計。
+フロントエンドナレッジは `frontend` コレクションとして登録されている。
 
 ```bash
-# インデックス未作成の場合（初回・新規マシン）
+# コレクション未登録の場合（初回・新規マシン）
 ~/dotfiles/scripts/setup-qmd.sh
 
-# セマンティック検索（推奨）
-qmd-fe query "CSS animation performance"
+# セマンティック検索（推奨。qmd-fe = qmd query -c frontend のエイリアス）
+qmd-fe "CSS animation performance"
 
-# キーワード検索（高速）
-qmd-fe search "Grid layout"
+# キーワード検索（BM25、高速）
+qmd search -c frontend "Grid layout"
 
-# git pull でナレッジが更新されたとき
-qmd-fe embed   # 差分のみ再埋め込み
+# 単一ファイルの取得
+qmd get knowledge/css/layout/container-query.md
 
-# ナレッジを削除・大幅整理したとき（完全再構築）
-rm "$QMD_FRONTEND_INDEX" && ~/dotfiles/scripts/setup-qmd.sh
+# ナレッジが更新されたとき（差分インデックス + 埋め込み更新）
+qmd update
+qmd embed
+
+# 完全再構築
+qmd collection remove frontend && ~/dotfiles/scripts/setup-qmd.sh
+
+# インデックスの状態確認
+qmd status
+qmd collection list
 ```
