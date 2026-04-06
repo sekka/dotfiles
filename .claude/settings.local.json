@@ -18,7 +18,8 @@
       "WebFetch(domain:dev.to)",
       "WebFetch(domain:mynixos.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(agent-browser navigate:*)"
+      "Bash(agent-browser navigate:*)",
+      "WebFetch(domain:zenn.dev)"
     ],
     "deny": [],
     "ask": []
