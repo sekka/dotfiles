@@ -26,7 +26,9 @@ Phase 1: Check rule files (CLAUDE.md, rules)
 Phase 2: Check skill descriptions (skills/*/SKILL.md)
 Phase 3: Clean up memory (memory/)
     ↓
-Output structured report → User approval → Apply fixes
+Phase 4: Escalation proposal (evaluate repeated violations for level upgrade)
+    ↓
+Structured report output → User approval → Apply fixes
 ```
 
 ## Phase 1: Check Rule Files
@@ -86,6 +88,16 @@ Phases with zero problems are reported in one line: "✅ All items OK".
 3. Apply only approved fixes
 
 **Do not apply fixes without user approval.**
+
+## Phase 4: Escalation Proposal
+
+When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`.claude/rules/escalation-ladder.md`).
+
+### Check Points
+
+1. **Feedback records in memory** — Has the same violation been recorded multiple times?
+2. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
+3. **Escalation proposal** — If 3+ repetitions are found, include a level upgrade recommendation in the report
 
 ## Out of Scope
 

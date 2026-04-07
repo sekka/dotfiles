@@ -15,8 +15,8 @@ export function extractFilePath(input: string): string | null {
 	}
 }
 
-function main() {
-	const stdinText = Bun.readFileSync("/dev/stdin", "utf8");
+async function main() {
+	const stdinText = await Bun.stdin.text();
 	const filePath = extractFilePath(stdinText);
 
 	if (!filePath) {
@@ -34,5 +34,5 @@ function main() {
 }
 
 if (import.meta.main) {
-	main();
+	await main();
 }
