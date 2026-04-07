@@ -1,37 +1,37 @@
-# 進捗レポート原則
+# Progress Reporting Principle
 
-長時間・多段階タスクでは、作業が細切れになって全体目標を見失う問題を防ぐため、作業レポートに「目的への達成度」を必ず含める。
+For long or multi-step tasks, always include "progress toward the goal" in work reports. This prevents the problem of losing sight of the overall goal when work becomes fragmented.
 
-## いつ適用するか
+## When to apply
 
-- 3ステップ以上のタスクを実行中
-- Planモードで計画を立てた後の実装フェーズ
-- サブエージェントからの報告を統合するタイミング
-- 一区切りついて次の作業に進む前
+- While executing a task with 3 or more steps
+- During the implementation phase after making a plan in Plan mode
+- When integrating reports from sub-agents
+- Before moving on to the next piece of work after finishing a stage
 
-## いつ適用しないか
+## When not to apply
 
-- 1〜2アクションで完結する単純タスク（ファイル1個の編集、質問への回答等）
-- ユーザーとの対話中の相槌や確認レス
+- Simple tasks that finish in 1-2 actions (editing one file, answering a question, etc.)
+- Short replies or acknowledgments during conversation with the user
 
-## レポートに含める要素
+## What to include in the report
 
-報告時に以下を1〜2行で明示する：
+State the following in 1-2 lines when reporting:
 
 ```
-進捗: 目的「XXX」に対し約N%完了。残り約Mステップで到達見込み。
-次: （次にやること）
+Progress: Goal "XXX" is about N% complete. Estimated M more steps to reach it.
+Next: (what to do next)
 ```
 
-- **目的**: 当初ユーザーが依頼した最上位ゴールを書く。サブタスクではない
-- **達成度%**: 定量化できなければ体感でよい（「約60%」等）
-- **残りステップ数**: 「残り2〜3スライス」のように粒度を示す
-- **次のアクション**: 即座に着手する次の1手
+- **Goal**: Write the top-level goal the user originally requested. Not a sub-task
+- **% complete**: A rough estimate is fine if it cannot be quantified (e.g., "about 60%")
+- **Remaining steps**: Show the scale, like "about 2-3 more slices remaining"
+- **Next action**: The single next step to start immediately
 
-## 狙い
+## Purpose
 
-- マイクロタスク化による停滞を防ぐ
-- ユーザーが進捗を一目で把握できる
-- エージェント自身が全体目標を忘れない
+- Prevent stalling caused by breaking work into too many micro-tasks
+- Let the user understand progress at a glance
+- Keep the agent from forgetting the overall goal
 
-出典: @fladdict のポスト（2026-04-06）より着想。
+Source: Inspired by a post by @fladdict (2026-04-06).
