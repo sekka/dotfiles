@@ -96,6 +96,15 @@
 						"async": true
 					}
 				]
+			},
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/.claude/hooks/circuit-breaker.sh"
+					}
+				]
 			}
 		],
 		"Stop": [
