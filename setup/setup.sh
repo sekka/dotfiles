@@ -12,7 +12,7 @@ usage() {
 
 # 利用可能なスクリプトを収集（setup.sh 自身を除く）
 collect_scripts() {
-  find "$SCRIPT_DIR" -maxdepth 1 -name '0[0-9]_*.sh' | sort
+  find "$SCRIPT_DIR" -maxdepth 1 -name '[0-9][0-9]_*.sh' | sort
 }
 
 list_scripts() {

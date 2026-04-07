@@ -3,7 +3,7 @@
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-log_section "05: Dev tools setup"
+log_section "10: Dev tools setup"
 
 # --- CotEditor コマンドラインツール ---
 
@@ -33,4 +33,4 @@ fi
 
 # --- サマリー ---
 
-log_section "05: 完了"
+log_section "10: 完了"

@@ -3,7 +3,7 @@
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-log_section "06: Claude Code setup"
+log_section "20: Claude Code setup"
 
 # --- Claude Code インストール ---
 
@@ -269,9 +269,5 @@ done
 
 # --- サマリー ---
 
-log_section "06: 完了"
+log_section "20: 完了"
 log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件"
-
-# --- qmd インデックス（フロントエンドナレッジのセマンティック検索） ---
-log_info "qmd フロントエンドコレクションをセットアップしています..."
-"$(dirname "$0")/setup-qmd.sh" || log_warn "qmd セットアップに失敗しました（続行します）"

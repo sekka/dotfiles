@@ -172,5 +172,5 @@ fi
 
 # --- サマリー ---
 
-log_section "03: 完了"
+log_section "04: 完了"
 log_info "新規作成: $created 件 / スキップ: $skipped 件"
