@@ -26,14 +26,16 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ## Git & バージョン管理
 
-| スキル                                        | 説明                   | いつ使う？                                                                               |
-| --------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------- |
-| `/commit`                                     | 論理単位でコミット     | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応 |
-| `/commit-commands:commit`                     | gitコミット実行        | シンプルなコミット操作                                                                   |
-| `/commit-commands:commit-push-pr`             | commit + push + PR一括 | 実装完了からPR作成まで一気に進めたいとき                                                 |
-| `/commit-commands:clean_gone`                 | gone ブランチ一括削除  | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                       |
-| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド     | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                       |
-| `/superpowers:using-git-worktrees`            | git worktree構築       | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築               |
+| スキル                                        | 説明                        | いつ使う？                                                                                                    |
+| --------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `/ship`                                       | preflight→commit→review一括 | 実装完了時。preflight・commit・軽量レビューを1パイプラインで実行。master/main/develop上では自動でブランチ作成 |
+| `/harness-ship`                               | harness変更を自動PR化       | .claude/配下の変更時。branch→commit→push→PR→squash mergeまで完全自動化                                        |
+| `/commit`                                     | 論理単位でコミット          | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応                      |
+| `/commit-commands:commit`                     | gitコミット実行             | シンプルなコミット操作                                                                                        |
+| `/commit-commands:commit-push-pr`             | commit + push + PR一括      | 実装完了からPR作成まで一気に進めたいとき                                                                      |
+| `/commit-commands:clean_gone`                 | gone ブランチ一括削除       | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                                            |
+| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド          | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                                            |
+| `/superpowers:using-git-worktrees`            | git worktree構築            | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                                    |
 
 ---
 
