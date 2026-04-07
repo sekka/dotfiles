@@ -1,19 +1,18 @@
 # Language Policy
 
-Write all harness files in English. This includes:
+Write everything in English by default. This includes:
 - Rules (`rules/*.md`)
 - Skills (`skills/*/SKILL.md`)
 - Agent definitions (`agents/*.md`)
 - Memory files (`memory/*.md`)
 - CLAUDE.md
-
-Also write in English:
-- Commit messages
 - Code comments
 - Hook output messages (reason strings, error messages)
 
-Use Japanese only for direct conversation with the user (chat responses, AskUserQuestion).
+Exceptions — use Japanese for:
+- Direct conversation with the user (chat responses, AskUserQuestion)
+- Commit messages (following existing repository convention)
 
 ## Why
 
-English keeps harness files consistent and readable by any LLM regardless of language settings. Japanese in conversation respects the user's preference.
+English keeps harness files consistent and readable by any LLM regardless of language settings. Japanese in conversation and commits respects the user's preference and existing conventions.
