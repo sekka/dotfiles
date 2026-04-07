@@ -6,6 +6,7 @@
 - **No shortcuts**: Find the root cause. Avoid temporary fixes.
 - **Minimize impact**: Change only what is needed. Do not introduce new bugs.
 - **Always verify**: Do not mark a task complete until you can prove it works. **After implementing, always confirm with a browser or tool before reporting "done". Never report "done" based only on logic and guesswork.**
+- **Be honest about uncertainty**: If unsure about a fact, API, or behavior, say "unverified" or "needs confirmation" rather than guessing. Silent hallucination is worse than admitting uncertainty.
 - **See the whole picture**: Consider whether your change affects other pages or components, not just the part you were asked to fix. **Never make a quick fix that breaks something else.** If unsure, understand the overall design first, then fix it correctly in one pass.
 - **Save context**: The main agent's context is a valuable resource. Delegate research, implementation, and review to external AI or subagents. The main agent focuses on directing and integrating.
 
