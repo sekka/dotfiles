@@ -42,19 +42,7 @@ git branch --show-current
 If the current branch is `master`, `main`, or `develop`:
 
 1. Run `git diff HEAD --name-only` to list changed files
-2. Infer a branch name from the changes:
-
-   | Change type | Prefix |
-   |-------------|--------|
-   | New feature | `feat/` |
-   | Bug fix | `fix/` |
-   | Config change | `config/` |
-   | Documentation | `docs/` |
-   | Refactoring | `refactor/` |
-   | Skill/rule addition | `feat/` |
-
-   Examples: `feat/add-ship-skill`, `config/update-session-summary`
-
+2. Infer a branch name following `rules/git-conventions.md`
 3. Ask the user: "Create branch `{name}`?"
    - Yes → `git checkout -b {name}` and continue
    - No → continue on the current branch
@@ -117,7 +105,7 @@ Run the same logic as the `/commit` skill.
 3. If splitting, commit in dependency order (foundation → implementation → tests → docs)
 4. Generate commit messages matching existing style
 
-Commit message prefixes: `feat`, `fix`, `config`, `refactor`, `docs`, `chore`, `ui`
+Follow `rules/git-conventions.md` for commit message format and prefixes.
 
 ---
 
