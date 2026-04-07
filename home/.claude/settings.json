@@ -1,201 +1,209 @@
 {
-  "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "env": {
-    "ENABLE_TOOL_SEARCH": "true",
-    "CLAUDE_CODE_NO_FLICKER": "1",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000"
-  },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-  "permissions": {
-    "allow": [
-      "Skill(commit-commands:*)",
-      "Skill(creating-hooks)",
-      "Skill(difit-here)",
-      "Skill(review-pr)",
-      "Skill(user-commit)",
-      "Skill(user-generating-skills-from-logs)",
-      "Skill(user-managing-frontend-knowledge)",
-      "Skill(user-review-and-improve)",
-      "WebSearch",
-      "mcp__chrome-devtools__*",
-      "mcp__deepwiki__*",
-      "mcp__drawio__*",
-      "mcp__plugin_context7_context7__*"
-    ],
-    "deny": [
-      "Bash(do:*)",
-      "Bash(for:*)",
-      "Bash(git rebase:*)",
-      "Bash(git reset:*)",
-      "Bash(rm -rf:*)",
-      "Bash(sudo:*)",
-      "Bash(until:*)",
-      "Bash(while:*)",
-      "Read(**/*.key)",
-      "Read(**/*.pem)",
-      "Read(**/*secret*)",
-      "Read(**/.env*)",
-      "Read(**/secrets/**)",
-      "Read(~/.ssh/*)",
-      "Write(**/*secret*)",
-      "Write(**/.env*)"
-    ],
-    "ask": [
-      "Bash(chmod:*)",
-      "Bash(curl:*)",
-      "Bash(git merge:*)",
-      "Bash(git push:*)",
-      "Bash(rm:*)",
-      "Bash(wget:*)"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/validate-command.ts"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/rtk-rewrite.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/post-format.ts",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/.claude/hooks/check-marketplace-health.ts",
-            "async": true
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/.claude/hooks/check-memory-health.ts",
-            "async": true
-          }
-        ]
-      }
-    ],
-    "PreCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/scripts/save-progress.sh"
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "$HOME/.claude/statusline.ts"
-  },
-  "enabledPlugins": {
-    "commit-commands@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false,
-    "codex@openai-codex": true
-  },
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
-    "designer-skills": {
-      "source": {
-        "source": "github",
-        "repo": "Owl-Listener/designer-skills"
-      }
-    },
-    "hiropon-plugins": {
-      "source": {
-        "source": "github",
-        "repo": "hiroro-work/claude-plugins"
-      }
-    },
-    "openai-codex": {
-      "source": {
-        "source": "github",
-        "repo": "openai/codex-plugin-cc"
-      }
-    }
-  },
-  "language": "Japanese",
-  "alwaysThinkingEnabled": true,
-  "plansDirectory": "./plans",
-  "skipAutoPermissionPrompt": true
+	"$schema": "https://json.schemastore.org/claude-code-settings.json",
+	"env": {
+		"ENABLE_TOOL_SEARCH": "true",
+		"CLAUDE_CODE_NO_FLICKER": "1",
+		"CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000"
+	},
+	"attribution": {
+		"commit": "",
+		"pr": ""
+	},
+	"permissions": {
+		"allow": [
+			"Skill(commit-commands:*)",
+			"Skill(creating-hooks)",
+			"Skill(difit-here)",
+			"Skill(review-pr)",
+			"Skill(user-commit)",
+			"Skill(user-generating-skills-from-logs)",
+			"Skill(user-managing-frontend-knowledge)",
+			"Skill(user-review-and-improve)",
+			"WebSearch",
+			"mcp__chrome-devtools__*",
+			"mcp__deepwiki__*",
+			"mcp__drawio__*",
+			"mcp__plugin_context7_context7__*"
+		],
+		"deny": [
+			"Bash(do:*)",
+			"Bash(for:*)",
+			"Bash(git rebase:*)",
+			"Bash(git reset:*)",
+			"Bash(rm -rf:*)",
+			"Bash(sudo:*)",
+			"Bash(until:*)",
+			"Bash(while:*)",
+			"Read(**/*.key)",
+			"Read(**/*.pem)",
+			"Read(**/*secret*)",
+			"Read(**/.env*)",
+			"Read(**/secrets/**)",
+			"Read(~/.ssh/*)",
+			"Write(**/*secret*)",
+			"Write(**/.env*)"
+		],
+		"ask": [
+			"Bash(chmod:*)",
+			"Bash(curl:*)",
+			"Bash(git merge:*)",
+			"Bash(git push:*)",
+			"Bash(rm:*)",
+			"Bash(wget:*)"
+		]
+	},
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Bash",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/hooks/validate-command.ts"
+					},
+					{
+						"type": "command",
+						"command": "$HOME/.claude/hooks/rtk-rewrite.sh"
+					}
+				]
+			},
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+					}
+				]
+			},
+			{
+				"matcher": "Read",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+					}
+				]
+			}
+		],
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/hooks/post-format.ts",
+						"async": true
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+						"async": true
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/dotfiles/scripts/hooks/commit-reminder.sh"
+					}
+				]
+			}
+		],
+		"Notification": [
+			{
+				"matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+						"async": true
+					}
+				]
+			}
+		],
+		"SessionStart": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/.claude/hooks/check-marketplace-health.ts",
+						"async": true
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bun $HOME/.claude/hooks/check-memory-health.ts",
+						"async": true
+					}
+				]
+			}
+		],
+		"PreCompact": [
+			{
+				"matcher": "*",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash $HOME/.claude/scripts/save-progress.sh"
+					}
+				]
+			}
+		]
+	},
+	"statusLine": {
+		"type": "command",
+		"command": "$HOME/.claude/statusline.ts"
+	},
+	"enabledPlugins": {
+		"commit-commands@claude-plugins-official": true,
+		"context7@claude-plugins-official": true,
+		"feature-dev@claude-plugins-official": true,
+		"superpowers@claude-plugins-official": true,
+		"claude-md-management@claude-plugins-official": true,
+		"code-review@claude-plugins-official": true,
+		"code-simplifier@claude-plugins-official": true,
+		"playwright@claude-plugins-official": false,
+		"codex@openai-codex": true
+	},
+	"extraKnownMarketplaces": {
+		"anthropic-agent-skills": {
+			"source": {
+				"source": "github",
+				"repo": "anthropics/skills"
+			}
+		},
+		"designer-skills": {
+			"source": {
+				"source": "github",
+				"repo": "Owl-Listener/designer-skills"
+			}
+		},
+		"hiropon-plugins": {
+			"source": {
+				"source": "github",
+				"repo": "hiroro-work/claude-plugins"
+			}
+		},
+		"openai-codex": {
+			"source": {
+				"source": "github",
+				"repo": "openai/codex-plugin-cc"
+			}
+		}
+	},
+	"language": "Japanese",
+	"alwaysThinkingEnabled": true,
+	"plansDirectory": "./plans",
+	"skipAutoPermissionPrompt": true
 }
