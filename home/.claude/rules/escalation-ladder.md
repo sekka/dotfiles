@@ -1,34 +1,34 @@
 # Escalation Ladder
 
-ルール違反を検出した場合の段階的な対応指針。
-同じ違反が繰り返されたら、1段階上のレベルに昇格させる。
+Guidelines for responding to rule violations in graduated steps.
+When the same violation repeats, escalate it one level up.
 
-## レベル定義
+## Level Definitions
 
-| Level | 方式 | 対応タイミング | 例 |
-|-------|------|--------------|-----|
-| L1 | ドキュメント | 初回違反 | CLAUDE.md / rules/ にパターンを記載 |
-| L2 | AI検証 | 同じ違反3回目 | レビュースキルでチェック項目に追加 |
-| L3 | ツール検証 | AI検証をすり抜け | lint ルール追加、フック追加 |
-| L4 | 構造的ブロック | ビジネスクリティカル | deny リスト、validate-command パターン |
+| Level | Method | When | Example |
+|-------|--------|------|---------|
+| L1 | Documentation | First violation | Record the pattern in CLAUDE.md / rules/ |
+| L2 | AI verification | Same violation 3rd time | Add to review skill checklist |
+| L3 | Tool verification | Bypasses AI verification | Add lint rule or hook |
+| L4 | Structural block | Business-critical | deny list, validate-command pattern |
 
-## 運用ルール
+## Operating Rules
 
-- **3回ルール**: 同じ違反パターンが3回検出されたら次のレベルに昇格
-- **即 L3 以上**: セキュリティ関連の違反は初回から L3 以上で対応
-- **降格なし**: 一度昇格したレベルは下げない（再発防止のため）
+- **3-strike rule**: Escalate to the next level after the same violation pattern occurs 3 times
+- **Immediate L3+**: Security-related violations start at L3 or above from the first occurrence
+- **No downgrade**: Once escalated, the level is never lowered (to prevent recurrence)
 
-## 昇格の判断基準
+## Escalation Criteria
 
-1. 違反パターンが明確に定義できるか（L3 以上はパターンマッチが前提）
-2. 自動検出のコスト vs 違反の影響度
-3. フック追加による応答速度への影響
+1. Can the violation pattern be clearly defined? (L3+ requires pattern matching)
+2. Cost of automated detection vs. impact of the violation
+3. Impact of additional hooks on response latency
 
-## 適用例
+## Examples
 
-| 違反 | 現在のレベル | 昇格先 |
-|------|------------|--------|
-| sed/awk の使用 | L4（validate-command で deny） | — |
-| git add -A | L4（validate-command で deny） | — |
-| console.log 残留 | L1（CLAUDE.md 記載） | 繰り返しなら L3（lint ルール） |
-| 機密ファイルの読み書き | L4（protect-sensitive.sh + deny リスト） | — |
+| Violation | Current Level | Escalate To |
+|-----------|--------------|-------------|
+| Using sed/awk | L4 (denied by validate-command) | — |
+| git add -A | L4 (denied by validate-command) | — |
+| Leftover console.log | L1 (documented in CLAUDE.md) | L3 (lint rule) if repeated |
+| Reading/writing sensitive files | L4 (protect-sensitive.sh + deny list) | — |

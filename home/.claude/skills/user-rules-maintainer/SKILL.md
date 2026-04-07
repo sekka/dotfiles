@@ -20,15 +20,15 @@ Apply fixes only after user approval.
 ## Flow
 
 ```
-Phase 1〜3 は独立しており並列実行可能
+Phases 1-3 are independent and can run in parallel
 
-Phase 1: ルールファイル照合（CLAUDE.md, rules）
-Phase 2: スキル description 照合（skills/*/SKILL.md）
-Phase 3: メモリ整理（memory/）
+Phase 1: Check rule files (CLAUDE.md, rules)
+Phase 2: Check skill descriptions (skills/*/SKILL.md)
+Phase 3: Clean up memory (memory/)
     ↓
-Phase 4: エスカレーション提案（繰り返し違反の昇格判定）
+Phase 4: Escalation proposal (evaluate repeated violations for level upgrade)
     ↓
-構造化レポート出力 → ユーザー承認 → 修正適用
+Structured report output → User approval → Apply fixes
 ```
 
 ## Phase 1: Check Rule Files
@@ -89,15 +89,15 @@ Phases with zero problems are reported in one line: "✅ All items OK".
 
 **Do not apply fixes without user approval.**
 
-## Phase 4: エスカレーション提案
+## Phase 4: Escalation Proposal
 
-Phase 1-3 で繰り返し違反パターンを検出した場合、エスカレーションラダー（`.claude/rules/escalation-ladder.md`）に基づいて昇格を提案する。
+When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`.claude/rules/escalation-ladder.md`).
 
-### チェック観点
+### Check Points
 
-1. **memory の feedback 記録** — 同じ違反が複数回記録されていないか
-2. **現在のレベル判定** — 違反パターンが L1（ドキュメント）/ L2（AI検証）/ L3（ツール検証）/ L4（構造的ブロック）のどこにあるか
-3. **昇格提案** — 3回以上の繰り返しがあれば次レベルへの昇格をレポートに含める
+1. **Feedback records in memory** — Has the same violation been recorded multiple times?
+2. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
+3. **Escalation proposal** — If 3+ repetitions are found, include a level upgrade recommendation in the report
 
 ## Out of Scope
 

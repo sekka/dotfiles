@@ -7,7 +7,12 @@ Write all harness files in English. This includes:
 - Memory files (`memory/*.md`)
 - CLAUDE.md
 
-Use Japanese only for direct conversation with the user (chat responses, AskUserQuestion, commit messages).
+Also write in English:
+- Commit messages
+- Code comments
+- Hook output messages (reason strings, error messages)
+
+Use Japanese only for direct conversation with the user (chat responses, AskUserQuestion).
 
 ## Why
 

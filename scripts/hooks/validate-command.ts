@@ -44,7 +44,7 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 	{
 		pattern: /\bgit\s+commit\b[^|;]*--no-verify\b/,
 		reason:
-			"git commit --no-verify は禁止されています。pre-commit hook をバイパスすると品質チェックが迂回されます。hook が失敗する場合は根本原因を修正してください。",
+			"git commit --no-verify is prohibited. Bypassing pre-commit hooks skips quality checks. Fix the root cause if a hook fails.",
 	},
 ];
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-// PostToolUse hook: Edit|Write 後に自動フォーマット
+// PostToolUse hook: auto-format files after Edit|Write
 // stdin: { tool_name, tool_input: { file_path } }
 
 const FORMATTABLE_EXTENSIONS = new Set([
@@ -38,7 +38,7 @@ async function main() {
 		const ext = getExtension(filePath);
 		if (!FORMATTABLE_EXTENSIONS.has(ext)) process.exit(0);
 
-		// settings.json 自体はフォーマット対象外（sort-permissions.sh が処理する）
+		// Exclude settings.json (handled by sort-permissions.sh)
 		if (
 			filePath.endsWith(".claude/settings.json") ||
 			filePath.endsWith(".claude/settings.local.json")
@@ -63,7 +63,7 @@ async function main() {
 			if (stderr) console.error(`[post-format] ${stderr.slice(0, 200)}`);
 		}
 	} catch {
-		// フォーマット失敗は致命的ではない — サイレントに終了
+		// Format failure is non-fatal — exit silently
 		process.exit(0);
 	}
 }
