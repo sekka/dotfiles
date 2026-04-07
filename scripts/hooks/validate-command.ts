@@ -16,30 +16,30 @@ interface HookOutput {
 	};
 }
 
-// 使用禁止コマンド（即ブロック）
+// Prohibited commands (immediate block)
 const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 	{
 		pattern: /\bg?sed\b/,
 		reason:
-			"sed は禁止されています。ファイル編集には Edit ツールを使用し、ストリーム処理には 'perl -pe' を使用してください。例: perl -pe 's/old/new/g' file",
+			"sed is prohibited. Use the Edit tool for file editing and 'perl -pe' for stream processing. Example: perl -pe 's/old/new/g' file",
 	},
 	{
 		pattern: /\bg?awk\b/,
 		reason:
-			"awk は禁止されています。ファイル編集には Edit ツールを使用し、フィールド処理には 'perl -lane' を使用してください。例: perl -lane 'print $F[0]' file",
+			"awk is prohibited. Use the Edit tool for file editing and 'perl -lane' for field processing. Example: perl -lane 'print $F[0]' file",
 	},
 	{
 		pattern: /\bgit\s+add\s+(-A\b|--all\b|\.(?:\s|$))/,
 		reason:
-			"git add -A/--all/. は禁止されています。機密ファイルの意図しないステージングを防ぐため、ファイルを個別に指定してください。例: git add specific-file.ts",
+			"git add -A/--all/. is prohibited. Specify files individually to prevent accidental staging of sensitive files. Example: git add specific-file.ts",
 	},
 	{
 		pattern: /\bgit\s+push\s+[^&|;]*--force(?:-with-lease)?\b/,
-		reason: "git push --force は禁止されています。リモートの変更を上書きする危険があります。",
+		reason: "git push --force is prohibited. Risk of overwriting remote changes.",
 	},
 	{
 		pattern: /\bgit\s+reset\s+--hard\b/,
-		reason: "git reset --hard は禁止されています。コミットされていない変更が失われます。",
+		reason: "git reset --hard is prohibited. Uncommitted changes will be lost.",
 	},
 	{
 		pattern: /\bgit\s+commit\b[^|;]*--no-verify\b/,
@@ -48,25 +48,25 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 	},
 ];
 
-// チェーン内で危険な組み合わせパターン
+// Dangerous command chain patterns
 const DANGEROUS_CHAINS = [
-	// パイプで危険なコマンドに渡す
+	// Pipe to dangerous commands
 	/\|\s*(rm|sudo|dd|shred|mkfs)\s+/,
-	// xargs で危険なコマンドを実行
+	// xargs with dangerous commands
 	/xargs\s+(?:-[^\s]*\s+)*(rm|sudo|dd|shred)(?:\s+|$)/,
-	// サブシェルでの危険な操作
+	// Dangerous operations in subshells
 	/\$\([^)]*(?:rm -rf|sudo|dd|shred)[^)]*\)/,
-	// バッククォートでの危険な操作
+	// Dangerous operations in backticks
 	/`[^`]*(?:rm -rf|sudo|dd|shred)[^`]*`/,
-	// セミコロンで危険なコマンドをチェーン
+	// Semicolon chaining with dangerous commands
 	/;\s*(?:rm -rf|sudo|dd|shred)\s+/,
-	// && で危険なコマンドをチェーン
+	// && chaining with dangerous commands
 	/&&\s*(?:rm -rf|sudo|dd|shred)\s+/,
-	// || で危険なコマンドをチェーン（エラー時に破壊的操作）
+	// || chaining with dangerous commands (destructive on error)
 	/\|\|\s*(?:rm -rf|sudo|dd|shred)\s+/,
 ];
 
-// 絶対ブロックすべきパターン（システム破壊リスク）
+// Critical patterns (system destruction risk)
 const CRITICAL_PATTERNS = [
 	/rm\s+-[rRf]*\s+\/(?!\S)/, // rm -rf /
 	/rm\s+-[rRf]*\s+~\/+\*\s*$/, // rm -rf ~/* (or ~//* etc.)
@@ -78,7 +78,7 @@ export function validateCommand(command: string): {
 	reason: string;
 	severity?: "prohibited" | "dangerous" | "critical";
 } {
-	// 禁止コマンドは即ブロック
+	// Prohibited commands — immediate block
 	for (const { pattern, reason } of PROHIBITED_COMMANDS) {
 		if (pattern.test(command)) {
 			return {
@@ -89,23 +89,23 @@ export function validateCommand(command: string): {
 		}
 	}
 
-	// Critical パターンは即ブロック
+	// Critical patterns — immediate block
 	for (const pattern of CRITICAL_PATTERNS) {
 		if (pattern.test(command)) {
 			return {
 				isValid: false,
-				reason: `Critical: システム破壊の危険性があるコマンドです: ${command.slice(0, 100)}`,
+				reason: `Critical: potentially destructive system command: ${command.slice(0, 100)}`,
 				severity: "critical",
 			};
 		}
 	}
 
-	// チェーン内の危険パターンは確認を求める
+	// Dangerous chain patterns — ask for confirmation
 	for (const pattern of DANGEROUS_CHAINS) {
 		if (pattern.test(command)) {
 			return {
 				isValid: false,
-				reason: `Dangerous chain: コマンドチェーン内に危険な操作が含まれています: ${command.slice(0, 100)}`,
+				reason: `Dangerous chain: command chain contains destructive operations: ${command.slice(0, 100)}`,
 				severity: "dangerous",
 			};
 		}
