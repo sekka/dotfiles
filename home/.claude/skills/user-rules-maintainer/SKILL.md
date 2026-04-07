@@ -20,13 +20,15 @@ Apply fixes only after user approval.
 ## Flow
 
 ```
-Phases 1-3 are independent and can run in parallel
+Phase 1〜3 は独立しており並列実行可能
 
-Phase 1: Check rule files (CLAUDE.md, rules)
-Phase 2: Check skill descriptions (skills/*/SKILL.md)
-Phase 3: Clean up memory (memory/)
+Phase 1: ルールファイル照合（CLAUDE.md, rules）
+Phase 2: スキル description 照合（skills/*/SKILL.md）
+Phase 3: メモリ整理（memory/）
     ↓
-Output structured report → User approval → Apply fixes
+Phase 4: エスカレーション提案（繰り返し違反の昇格判定）
+    ↓
+構造化レポート出力 → ユーザー承認 → 修正適用
 ```
 
 ## Phase 1: Check Rule Files
@@ -86,6 +88,16 @@ Phases with zero problems are reported in one line: "✅ All items OK".
 3. Apply only approved fixes
 
 **Do not apply fixes without user approval.**
+
+## Phase 4: エスカレーション提案
+
+Phase 1-3 で繰り返し違反パターンを検出した場合、エスカレーションラダー（`.claude/rules/escalation-ladder.md`）に基づいて昇格を提案する。
+
+### チェック観点
+
+1. **memory の feedback 記録** — 同じ違反が複数回記録されていないか
+2. **現在のレベル判定** — 違反パターンが L1（ドキュメント）/ L2（AI検証）/ L3（ツール検証）/ L4（構造的ブロック）のどこにあるか
+3. **昇格提案** — 3回以上の繰り返しがあれば次レベルへの昇格をレポートに含める
 
 ## Out of Scope
 
