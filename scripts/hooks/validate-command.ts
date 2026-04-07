@@ -41,6 +41,11 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 		pattern: /\bgit\s+reset\s+--hard\b/,
 		reason: "git reset --hard は禁止されています。コミットされていない変更が失われます。",
 	},
+	{
+		pattern: /\bgit\s+commit\b[^|;]*--no-verify\b/,
+		reason:
+			"git commit --no-verify は禁止されています。pre-commit hook をバイパスすると品質チェックが迂回されます。hook が失敗する場合は根本原因を修正してください。",
+	},
 ];
 
 // チェーン内で危険な組み合わせパターン
@@ -109,9 +114,9 @@ export function validateCommand(command: string): {
 	return { isValid: true, reason: "" };
 }
 
-function main() {
+async function main() {
 	try {
-		const stdinText = Bun.readFileSync("/dev/stdin", "utf8");
+		const stdinText = await Bun.stdin.text();
 		if (!stdinText) {
 			console.error(
 				JSON.stringify({
