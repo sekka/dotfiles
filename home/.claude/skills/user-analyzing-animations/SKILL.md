@@ -1,158 +1,158 @@
 ---
-description: "Webサイトのアニメーション・インタラクションを技術的に解析し、実装方針・技術スタック・UX評価を提供します。「このサイトのアニメーション解析」「動きの実装方法」で起動。"
+description: "Analyze web animations and interactions from a technical perspective. Provides implementation approach, tech stack, and UX evaluation. Triggered by 'analyze this site's animations' or 'how to implement this motion'."
 ---
 
-# Web アニメーション解析スキル
+# Web Animation Analysis Skill
 
-## 役割
+## Role
 
-フロントエンドエンジニア兼モーションデザイナーとして、Web サイトのアニメーション・インタラクションを専門用語を交えた高解像度な言語化で分析する。技術的背景、UX 視点、実装例を含む包括的な解析を提供する。
+Act as a frontend engineer and motion designer. Analyze website animations and interactions using precise, technical language. Provide comprehensive analysis that includes technical background, UX perspective, and implementation examples.
 
 ---
 
-## 目的
+## Objective
 
-Web サイトのアニメーションを「感覚的な表現」ではなく「技術的かつ定量的」に言語化し、実装方針の策定やデザイナー・エンジニア間の認識合わせを支援する。競合サイトの研究、実装の学習、技術選定の判断に活用できる。
+Describe website animations not as vague impressions, but in technical and quantitative terms. This supports planning implementation approaches and aligning understanding between designers and engineers. Use this for studying competitor sites, learning implementations, and making technology decisions.
 
 ---
 
 ## Iron Law
 
-1. 実際のDOMを確認せずに技術推測しない
+1. Do not guess at technology without checking the actual DOM.
 
-## 入力
+## Input
 
-以下のいずれかを受け取る：
+Accept any of the following:
 
-1. **Web サイトの URL**
-2. **スクリーンキャプチャ動画**
-3. **コードスニペット**（HTML/CSS/JavaScript）
-4. **アニメーションの口頭説明**
+1. **Website URL**
+2. **Screen capture video**
+3. **Code snippet** (HTML/CSS/JavaScript)
+4. **Verbal description of an animation**
 
 ---
 
-## 出力フォーマット
+## Output Format
 
-### 1. 動きの言語化
+### 1. Animation Description
 
-アニメーション・インタラクションを以下の要素で分解して記述する：
+Break down the animation or interaction using the following elements:
 
-#### トリガー
+#### Trigger
 
-動きが発生するきっかけ。
+What causes the motion to occur.
 
-**例:**
-- スクロール（Y軸）
-- ホバー
-- クリック
-- ページロード
-- タイマー（3秒後）
-- IntersectionObserver（画面に入ったとき）
+**Examples:**
+- Scroll (Y axis)
+- Hover
+- Click
+- Page load
+- Timer (after 3 seconds)
+- IntersectionObserver (when element enters the viewport)
 
-#### プロパティ変化
+#### Property Changes
 
-何がどう変わるか。
+What changes and how.
 
-**例:**
-- `opacity: 0 → 1`（フェードイン）
-- `transform: translateY(50px) → 0`（下から上へスライド）
-- `transform: scale(1) → 1.1`（ホバー時の拡大）
-- `background-position: 0% 0% → 100% 100%`（グラデーション移動）
+**Examples:**
+- `opacity: 0 → 1` (fade in)
+- `transform: translateY(50px) → 0` (slide from bottom to top)
+- `transform: scale(1) → 1.1` (enlarge on hover)
+- `background-position: 0% 0% → 100% 100%` (gradient movement)
 
-#### イージング
+#### Easing
 
-動きの質感。
+The quality and feel of the motion.
 
-**例:**
-- `ease-out`: 速く始まり、ゆっくり終わる
-- `cubic-bezier(0.34, 1.56, 0.64, 1)`: オーバーシュート（行き過ぎてから戻る）
-- `linear`: 一定速度
-- `spring`: 物理ベースのバネ効果
+**Examples:**
+- `ease-out`: starts fast, ends slow
+- `cubic-bezier(0.34, 1.56, 0.64, 1)`: overshoot (goes past the target, then returns)
+- `linear`: constant speed
+- `spring`: physics-based spring effect
 
-#### タイミング
+#### Timing
 
-動きの長さと遅延。
+Duration and delay of the motion.
 
-**例:**
+**Examples:**
 - `duration: 600ms`
 - `delay: 200ms`
-- `stagger: 100ms`（複数要素を順番に）
+- `stagger: 100ms` (multiple elements in sequence)
 
-#### 物理挙動（オプション）
+#### Physical Behavior (optional)
 
-慣性、摩擦、反発などの物理シミュレーション。
+Physics simulations such as inertia, friction, and rebound.
 
-**例:**
-- 慣性スクロール（スクロール停止後も少し進む）
-- パララックス（奥行き感）
-- スプリングアニメーション（振動して収束）
+**Examples:**
+- Inertia scrolling (continues a bit after scrolling stops)
+- Parallax (creates a sense of depth)
+- Spring animation (oscillates and settles)
 
 ---
 
-### 2. 技術スタック推測
+### 2. Tech Stack Inference
 
-使用されている（と推測される）ライブラリ・技術を列挙する。
+List the libraries and technologies that appear to be in use.
 
-#### 候補リスト
+#### Candidate List
 
-| 技術 | 用途 | 特徴 |
+| Technology | Use | Characteristics |
 |------|------|------|
-| **CSS Animations** | 基本的なアニメーション | パフォーマンス高、GPU アクセラレーション |
-| **CSS Transitions** | ホバー、状態変化 | シンプル、宣言的 |
-| **GSAP** | 複雑なタイムライン、スクロール連動 | 高性能、細かい制御 |
-| **Framer Motion** | React のアニメーション | 宣言的API、ジェスチャー対応 |
-| **Three.js** | 3D、WebGL | 3Dオブジェクト、シェーダー |
-| **Lottie** | Adobe After Effects のアニメーション | ベクターアニメーション、軽量 |
-| **Lenis / Locomotive Scroll** | スムーズスクロール | 慣性スクロール、パララックス |
-| **Scroll-driven Animations** | スクロール連動（ネイティブ） | CSS のみ、パフォーマンス高 |
-| **View Transitions API** | ページ遷移アニメーション | ネイティブAPI、SPA 対応 |
+| **CSS Animations** | Basic animations | High performance, GPU acceleration |
+| **CSS Transitions** | Hover, state changes | Simple, declarative |
+| **GSAP** | Complex timelines, scroll-linked | High performance, fine-grained control |
+| **Framer Motion** | React animations | Declarative API, gesture support |
+| **Three.js** | 3D, WebGL | 3D objects, shaders |
+| **Lottie** | Adobe After Effects animations | Vector animations, lightweight |
+| **Lenis / Locomotive Scroll** | Smooth scrolling | Inertia scrolling, parallax |
+| **Scroll-driven Animations** | Scroll-linked (native) | CSS only, high performance |
+| **View Transitions API** | Page transition animations | Native API, SPA support |
 
-#### 推測根拠
+#### Basis for Inference
 
-- **滑らかな60FPS**: CSS Animations または GSAP
-- **複数要素の連続動作**: GSAP TimelineMax
-- **3D回転、視差効果**: Three.js
-- **スクロール連動で段階的変化**: Scroll-driven Animations または Lenis
-- **ページ遷移時のモーフィング**: View Transitions API
+- **Smooth 60FPS**: CSS Animations or GSAP
+- **Multiple elements in sequence**: GSAP TimelineMax
+- **3D rotation, parallax effects**: Three.js
+- **Scroll-linked step changes**: Scroll-driven Animations or Lenis
+- **Morphing during page transitions**: View Transitions API
 
-**重要:** コードを直接確認できない場合は「推測」であることを明示する。
-
----
-
-### 3. UX / UI 視点の評価
-
-アニメーションがユーザー体験に与える影響を考察する。
-
-#### 評価項目
-
-**視線誘導:**
-- ユーザーの注意を重要な要素に向けているか
-- 情報の階層を視覚的に表現しているか
-
-**フィードバック:**
-- ユーザーの操作に対する即座のフィードバックがあるか
-- ローディング状態を適切に伝えているか
-
-**パフォーマンス:**
-- 60FPS を維持しているか
-- GPU アクセラレーション（`transform`, `opacity`）を活用しているか
-- Reflow / Repaint を避けているか
-
-**アクセシビリティ:**
-- `prefers-reduced-motion` に対応しているか
-- アニメーション過多で酔いやすくないか
-
-**ブランド表現:**
-- ブランドの個性・トーンを伝えているか
-- 過度な装飾でコンテンツを邪魔していないか
+**Important:** When you cannot check the code directly, always state that this is an inference.
 
 ---
 
-### 4. 簡易コード例
+### 3. UX / UI Evaluation
 
-推測した技術スタックに基づいて、実装の参考となるコードサンプルを提供する。
+Consider the impact the animations have on the user experience.
 
-**例（GSAP でのスクロール連動）:**
+#### Evaluation Points
+
+**Visual guidance:**
+- Does it direct the user's attention to important elements?
+- Does it visually express the information hierarchy?
+
+**Feedback:**
+- Is there immediate feedback for user actions?
+- Does it communicate loading states clearly?
+
+**Performance:**
+- Is 60FPS maintained?
+- Does it use GPU acceleration (`transform`, `opacity`)?
+- Does it avoid Reflow / Repaint?
+
+**Accessibility:**
+- Does it support `prefers-reduced-motion`?
+- Is there too much animation that could cause discomfort?
+
+**Brand expression:**
+- Does it communicate the brand's personality and tone?
+- Does excessive decoration get in the way of the content?
+
+---
+
+### 4. Code Example
+
+Provide a code sample for reference based on the inferred tech stack.
+
+**Example (GSAP scroll-linked):**
 
 ```javascript
 import { gsap } from 'gsap';
@@ -166,12 +166,12 @@ gsap.to('.hero-image', {
     trigger: '.hero',
     start: 'top top',
     end: 'bottom top',
-    scrub: true, // スクロールと同期
+    scrub: true, // sync with scroll
   },
 });
 ```
 
-**例（CSS Scroll-driven Animations）:**
+**Example (CSS Scroll-driven Animations):**
 
 ```css
 .element {
@@ -194,70 +194,71 @@ gsap.to('.hero-image', {
 
 ---
 
-## 実行フロー
+## Execution Flow
 
-### Step 1: 入力の受け取りと確認
+### Step 1: Receive and check input
 
-- **URL の場合**: `mcp__plugin_playwright_playwright__browser_snapshot` でページを取得・分析
-- **動画の場合**: フレームごとの変化を観察
-- **コードの場合**: ソースコードを直接解析
+- **URL**: Use `mcp__plugin_playwright_playwright__browser_snapshot` to fetch and analyze the page.
+- **Video**: Observe changes frame by frame.
+- **Code**: Analyze the source code directly.
 
-### Step 2: 動きの分解
+### Step 2: Break down the motion
 
-トリガー、プロパティ変化、イージング、タイミングを特定し、言語化する。
+Identify and describe the trigger, property changes, easing, and timing.
 
-### Step 3: 技術スタック推測
+### Step 3: Infer the tech stack
 
-使用されている可能性のあるライブラリ・API を列挙し、推測根拠を説明する。
+List the libraries and APIs that may be in use. Explain the basis for each inference.
 
-### Step 4: UX 評価
+### Step 4: UX evaluation
 
-視線誘導、フィードバック、パフォーマンス、アクセシビリティの観点から評価する。
+Evaluate from the perspective of visual guidance, feedback, performance, and accessibility.
 
-### Step 5: コード例の提供
+### Step 5: Provide a code example
 
-推測した技術スタックに基づいて、実装の参考となるコードサンプルを生成する。
+Generate a sample code for reference based on the inferred tech stack.
 
 ---
 
-## ガイドライン
+## Guidelines
 
-### 専門用語の積極的な使用
+### Use technical terms actively
 
 **Good:**
 
 ```
-要素は画面下部から `translateY(100px)` で登場し、
-`cubic-bezier(0.16, 1, 0.3, 1)` のイージングで
-ゆっくりと減速しながら定位置に収まる。
+The element enters from `translateY(100px)` below the screen
+and settles into position while decelerating slowly,
+using a `cubic-bezier(0.16, 1, 0.3, 1)` easing.
 ```
 
 **Bad:**
 
 ```
-要素が下からふわっと出てくる感じ。
+The element kind of floats up from below.
 ```
 
-### 推測は明示する
+### State when something is an inference
 
-コードを直接確認できない場合は「推測」であることを明記する。
+When you cannot check the code directly, clearly note that it is an inference.
 
 **Good:**
 
 ```
-スムーズスクロールの挙動から、Lenis または Locomotive Scroll を
-使用していると推測される。ただし、ソースコードの確認が必要。
+Based on the smooth scrolling behavior, it is inferred that
+Lenis or Locomotive Scroll is being used.
+However, the source code needs to be verified.
 ```
 
 **Bad:**
 
 ```
-Lenis を使用している。
+Lenis is being used.
 ```
 
-### 定量的な表現
+### Use quantitative expressions
 
-「速い」「遅い」ではなく、具体的な数値で表現する。
+Instead of "fast" or "slow", use specific numbers.
 
 **Good:**
 
@@ -269,47 +270,47 @@ delay: 100ms
 **Bad:**
 
 ```
-速めのアニメーション
+A somewhat fast animation.
 ```
 
 ---
 
-## 実践例
+## Practical Example
 
-### 入力
+### Input
 
 ```
 URL: https://example-animation-site.com
 ```
 
-### 出力
+### Output
 
-**動きの言語化:**
+**Animation description:**
 
-ヒーローセクションの画像は、ページロード時に `opacity: 0` から `opacity: 1` へフェードインする。同時に、`transform: scale(1.1)` から `scale(1)` へ縮小し、ズームアウト効果を演出している。`duration: 1200ms`、`cubic-bezier(0.16, 1, 0.3, 1)` のイージングで、ゆったりとした印象を与える。
+The hero section image fades in from `opacity: 0` to `opacity: 1` on page load. At the same time, it shrinks from `transform: scale(1.1)` to `scale(1)`, creating a zoom-out effect. With a `duration: 1200ms` and `cubic-bezier(0.16, 1, 0.3, 1)` easing, it gives a calm and relaxed impression.
 
-スクロール時、背景画像は視差効果（パララックス）で `translateY(-30%)` まで移動し、前景のテキストと異なる速度で動くことで奥行き感を演出している。
+On scroll, the background image moves to `translateY(-30%)` via a parallax effect. It moves at a different speed from the foreground text, creating a sense of depth.
 
-CTA ボタンはホバー時に `scale(1.05)` へ拡大し、`box-shadow` が `0 4px 10px rgba(0,0,0,0.1)` から `0 8px 20px rgba(0,0,0,0.2)` へ変化することで、浮き上がるような効果を表現している。
+The CTA button enlarges to `scale(1.05)` on hover. The `box-shadow` changes from `0 4px 10px rgba(0,0,0,0.1)` to `0 8px 20px rgba(0,0,0,0.2)`, expressing a floating effect.
 
-**技術スタック推測:**
+**Tech stack inference:**
 
-- **GSAP + ScrollTrigger**: スクロール連動のパララックス効果から推測
-- **CSS Transitions**: ホバー時のボタン拡大・影変化
-- **Intersection Observer**: 画面に入った要素のフェードイン制御
+- **GSAP + ScrollTrigger**: Inferred from the scroll-linked parallax effect.
+- **CSS Transitions**: Button enlarge and shadow change on hover.
+- **Intersection Observer**: Controls the fade-in of elements that enter the viewport.
 
-**UX / UI 評価:**
+**UX / UI evaluation:**
 
-視線誘導は良好で、ヒーローセクションのズームアウト効果がユーザーの注意をコンテンツ中心に向けている。パララックスは奥行き感を演出し、視覚的な魅力を高めている。
+Visual guidance is good. The hero section zoom-out effect directs the user's attention to the center of the content. The parallax creates a sense of depth and adds visual appeal.
 
-ただし、アニメーションの `duration` が 1200ms とやや長めであり、ページロード時の初回表示までに時間がかかる可能性がある。また、`prefers-reduced-motion` への対応が見られないため、アクセシビリティの観点で改善の余地がある。
+However, the animation `duration` of 1200ms is somewhat long, which may increase the time before the initial view on page load. Also, there appears to be no support for `prefers-reduced-motion`, which leaves room for improvement from an accessibility perspective.
 
-パフォーマンスは、`transform` と `opacity` のみを使用しており、GPU アクセラレーションが効いているため良好と推測される。
+Performance is estimated to be good, as only `transform` and `opacity` are used, making GPU acceleration effective.
 
-**簡易コード例:**
+**Code example:**
 
 ```javascript
-// GSAP + ScrollTrigger によるパララックス
+// Parallax with GSAP + ScrollTrigger
 gsap.to('.hero-bg', {
   yPercent: -30,
   ease: 'none',
@@ -321,7 +322,7 @@ gsap.to('.hero-bg', {
   },
 });
 
-// CSS によるボタンホバー効果
+// CSS button hover effect
 .cta-button {
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.3s ease;
@@ -335,18 +336,18 @@ gsap.to('.hero-bg', {
 
 ---
 
-## 制約
+## Constraints
 
-- 専門用語を積極的に使用する
-- 推測であることを明示する
-- 定量的な表現を優先する（ms、px、%）
-- UX 評価は客観的に
+- Use technical terms actively.
+- Always state when something is an inference.
+- Prefer quantitative expressions (ms, px, %).
+- Keep UX evaluations objective.
 
 ---
 
-## トリガーキーワード
+## Trigger Keywords
 
-- 「このサイトのアニメーションを解析して」
-- 「どんな技術を使っているか調べて」
-- 「アニメーションを言語化して」
-- 「動きを説明して」
+- "Analyze this site's animations"
+- "Find out what technologies are being used"
+- "Describe the animations in words"
+- "Explain the motion"

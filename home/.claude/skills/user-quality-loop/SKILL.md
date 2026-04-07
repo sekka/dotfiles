@@ -1,90 +1,90 @@
 ---
 name: user-quality-loop
-description: format・lint・typecheckを自動ループで通す品質チェック。「品質ループ」「lint通して」「フォーマット＆チェック」「コード整形」で起動。
+description: Run format, lint, and typecheck in an automatic loop. Triggered by "quality loop", "run lint", "format and check", or "format code".
 allowed-tools: Bash, Read, Edit, Glob
 ---
 
 # Quality Loop
 
-format → lint → typecheck を自動で実行し、失敗時は修正して再実行するループ。
+Automatically runs format → lint → typecheck. If a step fails, it fixes the issue and reruns.
 
 ## Iron Law
 
-1. 自動修正で既存ロジックを変更しない
+1. Do not change existing logic with auto-fixes
 
-## フロー
+## Flow
 
 ```
-コマンド検出 → 実行 → 全パス？ → Yes → 完了報告
-                         ↓ No
-                    自動修正 → 再実行（最大3回）
-                         ↓ 同じエラー2回連続
-                    打ち切り → 問題報告
+Detect commands → Run → All pass? → Yes → Report done
+                           ↓ No
+                      Auto-fix → Rerun (max 3 times)
+                           ↓ Same error 2 times in a row
+                      Stop → Report problems
 ```
 
-## Phase 1: コマンド検出
+## Phase 1: Detect Commands
 
-プロジェクトルートから利用可能な品質チェックコマンドを特定する。
+Find available quality check commands from the project root.
 
-### 検出順序
-1. `mise.toml` — `[tasks]` セクションから lint/format/check 系タスクを探す
-2. `package.json` — `scripts` から lint/format/typecheck 系を探す
-3. `Makefile` — lint/format/check ターゲットを探す
-4. 直接コマンド — dprint, oxlint, eslint, prettier, shfmt, shellcheck, tsc, pyright
+### Detection Order
+1. `mise.toml` — Look for lint/format/check tasks in the `[tasks]` section
+2. `package.json` — Look for lint/format/typecheck scripts
+3. `Makefile` — Look for lint/format/check targets
+4. Direct commands — dprint, oxlint, eslint, prettier, shfmt, shellcheck, tsc, pyright
 
-### よくあるパターン
-| プロジェクト | コマンド |
+### Common Patterns
+| Project | Command |
 |-------------|---------|
-| このdotfilesリポジトリ | `bun scripts/development/lint-format.ts` |
-| Node.js プロジェクト | `npm run lint && npm run format` |
-| mise管理プロジェクト | `mise run lint`, `mise run format` |
+| This dotfiles repository | `bun scripts/development/lint-format.ts` |
+| Node.js project | `npm run lint && npm run format` |
+| mise-managed project | `mise run lint`, `mise run format` |
 
-## Phase 2: 実行
+## Phase 2: Run
 
-以下の順序で実行する（存在するもののみ）:
+Run in this order (only what exists):
 
-1. **Formatter**（dprint, prettier, shfmt 等）— 自動修正モードで実行
-2. **Linter**（oxlint, eslint, shellcheck 等）— --fix オプション付きで実行
-3. **Type Checker**（tsc, pyright 等）— チェックのみ
+1. **Formatter** (dprint, prettier, shfmt, etc.) — Run in auto-fix mode
+2. **Linter** (oxlint, eslint, shellcheck, etc.) — Run with `--fix` option
+3. **Type Checker** (tsc, pyright, etc.) — Check only
 
-各ステップの結果（成功/失敗、エラー数）を記録する。
+Record the result of each step (pass/fail, error count).
 
-## Phase 3: リトライループ
+## Phase 3: Retry Loop
 
-### ループ条件
-- **最大3回**まで再実行（無限ループ防止）
-- **同じエラーが2回連続**で出たら即打ち切り（自動修正不可と判断）
+### Loop Conditions
+- Rerun up to **3 times** (to prevent infinite loops)
+- Stop immediately if the **same error appears 2 times in a row** (auto-fix not possible)
 
-### 各ループで行うこと
-1. エラー内容を解析
-2. 自動修正可能 → Edit ツールで修正 → Phase 2 を再実行
-3. 自動修正不可 → ループを打ち切り、Phase 4 で未解決として報告
-4. 全パス or 上限到達まで繰り返す
+### What to do in each loop
+1. Analyze the error content
+2. Auto-fixable → Fix with the Edit tool → Rerun Phase 2
+3. Cannot auto-fix → Stop the loop, report as unresolved in Phase 4
+4. Repeat until all pass or the limit is reached
 
-### 自動修正の対象
-- import順序の修正
-- 未使用変数の削除
-- フォーマットの適用（formatter再実行）
-- 簡単な型エラー（明らかな修正のみ）
+### What to auto-fix
+- Fix import order
+- Remove unused variables
+- Apply formatting (rerun formatter)
+- Simple type errors (only obvious fixes)
 
-### 自動修正しないもの
-- ロジックの変更が必要なエラー
-- 設計判断が必要な型エラー
-- セキュリティ関連の警告
+### What NOT to auto-fix
+- Errors that require logic changes
+- Type errors that require design decisions
+- Security-related warnings
 
-## Phase 4: 報告
+## Phase 4: Report
 
 ```markdown
-## 品質チェック結果
+## Quality Check Results
 
-- **実行回数:** N回（初回 + リトライM回）
-- **Formatter:** PASS / FAIL（詳細）
-- **Linter:** PASS / FAIL（残N件）
+- **Runs:** N times (initial + M retries)
+- **Formatter:** PASS / FAIL (details)
+- **Linter:** PASS / FAIL (N remaining)
 - **Type Check:** PASS / FAIL / SKIP
 
-### 自動修正した項目
-- [ファイル:行] 修正内容
+### Auto-fixed Items
+- [file:line] what was fixed
 
-### 未解決の問題（手動対応が必要）
-- [ファイル:行] エラー内容
+### Unresolved Issues (manual action needed)
+- [file:line] error description
 ```

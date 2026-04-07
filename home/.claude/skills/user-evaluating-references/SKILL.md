@@ -1,156 +1,156 @@
 ---
 name: user-evaluating-references
-description: URL/記事/ツール/投稿の参考評価と採用判断。URLが共有され「参考になりますか」「取り入れたい」「導入したい」「調査して」「興味あり」等のキーワードで起動。
+description: Evaluate a URL, article, tool, or post as a reference and decide whether to adopt it. Triggered when a URL is shared with phrases like "is this useful", "I want to use this", "investigate this", or "I'm interested".
 disable-model-invocation: false
 ---
 
 <objective>
-URL/記事/ツール/投稿の参考価値を評価し、現環境への採用可否を判断する。
-Quick評価（軽い参考判定）とDeep調査（採用に向けた詳細分析）の2モードを提供。
+Evaluate the reference value of a URL, article, tool, or post. Decide whether to adopt it for the current environment.
+Two modes: Quick Evaluation (light reference check) and Deep Research (detailed analysis for adoption).
 </objective>
 
 <quick_start>
-**Quick評価**: URLを共有して「参考になりますか？」
-**Deep調査**: URLを共有して「取り入れたい」「導入したい」「調査して」
+**Quick Evaluation**: Share a URL and ask "Is this useful?"
+**Deep Research**: Share a URL and say "I want to use this", "I want to adopt this", or "Research this"
 
-**トリガーフレーズ一覧:**
+**Trigger phrases:**
 
-| モード | トリガーフレーズ |
+| Mode | Trigger phrases |
 |--------|----------------|
-| Quick評価 | 「参考になりますか」「参考になる？」「どう思いますか」「使えそうですか」「評価して」 |
-| Deep調査 | 「取り入れたい」「導入したい」「調査して」「興味あり」「実装可能か確認して」 |
-| 自動判定 | URL + 短い質問 → Quick / URL + 詳細な背景説明 → Deep |
+| Quick Evaluation | "Is this useful?", "Is this a good reference?", "What do you think?", "Can I use this?", "Evaluate this" |
+| Deep Research | "I want to use this", "I want to adopt this", "Research this", "I'm interested", "Check if this is implementable" |
+| Auto detection | URL + short question → Quick / URL + detailed background → Deep |
 </quick_start>
 
 ## Iron Law
 
-1. 記事の内容を読まずに評価しない
-2. 現環境を確認せずに採用推奨しない
+1. Do not evaluate without reading the article content
+2. Do not recommend adoption without checking the current environment
 
 <workflow>
 
-## コンテンツ取得フロー（両モード共通）
+## Content Retrieval Flow (Common to Both Modes)
 
 ```
-1. WebFetch試行 → 200 OK → 完了
-2. WebFetch失敗（403/429/空レスポンス） → chrome MCP（claude-in-chrome / chrome-devtools）で取得
-3. 全て失敗 → 失敗理由をユーザーに報告して終了
+1. Try WebFetch → 200 OK → done
+2. WebFetch fails (403/429/empty response) → get with chrome MCP (claude-in-chrome / chrome-devtools)
+3. All fail → report failure reason to user and stop
 ```
 
-**Quick評価時**: WebFetch のみ試行（高速優先）、失敗時のみ chrome MCP へフォールバック
-**Deep調査時**: 全スキーム試行可
+**Quick Evaluation**: Try WebFetch only (speed first). Fall back to chrome MCP only on failure.
+**Deep Research**: Try all schemes.
 
 ---
 
-## 他スキルへのルーティング（コンテンツ取得後に判定）
+## Routing to Other Skills (Decide After Getting Content)
 
-| コンテンツ種別 | ルーティング先 | 判定方法 |
+| Content type | Route to | How to decide |
 |--------------|--------------|---------|
-| CSS/JS/HTML/パフォーマンス/アクセシビリティの技術記事 | managing-frontend-knowledge | コンテンツ内のキーワードで判定 |
-| デザイン事例・アワード・クリエイティブ作品 | researching-creative-cases | コンテンツ内のキーワードで判定 |
-| 「このサイトの構造を分析して」等の明示的リクエスト | analyzing-websites | ユーザー発言から判定 |
+| Technical articles on CSS/JS/HTML/performance/accessibility | managing-frontend-knowledge | Detect by keywords in content |
+| Design examples, awards, creative works | researching-creative-cases | Detect by keywords in content |
+| Explicit request like "analyze the structure of this site" | analyzing-websites | Detect from user message |
 
-→ 該当する場合は Skill ツールで対象スキルを起動し、evaluating-references はここで終了。
+→ If applicable, launch the target skill using the Skill tool, then end evaluating-references here.
 
 ---
 
-## Mode 1: Quick評価
+## Mode 1: Quick Evaluation
 
-**フロー:**
-1. ルーティング判定（上記テーブル参照）
-2. 3行以内の要約
-3. 5段階スケールで評価
-4. 構造化カード形式で出力
+**Flow:**
+1. Routing check (see table above)
+2. Summary in 3 lines or less
+3. Evaluate on a 5-point scale
+4. Output in structured card format
 
-**5段階スケール:**
+**5-point scale:**
 
-| スコア | 意味 |
+| Score | Meaning |
 |--------|------|
-| ⭐⭐⭐⭐⭐ | 即座に導入可能、直接的な価値あり |
-| ⭐⭐⭐⭐ | 高い参考価値、採用検討に値する |
-| ⭐⭐⭐ | 背景知識として有用 |
-| ⭐⭐ | 現環境との関連が薄い |
-| ⭐ | スコープ外 |
+| ⭐⭐⭐⭐⭐ | Can adopt immediately. Direct value. |
+| ⭐⭐⭐⭐ | High reference value. Worth considering for adoption. |
+| ⭐⭐⭐ | Useful as background knowledge |
+| ⭐⭐ | Low relevance to current environment |
+| ⭐ | Out of scope |
 
-**評価軸:**
-- **関連度**: 自分の現在の作業・環境にどれだけ関係するか（LLMの会話コンテキストと一般知識で判断）
-- **新規性**: すでに知っている/導入済みの内容か
-- **実装コスト**: 採用するならどの程度の手間か（低/中/高）
+**Evaluation dimensions:**
+- **Relevance**: How much does it relate to current work and environment? (Judge based on LLM conversation context and general knowledge)
+- **Novelty**: Is this content already known or already adopted?
+- **Implementation cost**: How much effort to adopt? (low / medium / high)
 
-**Quick評価の判定ベース:** LLMの一般知識 + 会話コンテキスト（深いファイル探索はしない）
+**Basis for Quick Evaluation:** LLM general knowledge + conversation context (no deep file search)
 
-**出力フォーマット（構造化カード形式）:**
+**Output format (structured card):**
 
 ```markdown
-## 参考評価: [記事タイトル/ツール名]
+## Reference Evaluation: [Article title / Tool name]
 
-| 項目 | 評価 |
+| Item | Rating |
 |------|------|
-| 関連度 | ⭐⭐⭐⭐ |
-| 新規性 | ⭐⭐⭐ |
-| 実装コスト | 低 |
+| Relevance | ⭐⭐⭐⭐ |
+| Novelty | ⭐⭐⭐ |
+| Implementation cost | low |
 
-**要約:** [3行以内]
+**Summary:** [3 lines or less]
 
-**推奨アクション:** [採用して○○に活用 / managing-frontend-knowledgeに格納推奨 / 参考程度 / スコープ外]
+**Recommended action:** [Adopt and use for ○○ / Recommend storing in managing-frontend-knowledge / For reference only / Out of scope]
 ```
 
 ---
 
-## Mode 2: Deep調査
+## Mode 2: Deep Research
 
-**フロー:**
-1. 詳細分析
-2. 既存環境の確認（優先順位順）
-3. 採用推奨 + 実装プラン（採用時）の出力
+**Flow:**
+1. Detailed analysis
+2. Check existing environment (in priority order)
+3. Output adoption recommendation + implementation plan (if adopting)
 
-**既存環境の確認対象（優先順位順）:**
-1. `CLAUDE.md`, `.claude/rules/*` — 設定・方針との競合確認
-2. `Brewfile` — ツール既導入確認
-3. `home/.claude/skills/` — 関連スキル確認
-4. 現在の作業コンテキスト — スコープ確認
+**Existing environment check targets (in priority order):**
+1. `CLAUDE.md`, `.claude/rules/*` — Check for conflicts with settings and policies
+2. `Brewfile` — Check if the tool is already installed
+3. `home/.claude/skills/` — Check related skills
+4. Current work context — Check scope
 
-**スコープ制限:** 実装プランは概要レベル。詳細な実装は Planモード（superpowers:writing-plans）に委譲。
+**Scope limit:** Implementation plan is at overview level only. Delegate detailed implementation to Plan mode (superpowers:writing-plans).
 
-**出力フォーマット:**
+**Output format:**
 
 ```markdown
-## 調査結果: [ツール名/手法名]
+## Research Results: [Tool name / Method name]
 
-### 概要
-[詳細な説明]
+### Overview
+[Detailed description]
 
-### 既存環境との比較
-| 項目 | 現在 | 提案 |
+### Comparison with Existing Environment
+| Item | Current | Proposed |
 |------|------|------|
 | ... | ... | ... |
 
-### 実装プラン（採用時）
-[ステップバイステップの概要レベルの導入手順]
+### Implementation Plan (if adopting)
+[Step-by-step overview-level adoption procedure]
 
-### 推奨: [採用 / 不採用]
-[根拠]
+### Recommendation: [Adopt / Do not adopt]
+[Rationale]
 ```
 
 ---
 
-## スキル境界の明確化
+## Skill Boundaries
 
 **evaluating-references vs researching-creative-cases:**
-- evaluating-references: ユーザーが能動的に共有した**個別のURL**を自分の環境に照らして評価
-- researching-creative-cases: システムが能動的に**複数のアワードサイト**をスクレイピングして事例を収集・キュレーション
+- evaluating-references: Evaluate a **single URL** actively shared by the user, against the user's own environment
+- researching-creative-cases: The system actively scrapes **multiple award sites** to collect and curate examples
 
 **evaluating-references vs analyzing-websites:**
-- evaluating-references: 「参考になるか？」という価値判断
-- analyzing-websites: 「構造を分析して」「サイトマップを作って」という構造解析タスク
+- evaluating-references: Value judgment — "Is this useful?"
+- analyzing-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
 
 </workflow>
 
 <success_criteria>
-**Quick評価:** 構造化カード形式（表 + 要約 + 推奨アクション）を返却
+**Quick Evaluation:** Return structured card format (table + summary + recommended action)
 
-**Deep調査:**
-- 採用/不採用の推奨 + 根拠を明示
-- 採用時は概要レベルの実装プランを添付
-- 既存環境（CLAUDE.md, Brewfile, skills/）との比較を含む
+**Deep Research:**
+- State adoption/rejection recommendation with rationale
+- Attach an overview-level implementation plan when adopting
+- Include comparison with existing environment (CLAUDE.md, Brewfile, skills/)
 </success_criteria>

@@ -1,824 +1,822 @@
 ---
 name: user-researching-creative-cases
-description: アワードやトレンドから日本の最新クリエイティブ事例（Web、広告、プロダクト、MV・映像、LP、タイポグラフィ、パッケージ、空間、UI/UX、展示会等）を調査し、厳選されたMarkdownレポートを生成します。隣接分野の提案機能付き。チームのインスピレーション、クライアント提案、デザイントレンド分析に活用できます。
+description: Research the latest Japanese creative work (web, ads, products, music videos, landing pages, typography, packaging, spaces, UI/UX, exhibitions, etc.) from awards and trends. Generates a curated Markdown report. Suggests related fields. Useful for team inspiration, client proposals, and design trend analysis.
 disable-model-invocation: false
 ---
 
 <objective>
-国内外の主要アワードサイト（Awwwards、Red Dot、D&AD、ADC、Cannes Lions、文化庁メディア芸術祭等）や専門ギャラリー（SANKOU!、MUUUUU.ORG、VIMEO Staff Picks等）から、日本の最新クリエイティブ事例を自動調査・文書化します。対象分野：Webデザイン、広告キャンペーン、プロダクトデザイン、MV・映像制作、LP、タイポグラフィ、パッケージ、空間デザイン、UI/UX、モーショングラフィックス、展示会、インスタレーション等。注目制作会社の実績を優先的にカバーし、ユーザーの興味に応じて隣接分野を提案します。受賞情報、制作会社/ディレクター、技術・手法、トレンド分析を含む構造化Markdownレポートを生成し、チームのインスピレーションやクライアント提案に活用できます。
+Automatically research and document the latest Japanese creative work from major domestic and international award sites (Awwwards, Red Dot, D&AD, ADC, Cannes Lions, Japan Media Arts Festival, etc.) and specialized galleries (SANKOU!, MUUUUU.ORG, VIMEO Staff Picks, etc.). Fields covered: web design, advertising campaigns, product design, music videos and video production, landing pages, typography, packaging, spatial design, UI/UX, motion graphics, exhibitions, installations, and more. Prioritizes work from featured production companies and suggests adjacent fields based on user interests. Generates a structured Markdown report that includes award information, production company/director, techniques and methods, and trend analysis. Useful for team inspiration and client proposals.
 </objective>
 
 <quick_start>
-**基本的な実行方法:**
+**Basic usage:**
 ```
 /researching-creative-cases
 ```
-直近2ヶ月から20件の事例を収集し、`creative-cases/YYYYMMDD-web-creative-cases-YYYYMM-YYYYMM.md`に保存します
+Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-web-creative-cases-YYYYMM-YYYYMM.md`
 
-**開始前に確認する項目:**
-1. 対象分野（Web、広告、MV・映像、プロダクト、UI/UX、タイポグラフィ、パッケージ、空間、LP等）
-2. 隣接分野も調査するか（推奨：選択分野に関連するジャンルを自動提案）
-3. 対象期間（直近1週間〜6ヶ月）
-4. 収集件数（10〜30件）
-5. 目的（インスピレーション、クライアント提案、トレンド分析、競合調査）
+**Items to confirm before starting:**
+1. Target field (Web, advertising, MV/video, product, UI/UX, typography, packaging, spatial, LP, etc.)
+2. Whether to also research adjacent fields (recommended: automatically suggest genres related to the selected field)
+3. Target period (last 1 week to 6 months)
+4. Number of cases to collect (10-30)
+5. Purpose (inspiration, client proposal, trend analysis, competitive research)
 
-**スキルが自動的に実行すること:**
-- 複数のアワードサイト（Awwwards、Red Dot、D&AD、ADC、Cannes Lions、文化庁メディア芸術祭、MVA、Webグランプリ、JAGDA、Tokyo TDC、JPDA）を横断してWebSearchを並列実行
-- 専門ギャラリー・メディア（SANKOU!、MUUUUU.ORG、VIMEO Staff Picks、AXIS、Advertising TIMES、宣伝会議、SpaceDesign）やトレンド記事を検索
-- 注目制作会社（featured-companies.md記載の16社）の最新実績を優先的に検索
-- ユーザーの選択分野に基づいて隣接分野を自動提案（例：Web選択時→MV・映像、UI/UX、モーショングラフィックスを提案）
-- URLを検証し、各事例の詳細情報（制作手法、技術、素材、コンセプト、ディレクター等）を抽出
-- 目次、分野別カテゴリ内訳、トレンド分析を含むMarkdownファイルを生成
+**What the skill does automatically:**
+- Runs parallel WebSearch across multiple award sites (Awwwards, Red Dot, D&AD, ADC, Cannes Lions, Japan Media Arts Festival, MVA, Web Grand Prix, JAGDA, Tokyo TDC, JPDA)
+- Searches specialized galleries and media (SANKOU!, MUUUUU.ORG, VIMEO Staff Picks, AXIS, Advertising TIMES, Sendenkaigi, SpaceDesign) and trend articles
+- Prioritizes searching for the latest work from featured production companies (16 companies listed in featured-companies.md)
+- Automatically suggests adjacent fields based on the user's selected field (e.g., when Web is selected → suggest MV/video, UI/UX, motion graphics)
+- Verifies URLs and extracts detailed information for each case (production methods, technology, materials, concept, director, etc.)
+- Generates a Markdown file including a table of contents, field-by-field category breakdown, and trend analysis
 </quick_start>
 
 ## Iron Law
 
-1. アクセスできないサイトの情報を推測で補完しない
+1. Do not fill in information about inaccessible sites with guesswork.
 
 <success_criteria>
-**完全性:**
-- 目標件数の事例を収集（デフォルト: 20件）
-- 各事例に含まれる情報: URL/参照先、受賞情報、制作会社/クリエイター/ディレクター、技術・手法・素材、評価ポイント
-- 注目制作会社（featured-companies.md記載）の実績を複数件含む
-- 隣接分野を有効にした場合、提案された関連ジャンルの事例も含む
-- Markdownファイルに含まれる情報: 対象期間、分野別カテゴリ内訳、業種別内訳、注目制作会社の実績件数、目次、分野横断トレンド分析（10以上のトレンド）、隣接分野の発見セクション、参考リンク
+**Completeness:**
+- Collect the target number of cases (default: 20)
+- Each case includes: URL/reference, award information, production company/creator/director, techniques/methods/materials, evaluation points
+- Includes multiple works from featured production companies (listed in featured-companies.md)
+- When adjacent fields are enabled, includes cases from the suggested related genres
+- The Markdown file includes: target period, field-by-field category breakdown, industry-by-industry breakdown, featured production company work count, table of contents, cross-field trend analysis (10 or more trends), adjacent field discoveries section, reference links
 
-**品質:**
-- 全URL/参照先が検証済みで機能している（またはアーカイブリンクを提供）
-- 受賞日・開催日が正確
-- 制作会社名/クリエイター名/ディレクター名が正式な表記
-- 技術・手法・素材が実際の制作内容と一致
-- 分野固有の専門情報が適切に記載（MVなら尺・撮影手法、プロダクトなら素材、空間なら面積等）
-- 隣接分野の関連性が論理的に説明されている
-- ファイル名形式: `YYYYMMDD-creative-cases-YYYYMM-YYYYMM.md`（分野指定時: `YYYYMMDD-[分野]-cases-YYYYMM-YYYYMM.md`）
-- ファイルサイズ: 20件で500行以上（隣接分野含む場合はより多い）
+**Quality:**
+- All URLs/references are verified and working (or provide archive links)
+- Award dates and event dates are accurate
+- Production company names/creator names/director names are in official notation
+- Techniques/methods/materials match the actual production content
+- Field-specific expert information is included where appropriate (MV: length and shooting method, product: materials, spatial: area in sqm, etc.)
+- The relevance of adjacent fields is explained logically
+- File name format: `YYYYMMDD-creative-cases-YYYYMM-YYYYMM.md` (with field specified: `YYYYMMDD-[field]-cases-YYYYMM-YYYYMM.md`)
+- File size: 500+ lines for 20 cases (more when adjacent fields are included)
 </success_criteria>
 
 <workflow>
-**1. 要件の収集**
-AskUserQuestionを使用して以下を確認:
+**1. Gather Requirements**
+Use AskUserQuestion to confirm the following:
 
-**質問1: 対象分野**
-- 選択肢: 「Web中心（推奨）」「広告・マーケティング」「MV・映像制作」「プロダクトデザイン」「UI/UX・アプリ」「タイポグラフィ」「パッケージデザイン」「空間デザイン」「LP特化」「総合（複数分野）」
-- multiSelect: true（複数選択可能）
-- 説明: 注目制作会社の実績を優先的にカバーします
+**Question 1: Target field**
+- Options: "Web-focused (recommended)", "Advertising & marketing", "MV & video production", "Product design", "UI/UX & apps", "Typography", "Packaging design", "Spatial design", "LP-focused", "All fields (multiple)"
+- multiSelect: true (multiple selections allowed)
+- Note: Featured production company work will be prioritized.
 
-**質問2: 隣接分野も調査しますか？**
-- 選択肢: 「はい（推奨）」「いいえ」
+**Question 2: Also research adjacent fields?**
+- Options: "Yes (recommended)", "No"
 - multiSelect: false
-- 説明: 選択した分野に関連する隣接ジャンルを自動提案します（例：Web選択時→MV、モーショングラフィックス、UI/UXを提案）
+- Note: Automatically suggests adjacent genres related to the selected field (e.g., Web → suggests MV, motion graphics, UI/UX)
 
-**質問3: 対象期間**
-- 選択肢: 「直近1週間」「直近2週間」「直近1ヶ月」「直近2ヶ月（推奨）」「直近3ヶ月」「直近6ヶ月」
-- multiSelect: false
-
-**質問4: 収集件数**
-- 選択肢: 「10件」「15件」「20件（推奨）」「30件」
+**Question 3: Target period**
+- Options: "Last 1 week", "Last 2 weeks", "Last 1 month", "Last 2 months (recommended)", "Last 3 months", "Last 6 months"
 - multiSelect: false
 
-**質問5: 目的**
-- 選択肢: 「チームインスピレーション（推奨）」「クライアント提案」「トレンド分析」「競合調査」
-- multiSelect: true（複数選択可能）
+**Question 4: Number of cases to collect**
+- Options: "10", "15", "20 (recommended)", "30"
+- multiSelect: false
 
-**隣接分野の自動提案ロジック:**
-- **Web選択時** → MV・映像、モーショングラフィックス、UI/UX、インタラクティブ作品
-- **広告選択時** → MV・映像、グラフィック、パッケージ、空間デザイン（店舗什器等）
-- **MV・映像選択時** → Web（特設サイト）、モーショングラフィックス、インスタレーション
-- **プロダクト選択時** → パッケージ、グラフィック、空間デザイン
-- **UI/UX選択時** → Web、モーショングラフィックス、プロダクト
-- **タイポグラフィ選択時** → グラフィック、パッケージ、Web
-- **パッケージ選択時** → プロダクト、グラフィック、タイポグラフィ
-- **空間選択時** → インスタレーション、グラフィック、プロダクト
+**Question 5: Purpose**
+- Options: "Team inspiration (recommended)", "Client proposal", "Trend analysis", "Competitive research"
+- multiSelect: true (multiple selections allowed)
 
-**2. 並列リサーチ**
-対象分野に応じて同時にWebSearch クエリを実行:
+**Adjacent field auto-suggestion logic:**
+- **Web selected** → MV/video, motion graphics, UI/UX, interactive works
+- **Advertising selected** → MV/video, graphics, packaging, spatial design (store fixtures, etc.)
+- **MV/video selected** → Web (special sites), motion graphics, installations
+- **Product selected** → Packaging, graphics, spatial design
+- **UI/UX selected** → Web, motion graphics, product
+- **Typography selected** → Graphics, packaging, Web
+- **Packaging selected** → Product, graphics, typography
+- **Spatial selected** → Installations, graphics, product
 
-**Webデザイン:**
-- Awwwards Japan（SOTD、Developer Award、Honorable Mention）
-- CSS Design Awards（WOTD、Special Kudos）
-- CSS Winner、FWA、日本のWebグランプリ
-- デザインギャラリー（SANKOU!、MUUUUU.ORG、81-web.com、S5-Style、URAGAWA）
+**2. Parallel Research**
+Run multiple WebSearch queries simultaneously based on the target field:
 
-**広告・マーケティング:**
-- Cannes Lions、D&AD Awards、ADC Awards、ACC TOKYO CREATIVITY AWARDS
-- 宣伝会議、Advertising TIMES、ブレーン（Brain）
-- Marketing Native、AdverTimes
+**Web design:**
+- Awwwards Japan (SOTD, Developer Award, Honorable Mention)
+- CSS Design Awards (WOTD, Special Kudos)
+- CSS Winner, FWA, Japan Web Grand Prix
+- Design galleries (SANKOU!, MUUUUU.ORG, 81-web.com, S5-Style, URAGAWA)
 
-**MV・映像制作:**
-- MVA（Music Video Awards）、文化庁メディア芸術祭
-- VIMEO Staff Picks、VIMEO Awards
-- Shots、The One Show
-- 注目制作会社の映像実績（Garden Eight、mount inc.、IN FOCUS、TryMore、mont.等）
+**Advertising & marketing:**
+- Cannes Lions, D&AD Awards, ADC Awards, ACC TOKYO CREATIVITY AWARDS
+- Sendenkaigi, Advertising TIMES, Brain
+- Marketing Native, AdverTimes
 
-**プロダクト:**
-- Red Dot Design Award、iF Design Award、Good Design Award
-- AXIS、デザインのひきだし
+**MV & video production:**
+- MVA (Music Video Awards), Japan Media Arts Festival
+- VIMEO Staff Picks, VIMEO Awards
+- Shots, The One Show
+- Video work from featured production companies (Garden Eight, mount inc., IN FOCUS, TryMore, mont., etc.)
 
-**UI/UX・アプリ:**
-- Awwwards（Mobile Excellence）、FWA（Mobile of the Day）
-- App Design Inspiration、UI Movement
-- Good Design Award（アプリ部門）
+**Product:**
+- Red Dot Design Award, iF Design Award, Good Design Award
+- AXIS, Design no Hikidashi
 
-**タイポグラフィ:**
-- Tokyo TDC、JAGDA新人賞
-- Typography Gallery、タイポグラフィ年鑑
+**UI/UX & apps:**
+- Awwwards (Mobile Excellence), FWA (Mobile of the Day)
+- App Design Inspiration, UI Movement
+- Good Design Award (app category)
 
-**パッケージデザイン:**
-- JPDA（日本パッケージデザイン協会）、Pentawards
-- デザインのひきだし、AXIS
+**Typography:**
+- Tokyo TDC, JAGDA newcomer award
+- Typography Gallery, Typography Yearbook
 
-**空間デザイン:**
-- JCD（日本商環境デザイン協会）、DSA（日本空間デザイン協会）
-- Space Design、商店建築
+**Packaging design:**
+- JPDA (Japan Package Design Association), Pentawards
+- Design no Hikidashi, AXIS
 
-**モーショングラフィックス:**
-- VIMEO Staff Picks（Motion Graphics）
-- Motionographer、STASH
+**Spatial design:**
+- JCD (Japan Commercial Environment Design Association), DSA (Japan Space Design Association)
+- Space Design, Shotenkenchiku
 
-**展示会・イベント・インスタレーション:**
-- 文化庁メディア芸術祭、アルスエレクトロニカ
-- Tokyo Midtown DESIGN TOUCH、21_21 DESIGN SIGHT、GOOD DESIGN EXHIBITION
+**Motion graphics:**
+- VIMEO Staff Picks (Motion Graphics)
+- Motionographer, STASH
 
-**注目制作会社の実績:**
-- featured-companies.md記載の16社の最新実績を優先検索
-- 各社公式サイトのWorks/実績ページ
-- URAGAWAでの制作会社別実績
+**Exhibitions, events, installations:**
+- Japan Media Arts Festival, Ars Electronica
+- Tokyo Midtown DESIGN TOUCH, 21_21 DESIGN SIGHT, GOOD DESIGN EXHIBITION
 
-**トレンド記事:**
-- 2025-2026年のデザイントレンド（各分野）
+**Featured production company work:**
+- Prioritize searching for the latest work from the 16 companies listed in featured-companies.md
+- Works/portfolio pages on each company's official site
+- Company-specific work on URAGAWA
 
-**3. 選定と詳細調査**
-- 受賞作品・注目事例を優先
-- 多様性を確保: カテゴリ、制作会社/クリエイター、技術・手法・素材
-- 各URL/参照先をWebFetchで検証し詳細を抽出
-- 制作会社/クリエイター情報と制作手法・技術を検索
-- 分野に応じた専門情報（素材、印刷技術、展示手法等）を収集
+**Trend articles:**
+- Design trends for 2025-2026 (by field)
 
-**URL/参照先検証（必須）**
-各事例について以下を実行：
-a) WebFetchでURL/参照先にアクセス
-b) 404/403/タイムアウト → 正しいURL/記事を検索（ブランド名/プロジェクト名 + "受賞" or "事例"）
-c) 見つからない → Archive.orgで確認、またはメディア記事を探す
-d) 非公開・パスワード保護 → 代替の参照先（メディア記事、受賞リリース等）を検索
-e) 参照先がない → 別の事例を探す
+**3. Selection and Detailed Research**
+- Prioritize award-winning works and notable cases
+- Ensure diversity: categories, production companies/creators, techniques/methods/materials
+- Verify each URL/reference with WebFetch and extract details
+- Research production company/creator information and production methods/technology
+- Collect field-specific expert information (materials, printing techniques, exhibition methods, etc.)
 
-**検証時の注意：**
-- ドメインを推測しない（必ずWebSearchで確認）
-- 制作会社/クリエイターのURLも同様に検証
-- リダイレクト先が正しいか確認
-- 広告・プロダクト等でWebサイトがない場合は、メディア記事やアワードサイトの受賞ページを参照先とする
+**URL/Reference verification (required)**
+For each case, do the following:
+a) Access the URL/reference with WebFetch
+b) 404/403/timeout → Search for the correct URL/article (brand name/project name + "award" or "case study")
+c) Not found → Check Archive.org, or look for a media article
+d) Private/password protected → Search for an alternative reference (media article, award press release, etc.)
+e) No reference available → Find a different case
 
-**4. ドキュメント生成**
-以下を含むMarkdownを生成:
-- ヘッダー（対象期間、作成日、分野別内訳、業種別内訳）
-- アワード・分野注釈付き目次
-- 構造化された事例詳細（分野に応じた標準フォーマット）
-- 分野横断的トレンド分析表
-- 参考リンク（アワードサイト、専門メディア、ギャラリー）
+**Verification notes:**
+- Do not guess domains (always confirm with WebSearch)
+- Verify production company/creator URLs the same way
+- Confirm the redirect destination is correct
+- For advertising/products with no website, use media articles or award pages as the reference
+
+**4. Document Generation**
+Generate Markdown that includes:
+- Header (target period, creation date, field-by-field breakdown, industry-by-industry breakdown)
+- Table of contents with award/field annotations
+- Structured case details (standard format based on field)
+- Cross-field trend analysis table
+- Reference links (award sites, specialized media, galleries)
 </workflow>
 
 <advanced_features>
-**注目制作会社の優先検索:**
-featured-companies.md記載の16社の最新実績を優先的に検索・収集:
-- 各社の公式サイトWorks/実績ページを巡回
-- URAGAWA等のギャラリーサイトで制作会社別に検索
-- 分野横断的に検索（Web、MV・映像、グラフィック等）
-- レポート内に制作会社別の実績件数を明記
+**Priority search for featured production companies:**
+Search and collect the latest work from the 16 companies listed in featured-companies.md:
+- Browse the Works/portfolio pages on each company's official site
+- Search by company on gallery sites like URAGAWA
+- Search across fields (Web, MV/video, graphics, etc.)
+- Clearly state the number of works per production company in the report
 
-**隣接分野の自動提案:**
-ユーザーの選択分野に基づいて関連ジャンルを提案:
-- Web選択時 → MV・映像、モーショングラフィックス、UI/UX、インタラクティブ作品
-- 広告選択時 → MV・映像、グラフィック、パッケージ、空間デザイン
-- MV・映像選択時 → Web（特設サイト）、モーショングラフィックス、インスタレーション
-- 同一制作会社が手がける隣接分野の作品を自動的に発見
+**Auto-suggestion for adjacent fields:**
+Suggest related genres based on the user's selected field:
+- Web selected → MV/video, motion graphics, UI/UX, interactive works
+- Advertising selected → MV/video, graphics, packaging, spatial design
+- MV/video selected → Web (special sites), motion graphics, installations
+- Automatically discover work in adjacent fields by the same production company
 
-**自動トレンド抽出:**
-事例からキーワードをグループ化してトレンドカテゴリに分類:
-- 技術トレンド: WebGL/3D、生成AI、Reactフレームワーク、インタラクティブ技術、リアルタイムレンダリング
-- デザイントレンド: レトロ/ノスタルジア、ミニマリズム、グラスモーフィズム、可変フォント、手書き要素、Y2K
-- 素材・手法トレンド: サステナブル素材、特殊印刷、デジタルファブリケーション、ミックスメディア
-- コンテンツトレンド: 採用キャンペーン、周年記念、サステナビリティ、D2C、体験型展示、パーソナライゼーション
-- 分野横断トレンド: Web×映像連携、フィジカル×デジタル融合
+**Automatic trend extraction:**
+Group keywords from cases and classify them into trend categories:
+- Technology trends: WebGL/3D, generative AI, React frameworks, interactive technology, real-time rendering
+- Design trends: retro/nostalgia, minimalism, glassmorphism, variable fonts, hand-drawn elements, Y2K
+- Material/method trends: sustainable materials, special printing, digital fabrication, mixed media
+- Content trends: recruitment campaigns, anniversary campaigns, sustainability, D2C, experiential exhibitions, personalization
+- Cross-field trends: Web × video collaboration, physical × digital fusion
 
-**自動カテゴリ分類:**
-分野横断的な事例分類:
-- **業種別**: 企業ブランディング、ファッション・ライフスタイル、エンタメ・音楽、BtoB、ホスピタリティ・観光、教育・文化、テック・実験的、プロダクト・EC、食品・消費財
-- **分野別**: Webデザイン、広告キャンペーン、MV・映像制作、プロダクトデザイン、UI/UX、LP、タイポグラフィ、パッケージ、空間デザイン、モーショングラフィックス、展示会、インスタレーション
+**Automatic category classification:**
+Cross-field case classification:
+- **By industry**: corporate branding, fashion/lifestyle, entertainment/music, B2B, hospitality/tourism, education/culture, tech/experimental, products/e-commerce, food/consumer goods
+- **By field**: web design, advertising campaigns, MV/video production, product design, UI/UX, LP, typography, packaging, spatial design, motion graphics, exhibitions, installations
 
-**クライアント提案向けキュレーション:**
-業界・分野でフィルタリング: `--industry fashion` `--field advertising,mv` `--client-type corporate`
+**Curation for client proposals:**
+Filter by industry and field: `--industry fashion` `--field advertising,mv` `--client-type corporate`
 
-**継続的トラッキング:**
-前回のファイルと比較して、新規事例、新たなトレンド、制作会社/クリエイター/ディレクターランキングを特定
+**Ongoing tracking:**
+Compare with the previous file to identify new cases, new trends, and production company/creator/director rankings
 </advanced_features>
 
 <validation>
-**URL/参照先検証:**
-- 全てのURL/参照先と参考リンクが機能している（WebFetchを使用）
-- Webサイトがない場合はメディア記事やアワードページを参照先とする
-- Markdownリンク構文が正しい
+**URL/Reference verification:**
+- All URLs/references and reference links are working (use WebFetch)
+- When there is no website, use a media article or award page as the reference
+- Markdown link syntax is correct
 
-**URL/参照先検証の具体的手順:**
-1. WebFetchで各URL/参照先にアクセス（全件必須）
-2. HTTPステータス確認（200以外は要対応）
-3. ドメイン/URLの正確性確認（思い込み禁止）
-   - 例：`words.inc` ではなく `words-inc.co.jp` が正しいか検索で確認
-4. リダイレクト先の確認（意図したページか）
-5. 広告・プロダクト等でWebサイトがない場合
-   - メディア記事（宣伝会議、Advertising TIMES等）を検索
-   - アワードサイトの受賞ページを参照
-   - ブランドのプレスリリースを確認
+**Specific steps for URL/reference verification:**
+1. Access each URL/reference with WebFetch (required for all cases)
+2. Check HTTP status (anything other than 200 needs to be addressed)
+3. Verify the accuracy of the domain/URL (do not assume)
+   - Example: Confirm whether `words.inc` or `words-inc.co.jp` is correct by searching
+4. Check the redirect destination (is it the intended page?)
+5. When there is no website for advertising/products:
+   - Search for media articles (Sendenkaigi, Advertising TIMES, etc.)
+   - Refer to the award page on the award site
+   - Check the brand's press release
 
-**検証失敗時のフロー:**
-1. まず正しいURLを検索（プロジェクト名 + "公式サイト" or "受賞" or "事例"）
-2. メディア記事を検索（プロジェクト名 + "宣伝会議" or "Advertising TIMES"）
-3. Archive.org で過去のURLを確認
-4. 見つからない場合は事例を除外し、代替事例を収集
+**When verification fails:**
+1. First search for the correct URL (project name + "official site" or "award" or "case study")
+2. Search for a media article (project name + "Sendenkaigi" or "Advertising TIMES")
+3. Check past URLs on Archive.org
+4. If not found, exclude the case and collect a replacement
 
-**情報の正確性:**
-- 受賞日が検索結果と一致
-- 制作会社名が公式表記
-- 技術スタックが実際の実装と一致することを検証
+**Information accuracy:**
+- Award dates match the search results
+- Production company names are in official notation
+- Verify that the tech stack matches the actual implementation
 
-**ドキュメント構造:**
-- 対象期間を明記
-- 分野別・業種別カテゴリがバランスよく分布（1-2件のカテゴリを避ける）
-- 分析表に最低10のトレンドを記載（分野横断的な視点を含む）
-- 目次から全事例へリンク
-- 各分野固有の情報が適切に記載されている
+**Document structure:**
+- Target period is clearly stated
+- Field and industry categories are distributed evenly (avoid categories with only 1-2 cases)
+- Analysis table has at least 10 trends (including a cross-field perspective)
+- Table of contents links to all cases
+- Field-specific information is appropriately included
 </validation>
 
 <examples>
-**例1: 標準実行（Web中心）**
+**Example 1: Standard execution (Web-focused)**
 ```
 /researching-creative-cases
 ```
-出力: `20260122-creative-cases-2025-12-2026-01.md`（2025年12月〜2026年1月の20件）
+Output: `20260122-creative-cases-2025-12-2026-01.md` (20 cases from Dec 2025–Jan 2026)
 
-**例2: 広告キャンペーン特化**
+**Example 2: Advertising campaign focused**
 ```
-/researching-creative-cases --field advertising --period "直近3ヶ月" --count 15
+/researching-creative-cases --field advertising --period "last 3 months" --count 15
 ```
-出力: `20260122-advertising-cases-2025-11-2026-01.md`（直近3ヶ月の広告事例15件）
+Output: `20260122-advertising-cases-2025-11-2026-01.md` (15 advertising cases from the last 3 months)
 
-**例3: プロダクトデザイン特化**
+**Example 3: Product design focused**
 ```
 /researching-creative-cases --field product --industry fashion --count 10
 ```
-出力: ファッション業界のプロダクトデザイン10件
+Output: 10 product design cases from the fashion industry
 
-**例4: タイポグラフィ・LP混合**
+**Example 4: Typography and LP mix**
 ```
 /researching-creative-cases --field "typography,lp" --count 20
 ```
-出力: タイポグラフィとLP事例の混合20件
+Output: 20 mixed typography and LP cases
 
-**例5: MV・映像特化（注目制作会社優先）**
+**Example 5: MV/video focused (featured companies first)**
 ```
-/researching-creative-cases --field "mv" --period "直近3ヶ月" --count 15
+/researching-creative-cases --field "mv" --period "last 3 months" --count 15
 ```
-出力: `20260122-mv-cases-2025-11-2026-01.md`（Garden Eight、mount inc.、IN FOCUS等の映像実績を優先）
+Output: `20260122-mv-cases-2025-11-2026-01.md` (prioritizes work from Garden Eight, mount inc., IN FOCUS, etc.)
 
-**例6: Web + 隣接分野提案**
+**Example 6: Web + adjacent field suggestions**
 ```
 /researching-creative-cases --field "web" --adjacent-fields true
 ```
-→ 自動的にMV・映像、モーショングラフィックス、UI/UXも調査対象に含める
+→ Automatically includes MV/video, motion graphics, UI/UX in the research scope
 
-**例7: 総合（複数分野）**
+**Example 7: All fields (multiple)**
 ```
 /researching-creative-cases --field "web,advertising,mv,product" --count 30
 ```
-出力: 4分野にまたがる総合事例30件
+Output: 30 comprehensive cases spanning 4 fields
 
-**例8: 出力フォーマット**
+**Example 8: Output format**
 ```markdown
-# 直近2ヶ月 日本クリエイティブ事例集（25選）
+# Latest 2-month Japan Creative Case Studies (25 picks)
 
-**対象期間**: 2025年12月 〜 2026年1月
-**作成日**: 2026年1月22日
+**Target period**: December 2025 – January 2026
+**Created**: January 22, 2026
 
-**分野別内訳**:
-- Webデザイン: 7件
-- 広告キャンペーン: 5件
-- MV・映像制作: 4件
-- プロダクトデザイン: 3件
-- UI/UX: 2件
-- タイポグラフィ: 2件
-- パッケージデザイン: 1件
-- 空間デザイン: 1件
+**Field breakdown**:
+- Web design: 7
+- Advertising campaigns: 5
+- MV & video production: 4
+- Product design: 3
+- UI/UX: 2
+- Typography: 2
+- Packaging design: 1
+- Spatial design: 1
 
-**業種別内訳**:
-- 企業ブランディング・周年記念: 4件
-- ファッション・ライフスタイル: 6件
-- エンタメ・音楽: 5件
-- コーポレート・BtoB: 4件
+**Industry breakdown**:
+- Corporate branding & anniversaries: 4
+- Fashion & lifestyle: 6
+- Entertainment & music: 5
+- Corporate & B2B: 4
 ...
 
-**注目制作会社の実績**:
-- Garden Eight: 2件
-- mount inc.: 2件（Web 1件、映像 1件）
-- IN FOCUS: 1件
-- SUPER CROWDS: 1件
+**Featured production company work**:
+- Garden Eight: 2
+- mount inc.: 2 (Web 1, video 1)
+- IN FOCUS: 1
+- SUPER CROWDS: 1
 ...
 
-## 📋 目次
-### 🏆 アワード受賞作品
-1. [KOKUYO - Curiosity is Life](https://example.com) - Awwwards SOTD（Web）
-2. [BEAMS 50周年キャンペーン](https://example.com) - ACC TOKYO（広告）
-3. [Ado - 唱](https://vimeo.com/xxx) - MVA 2025（MV・映像）[Garden Eight]
-4. [無印良品 折りたたみ傘](https://example.com) - Good Design Award（プロダクト）
-5. [Sony Music App](https://example.com) - Awwwards Mobile Excellence（UI/UX）
+## 📋 Table of Contents
+### 🏆 Award-winning works
+1. [KOKUYO - Curiosity is Life](https://example.com) - Awwwards SOTD (Web)
+2. [BEAMS 50th Anniversary Campaign](https://example.com) - ACC TOKYO (advertising)
+3. [Ado - Uta](https://vimeo.com/xxx) - MVA 2025 (MV/video) [Garden Eight]
+4. [MUJI Folding Umbrella](https://example.com) - Good Design Award (product)
+5. [Sony Music App](https://example.com) - Awwwards Mobile Excellence (UI/UX)
 ...
 
-## 分野横断トレンド分析
-| トレンド | 概要 | 主要分野 | 活用事例 |
+## Cross-field Trend Analysis
+| Trend | Overview | Main fields | Example cases |
 |---------|------|---------|---------|
-| **3D + WebGL** | 没入型の3D体験 | Web, MV | KOKUYO, 映像作品A |
-| **Retro Revival** | 昭和レトロ、手書き要素 | Web, 広告, パッケージ | 丸亀製麺, BEAMS, 商品B |
-| **可変フォント** | レスポンシブタイポグラフィ | タイポ, Web, UI | Sony Type, モリサワ |
-| **生成AI活用** | AIによる映像生成・補助 | MV, 広告 | MV作品C, キャンペーンD |
-| **サステナブル素材** | 環境配慮素材の活用 | プロダクト, パッケージ | 無印良品, Patagonia |
-| **インタラクティブ体験** | 触れる・動かす体験設計 | Web, 空間, 展示 | サイトE, 店舗F |
+| **3D + WebGL** | Immersive 3D experiences | Web, MV | KOKUYO, Video work A |
+| **Retro Revival** | Showa-era retro, hand-drawn elements | Web, advertising, packaging | Marugame Seimen, BEAMS, Product B |
+| **Variable fonts** | Responsive typography | Typography, Web, UI | Sony Type, Morisawa |
+| **Generative AI use** | AI-assisted video generation | MV, advertising | MV work C, Campaign D |
+| **Sustainable materials** | Eco-friendly materials | Product, packaging | MUJI, Patagonia |
+| **Interactive experiences** | Touch and move experience design | Web, spatial, exhibitions | Site E, Store F |
 ...
 
-## 隣接分野の発見
-Webデザイン事例を調査する中で、以下の隣接分野の優れた事例も発見：
-- **MV・映像**: 同一制作会社（Garden Eight、mount inc.等）が手がける映像作品
-- **モーショングラフィックス**: Webサイトの動き→独立したMG作品
-- **UI/UX**: Webの延長としてのアプリデザイン
+## Adjacent Field Discoveries
+While researching web design cases, excellent cases from the following adjacent fields were also found:
+- **MV/video**: Video works by the same production companies (Garden Eight, mount inc., etc.)
+- **Motion graphics**: Web motion → independent MG works
+- **UI/UX**: App design as an extension of web
 
-→ これらの分野も合わせて調査することで、より包括的なインスピレーションを得られます
+→ Researching these fields together provides more comprehensive inspiration
 ...
 ```
 </examples>
 
 <anti_patterns>
-**避けるべきこと:**
-- 対象期間外の古い事例を含める（最新性が重要）
-- カテゴリや分野が偏る（全て企業Webサイトのみ、など）
-- 注目制作会社の実績を調査しない（featured-companies.mdを活用すべき）
-- 隣接分野の提案を無視する（同一制作会社の分野横断作品を見逃す）
-- 未検証のURL/参照先（リンク切れは信頼性を損なう）
-- 制作会社名/クリエイター名/ディレクター名や技術・手法の不正確な記載
-- 事例横断的なトレンド分析の欠如
-- 分野横断的な視点の欠如（Webだけ、MVだけ、など単一分野に閉じる）
-- 分野固有の専門情報の欠如（MVなら尺・撮影手法、プロダクトなら素材、広告なら媒体など）
-- 隣接分野の関連性を説明しない（なぜその分野も調査すべきか）
-- 1000行を超えるドキュメント（必要に応じてエグゼクティブサマリーを追加）
-- アワードサイトや専門メディアへの参考リンク不足
+**Things to avoid:**
+- Including old cases outside the target period (recency matters)
+- Unbalanced categories or fields (all corporate websites, etc.)
+- Not researching featured production company work (use featured-companies.md)
+- Ignoring adjacent field suggestions (missing cross-field works by the same company)
+- Unverified URLs/references (broken links damage credibility)
+- Inaccurate production company names/creator names/director names or techniques/methods
+- Lack of cross-case trend analysis
+- Lack of cross-field perspective (staying within only Web, only MV, etc.)
+- Lack of field-specific expert information (MV: length and shooting method, product: materials, advertising: media, etc.)
+- Not explaining the relevance of adjacent fields (why that field should also be researched)
+- Documents over 1000 lines (add an executive summary as needed)
+- Insufficient reference links to award sites and specialized media
 
-**URL関連の禁止事項:**
-- ドメインの推測・思い込み（必ず検索で確認）
-- 検証せずにURLを記載
-- 制作会社URLの省略や推測
-- 非公開・アクセス不可サイトの掲載
+**URL-related prohibitions:**
+- Guessing or assuming domains (always confirm by searching)
+- Recording URLs without verification
+- Omitting or guessing production company URLs
+- Including private or inaccessible sites
 
-**品質チェック:**
-1. WebFetchで各URL/参照先を検証（アーカイブリンクも検討）
-2. 受賞日・開催日がソースと一致することを確認
-3. 公式な制作会社名/クリエイター名/ディレクター名表記を使用
-4. 技術・手法・素材が実際の制作内容と一致することを確認
-5. 注目制作会社（featured-companies.md）の実績を優先的に収集できているか確認
-6. 隣接分野を有効にした場合、提案された分野の事例が含まれているか確認
-7. 同一制作会社による分野横断的作品（例：Web + MV）を発見できているか確認
-8. トレンド分析を客観的に保つ（"今流行"のような主観的な表現を避ける）
-9. 分野横断的な視点を含める（単一分野に閉じない）
-10. 分野別の専門性を確保（Webなら技術、MVなら尺・撮影手法、広告なら媒体、プロダクトなら素材等）
-11. 隣接分野の関連性を論理的に説明（なぜその分野も調査すべきか）
-12. デザイナー/クリエイター向けのヒントを実用的にする（非現実的な理想論を避ける）
+**Quality checklist:**
+1. Verify each URL/reference with WebFetch (also consider archive links)
+2. Confirm award dates and event dates match the source
+3. Use official production company names/creator names/director names
+4. Verify that techniques/methods/materials match the actual production content
+5. Check that featured production company (featured-companies.md) work has been prioritized
+6. When adjacent fields are enabled, confirm that cases from the suggested fields are included
+7. Check whether cross-field works by the same company (e.g., Web + MV) have been discovered
+8. Keep trend analysis objective (avoid subjective expressions like "trendy right now")
+9. Include a cross-field perspective (do not stay within a single field)
+10. Ensure field-specific expertise (Web: technology, MV: length and shooting method, advertising: media, product: materials, etc.)
+11. Logically explain the relevance of adjacent fields (why that field should also be researched)
+12. Make tips for designers/creators practical (avoid unrealistic idealism)
 </anti_patterns>
 
 <common_patterns>
-**標準的な事例フォーマット:**
+**Standard case formats:**
 
-**Webデザイン:**
+**Web design:**
 ```markdown
-## N. サイト名
+## N. Site Name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
 | **URL** | [https://example.com](https://example.com) |
-| **分野** | Webデザイン |
-| **受賞** | Awwwards SOTD（2025/12/14） |
-| **制作** | [制作会社名](https://company.com) |
-| **技術** | WebGL, Three.js, Next.js |
-| **カテゴリ** | 企業ブランディング |
+| **Field** | Web design |
+| **Award** | Awwwards SOTD (2025/12/14) |
+| **Production** | [Production company name](https://company.com) |
+| **Technology** | WebGL, Three.js, Next.js |
+| **Category** | Corporate branding |
 
-### 評価ポイント・新規性
-[1-2文でコンセプトを概要説明]
+### Evaluation points and novelty
+[1-2 sentence overview of the concept]
 
-**デザイン・技術的特徴:**
-- インパクトのある特徴1
-- 革新性のある特徴2
-- 実装に関する注記を含む特徴3
+**Design and technical features:**
+- Impactful feature 1
+- Innovative feature 2
+- Feature 3 with implementation notes
 
-### デザイナー向け注目点
-- 実践可能なテクニック1
-- 実践可能なテクニック2
+### Points to note for designers
+- Practical technique 1
+- Practical technique 2
 
-### クライアント提案での活用
-- 提案シナリオ1
-- 提案シナリオ2
+### Use in client proposals
+- Proposal scenario 1
+- Proposal scenario 2
 ```
 
-**広告・マーケティング:**
+**Advertising & marketing:**
 ```markdown
-## N. キャンペーン名
+## N. Campaign Name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [記事URL](https://example.com) |
-| **分野** | 広告キャンペーン |
-| **受賞** | ACC TOKYO CREATIVITY AWARDS（2025） |
-| **クライアント** | ブランド名 |
-| **制作** | [広告代理店・制作会社](https://company.com) |
-| **媒体** | TV, Web, OOH, SNS |
-| **カテゴリ** | ファッション・ライフスタイル |
+| **Reference** | [Article URL](https://example.com) |
+| **Field** | Advertising campaign |
+| **Award** | ACC TOKYO CREATIVITY AWARDS (2025) |
+| **Client** | Brand name |
+| **Production** | [Ad agency / production company](https://company.com) |
+| **Media** | TV, Web, OOH, social media |
+| **Category** | Fashion & lifestyle |
 
-### キャンペーン概要
-[1-2文でキャンペーンコンセプトを説明]
+### Campaign overview
+[1-2 sentences explaining the campaign concept]
 
-**クリエイティブ特徴:**
-- コミュニケーション戦略
-- 統合キャンペーン施策
-- 効果・反響
+**Creative features:**
+- Communication strategy
+- Integrated campaign measures
+- Impact and response
 
-### 注目ポイント
-- クリエイティブアプローチ
-- メディア活用の工夫
+### Points to note
+- Creative approach
+- Media usage innovations
 
-### 提案での活用
-- 応用可能なシナリオ
+### Use in proposals
+- Applicable scenarios
 ```
 
-**プロダクトデザイン:**
+**Product design:**
 ```markdown
-## N. プロダクト名
+## N. Product Name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [製品情報URL](https://example.com) |
-| **分野** | プロダクトデザイン |
-| **受賞** | Good Design Award 2025 |
-| **ブランド** | ブランド名 |
-| **デザイナー** | デザイナー名 |
-| **素材** | アルミニウム、再生プラスチック |
-| **カテゴリ** | 日用品 |
+| **Reference** | [Product info URL](https://example.com) |
+| **Field** | Product design |
+| **Award** | Good Design Award 2025 |
+| **Brand** | Brand name |
+| **Designer** | Designer name |
+| **Materials** | Aluminum, recycled plastic |
+| **Category** | Daily goods |
 
-### デザインコンセプト
-[1-2文でコンセプトを説明]
+### Design concept
+[1-2 sentences explaining the concept]
 
-**デザイン特徴:**
-- 機能性の工夫
-- 素材選定の理由
-- ユーザビリティ
+**Design features:**
+- Functional innovations
+- Rationale for material selection
+- Usability
 
-### 注目ポイント
-- イノベーション要素
-- サステナビリティ配慮
+### Points to note
+- Innovation elements
+- Sustainability considerations
 
-### 提案での活用
-- 応用可能な視点
+### Use in proposals
+- Applicable perspectives
 ```
 
-**タイポグラフィ:**
+**Typography:**
 ```markdown
-## N. 作品名/プロジェクト名
+## N. Work title / Project name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [作品URL](https://example.com) |
-| **分野** | タイポグラフィ |
-| **受賞** | Tokyo TDC賞 2025 |
-| **クライアント** | ブランド名（または自主制作） |
-| **書体デザイナー** | デザイナー名 |
-| **書体** | オリジナル書体 or 既存書体名 |
-| **用途** | ブランディング、パッケージ、Web |
+| **Reference** | [Work URL](https://example.com) |
+| **Field** | Typography |
+| **Award** | Tokyo TDC Award 2025 |
+| **Client** | Brand name (or self-initiated) |
+| **Type designer** | Designer name |
+| **Typeface** | Original typeface or existing typeface name |
+| **Use** | Branding, packaging, web |
 
-### デザインコンセプト
-[1-2文でコンセプトを説明]
+### Design concept
+[1-2 sentences explaining the concept]
 
-**タイポグラフィ特徴:**
-- 文字デザインの工夫
-- 可読性・視認性への配慮
-- コンテクストとの調和
+**Typography features:**
+- Character design innovations
+- Consideration for legibility and visibility
+- Harmony with context
 
-### 注目ポイント
-- 書体選定の理由
-- 組版の工夫
+### Points to note
+- Rationale for typeface selection
+- Typesetting innovations
 
-### 提案での活用
-- 応用可能な手法
+### Use in proposals
+- Applicable methods
 ```
 
-**MV・映像制作:**
+**MV & video production:**
 ```markdown
-## N. 作品名（アーティスト名 - 曲名）
+## N. Work title (Artist name - Song title)
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [VIMEO/YouTube URL](https://example.com) |
-| **分野** | MV・映像制作 |
-| **受賞** | MVA 2025、文化庁メディア芸術祭 |
-| **アーティスト** | アーティスト名 |
-| **制作会社** | [制作会社名](https://company.com) |
-| **ディレクター** | ディレクター名 |
-| **撮影** | 撮影監督名 |
-| **編集** | 編集者名 |
-| **手法** | 実写、CG、アニメーション、ミックス |
-| **尺** | 3分45秒 |
+| **Reference** | [VIMEO/YouTube URL](https://example.com) |
+| **Field** | MV & video production |
+| **Award** | MVA 2025, Japan Media Arts Festival |
+| **Artist** | Artist name |
+| **Production company** | [Production company name](https://company.com) |
+| **Director** | Director name |
+| **Cinematography** | Cinematographer name |
+| **Editing** | Editor name |
+| **Method** | Live action, CG, animation, mixed |
+| **Length** | 3 min 45 sec |
 
-### コンセプト・ストーリー
-[1-2文でコンセプトやストーリーを説明]
+### Concept and story
+[1-2 sentences explaining the concept or story]
 
-**映像的特徴:**
-- ビジュアル表現の工夫
-- カメラワーク・編集技法
-- VFX・CGの活用
+**Video features:**
+- Visual expression innovations
+- Camera work and editing techniques
+- VFX and CG use
 
-**音楽との調和:**
-- 曲との同期手法
-- リズムとの連動
+**Harmony with the music:**
+- Method of syncing with the track
+- Coordination with rhythm
 
-### 注目ポイント
-- 技術的チャレンジ
-- 独自の表現手法
+### Points to note
+- Technical challenges
+- Unique expression methods
 
-### 提案での活用
-- 応用可能なアイデア
+### Use in proposals
+- Applicable ideas
 ```
 
-**空間デザイン:**
+**Spatial design:**
 ```markdown
-## N. プロジェクト名
+## N. Project Name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [プロジェクトURL](https://example.com) |
-| **分野** | 空間デザイン |
-| **受賞** | JCD Design Award 2025 |
-| **クライアント** | ブランド名 |
-| **空間デザイナー** | デザイナー/設計事務所名 |
-| **用途** | 店舗、展示、オフィス、イベント |
-| **面積** | ○○㎡ |
-| **所在地** | 東京都○○区 |
+| **Reference** | [Project URL](https://example.com) |
+| **Field** | Spatial design |
+| **Award** | JCD Design Award 2025 |
+| **Client** | Brand name |
+| **Spatial designer** | Designer / design firm name |
+| **Use** | Store, exhibition, office, event |
+| **Area** | XX sqm |
+| **Location** | XX ward, Tokyo |
 
-### デザインコンセプト
-[1-2文でコンセプトを説明]
+### Design concept
+[1-2 sentences explaining the concept]
 
-**空間デザイン特徴:**
-- 動線・レイアウトの工夫
-- 素材・照明の選定
-- ブランド体験の設計
+**Spatial design features:**
+- Flow and layout innovations
+- Material and lighting selection
+- Brand experience design
 
-### 注目ポイント
-- 体験設計の工夫
-- サステナビリティ配慮
+### Points to note
+- Experience design innovations
+- Sustainability considerations
 
-### 提案での活用
-- 応用可能な視点
+### Use in proposals
+- Applicable perspectives
 ```
 
-**パッケージデザイン:**
+**Packaging design:**
 ```markdown
-## N. 商品名
+## N. Product Name
 
-| 項目 | 内容 |
+| Item | Content |
 |------|------|
-| **参照先** | [商品情報URL](https://example.com) |
-| **分野** | パッケージデザイン |
-| **受賞** | JPDA賞 2025 |
-| **ブランド** | ブランド名 |
-| **デザイナー** | デザイナー名 |
-| **素材** | 紙、プラスチック、金属等 |
-| **印刷技術** | オフセット、活版、箔押し等 |
-| **商品カテゴリ** | 食品、化粧品、雑貨等 |
+| **Reference** | [Product info URL](https://example.com) |
+| **Field** | Packaging design |
+| **Award** | JPDA Award 2025 |
+| **Brand** | Brand name |
+| **Designer** | Designer name |
+| **Materials** | Paper, plastic, metal, etc. |
+| **Printing technique** | Offset, letterpress, foil stamping, etc. |
+| **Product category** | Food, cosmetics, miscellaneous goods, etc. |
 
-### デザインコンセプト
-[1-2文でコンセプトを説明]
+### Design concept
+[1-2 sentences explaining the concept]
 
-**デザイン特徴:**
-- グラフィック表現
-- 構造・形状の工夫
-- 環境配慮
+**Design features:**
+- Graphic expression
+- Structure and shape innovations
+- Environmental considerations
 
-### 注目ポイント
-- 棚映えの工夫
-- 開封体験の設計
+### Points to note
+- Shelf presence design
+- Unboxing experience design
 
-### 提案での活用
-- 応用可能なアイデア
+### Use in proposals
+- Applicable ideas
 ```
 
-**トレンド分析表:**
+**Trend analysis table:**
 ```markdown
-| トレンド | 概要 | 主要分野 | 活用事例 | 注目制作会社 |
+| Trend | Overview | Main fields | Example cases | Featured companies |
 |---------|------|---------|---------|-------------|
-| **3D + WebGL** | 没入型のリアルな体験 | Web, MV | 事例A、事例B | Garden Eight |
-| **生成AI** | AIによる映像・コンテンツ生成 | Web, 広告, MV | 事例C | mount inc. |
-| **可変フォント** | レスポンシブタイポグラフィ | タイポ, Web, UI | 事例D | Quoitworks |
-| **サステナブル素材** | 環境配慮素材の活用 | プロダクト, パッケージ | 事例E | - |
-| **統合キャンペーン** | オンライン・オフライン融合 | 広告, 空間 | 事例F | SUPER CROWDS |
-| **インタラクティブ体験** | 触れる・動かす体験設計 | Web, 空間, 展示 | 事例G | HOMUNCULUS |
-| **Retro Revival** | 昭和レトロ、手書き要素 | Web, 広告, パッケージ | 事例H | TryMore |
-| **フィジタル融合** | フィジカル×デジタル統合 | 空間, Web, インスタレーション | 事例I | IN FOCUS |
+| **3D + WebGL** | Immersive realistic experiences | Web, MV | Case A, Case B | Garden Eight |
+| **Generative AI** | AI-assisted video and content generation | Web, advertising, MV | Case C | mount inc. |
+| **Variable fonts** | Responsive typography | Typography, Web, UI | Case D | Quoitworks |
+| **Sustainable materials** | Use of eco-friendly materials | Product, packaging | Case E | - |
+| **Integrated campaigns** | Online and offline fusion | Advertising, spatial | Case F | SUPER CROWDS |
+| **Interactive experiences** | Touch and move experience design | Web, spatial, exhibitions | Case G | HOMUNCULUS |
+| **Retro Revival** | Showa-era retro, hand-drawn elements | Web, advertising, packaging | Case H | TryMore |
+| **Phygital fusion** | Physical × digital integration | Spatial, Web, installations | Case I | IN FOCUS |
 ```
 
-**隣接分野の発見パターン:**
+**Adjacent field discovery pattern:**
 ```markdown
-## 隣接分野の発見
-Webデザイン事例を調査する中で、以下の隣接分野の優れた事例も発見：
+## Adjacent Field Discoveries
+While researching web design cases, excellent cases from the following adjacent fields were also found:
 
-### 同一制作会社による分野横断的作品
-- **Garden Eight**: Webサイト（Awwwards SOTD） + MV制作（MVA受賞）
-- **mount inc.**: キャンペーンサイト + ブランド映像
-- **IN FOCUS**: コーポレートサイト + プロダクト映像
+### Cross-field works by the same production company
+- **Garden Eight**: Website (Awwwards SOTD) + MV production (MVA winner)
+- **mount inc.**: Campaign site + brand video
+- **IN FOCUS**: Corporate site + product video
 
-### 技術・手法の転用
-- Webのモーショングラフィックス → 独立したMG作品
-- UIアニメーション → MVの演出手法
-- インタラクティブWeb → 体験型インスタレーション
+### Repurposing techniques and methods
+- Web motion graphics → independent MG works
+- UI animations → MV production techniques
+- Interactive web → experiential installations
 
-### 推奨する隣接分野
-次回調査時に含めることで、より包括的なインスピレーションを得られます：
-- MV・映像制作（特にWeb制作会社が手がける映像作品）
-- モーショングラフィックス
-- UI/UXデザイン（Webの延長としてのアプリ）
-```
-```
-
-**URL/参照先検証の例:**
-
-**例1: Webサイトの検証**
-```
-# 悪い例（思い込み）
-サイトURL: https://words.inc ← 推測で記載
-
-# 良い例（検証済み）
-1. WebSearch「WORDS Inc. 公式サイト」
-2. 結果から https://words-inc.co.jp を発見
-3. WebFetchで確認 → 200 OK
-サイトURL: https://words-inc.co.jp ← 検証済み
+### Recommended adjacent fields
+Including these fields in the next research will provide more comprehensive inspiration:
+- MV/video production (especially video works by web production companies)
+- Motion graphics
+- UI/UX design (apps as an extension of web)
 ```
 
-**例2: 広告キャンペーン（Webサイトなし）の検証**
+**URL/reference verification examples:**
+
+**Example 1: Verifying a website**
 ```
-# 悪い例（参照先なし）
-参照先: なし ← キャンペーンサイトがないため記載せず
+# Bad (assumption)
+Site URL: https://words.inc ← recorded by guessing
 
-# 良い例（メディア記事を参照）
-1. WebSearch「BEAMS 50周年キャンペーン 2025 宣伝会議」
-2. 宣伝会議の記事を発見
-3. WebFetchで確認 → 200 OK
-参照先: https://www.sendenkaigi.com/... ← メディア記事を参照先として検証済み
-
-または
-1. WebSearch「BEAMS 50周年 ACC TOKYO 受賞」
-2. ACC TOKYOの受賞ページを発見
-参照先: https://www.acc-awards.com/... ← アワードページを参照先として検証済み
+# Good (verified)
+1. WebSearch "WORDS Inc. official site"
+2. Found https://words-inc.co.jp from results
+3. Confirmed with WebFetch → 200 OK
+Site URL: https://words-inc.co.jp ← verified
 ```
 
-**例3: プロダクトデザインの検証**
+**Example 2: Verifying an advertising campaign (no website)**
 ```
-# 良い例（製品情報ページ）
-1. WebSearch「無印良品 折りたたみ傘 Good Design Award」
-2. 製品ページとGood Design Awardページを発見
-3. 両方をWebFetchで確認
-参照先: https://www.muji.com/... (製品ページ)、https://www.g-mark.org/... (受賞ページ) ← 複数参照先
+# Bad (no reference)
+Reference: none ← not recorded because there is no campaign site
+
+# Good (using a media article as reference)
+1. WebSearch "BEAMS 50th anniversary campaign 2025 Sendenkaigi"
+2. Found a Sendenkaigi article
+3. Confirmed with WebFetch → 200 OK
+Reference: https://www.sendenkaigi.com/... ← media article verified as reference
+
+or
+1. WebSearch "BEAMS 50th anniversary ACC TOKYO award"
+2. Found the ACC TOKYO award page
+Reference: https://www.acc-awards.com/... ← award page verified as reference
 ```
+
+**Example 3: Verifying a product design**
+```
+# Good (product information page)
+1. WebSearch "MUJI folding umbrella Good Design Award"
+2. Found the product page and Good Design Award page
+3. Confirmed both with WebFetch
+Reference: https://www.muji.com/... (product page), https://www.g-mark.org/... (award page) ← multiple references
 ```
 </common_patterns>
 
 <reference_guides>
-**アワードサイト:**
+**Award sites:**
 
-**Webデザイン:**
-- [Awwwards Japan](https://www.awwwards.com/websites/Japan/) - 国際的なウェブデザインアワード
-- [CSS Design Awards](https://www.cssdesignawards.com/) - CSS/UI/UXに特化
-- [CSS Winner](https://www.csswinner.com/) - CSS/ウェブデザインアワード
-- [FWA](https://thefwa.com/) - クリエイティビティ重視のアワード
-- [Web Grand Prix](https://award.dmi.jaa.or.jp/) - 日本の全国的なアワード
+**Web design:**
+- [Awwwards Japan](https://www.awwwards.com/websites/Japan/) - International web design award
+- [CSS Design Awards](https://www.cssdesignawards.com/) - Focused on CSS/UI/UX
+- [CSS Winner](https://www.csswinner.com/) - CSS/web design award
+- [FWA](https://thefwa.com/) - Creativity-focused award
+- [Web Grand Prix](https://award.dmi.jaa.or.jp/) - National Japanese award
 
-**広告・マーケティング:**
-- [Cannes Lions](https://www.canneslions.com/) - 世界最大級の広告祭
-- [D&AD Awards](https://www.dandad.org/) - 英国の権威ある広告賞
-- [ADC Awards](https://www.oneclub.org/) - ニューヨークADC
-- [ACC TOKYO CREATIVITY AWARDS](https://www.acc-awards.com/) - 日本のクリエイティブアワード
-- [宣伝会議賞](https://www.sendenkaigi.com/) - 日本の広告賞
+**Advertising & marketing:**
+- [Cannes Lions](https://www.canneslions.com/) - One of the world's largest advertising festivals
+- [D&AD Awards](https://www.dandad.org/) - Prestigious UK advertising award
+- [ADC Awards](https://www.oneclub.org/) - New York ADC
+- [ACC TOKYO CREATIVITY AWARDS](https://www.acc-awards.com/) - Japanese creative award
+- [Sendenkaigi Award](https://www.sendenkaigi.com/) - Japanese advertising award
 
-**プロダクトデザイン:**
-- [Red Dot Design Award](https://www.red-dot.org/) - 国際的な権威あるデザインアワード
-- [iF Design Award](https://ifdesign.com/) - ドイツの国際デザイン賞
-- [Good Design Award](https://www.g-mark.org/) - 日本のグッドデザイン賞
+**Product design:**
+- [Red Dot Design Award](https://www.red-dot.org/) - Internationally prestigious design award
+- [iF Design Award](https://ifdesign.com/) - German international design award
+- [Good Design Award](https://www.g-mark.org/) - Japan's Good Design Award
 
-**タイポグラフィ:**
-- [Tokyo TDC](https://www.tdctokyo.org/) - 東京タイプディレクターズクラブ
-- [JAGDA](https://www.jagda.or.jp/) - 日本グラフィックデザイン協会
+**Typography:**
+- [Tokyo TDC](https://www.tdctokyo.org/) - Tokyo Type Directors Club
+- [JAGDA](https://www.jagda.or.jp/) - Japan Graphic Designers Association
 
-**MV・映像:**
-- [MVA（Music Video Awards）](https://www.mvajapan.com/) - 日本のMVアワード
-- [文化庁メディア芸術祭](https://j-mediaarts.jp/) - アニメーション・映像部門
-- [VIMEO Staff Picks](https://vimeo.com/channels/staffpicks) - VIMEO厳選作品
-- [Shots](https://shots.net/) - 国際的な映像作品プラットフォーム
+**MV & video:**
+- [MVA (Music Video Awards)](https://www.mvajapan.com/) - Japanese MV award
+- [Japan Media Arts Festival](https://j-mediaarts.jp/) - Animation and video category
+- [VIMEO Staff Picks](https://vimeo.com/channels/staffpicks) - VIMEO curated works
+- [Shots](https://shots.net/) - International video work platform
 
-**パッケージデザイン:**
-- [JPDA](https://www.jpda.or.jp/) - 日本パッケージデザイン協会
-- [Pentawards](https://www.pentawards.com/) - 国際パッケージデザイン賞
+**Packaging design:**
+- [JPDA](https://www.jpda.or.jp/) - Japan Package Design Association
+- [Pentawards](https://www.pentawards.com/) - International packaging design award
 
-**空間デザイン:**
-- [JCD](https://www.jcd.or.jp/) - 日本商環境デザイン協会
-- [DSA](https://www.dsa.or.jp/) - 日本空間デザイン協会
+**Spatial design:**
+- [JCD](https://www.jcd.or.jp/) - Japan Commercial Environment Design Association
+- [DSA](https://www.dsa.or.jp/) - Japan Space Design Association
 
 **UI/UX:**
 - [App Design Inspiration](https://www.awwwards.com/websites/mobile-excellence/) - Awwwards Mobile
-- [UI Movement](https://uimovement.com/) - UIアニメーション集
+- [UI Movement](https://uimovement.com/) - UI animation collection
 
-**デザインギャラリー・メディア:**
+**Design galleries and media:**
 
 **Web:**
-- [SANKOU!](https://sankoudesign.com/) - 日本のウェブデザインギャラリー
-- [MUUUUU.ORG](https://muuuuu.org/) - 縦長ウェブデザインに特化したギャラリー
-- [81-web.com](https://81-web.com/) - 日本のウェブデザインリンク集
-- [S5-Style](https://www.s5-style.com/) - デザインの優れたウェブサイト集
-- [URAGAWA](https://mirai-works.co.jp/uragawa/) - ウェブデザインの参考コレクション
+- [SANKOU!](https://sankoudesign.com/) - Japanese web design gallery
+- [MUUUUU.ORG](https://muuuuu.org/) - Gallery focused on long-scroll web design
+- [81-web.com](https://81-web.com/) - Japanese web design link collection
+- [S5-Style](https://www.s5-style.com/) - Collection of excellent web design
+- [URAGAWA](https://mirai-works.co.jp/uragawa/) - Web design reference collection
 
-**総合デザイン:**
-- [AXIS](https://www.axisinc.co.jp/) - デザイン専門誌
-- [デザインのひきだし](https://www.amazon.co.jp/gp/bookseries/B00CL6YPLC) - グラフィック・プロダクトデザイン
+**General design:**
+- [AXIS](https://www.axisinc.co.jp/) - Design specialty magazine
+- [Design no Hikidashi](https://www.amazon.co.jp/gp/bookseries/B00CL6YPLC) - Graphic and product design
 
-**広告・マーケティング:**
-- [Advertising TIMES](https://www.sendenkaigi.com/books/advertisingtimes/) - 広告業界誌
-- [ブレーン（Brain）](https://www.sendenkaigi.com/books/brain/) - クリエイティブ専門誌
-- [Marketing Native](https://marketingnative.jp/) - マーケティングメディア
-- [AdverTimes](https://www.advertimes.com/) - 広告業界ニュース
+**Advertising & marketing:**
+- [Advertising TIMES](https://www.sendenkaigi.com/books/advertisingtimes/) - Advertising industry magazine
+- [Brain](https://www.sendenkaigi.com/books/brain/) - Creative specialty magazine
+- [Marketing Native](https://marketingnative.jp/) - Marketing media
+- [AdverTimes](https://www.advertimes.com/) - Advertising industry news
 
-**映像・MV:**
-- [VIMEO](https://vimeo.com/) - 高品質映像プラットフォーム
-- [Motionographer](https://motionographer.com/) - モーショングラフィックス専門メディア
-- [STASH](https://www.stashmedia.tv/) - デザイン・映像・VFX
+**Video & MV:**
+- [VIMEO](https://vimeo.com/) - High-quality video platform
+- [Motionographer](https://motionographer.com/) - Motion graphics specialty media
+- [STASH](https://www.stashmedia.tv/) - Design, video, and VFX
 
-**空間:**
-- [Space Design](https://www.shotenkenchiku.com/space-design/) - 空間デザイン専門誌
-- [商店建築](https://www.shotenkenchiku.com/) - 店舗・商業空間専門誌
+**Spatial:**
+- [Space Design](https://www.shotenkenchiku.com/space-design/) - Spatial design specialty magazine
+- [Shotenkenchiku](https://www.shotenkenchiku.com/) - Store and commercial space specialty magazine
 
-**イベント・展示:**
-- [21_21 DESIGN SIGHT](https://www.2121designsight.jp/) - 東京ミッドタウンのデザイン施設
-- [GOOD DESIGN EXHIBITION](https://www.g-mark.org/exhibition/) - グッドデザイン賞受賞展
-- [Tokyo Midtown DESIGN TOUCH](https://www.tokyo-midtown.com/jp/designtouch/) - デザインイベント
+**Events & exhibitions:**
+- [21_21 DESIGN SIGHT](https://www.2121designsight.jp/) - Design facility at Tokyo Midtown
+- [GOOD DESIGN EXHIBITION](https://www.g-mark.org/exhibition/) - Good Design Award exhibition
+- [Tokyo Midtown DESIGN TOUCH](https://www.tokyo-midtown.com/jp/designtouch/) - Design event
 
-**検索クエリテンプレート:**
+**Search query templates:**
 
 **Web:**
 - Awwwards: `Awwwards Japan 2025 December site of the day`
-- 日本のアワード: `2025 Webグランプリ 受賞`
+- Japanese awards: `2025 Web Grand Prix winners`
 
-**広告:**
+**Advertising:**
 - Cannes Lions: `Cannes Lions 2025 Japan Grand Prix`
-- ACC: `ACC TOKYO CREATIVITY AWARDS 2025 受賞作品`
-- 宣伝会議賞: `宣伝会議賞 2025 グランプリ`
+- ACC: `ACC TOKYO CREATIVITY AWARDS 2025 winners`
+- Sendenkaigi: `Sendenkaigi Award 2025 Grand Prix`
 
-**プロダクト:**
-- Good Design: `グッドデザイン賞 2025 ベスト100`
+**Product:**
+- Good Design: `Good Design Award 2025 Best 100`
 - Red Dot: `Red Dot Design Award 2025 Japan winner`
 
-**タイポグラフィ:**
-- Tokyo TDC: `Tokyo TDC 2025 グランプリ`
-- JAGDA: `JAGDA新人賞 2025`
+**Typography:**
+- Tokyo TDC: `Tokyo TDC 2025 Grand Prix`
+- JAGDA: `JAGDA newcomer award 2025`
 
-**MV・映像:**
-- MVA: `MVA 2025 受賞作品`
+**MV & video:**
+- MVA: `MVA 2025 award winners`
 - VIMEO: `VIMEO Staff Picks Japan 2025`
-- 文化庁: `文化庁メディア芸術祭 2025 アニメーション部門`
+- Japan Media Arts: `Japan Media Arts Festival 2025 animation category`
 
-**パッケージ:**
-- JPDA: `JPDA賞 2025 受賞作品`
+**Packaging:**
+- JPDA: `JPDA Award 2025 winners`
 - Pentawards: `Pentawards 2025 Japan`
 
-**空間:**
+**Spatial:**
 - JCD: `JCD Design Award 2025`
 - DSA: `DSA Design Award 2025`
 
 **UI/UX:**
 - App Design: `Awwwards Mobile Excellence 2025`
-- Good Design: `グッドデザイン賞 2025 アプリ`
+- Good Design: `Good Design Award 2025 app`
 
-**トレンド:**
-- 各分野: `日本 [分野名] デザイン 2025年 トレンド`
+**Trends:**
+- By field: `Japan [field name] design 2025 trends`
 
-**制作会社/クリエイター:**
-- `[制作会社名] 2025 制作実績`
-- `[制作会社名] MV 映像 2025`
-- `[ディレクター名] 2025 受賞`
+**Production company/creator:**
+- `[production company name] 2025 work`
+- `[production company name] MV video 2025`
+- `[director name] 2025 award`
 
-**注目制作会社の実績検索:**
-- Garden Eight: `Garden Eight 2025 作品`
-- mount inc: `mount inc 2025 映像 MV`
-- IN FOCUS: `IN FOCUS 2025 実績`
-- TryMore: `TryMore 2025 映像制作`
-- mont: `mont 2025 映像 ブランディング`
+**Searching for featured production company work:**
+- Garden Eight: `Garden Eight 2025 works`
+- mount inc: `mount inc 2025 video MV`
+- IN FOCUS: `IN FOCUS 2025 portfolio`
+- TryMore: `TryMore 2025 video production`
+- mont: `mont 2025 video branding`
 
-**注目制作会社リスト:**
-詳細は [featured-companies.md](./featured-companies.md) を参照してください。
-優先的に検索すべき制作会社16社（Garden Eight、SUPER CROWDS、MONOPO、mount inc.、MEFILAS、STUDIO DETAILS、HOMUNCULUS、Quoitworks、TANE-be、mont.、THREE Inc.、IN FOCUS、TryMore、NEWTOWN、Fivestar Interactive、ARUTEGA）の特徴、強み、活動分野をまとめています。
+**Featured production company list:**
+See [featured-companies.md](./featured-companies.md) for details.
+This file covers 16 companies to prioritize in searches (Garden Eight, SUPER CROWDS, MONOPO, mount inc., MEFILAS, STUDIO DETAILS, HOMUNCULUS, Quoitworks, TANE-be, mont., THREE Inc., IN FOCUS, TryMore, NEWTOWN, Fivestar Interactive, ARUTEGA) with their characteristics, strengths, and active fields.
 </reference_guides>

@@ -7,8 +7,8 @@ model: opus
 
 ## Iron Law
 
-1. ユーザーの回答を勝手に解釈・補完しない
-2. 仕様確定前に実装に着手しない
+1. Do not interpret or fill in the user's answers without permission
+2. Do not start implementing before the spec is confirmed
 
 Read this plan file $1 and interview me in detail using the AskUserQuestionTool about 
 literally anything: technical implementation, UI & UX, concerns, tradeoffs, etc. 

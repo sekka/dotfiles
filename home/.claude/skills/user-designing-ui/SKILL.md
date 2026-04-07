@@ -1,46 +1,46 @@
 ---
 name: user-designing-ui
-description: ユーザーインターフェースの設計とコンポーネント設計を支援します。ワイヤーフレーム、レイアウト設計、デザインシステム構築、レスポンシブデザイン、インタラクションパターンを提供します。美しく機能的で実装可能なインターフェース設計が必要な場合に使用してください。
+description: Help with UI and component design. Covers wireframes, layout, design systems, responsive design, and interaction patterns. Use when you need a clear, functional, and implementable interface design.
 disable-model-invocation: false
 ---
 
-# UIデザイン設計
+# UI Design
 
-## 概要
+## Overview
 
-単に美しいだけでなく、迅速な開発サイクルで実装可能なUIを設計するスキルです。モダンなデザイントレンド、プラットフォーム固有のガイドライン、コンポーネント設計、革新と使いやすさの微妙なバランスに精通しています。
+A skill for designing UIs that are not just visually appealing, but also implementable within a rapid development cycle. Covers modern design trends, platform-specific guidelines, component design, and the delicate balance between innovation and usability.
 
 ## Iron Law
 
-1. 実装不可能なデザインを提案しない
-2. レスポンシブ対応を省略しない
+1. Do not propose designs that cannot be implemented.
+2. Do not skip responsive support.
 
-## 実行フロー
+## Execution Flow
 
-### Step 1: ワイヤーフレームと情報アーキテクチャ
+### Step 1: Wireframes and Information Architecture
 
-#### ワイヤーフレームの作成
+#### Creating Wireframes
 
-**目的:**
+**Goals:**
 
-- 目的に沿った情報設計とセクション配置の提案
-- ナビゲーション/CTA/フォームなど主要要素の配置設計
-- ブレークポイント別のレイアウト案作成
-- ユーザーフローと画面遷移の整理
-- 注釈付きワイヤーで意図や状態を明確化
+- Propose information design and section layout that matches the purpose.
+- Design placement of key elements such as navigation, CTAs, and forms.
+- Create layout options for each breakpoint.
+- Organize user flows and screen transitions.
+- Use annotated wireframes to clarify intent and states.
 
-**成果物:**
+**Deliverables:**
 
 ```markdown
-## [ページ名] ワイヤーフレーム
+## [Page Name] Wireframe
 
-### レイアウト構造（デスクトップ）
+### Layout Structure (Desktop)
 ┌─────────────────────────────────────┐
 │ [Header]                            │
 │ Logo | Nav | Search | User Menu     │
 ├─────────────────────────────────────┤
 │ [Hero Section]                      │
-│ H1: メインメッセージ                │
+│ H1: Main Message                    │
 │ Subheading                          │
 │ [Primary CTA] [Secondary CTA]       │
 ├─────────────────────────────────────┤
@@ -50,107 +50,107 @@ disable-model-invocation: false
 │ └───────┘ └───────┘ └───────┘     │
 └─────────────────────────────────────┘
 
-### レスポンシブ対応（モバイル）
-- Header: ハンバーガーメニュー化
-- Hero: 1カラムレイアウト
-- Cards: スタック配置
+### Responsive (Mobile)
+- Header: Hamburger menu
+- Hero: Single column layout
+- Cards: Stacked layout
 ```
 
-#### 情報設計の原則
+#### Information Design Principles
 
-**視線の流れ:**
+**Eye flow:**
 
-- F字パターン（テキスト重視）
-- Z字パターン（ビジュアル重視）
-- グーテンベルク図（斜め読み）
+- F-pattern (text-heavy)
+- Z-pattern (visual-heavy)
+- Gutenberg diagram (diagonal scan)
 
-**優先度の視覚化:**
+**Visualizing priority:**
 
-- サイズと位置で重要度を表現
-- カラーとコントラストで注意を誘導
-- 余白で要素をグループ化
+- Use size and position to express importance.
+- Use color and contrast to guide attention.
+- Use whitespace to group elements.
 
-### Step 2: レイアウトとグリッド設計
+### Step 2: Layout and Grid Design
 
-#### グリッドシステム
+#### Grid System
 
-**12カラムグリッド（推奨）:**
+**12-column grid (recommended):**
 
 ```css
-/* コンテナ */
+/* Container */
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
-/* グリッド */
+/* Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
 }
 
-/* レスポンシブ例 */
+/* Responsive example */
 .col-span-4 {
-  grid-column: span 4; /* デスクトップ: 3カラム */
+  grid-column: span 4; /* Desktop: 3 columns */
 }
 
 @media (max-width: 768px) {
   .col-span-4 {
-    grid-column: span 12; /* モバイル: 1カラム */
+    grid-column: span 12; /* Mobile: 1 column */
   }
 }
 ```
 
-#### スペーシングシステム
+#### Spacing System
 
-**4px/8pxグリッド:**
+**4px/8px grid:**
 
 ```css
-/* Tailwindベースのスペーシング */
---spacing-1:  0.25rem;  /* 4px  - タイト */
---spacing-2:  0.5rem;   /* 8px  - 小 */
---spacing-4:  1rem;     /* 16px - 中（標準） */
---spacing-6:  1.5rem;   /* 24px - セクション間 */
---spacing-8:  2rem;     /* 32px - 大 */
---spacing-12: 3rem;     /* 48px - ヒーロー */
---spacing-16: 4rem;     /* 64px - 特大 */
+/* Tailwind-based spacing */
+--spacing-1:  0.25rem;  /* 4px  - tight */
+--spacing-2:  0.5rem;   /* 8px  - small */
+--spacing-4:  1rem;     /* 16px - medium (standard) */
+--spacing-6:  1.5rem;   /* 24px - between sections */
+--spacing-8:  2rem;     /* 32px - large */
+--spacing-12: 3rem;     /* 48px - hero */
+--spacing-16: 4rem;     /* 64px - extra large */
 ```
 
-**スペーシングルール:**
+**Spacing rules:**
 
-- 関連要素: 小さい余白（4-8px）
-- セクション内: 中程度の余白（16-24px）
-- セクション間: 大きい余白（32-64px）
+- Related elements: small spacing (4-8px)
+- Within a section: medium spacing (16-24px)
+- Between sections: large spacing (32-64px)
 
-### Step 3: タイポグラフィ設計
+### Step 3: Typography Design
 
-#### フォント選定
+#### Font Selection
 
-**推奨フォントペアリング:**
+**Recommended font pairings:**
 
-| 用途 | 組み合わせ | 特徴 |
+| Use | Combination | Characteristics |
 |------|------------|------|
-| モダン・ミニマル | Inter | クリーンで読みやすい |
-| エレガント | Playfair Display + Lato | セリフ×サンセリフ |
-| テック系 | Space Grotesk + IBM Plex Sans | 技術的で信頼感 |
-| ビジネス | Roboto + Open Sans | 汎用性高い |
+| Modern / minimal | Inter | Clean and readable |
+| Elegant | Playfair Display + Lato | Serif × sans-serif |
+| Tech | Space Grotesk + IBM Plex Sans | Technical and trustworthy |
+| Business | Roboto + Open Sans | Versatile |
 
-#### タイプスケール（モバイルファースト）
+#### Type Scale (mobile-first)
 
 ```css
-/* モバイル */
---text-xs:   0.75rem;  /* 12px - キャプション */
---text-sm:   0.875rem; /* 14px - セカンダリ */
---text-base: 1rem;     /* 16px - 本文 */
---text-lg:   1.125rem; /* 18px - 強調本文 */
+/* Mobile */
+--text-xs:   0.75rem;  /* 12px - caption */
+--text-sm:   0.875rem; /* 14px - secondary */
+--text-base: 1rem;     /* 16px - body */
+--text-lg:   1.125rem; /* 18px - emphasized body */
 --text-xl:   1.25rem;  /* 20px - H3 */
 --text-2xl:  1.5rem;   /* 24px - H2 */
 --text-3xl:  1.875rem; /* 30px - H1 */
 --text-4xl:  2.25rem;  /* 36px - Display */
 
-/* デスクトップ（やや大きく） */
+/* Desktop (slightly larger) */
 @media (min-width: 768px) {
   --text-3xl: 2.25rem;  /* 36px */
   --text-4xl: 3rem;     /* 48px */
@@ -158,106 +158,106 @@ disable-model-invocation: false
 }
 ```
 
-#### タイポグラフィのルール
+#### Typography Rules
 
-**行間（Line Height）:**
+**Line height:**
 
-- 見出し: 1.2-1.3
-- 本文: 1.5-1.7
-- キャプション: 1.4
+- Headings: 1.2–1.3
+- Body: 1.5–1.7
+- Captions: 1.4
 
-**字間（Letter Spacing）:**
+**Letter spacing:**
 
-- 大文字見出し: 0.05em（広め）
-- 通常: 0（デフォルト）
-- 小さい文字: 0.01em（やや広め）
+- Uppercase headings: 0.05em (wider)
+- Normal: 0 (default)
+- Small text: 0.01em (slightly wider)
 
-### Step 4: カラーシステム
+### Step 4: Color System
 
-#### カラーパレット設計
+#### Color Palette Design
 
-**プライマリカラー（50-900の階調）:**
+**Primary color (shades 50–900):**
 
 ```css
-/* 例: Blueパレット */
+/* Example: Blue palette */
 --color-primary-50:  #eff6ff;
 --color-primary-100: #dbeafe;
 --color-primary-200: #bfdbfe;
 --color-primary-300: #93c5fd;
 --color-primary-400: #60a5fa;
---color-primary-500: #3b82f6;  /* ベースカラー */
+--color-primary-500: #3b82f6;  /* Base color */
 --color-primary-600: #2563eb;
 --color-primary-700: #1d4ed8;
 --color-primary-800: #1e40af;
 --color-primary-900: #1e3a8a;
 ```
 
-#### セマンティックカラー
+#### Semantic Colors
 
 ```css
-/* 成功 */
+/* Success */
 --color-success: #10b981;
 
-/* 警告 */
+/* Warning */
 --color-warning: #f59e0b;
 
-/* エラー */
+/* Error */
 --color-error: #ef4444;
 
-/* 情報 */
+/* Info */
 --color-info: #3b82f6;
 
-/* ニュートラル（グレースケール） */
+/* Neutral (grayscale) */
 --color-gray-50:  #f9fafb;
 --color-gray-500: #6b7280;
 --color-gray-900: #111827;
 ```
 
-#### アクセシビリティ確保
+#### Ensuring Accessibility
 
-**WCAGコントラスト比:**
+**WCAG contrast ratios:**
 
-- AA基準（最低要件）: 通常テキスト 4.5:1、大テキスト 3:1
-- AAA基準（推奨）: 通常テキスト 7:1、大テキスト 4.5:1
+- AA (minimum): Normal text 4.5:1, large text 3:1
+- AAA (recommended): Normal text 7:1, large text 4.5:1
 
-**チェックツール:**
+**Check tools:**
 
 - [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
 - Chrome DevTools: Accessibility Pane
 
-### Step 5: コンポーネント設計
+### Step 5: Component Design
 
-#### コンポーネントの状態定義
+#### Defining Component States
 
-**必須ステート:**
+**Required states:**
 
 ```markdown
-## ボタンコンポーネント
+## Button Component
 
-### 状態一覧
-- [ ] Default（初期状態）
-- [ ] Hover（マウスオーバー）
-- [ ] Focus（キーボードフォーカス）
-- [ ] Active（クリック中）
-- [ ] Disabled（無効）
-- [ ] Loading（読み込み中）
+### States
+- [ ] Default (initial state)
+- [ ] Hover (mouse over)
+- [ ] Focus (keyboard focus)
+- [ ] Active (clicking)
+- [ ] Disabled
+- [ ] Loading
 
-### バリエーション
-- Primary（主要アクション）
-- Secondary（補助アクション）
-- Outline（枠線のみ）
-- Ghost（背景透明）
-- Danger（削除など危険な操作）
+### Variants
+- Primary (main action)
+- Secondary (supporting action)
+- Outline (border only)
+- Ghost (transparent background)
+- Danger (destructive actions like delete)
 
-### サイズ
+### Sizes
 - Small (32px height)
-- Medium (40px height) - デフォルト
+- Medium (40px height) - default
 - Large (48px height)
 ```
 
-#### コンポーネントライブラリ構成
+#### Component Library Structure
 
-**基本コンポーネント:**
+**Basic components:**
 
 - Button
 - Input / Textarea
@@ -268,7 +268,7 @@ disable-model-invocation: false
 - Avatar
 - Icon
 
-**複合コンポーネント:**
+**Composite components:**
 
 - Card
 - Modal / Dialog
@@ -279,31 +279,31 @@ disable-model-invocation: false
 - Breadcrumb
 - Pagination
 
-### Step 6: レスポンシブデザイン
+### Step 6: Responsive Design
 
-#### ブレークポイント
+#### Breakpoints
 
 ```css
-/* Tailwindベースのブレークポイント */
---breakpoint-sm: 640px;   /* モバイル（横） */
---breakpoint-md: 768px;   /* タブレット */
---breakpoint-lg: 1024px;  /* ラップトップ */
---breakpoint-xl: 1280px;  /* デスクトップ */
---breakpoint-2xl: 1536px; /* 大型デスクトップ */
+/* Tailwind-based breakpoints */
+--breakpoint-sm: 640px;   /* Mobile (landscape) */
+--breakpoint-md: 768px;   /* Tablet */
+--breakpoint-lg: 1024px;  /* Laptop */
+--breakpoint-xl: 1280px;  /* Desktop */
+--breakpoint-2xl: 1536px; /* Large desktop */
 ```
 
-#### レスポンシブ戦略
+#### Responsive Strategy
 
-**モバイルファースト:**
+**Mobile-first:**
 
 ```css
-/* ベーススタイル（モバイル） */
+/* Base styles (mobile) */
 .card {
   width: 100%;
   padding: 1rem;
 }
 
-/* タブレット以上 */
+/* Tablet and above */
 @media (min-width: 768px) {
   .card {
     width: 50%;
@@ -311,7 +311,7 @@ disable-model-invocation: false
   }
 }
 
-/* デスクトップ以上 */
+/* Desktop and above */
 @media (min-width: 1024px) {
   .card {
     width: 33.333%;
@@ -320,10 +320,10 @@ disable-model-invocation: false
 }
 ```
 
-**コンテナクエリ（モダンアプローチ）:**
+**Container queries (modern approach):**
 
 ```css
-/* コンポーネント自身のサイズに応じて変化 */
+/* Changes based on the component's own size */
 .card-container {
   container-type: inline-size;
 }
@@ -336,29 +336,29 @@ disable-model-invocation: false
 }
 ```
 
-### Step 7: インタラクションとアニメーション
+### Step 7: Interactions and Animations
 
-#### マイクロインタラクション
+#### Micro-interactions
 
-**トランジション設定:**
+**Transition settings:**
 
 ```css
-/* イージング関数 */
+/* Easing functions */
 --ease-in:     cubic-bezier(0.4, 0, 1, 1);
 --ease-out:    cubic-bezier(0, 0, 0.2, 1);
 --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
-/* デュレーション */
---duration-fast:   150ms;  /* 素早い（ホバー等） */
---duration-base:   200ms;  /* 標準 */
---duration-slow:   300ms;  /* ゆっくり */
---duration-slower: 500ms;  /* 特別な演出 */
+/* Durations */
+--duration-fast:   150ms;  /* Quick (hover, etc.) */
+--duration-base:   200ms;  /* Standard */
+--duration-slow:   300ms;  /* Slow */
+--duration-slower: 500ms;  /* Special effects */
 ```
 
-**アニメーション例:**
+**Animation examples:**
 
 ```css
-/* ボタンホバー */
+/* Button hover */
 .button {
   transition: all var(--duration-base) var(--ease-out);
 }
@@ -368,7 +368,7 @@ disable-model-invocation: false
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* ローディングスピナー */
+/* Loading spinner */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -378,11 +378,11 @@ disable-model-invocation: false
 }
 ```
 
-### Step 8: デザイントークン
+### Step 8: Design Tokens
 
-#### トークン定義（Design Tokens）
+#### Token Definition
 
-**JSON形式:**
+**JSON format:**
 
 ```json
 {
@@ -404,7 +404,7 @@ disable-model-invocation: false
 }
 ```
 
-**CSS Variables（実装）:**
+**CSS Variables (implementation):**
 
 ```css
 :root {
@@ -423,40 +423,40 @@ disable-model-invocation: false
 }
 ```
 
-### Step 9: プラットフォーム別ガイドライン
+### Step 9: Platform-Specific Guidelines
 
-#### iOS（Human Interface Guidelines）
+#### iOS (Human Interface Guidelines)
 
-**特徴:**
+**Characteristics:**
 
-- SF Pro / SF Compactフォント
-- 最小タップターゲット: 44×44pt
-- iOS標準コンポーネントの尊重
-- ジェスチャー: スワイプ、ピンチ、長押し
+- SF Pro / SF Compact fonts
+- Minimum tap target: 44×44pt
+- Respect iOS standard components
+- Gestures: swipe, pinch, long press
 
-#### Android（Material Design）
+#### Android (Material Design)
 
-**特徴:**
+**Characteristics:**
 
-- Robotoフォント
-- 最小タップターゲット: 48×48dp
-- Elevation（影）でUIの階層を表現
-- FAB（Floating Action Button）の活用
+- Roboto font
+- Minimum tap target: 48×48dp
+- Use elevation (shadow) to express UI hierarchy
+- Use FAB (Floating Action Button)
 
-#### Web（レスポンシブ）
+#### Web (Responsive)
 
-**特徴:**
+**Characteristics:**
 
-- システムフォントスタック
-- 最小タップターゲット: 48×48px
-- ホバー状態の明示
-- キーボードナビゲーション対応
+- System font stack
+- Minimum tap target: 48×48px
+- Show hover states clearly
+- Support keyboard navigation
 
-### Step 10: デザインハンドオフ
+### Step 10: Design Handoff
 
-#### 開発者向け仕様書
+#### Developer Specification
 
-**コンポーネント仕様:**
+**Component spec:**
 
 ```markdown
 ## Button Component
@@ -486,185 +486,185 @@ disable-model-invocation: false
 - Keyboard accessible (Enter, Space)
 ```
 
-#### アセット準備
+#### Asset Preparation
 
-**画像:**
+**Images:**
 
-- SVG: アイコン、ロゴ（スケーラブル）
-- WebP/AVIF: 写真（次世代フォーマット）
-- 2x/3x: Retina対応
+- SVG: icons, logos (scalable)
+- WebP/AVIF: photos (next-gen formats)
+- 2x/3x: Retina support
 
-**アイコンシステム:**
+**Icon system:**
 
-- 推奨: Heroicons, Lucide, Phosphor Icons
-- サイズ: 16px, 20px, 24px, 32px
-- 形式: SVG（インライン化推奨）
+- Recommended: Heroicons, Lucide, Phosphor Icons
+- Sizes: 16px, 20px, 24px, 32px
+- Format: SVG (inline recommended)
 
-## 出力成果物
+## Output Deliverables
 
-1. **ワイヤーフレーム**: 主要ブレークポイント別のレイアウト案
-2. **デザインシステムドキュメント**: カラー、タイポグラフィ、スペーシングのルール
-3. **コンポーネントライブラリ**: 全状態を含むコンポーネント仕様
-4. **デザイントークン**: JSON/CSS Variables形式
-5. **インタラクティブプロトタイプ**: 主要フローの動作確認
-6. **開発者向け実装ノート**: Tailwindクラス、CSS仕様
-7. **アニメーション仕様**: トランジション、イージング、デュレーション
+1. **Wireframes**: Layout options per major breakpoint
+2. **Design system document**: Rules for colors, typography, and spacing
+3. **Component library**: Component specs including all states
+4. **Design tokens**: JSON / CSS Variables format
+5. **Interactive prototype**: Verify the behavior of main flows
+6. **Developer implementation notes**: Tailwind classes, CSS specs
+7. **Animation specs**: Transitions, easing, and durations
 
-## ベストプラクティス
+## Best Practices
 
-1. **Simplicity First**: 複雑なデザインは実装に時間がかかる
-2. **Component Reuse**: 一度設計したらどこでも使う
-3. **Standard Patterns**: ありふれたインタラクションは再発明しない
-4. **Progressive Enhancement**: コア体験を優先し、後で楽しさを足す
-5. **Performance Conscious**: 美しく軽量に
-6. **Accessibility Built-in**: 最初からWCAG準拠
+1. **Simplicity First**: Complex designs take longer to implement.
+2. **Component Reuse**: Design once, use everywhere.
+3. **Standard Patterns**: Do not reinvent common interactions.
+4. **Progressive Enhancement**: Prioritize the core experience, then add delight.
+5. **Performance Conscious**: Beautiful and lightweight.
+6. **Accessibility Built-in**: WCAG compliant from the start.
 
-## 実装スピードアップのヒント
+## Tips for Faster Implementation
 
-**活用すべきツール:**
+**Useful tools:**
 
-- **Tailwind UI**: 高品質なコンポーネントテンプレート
-- **Shadcn/ui**: カスタマイズ可能なコンポーネントライブラリ
-- **Heroicons**: 統一感のあるアイコンセット
-- **Radix UI**: アクセシブルなプリミティブコンポーネント
-- **Framer Motion**: プリセットアニメーション
+- **Tailwind UI**: High-quality component templates
+- **Shadcn/ui**: Customizable component library
+- **Heroicons**: Consistent icon set
+- **Radix UI**: Accessible primitive components
+- **Framer Motion**: Preset animations
 
 ## CSS Knowledge Reference
 
-モダンCSS技術を活用したデザイン実装時は `managing-frontend-knowledge` スキルを使用してナレッジベースを参照できます。
+When implementing designs with modern CSS techniques, you can use the `managing-frontend-knowledge` skill to refer to the knowledge base.
 
-**注意:** ナレッジは参考情報であり、古い・不足している場合があります。最新情報はContext7やMDN等で確認してください。JavaScript不要で実現できるUIパターン（アコーディオン、ポップオーバー等）はCSS実装を優先的に検討してください。
+**Note:** The knowledge is reference information and may be outdated or incomplete. Always check the latest information with Context7, MDN, etc. For UI patterns that can be done without JavaScript (accordion, popover, etc.), consider CSS implementations first.
 
-## 関連スキル
+## Related Skills
 
-- **designing-brand**: ブランドレベルのデザインシステム（カラーパレット、タイポグラフィ基礎）
-- **developing-frontend**: UI実装への橋渡し（React/Vue/Tailwind実装）
-- **working-with-figma**: Figmaデザインデータの実装支援
-- **managing-frontend-knowledge**: CSS/JS技術の最新情報参照
-- **auditing-accessibility**: アクセシビリティ監査と改善
+- **designing-brand**: Design systems at the brand level (color palette, typography foundations)
+- **developing-frontend**: Bridge to UI implementation (React/Vue/Tailwind)
+- **working-with-figma**: Implementation support using Figma design data
+- **managing-frontend-knowledge**: Reference for the latest CSS/JS technologies
+- **auditing-accessibility**: Accessibility audits and improvements
 
-## スキル選択ガイド
+## Skill Selection Guide
 
-作業内容に応じて、適切なスキルを選択してください。
+Choose the right skill based on your task.
 
-### UIデザインワークフロー別の推奨スキル
+### Recommended Skills by UI Design Workflow Phase
 
-| 作業フェーズ | 主スキル | 補助スキル | 出力 |
+| Work Phase | Main Skill | Supporting Skill | Output |
 |------------|---------|----------|------|
-| **1. ブランド基盤構築** | designing-brand | - | カラーパレット、タイポグラフィ、ロゴ |
-| **2. ワイヤーフレーム作成** | designing-ui | - | 画面構成、レイアウト案 |
-| **3. デザインシステム設計** | designing-brand + designing-ui | - | デザイントークン、コンポーネントライブラリ |
-| **4. UI実装** | developing-frontend | designing-ui, managing-frontend-knowledge | React/Vue/Tailwindコード |
-| **5. Figmaからの実装** | working-with-figma | designing-ui, developing-frontend | コンポーネントコード |
-| **6. アクセシビリティ監査** | auditing-accessibility | designing-ui | WCAG準拠レポート |
+| **1. Build brand foundation** | designing-brand | - | Color palette, typography, logo |
+| **2. Create wireframes** | designing-ui | - | Screen layout, layout options |
+| **3. Design design system** | designing-brand + designing-ui | - | Design tokens, component library |
+| **4. Implement UI** | developing-frontend | designing-ui, managing-frontend-knowledge | React/Vue/Tailwind code |
+| **5. Implement from Figma** | working-with-figma | designing-ui, developing-frontend | Component code |
+| **6. Accessibility audit** | auditing-accessibility | designing-ui | WCAG compliance report |
 
-### 作業内容別のスキル選択
+### Skill Selection by Task
 
-#### デザイン設計フェーズ
+#### Design Phase
 
-| やりたいこと | 推奨スキル | 理由 |
+| Task | Recommended Skill | Reason |
 |------------|-----------|------|
-| ブランドカラー・ロゴを決めたい | **designing-brand** | ブランドアイデンティティの確立が主目的 |
-| 画面のワイヤーフレームを描きたい | **designing-ui** | 情報設計とレイアウトが主目的 |
-| コンポーネントの状態を定義したい | **designing-ui** | UIコンポーネントの詳細設計が主目的 |
-| デザイントークンを作りたい | **designing-brand** → **designing-ui** | まずブランド基盤、次にUI実装用トークン |
+| Decide brand colors and logo | **designing-brand** | Main goal is establishing brand identity |
+| Draw screen wireframes | **designing-ui** | Main goal is information design and layout |
+| Define component states | **designing-ui** | Main goal is detailed UI component design |
+| Create design tokens | **designing-brand** → **designing-ui** | Brand foundation first, then UI implementation tokens |
 
-#### 実装フェーズ
+#### Implementation Phase
 
-| やりたいこと | 推奨スキル | 理由 |
+| Task | Recommended Skill | Reason |
 |------------|-----------|------|
-| CSS/Tailwindの最新技術を知りたい | **managing-frontend-knowledge** | 技術情報参照が主目的 |
-| React/Vueでコンポーネント実装したい | **developing-frontend** | コード記述が主目的 |
-| Figmaデザインをコード化したい | **working-with-figma** | Figmaデータの活用が主目的 |
-| CSSアニメーションを実装したい | **developing-frontend** + **managing-frontend-knowledge** | 実装＋最新技術情報 |
+| Learn the latest CSS/Tailwind techniques | **managing-frontend-knowledge** | Main goal is accessing technical information |
+| Implement components in React/Vue | **developing-frontend** | Main goal is writing code |
+| Convert Figma design to code | **working-with-figma** | Main goal is using Figma data |
+| Implement CSS animations | **developing-frontend** + **managing-frontend-knowledge** | Implementation + latest tech info |
 
-#### 品質保証フェーズ
+#### Quality Assurance Phase
 
-| やりたいこと | 推奨スキル | 理由 |
+| Task | Recommended Skill | Reason |
 |------------|-----------|------|
-| WCAGアクセシビリティをチェックしたい | **auditing-accessibility** | a11y監査が主目的 |
-| デザインシステムの一貫性を検証したい | **designing-ui** | コンポーネント設計の見直し |
-| レスポンシブ対応を確認したい | **designing-ui** + **developing-frontend** | 設計＋実装の両面確認 |
+| Check WCAG accessibility | **auditing-accessibility** | Main goal is a11y audit |
+| Verify design system consistency | **designing-ui** | Review component design |
+| Verify responsive support | **designing-ui** + **developing-frontend** | Check both design and implementation |
 
-### スキル組み合わせパターン
+### Skill Combination Patterns
 
-#### パターン1: ゼロからのUIデザイン
-
-```
-1. designing-brand（ブランド基盤）
-   ↓ カラーパレット、タイポグラフィ確立
-2. designing-ui（UI設計）
-   ↓ ワイヤーフレーム、コンポーネント設計
-3. developing-frontend（実装）
-   ↓ React/Tailwindコード記述
-4. auditing-accessibility（品質保証）
-   ↓ WCAG準拠確認
-```
-
-#### パターン2: Figmaデザインの実装
+#### Pattern 1: UI Design from Scratch
 
 ```
-1. working-with-figma（デザイン取得）
-   ↓ Figmaからデザインデータ抽出
-2. designing-ui（実装仕様作成）
-   ↓ コンポーネント仕様、デザイントークン
-3. developing-frontend（実装）
-   ↓ コード記述
+1. designing-brand (brand foundation)
+   ↓ Establish color palette and typography
+2. designing-ui (UI design)
+   ↓ Wireframes, component design
+3. developing-frontend (implementation)
+   ↓ Write React/Tailwind code
+4. auditing-accessibility (quality assurance)
+   ↓ Verify WCAG compliance
 ```
 
-#### パターン3: 既存UIの改善
+#### Pattern 2: Implement from Figma Design
 
 ```
-1. auditing-accessibility（現状評価）
-   ↓ 問題点の特定
-2. designing-ui（改善設計）
-   ↓ 新しいUI設計
-3. developing-frontend（実装）
-   ↓ 改善コードの適用
+1. working-with-figma (get design)
+   ↓ Extract design data from Figma
+2. designing-ui (create implementation specs)
+   ↓ Component specs, design tokens
+3. developing-frontend (implementation)
+   ↓ Write code
 ```
 
-### よくある質問
+#### Pattern 3: Improve Existing UI
 
-**Q: デザインブランドとUIデザインの違いは？**
+```
+1. auditing-accessibility (evaluate current state)
+   ↓ Identify problems
+2. designing-ui (design improvements)
+   ↓ New UI design
+3. developing-frontend (implementation)
+   ↓ Apply improved code
+```
 
-- **designing-brand**: ブランド全体のビジュアルアイデンティティ（カラーシステム、タイポグラフィ基礎、ロゴ）
-- **designing-ui**: 個別画面・コンポーネントの設計（ワイヤーフレーム、レイアウト、インタラクション）
+### FAQ
 
-**Q: CSS実装情報はどのスキルを使えばいい？**
+**Q: What is the difference between designing-brand and designing-ui?**
 
-- **最新技術を調べる**: managing-frontend-knowledge（情報参照）
-- **実装コードを書く**: developing-frontend（コーディング）
-- **設計仕様を作る**: designing-ui（仕様定義）
+- **designing-brand**: Visual identity for the whole brand (color system, typography foundation, logo)
+- **designing-ui**: Design of individual screens and components (wireframes, layout, interactions)
 
-**Q: Figmaデザインの実装にはどのスキルが必要？**
+**Q: Which skill should I use for CSS implementation information?**
 
-1. working-with-figma（Figmaデータ取得）
-2. designing-ui（実装仕様の補完）
-3. developing-frontend（コード実装）
+- **Look up the latest techniques**: managing-frontend-knowledge (info reference)
+- **Write implementation code**: developing-frontend (coding)
+- **Create design specs**: designing-ui (spec definition)
 
-## クイックリファレンス
+**Q: Which skills do I need to implement a Figma design?**
+
+1. working-with-figma (get Figma data)
+2. designing-ui (fill in implementation specs)
+3. developing-frontend (code implementation)
+
+## Quick Reference
 
 ### Typography Scale (Mobile-first)
 
 ```
-Display: 36px/40px - ヒーロー見出し
-H1: 30px/36px - ページタイトル
-H2: 24px/32px - セクション見出し
-H3: 20px/28px - カードタイトル
-Body: 16px/24px - 標準テキスト
-Small: 14px/20px - セカンダリテキスト
-Tiny: 12px/16px - キャプション
+Display: 36px/40px - Hero heading
+H1: 30px/36px - Page title
+H2: 24px/32px - Section heading
+H3: 20px/28px - Card title
+Body: 16px/24px - Standard text
+Small: 14px/20px - Secondary text
+Tiny: 12px/16px - Caption
 ```
 
 ### Spacing System (Tailwind-based)
 
 ```
-0.25rem (4px)  - タイトな余白
-0.5rem  (8px)  - 小
-1rem    (16px) - 中（標準）
-1.5rem  (24px) - セクション間
-2rem    (32px) - 大
-3rem    (48px) - ヒーロー
+0.25rem (4px)  - Tight spacing
+0.5rem  (8px)  - Small
+1rem    (16px) - Medium (standard)
+1.5rem  (24px) - Between sections
+2rem    (32px) - Large
+3rem    (48px) - Hero
 ```
 
 ### Component State Checklist
@@ -676,4 +676,4 @@ Tiny: 12px/16px - キャプション
 - [ ] Loading state
 - [ ] Error state
 - [ ] Empty state
-- [ ] Dark mode variant (必要に応じて)
+- [ ] Dark mode variant (if needed)

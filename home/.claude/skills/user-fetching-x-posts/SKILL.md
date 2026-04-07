@@ -3,15 +3,15 @@ name: user-fetching-x-posts
 description: Use when an X (Twitter) post URL is shared and content extraction is needed. Triggers on x.com or twitter.com URLs pointing to individual posts/statuses.
 ---
 
-# X投稿取得スキル
+# X Post Fetching Skill
 
-X投稿URLからデータを抽出する。agent-browser CLI を優先し、失敗時のみ Playwright MCP にフォールバック。
+Extract data from X post URLs. Prefer the agent-browser CLI. Fall back to Playwright MCP only if it fails.
 
 ## Iron Law
 
-1. ポストが取得できなかった場合に内容を推測しない
+1. Do not guess post content when a post cannot be fetched
 
-## 実行フロー
+## Execution Flow
 
 ```dot
 digraph fetch_flow {
@@ -29,9 +29,9 @@ digraph fetch_flow {
 }
 ```
 
-## 抽出ロジック（JS）
+## Extraction Logic (JS)
 
-agent-browser `eval` および Playwright MCP `browser_run_code` で同一コードを使う。
+Use the same code for agent-browser `eval` and Playwright MCP `browser_run_code`.
 
 ```javascript
 (() => {
@@ -57,56 +57,56 @@ agent-browser `eval` および Playwright MCP `browser_run_code` で同一コー
 })()
 ```
 
-## Step 1: agent-browser CLI方式（優先）
+## Step 1: agent-browser CLI (preferred)
 
-各URLに対して以下を実行する。複数URLは並列実行可能（別々のBash呼び出し）。
+Run the following for each URL. Multiple URLs can be run in parallel (separate Bash calls).
 
 ```bash
 agent-browser open TARGET_URL
 agent-browser wait '[data-testid="tweetText"]'
-agent-browser eval '抽出ロジック（JS）'
-# 画像付きの場合
+agent-browser eval 'extraction logic (JS)'
+# When the post has images
 agent-browser screenshot /tmp/x_post_image.png
 agent-browser close
 ```
 
-- `agent-browser` コマンドは mise の shim 経由で解決される。パスのハードコード不要
-- デーモンが永続化するため、複数投稿を連続取得する場合は `open` で次のURLに遷移し、最後に `close` する
+- The `agent-browser` command is resolved via a mise shim. No need to hardcode the path.
+- The daemon persists, so when fetching multiple posts in sequence, use `open` to navigate to the next URL and `close` only at the end.
 
-## Step 2: Playwright MCP方式（フォールバック）
+## Step 2: Playwright MCP (fallback)
 
-Step 1 が失敗した場合（`command not found`、終了コード非0、`error` キー）のみ使用。
+Use only if Step 1 fails (`command not found`, non-zero exit code, or `error` key in result).
 
 ```
 1. mcp__playwright__browser_navigate → TARGET_URL
-2. mcp__playwright__browser_run_code → 抽出ロジック（JS）を実行
-3. mcp__playwright__browser_close → セッション閉じる（必須）
+2. mcp__playwright__browser_run_code → run extraction logic (JS)
+3. mcp__playwright__browser_close → close session (required)
 ```
 
-## Step 3: 結果の整形と出力
+## Step 3: Format and Output
 
-画像あり → Read で `/tmp/x_post_image.png` を表示。動画 → メタデータのみ。
+If image → display `/tmp/x_post_image.png` with Read. If video → metadata only.
 
 ```
-**投稿者:** {userName} ({userHandle})
-**日時:** {displayTime}
-**本文:**
+**Author:** {userName} ({userHandle})
+**Time:** {displayTime}
+**Text:**
 {text}
 
-**エンゲージメント:** 返信{replies} / リポスト{retweets} / いいね{likes}
-**メディア:** {type}
+**Engagement:** Replies {replies} / Reposts {retweets} / Likes {likes}
+**Media:** {type}
 ```
 
-## エラーハンドリング
+## Error Handling
 
-| エラー | 対応 |
+| Error | Action |
 |--------|------|
-| `article not found` | URL確認 or 再試行 |
-| `command not found: agent-browser` | Step 2 にフォールバック |
-| タイムアウト | `agent-browser wait` のタイムアウトを増やして再試行 |
+| `article not found` | Check the URL or retry |
+| `command not found: agent-browser` | Fall back to Step 2 |
+| Timeout | Increase the `agent-browser wait` timeout and retry |
 
-## 制限事項
+## Limitations
 
-- 公開投稿のみ（ログイン要求の投稿は取得不可）
-- 動画はメタデータのみ
-- リプライチェーンはメイン投稿のみ
+- Public posts only (cannot fetch posts that require login)
+- Videos return metadata only
+- Reply chains return the main post only

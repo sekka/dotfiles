@@ -1,121 +1,121 @@
 ---
 name: user-review-and-improve
-description: コードをレビューし、検出した問題を修正する。セッション内の変更確認、品質チェック、セキュリティ監査に使用。「レビューして」「品質チェック」「セキュリティ確認」で起動。
+description: Review code and fix found problems. Use for checking session changes, quality checks, and security audits. Triggered by "review this", "quality check", or "security check".
 allowed-tools: Read, Grep, Glob, Edit, Bash
 ---
 
 # Review & Improve
 
-コードをレビューし、問題があればその場で修正する。
+Review code and fix any problems found.
 
 ## Iron Law
 
-1. diff外のコードだけで判断しない
-2. 推測による指摘禁止
+1. Do not judge based only on code outside the diff
+2. Do not make comments based on guesswork
 
-## フロー
+## Flow
 
 ```
-対象特定 → レビュー → 結果報告 → 改善実行 → 再検証ループ
+Identify target → Review → Report results → Fix → Re-verify loop
 ```
 
-## Phase 1: 対象特定
+## Phase 1: Identify Target
 
-### 引数あり
-指定されたファイル・ディレクトリをスコープとする。
+### With arguments
+Use the specified files or directories as the scope.
 
-### 引数なし
+### Without arguments
 ```bash
-git diff --name-only        # 未ステージの変更
-git diff --cached --name-only  # ステージ済みの変更
+git diff --name-only        # unstaged changes
+git diff --cached --name-only  # staged changes
 ```
-変更ファイルがなければユーザーに確認。
+If there are no changed files, ask the user.
 
-## Phase 2: レビュー
+## Phase 2: Review
 
-対象コードを Read/Grep/Glob で取得し、以下の観点で評価する。
+Get the target code with Read/Grep/Glob and evaluate it from the following perspectives.
 
-### チェック観点（優先度順）
+### Check points (in priority order)
 
-#### セキュリティ
-- インジェクション（SQL, コマンド, XSS）
-- ハードコードされた認証情報・APIキー
-- 安全でない入力処理
-- 認証・認可の欠落
+#### Security
+- Injection (SQL, command, XSS)
+- Hardcoded credentials or API keys
+- Unsafe input handling
+- Missing authentication or authorization
 
-#### 正確性
-- ロジックエラー・off-by-one
-- エッジケース未処理（null, 空, 境界値）
-- エラーハンドリングの欠落
-- 型の不整合
+#### Correctness
+- Logic errors, off-by-one
+- Unhandled edge cases (null, empty, boundary values)
+- Missing error handling
+- Type mismatches
 
-#### パフォーマンス
-- O(n^2) 以上のアルゴリズム
-- N+1 クエリ
-- 不要な再計算・再レンダリング
-- メモリの過剰使用
+#### Performance
+- O(n^2) or worse algorithms
+- N+1 queries
+- Unnecessary recalculation or re-rendering
+- Excessive memory use
 
-#### 保守性
-- 50行超の関数
-- 不明瞭な命名
-- 重複コード
-- 過剰な結合
+#### Maintainability
+- Functions over 50 lines
+- Unclear naming
+- Duplicate code
+- Excessive coupling
 
-## Phase 3: 結果報告
+## Phase 3: Report Results
 
-検出した問題を優先度付きで報告する。
+Report detected problems with priority levels.
 
 ```markdown
-## レビュー結果
+## Review Results
 
-### 問題
-- **[file:line]** 問題の説明 → 修正方針
+### Problems
+- **[file:line]** Description of problem → Proposed fix
 
-### 良い点
-- 評価すべき実装があれば記載
+### Good points
+- Note any implementation worth recognizing
 
-### 総合: セキュリティ○ / 正確性○ / パフォーマンス○ / 保守性○
+### Summary: Security○ / Correctness○ / Performance○ / Maintainability○
 ```
 
-問題がなければ「問題なし」と報告して終了。
+If there are no problems, report "No issues found" and finish.
 
-## Phase 4: 改善実行
+## Phase 4: Fix
 
-問題を検出した場合：
+When problems are detected:
 
-1. 修正対象を優先度順にリストアップ
-2. Edit ツールで修正を実行
-3. 修正ごとに何をなぜ変えたか簡潔に報告
-4. 全修正後、変更が他の箇所を壊していないか確認
+1. List fix targets in priority order
+2. Apply fixes using the Edit tool
+3. Briefly report what was changed and why for each fix
+4. After all fixes, verify that changes did not break other parts
 
-### 修正しないもの
-- スタイルの好み（既存コードの慣習に従う）
-- 過剰な抽象化・汎用化の提案
-- 動作に影響しないリファクタリング（ユーザーが明示的に求めた場合のみ）
+### What not to fix
+- Style preferences (follow existing code conventions)
+- Proposals for excessive abstraction or generalization
+- Refactoring that does not affect behavior (only if the user explicitly requests it)
 
-## Phase 5: 再検証ループ
+## Phase 5: Re-verify Loop
 
-Phase 4 で修正を行った場合、修正が新たな問題を引き起こしていないか再検証する。
-Phase 4 で問題がなかった場合はスキップ。
+If fixes were made in Phase 4, re-verify that the fixes did not introduce new problems.
+Skip this phase if no problems were found in Phase 4.
 
-### ループ条件
-- **最大2回**まで再検証を繰り返す（合計3パスで打ち切り）
-- 各パスで Critical レベルの問題が残っている場合のみ次のループへ進む
-- Warning 以下のみの場合はループを終了し報告
+### Loop conditions
+- Repeat re-verification up to **2 times** (stop after 3 passes total)
+- Continue to the next loop only if Critical-level problems remain
+- Stop the loop and report if only Warning-level or lower problems remain
 
-### 各ループで行うこと
-1. 修正したファイルを再度 Read で取得
-2. Phase 2 と同じ観点（セキュリティ・正確性・パフォーマンス・保守性）で再チェック
-3. 新たな問題があれば修正を実行
-4. なければループ終了
+### What to do in each loop
+1. Read the fixed files again
+2. Re-check with the same perspectives as Phase 2 (security, correctness, performance, maintainability)
+3. Apply fixes if new problems are found
+4. End the loop if no new problems are found
 
-### 最終報告
-- 総パス数と各パスで検出・修正した問題数を報告
-- 残存する Warning 以下の問題があればリストアップ
+### Final report
+- Report the total number of passes and the number of problems detected and fixed in each pass
+- List any remaining Warning-level or lower problems
 
-## スコープ判断
+## Scope Decision
 
-| 状況 | 対応 |
+| Situation | Action |
 |------|------|
-| 変更ファイル5個以下 | このスキルで完結 |
-| 変更ファイル6個以上 or アーキテクチャレベル | reviewer エージェントに委譲を提案 |
+| 5 or fewer changed files | Complete within this skill |
+| 6 or more changed files, or architecture-level | Suggest delegating to a reviewer agent |

@@ -1,157 +1,157 @@
 ---
 name: user-improve-html
-description: HTMLのセマンティクス・アクセシビリティ・ARIA属性を網羅的にチェックし改善提案を行う。「HTML改善」「a11yチェック」「アクセシビリティ」「ARIA」「セマンティクス」「マークアップ改善」で起動。
+description: Check HTML semantics, accessibility, and ARIA attributes thoroughly and suggest improvements. Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
 ---
 
-# HTML セマンティクス・アクセシビリティチェック
+# HTML Semantics & Accessibility Check
 
-マークアップのセマンティクス・アクセシビリティ・ARIA属性をルールベースで網羅的にチェックし、具体的な改善提案を行う。
+Check markup semantics, accessibility, and ARIA attributes using rules. Provide specific improvement suggestions.
 
 ## Iron Law
 
-1. 見た目を変えるHTML変更を無断で行わない
+1. Do not make HTML changes that affect appearance without permission
 
-## 進捗報告ルール（必須）
+## Progress Reporting Rules (Required)
 
-各Phase開始時・完了時にユーザーに進捗を報告すること。報告フォーマット:
+Report progress to the user at the start and end of each Phase. Report format:
 
 ```
-[HTML Check Phase N/4] {Phase名} — {状態}
-  検出: errors=X, warnings=Y, info=Z
-  次: {次のアクション}
+[HTML Check Phase N/4] {Phase name} — {status}
+  Found: errors=X, warnings=Y, info=Z
+  Next: {next action}
 ```
 
-## 実行ルール（必須）
+## Execution Rules (Required)
 
-- **check-html.ts の実行は常にサブエージェント（implementer）に委譲する。** メインエージェントのコンテキストを消費しない。
-- サブエージェントにはファイルパス/URL、期待する出力形式を明示して渡す。
-- サブエージェント完了後、メインエージェントはJSON結果を元に定性分析とレポートを作成する。
+- **Always delegate check-html.ts execution to a subagent (implementer).** Do not consume the main agent's context.
+- Pass the file path/URL and expected output format clearly to the subagent.
+- After the subagent completes, the main agent creates a qualitative analysis and report from the JSON results.
 
-## 前提条件チェック（必須・最初に実行）
+## Prerequisite Check (Required — Run First)
 
-スキル起動時、**他の一切の作業より先に**以下を確認し、失敗したら即座にユーザーに報告して停止する:
+When the skill starts, **before any other work**, confirm the following. If it fails, report to the user immediately and stop:
 
 ```bash
 CHECK_HTML="$HOME/.claude/skills/improve-html/scripts/check-html.ts"
-test -f "$CHECK_HTML" || { echo "ERROR: $CHECK_HTML が見つかりません"; exit 1; }
-command -v bun >/dev/null || { echo "ERROR: bun がインストールされていません"; exit 1; }
+test -f "$CHECK_HTML" || { echo "ERROR: $CHECK_HTML not found"; exit 1; }
+command -v bun >/dev/null || { echo "ERROR: bun is not installed"; exit 1; }
 ```
 
-両方パスしたら次のPhaseに進む。失敗したらユーザーに報告して終了。
+If both pass, proceed to the next phase. If either fails, report to the user and stop.
 
-## 入力タイプ
+## Input Types
 
-| 入力 | 処理 |
+| Input | Processing |
 |------|------|
-| ファイルパス（.html） | そのまま check-html.ts に渡す |
-| URL | ブラウザツールでHTML取得 → 一時ファイルに保存 → check-html.ts |
-| git diff | 変更されたHTML/TSX/JSXファイルを特定 → 各ファイルをチェック |
-| コードブロック | 一時ファイルに保存 → check-html.ts |
+| File path (.html) | Pass directly to check-html.ts |
+| URL | Get HTML with browser tool → save to temp file → check-html.ts |
+| git diff | Find changed HTML/TSX/JSX files → check each file |
+| Code block | Save to temp file → check-html.ts |
 
-URL入力の場合、ブラウザ自動化ツール（chrome MCP）を使用してページを取得する。
+For URL input, use a browser automation tool (chrome MCP) to get the page.
 
-## ワークフロー
+## Workflow
 
-### Phase 1: 入力の準備
+### Phase 1: Prepare Input
 
-1. 入力タイプを判定
-2. URLの場合: ブラウザツールでページHTMLを取得し `/tmp/html-check/` に保存
-3. git diffの場合: 変更ファイルを特定
+1. Determine input type
+2. For URL: get page HTML with browser tool and save to `/tmp/html-check/`
+3. For git diff: identify changed files
 
-### Phase 2: 自動チェック（サブエージェント委譲）
+### Phase 2: Automated Check (Delegate to Subagent)
 
-implementer サブエージェントに以下を実行させる:
+Have the implementer subagent run:
 
 ```bash
 bun "$CHECK_HTML" <file> --format=json --severity=info
 ```
 
-複数ファイルの場合は glob パターンまたは個別実行。
+For multiple files, use a glob pattern or run individually.
 
-JSON結果を受け取る。
+Receive the JSON results.
 
-### Phase 3: 定性分析（Claude推論）
+### Phase 3: Qualitative Analysis (Claude reasoning)
 
-自動チェックでは検出困難な以下を分析:
+Analyze the following items that are hard to detect automatically:
 
-- **文脈に応じたARIA使用の適切さ**: roleの選択が用途に合っているか
-- **altテキスト品質**: コンテンツを踏まえた具体性があるか
-- **論理的な読み上げ順序**: DOM順序が視覚的順序と一致しているか
-- **コンポーネントレベルのa11yパターン**: WAI-ARIA APGに準拠しているか
-- **ナレッジベース照合**: `knowledge/cross-cutting/accessibility/` の知見を適用
+- **Appropriateness of ARIA use in context**: Does the role choice match the purpose?
+- **Alt text quality**: Is it specific enough given the content?
+- **Logical reading order**: Does DOM order match visual order?
+- **Component-level a11y patterns**: Does it follow WAI-ARIA APG?
+- **Knowledge base check**: Apply knowledge from `knowledge/cross-cutting/accessibility/`
 
-パターン違反を検出した場合、`patterns/` ディレクトリの対応テンプレートを参照して正しい実装例を提示する。
+When a pattern violation is found, refer to the corresponding template in the `patterns/` directory and show the correct implementation example.
 
-### Phase 4: レポート生成
+### Phase 4: Generate Report
 
-Markdown形式で以下を出力:
+Output in Markdown format:
 
 ```markdown
-# HTML セマンティクス・アクセシビリティレポート
+# HTML Semantics & Accessibility Report
 
-## サマリー
+## Summary
 
-| カテゴリ | Error | Warning | Info |
+| Category | Error | Warning | Info |
 |---------|-------|---------|------|
-| ARIA属性 | 2 | 1 | 0 |
+| ARIA attributes | 2 | 1 | 0 |
 | ...     | ...   | ...     | ...  |
 
-## 課題一覧（優先度順）
+## Issues (in priority order)
 
-### Error: [rule-id] ルール名
-- **要素**: `<element ...>`
-- **WCAG**: 達成基準 X.Y.Z
-- **影響**: 支援技術ユーザーへの具体的影響
-- **修正例**:
+### Error: [rule-id] Rule name
+- **Element**: `<element ...>`
+- **WCAG**: Success Criterion X.Y.Z
+- **Impact**: Specific impact on assistive technology users
+- **Fix example**:
   ```html
-  修正後のコード
+  Fixed code here
   ```
 
 ### Warning: ...
 
-## 定性分析の所見
+## Qualitative Analysis Findings
 
-（Phase 3で検出した構造的な問題や改善提案）
+(Structural issues and improvement suggestions found in Phase 3)
 
-## 参考パターン
+## Reference Patterns
 
-（違反に関連するAPGパターンへのリンク）
+(Links to APG patterns related to violations)
 ```
 
-## プロジェクト設定
+## Project Configuration
 
-プロジェクトルートに `.htmlcheckrc.yaml` がある場合、CLI が自動で読み込む:
+If `.htmlcheckrc.yaml` exists in the project root, the CLI loads it automatically:
 
 ```yaml
 ignore:
-  - seo-meta-description    # 特定ルールを無視
+  - seo-meta-description    # ignore specific rules
 severity_overrides:
-  heading-hierarchy: error   # severity変更
-custom_rules: []             # カスタムルール追加
+  heading-hierarchy: error   # change severity
+custom_rules: []             # add custom rules
 ```
 
-## ルールカテゴリ
+## Rule Categories
 
-| # | ファイル | 概要 | ルール数 |
+| # | File | Description | Rule count |
 |---|---------|------|---------|
-| 01 | aria-attributes | ARIA属性の妥当性・完全性 | 15 |
-| 02 | aria-widgets | ARIAウィジェットパターン | 12 |
-| 03 | accessible-names | アクセシブルネーム | 8 |
-| 04 | forms | フォームアクセシビリティ | 10 |
-| 05 | focus-keyboard | フォーカス・キーボード | 10 |
-| 06 | images-media | 画像・メディア代替テキスト | 8 |
-| 07 | live-regions | ライブリージョン・動的コンテンツ | 6 |
-| 08 | semantic-structure | セマンティック構造・ランドマーク | 12 |
-| 09 | tables | テーブルアクセシビリティ | 5 |
-| 10 | language | 言語・国際化（日本語固有含む） | 5 |
-| 11 | css-a11y | CSS起因アクセシビリティ問題 | 8 |
-| 12 | seo | SEO基本 | 5 |
-| 13 | performance | パフォーマンス | 5 |
+| 01 | aria-attributes | ARIA attribute validity and completeness | 15 |
+| 02 | aria-widgets | ARIA widget patterns | 12 |
+| 03 | accessible-names | Accessible names | 8 |
+| 04 | forms | Form accessibility | 10 |
+| 05 | focus-keyboard | Focus and keyboard | 10 |
+| 06 | images-media | Image and media alternative text | 8 |
+| 07 | live-regions | Live regions and dynamic content | 6 |
+| 08 | semantic-structure | Semantic structure and landmarks | 12 |
+| 09 | tables | Table accessibility | 5 |
+| 10 | language | Language and internationalization (including Japanese-specific) | 5 |
+| 11 | css-a11y | CSS-caused accessibility issues | 8 |
+| 12 | seo | Basic SEO | 5 |
+| 13 | performance | Performance | 5 |
 
-## リソース
+## Resources
 
-- ルール定義: `rules/*.yaml`
-- ARIAデータ: `data/aria-role-map.yaml`, `data/valid-aria-attrs.yaml`
-- APGパターン: `patterns/*.md`
-- CLIスクリプト: `~/.claude/skills/improve-html/scripts/check-html.ts`
-- a11yナレッジ: `home/.claude/skills/managing-frontend-knowledge/knowledge/cross-cutting/accessibility/`
+- Rule definitions: `rules/*.yaml`
+- ARIA data: `data/aria-role-map.yaml`, `data/valid-aria-attrs.yaml`
+- APG patterns: `patterns/*.md`
+- CLI script: `~/.claude/skills/improve-html/scripts/check-html.ts`
+- a11y knowledge: `home/.claude/skills/managing-frontend-knowledge/knowledge/cross-cutting/accessibility/`

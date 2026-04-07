@@ -1,115 +1,114 @@
 ---
 name: visual-regression-test
-description: コード変更前後のスクリーンショットを複数ビューポートで撮影しImageMagickで画像diffを取るビジュアル回帰テスト。「ビジュアル確認」「レイアウト確認」「VRT」「スクショ比較」「見た目が崩れていないか」で起動。
+description: Visual regression test that captures screenshots at multiple viewports before and after code changes, then diffs them with ImageMagick. Triggered by "visual check", "layout check", "VRT", "screenshot compare", or "check if layout is broken".
 ---
 
 # Visual Regression Test (VRT)
 
-マークアップ・CSS・レイアウトに影響する変更の前後でスクリーンショットを撮影し、ピクセル単位で差分を検出する。
+Capture screenshots before and after changes to markup, CSS, or layout. Detect pixel-level differences.
 
 ## Iron Law
 
-1. 変更前スクリーンショットなしに比較しない
+1. Do not compare without a before-change screenshot
 
-## 進捗報告ルール（必須）
+## Progress Reporting Rules (Required)
 
-各Phase開始時・完了時にユーザーに進捗を報告すること。報告フォーマット:
+Report progress to the user at the start and end of each Phase. Report format:
 
 ```
-[VRT Phase N/5] {Phase名} — {状態}
-  完了: X/Y ページ × Z ビューポート
-  次: {次のアクション}
+[VRT Phase N/5] {Phase name} — {status}
+  Done: X/Y pages × Z viewports
+  Next: {next action}
 ```
 
-エラー発生時は即座に報告し、止まらずに代替手段を試す。
+If an error occurs, report it immediately and try alternatives without stopping.
 
-## 実行ルール（必須）
+## Execution Rules (Required)
 
-- **VRTスクリプトの実行は常にサブエージェント（implementer）に委譲する。** メインエージェントのコンテキストを消費しない。
-- サブエージェントにはスクリプトパス、URL一覧パス、期待する結果を明示して渡す。
-- サブエージェント完了後、メインエージェントはレポートのスクリーンショットを撮影してユーザーに見せる。
-- **テスト実行時は対象を絞る:** 動作確認目的なら1ページ×1ビューポートで十分。フル実行は検証時のみ。
+- **Always delegate VRT script execution to a subagent (implementer).** Do not consume the main agent's context.
+- Pass the script path, URL list path, and expected results clearly to the subagent.
+- After the subagent completes, the main agent takes a screenshot of the report and shows it to the user.
+- **Limit the test scope when running:** For verification purposes, 1 page × 1 viewport is enough. Run the full test only for final validation.
 
-## 前提条件
+## Prerequisites
 
-- ImageMagick (`magick`) がインストール済み
-- Node.js がインストール済み（Playwright を npm install して使用）
-- プロジェクトに `scripts/vrt-urls.txt` が存在する（対象URL一覧）
+- ImageMagick (`magick`) is installed
+- Node.js is installed (Playwright is installed via npm install)
+- `scripts/vrt-urls.txt` exists in the project (list of target URLs)
 
-`scripts/vrt-urls.txt` が存在しない場合、ユーザーに対象URLを確認して作成する。
+If `scripts/vrt-urls.txt` does not exist, ask the user for the target URLs and create it.
 
-## ワークフロー
+## Workflow
 
-vrt.sh が以下を全て自動処理する。AIが手動で各フェーズのスクリプトを書く必要はない。
+vrt.sh handles all steps automatically. The AI does not need to write scripts for each phase manually.
 
-### Phase 1: セットアップ
+### Phase 1: Setup
 
-`vrt.sh` を呼び出すだけで以下が自動実行される:
+Calling `vrt.sh` automatically runs:
 
-- stash残留チェック（前回の `vrt-auto` stashが残っている場合はエラーで停止）
-- Playwright のインストール（`/tmp/vrt-work/` に隔離）
-- URLsファイルの退避（git stash で消えないように `/tmp/vrt-work/` にコピー）
+- Stash leftover check (stops with error if a previous `vrt-auto` stash remains)
+- Playwright installation (isolated in `/tmp/vrt-work/`)
+- URLs file backup (copied to `/tmp/vrt-work/` so it is not lost by git stash)
 
-### Phase 2: ベースライン取得
+### Phase 2: Capture Baseline
 
-vrt.sh が自動処理:
+vrt.sh handles automatically:
 
-- `git add -A && git stash push -m "vrt-auto"` でコード変更を退避
-- 3ビューポート（1440px → 768px → 375px）を逐次撮影
-- stash後は EXIT trap が有効なため、スクリプトが途中終了しても `git stash pop` が自動実行される
+- Stashes code changes with `git add -A && git stash push -m "vrt-auto"`
+- Captures screenshots at 3 viewports (1440px → 768px → 375px) in sequence
+- An EXIT trap runs after stashing, so `git stash pop` runs automatically even if the script exits early
 
-既存ベースライン（`/tmp/vrt-baseline/`）がある場合はスキップ。`VRT_FORCE_BASELINE=1` で強制再撮影。
+If a baseline already exists (`/tmp/vrt-baseline/`), this phase is skipped. Use `VRT_FORCE_BASELINE=1` to force re-capture.
 
-### Phase 3: コード変更を実施
+### Phase 3: Apply Code Changes
 
-（スキルのスコープ外。変更完了後に vrt.sh を実行する）
+(Outside the scope of this skill. Run vrt.sh after changes are complete.)
 
-### Phase 4: After撮影 + diff（ビューポート逐次・fail-fast）
+### Phase 4: Capture After + Diff (per viewport, fail-fast)
 
-vrt.sh が自動処理（`git stash pop` は After撮影前に1回だけ実行）:
+vrt.sh handles automatically (`git stash pop` runs once before After capture):
 
 ```
 for each viewport in (1440, 768, 375):
-  1. After撮影（そのVPのみ）
-  2. diff算出（そのVPのみ）
-  3. FAILがあれば → レポート生成して即 exit 1（残りのVPはスキップ）
+  1. Capture After (that VP only)
+  2. Calculate diff (that VP only)
+  3. If FAIL → generate report and exit 1 immediately (skip remaining VPs)
 ```
 
-fail-fast により、最初の問題ビューポートで即座に停止してレポートを出す。
+Fail-fast stops at the first failing viewport and outputs the report immediately.
 
-### Phase 5: レポート確認
+### Phase 5: Review Report
 
-生成先: `/tmp/vrt-report/index.html`（macOS では自動でブラウザが開く）
+Output location: `/tmp/vrt-report/index.html` (opens in browser automatically on macOS)
 
-レポートの構成:
-- ページタイトル行に **PASS/WARN/FAIL** とパーセンテージを表示
-- 3列: BEFORE / AFTER / DIFF の画像
-- フィルターボタン（Status / Page / Viewport）
+Report contents:
+- Page title row shows **PASS/WARN/FAIL** and percentage
+- 3 columns: BEFORE / AFTER / DIFF images
+- Filter buttons (Status / Page / Viewport)
 
-## 判定基準
+## Criteria
 
-| 状態 | 差分率（fuzz 2%後） | アクション |
+| Status | Diff rate (after fuzz 2%) | Action |
 |------|---------------------|-----------|
-| PASS | < 0.5% | 問題なし |
-| WARN | 0.5% ～ 2.0% | ユーザーにdiff画像を見せて確認 |
-| FAIL | >= 2.0% | レイアウト崩れの可能性。原因調査必須 |
+| PASS | < 0.5% | No problem |
+| WARN | 0.5% to 2.0% | Show diff image to user for confirmation |
+| FAIL | >= 2.0% | Possible layout break. Investigation required |
 
-## レンダリングノイズについて
+## About Rendering Noise
 
-写真領域はアンチエイリアシングで毎回微差が出る。fuzz 2% で吸収している。
-それでも FAIL になる場合は `magick compare -metric SSIM` も参照すること。
+Photo areas produce small differences each time due to anti-aliasing. Fuzz 2% absorbs these. If FAIL still occurs, also check `magick compare -metric SSIM`.
 
-## 実行コマンド
+## Commands
 
 ```bash
-# 通常実行（ベースラインから全自動）
+# Normal run (fully automatic from baseline)
 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
 
-# ベースライン強制再撮影
+# Force re-capture baseline
 VRT_FORCE_BASELINE=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
 
-# ベースラインのみ撮影（git stash なし、diff なし）
-# 現在の表示状態をそのままベースラインとして保存する。
-# 変更前にベースラインだけ先に取りたい場合に使う。
+# Capture baseline only (no git stash, no diff)
+# Saves the current display state as the baseline.
+# Use this when you want to capture the baseline before making changes.
 VRT_BASELINE_ONLY=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
 ```
