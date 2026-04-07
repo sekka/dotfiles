@@ -1,150 +1,150 @@
 ---
 name: user-analyzing-websites
-description: 既存ウェブサイトを分析し、サイトマップとワイヤーフレームを作成します。URLを渡すとページ構造を解析し、指定形式で出力します。コンテンツ分析機能でページの目的やターゲットも要約できます。
+description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Can also summarize a page's purpose and target audience.
 disable-model-invocation: false
 ---
 
-# ウェブサイト構造分析・ワイヤーフレーム作成
+# Website Structure Analysis and Wireframe Creation
 
-## 概要
+## Overview
 
-指定されたURLからウェブサイトをクロールし、サイトマップ・ワイヤーフレーム・コンテンツ分析を作成する。
+Crawl a website from a given URL and create a sitemap, wireframes, and content analysis.
 
 ## Iron Law
 
-1. 認証が必要なページに無断アクセスしない
-2. 推測でサイト構造を補完しない
+1. Do not access pages that require authentication without permission.
+2. Do not fill in site structure based on guesswork.
 
-## 入力情報の確認
+## Confirm Input Information
 
-スキル実行時、以下を確認する：
+At the start of the skill, confirm the following:
 
-### 1. 対象URL
+### 1. Target URL
 
-- トップページのURLを取得
-- ドメインを特定（クロール範囲の制限に使用）
+- Get the top page URL.
+- Identify the domain (used to restrict the crawl scope).
 
-### 2. クロール深度
+### 2. Crawl Depth
 
-ユーザーに確認：
+Ask the user:
 
-- **1階層**: トップページから直接リンクされているページのみ
-- **2階層**: トップ + その1つ下のページまで
-- **3階層以上**: 必要に応じて指定
-- **特定ページのみ**: URLリストを手動指定
+- **1 level**: Only pages linked directly from the top page.
+- **2 levels**: Top page + one level below it.
+- **3 levels or more**: Specify as needed.
+- **Specific pages only**: Manually specify a list of URLs.
 
-### 3. サイトマップ出力形式（複数選択可）
+### 3. Sitemap Output Format (multiple selections allowed)
 
-- **Mermaid図**: 階層構造をツリー図で視覚化
-- **Markdownリスト**: インデント付きリストで構造化
-- **JSON**: プログラムで利用しやすい形式
+- **Mermaid diagram**: Visualize the hierarchy as a tree diagram.
+- **Markdown list**: Structure with indented list.
+- **JSON**: A format easy to use programmatically.
 
-### 4. ワイヤーフレーム出力形式（複数選択可）
+### 4. Wireframe Output Format (multiple selections allowed)
 
-- **Markdown + ASCII**: テキストベースで軽量
-- **HTML/CSS**: ブラウザで確認可能な実際のワイヤーフレーム
+- **Markdown + ASCII**: Text-based and lightweight.
+- **HTML/CSS**: Actual wireframe that can be viewed in a browser.
 
-### 5. コンテンツ分析（オプション）
+### 5. Content Analysis (optional)
 
-- **なし**: ワイヤーフレームのみ
-- **簡易分析**: ページ目的・ターゲット・主要メッセージ
-- **詳細分析**: セクション別の目的・要約・キーワード・改善提案
+- **None**: Wireframe only.
+- **Basic analysis**: Page purpose, target audience, key messages.
+- **Detailed analysis**: Per-section purpose, summary, keywords, and improvement suggestions.
 
-### 6. デザイン分析（オプション）
+### 6. Design Analysis (optional)
 
-- **なし**: 抽出しない
-- **基本分析**: カラーパレット + タイポグラフィ
-- **詳細分析**: 基本 + スペーシング + サイズ + CSS変数出力
+- **None**: Do not extract.
+- **Basic analysis**: Color palette and typography.
+- **Detailed analysis**: Basic + spacing + sizes + CSS variable output.
 
-## 実行フロー
+## Execution Flow
 
-### Step 1: サイトクロール
+### Step 1: Site Crawl
 
 ```text
 mcp__plugin_playwright_playwright__browser_navigate
 ```
 
-1. トップページにアクセス
-2. ページ内のリンクを抽出
-3. 同一ドメイン内のリンクをフィルタリング
-4. 指定深度まで再帰的にクロール
+1. Access the top page.
+2. Extract links on the page.
+3. Filter links to the same domain.
+4. Crawl recursively to the specified depth.
 
-**除外対象**:
+**Excluded items:**
 
-- 外部ドメインへのリンク
-- アンカーリンク（#で始まるもの）
-- mailto:、tel:、javascript: 等
-- 画像・PDF等のファイルリンク
-- 重複URL
+- Links to external domains.
+- Anchor links (starting with #).
+- `mailto:`, `tel:`, `javascript:`, etc.
+- File links such as images and PDFs.
+- Duplicate URLs.
 
-### Step 2: ページ構造の取得
+### Step 2: Get Page Structure
 
-各ページで以下を実行：
+Run the following on each page:
 
 ```text
 mcp__plugin_playwright_playwright__browser_snapshot
 ```
 
-スナップショットから抽出する情報：
+Information to extract from the snapshot:
 
-- ヘッダー構造（h1〜h6）
-- ナビゲーション要素
-- メインコンテンツエリア
-- サイドバー
-- フッター
-- フォーム要素
-- ボタン・リンク
-- 画像エリア
+- Header structure (h1–h6)
+- Navigation elements
+- Main content area
+- Sidebar
+- Footer
+- Form elements
+- Buttons and links
+- Image areas
 
-### Step 3: サイトマップ生成
+### Step 3: Generate Sitemap
 
-#### Mermaid形式
+#### Mermaid format
 
 ```mermaid
 graph TD
-    A[トップページ] --> B[会社概要]
-    A --> C[サービス]
-    A --> D[お問い合わせ]
-    C --> C1[サービスA]
-    C --> C2[サービスB]
+    A[Top Page] --> B[About Us]
+    A --> C[Services]
+    A --> D[Contact]
+    C --> C1[Service A]
+    C --> C2[Service B]
 ```
 
-#### Markdown形式
+#### Markdown format
 
 ```markdown
-- トップページ (/)
-  - 会社概要 (/about)
-  - サービス (/services)
-    - サービスA (/services/a)
-    - サービスB (/services/b)
-  - お問い合わせ (/contact)
+- Top Page (/)
+  - About Us (/about)
+  - Services (/services)
+    - Service A (/services/a)
+    - Service B (/services/b)
+  - Contact (/contact)
 ```
 
-#### JSON形式
+#### JSON format
 
 ```json
 {
   "url": "/",
-  "title": "トップページ",
+  "title": "Top Page",
   "children": [
     {
       "url": "/about",
-      "title": "会社概要",
+      "title": "About Us",
       "children": []
     }
   ]
 }
 ```
 
-### Step 4: ワイヤーフレーム生成
+### Step 4: Generate Wireframes
 
-#### Markdown + ASCII形式
+#### Markdown + ASCII format
 
 ```markdown
-## ページ名: トップページ
+## Page Name: Top Page
 URL: https://example.com/
 
-### レイアウト構造
+### Layout Structure
 
 ┌─────────────────────────────────────────┐
 │ [HEADER]                                │
@@ -154,8 +154,8 @@ URL: https://example.com/
 ├─────────────────────────────────────────┤
 │ [HERO]                                  │
 │ ┌─────────────────────────────────────┐ │
-│ │ H1: メインキャッチコピー            │ │
-│ │ P: サブテキスト説明文               │ │
+│ │ H1: Main Headline                   │ │
+│ │ P: Sub-text description             │ │
 │ │ [CTA Button]                        │ │
 │ └─────────────────────────────────────┘ │
 ├─────────────────────────────────────────┤
@@ -171,43 +171,43 @@ URL: https://example.com/
 │ Copyright | Links | SNS Icons           │
 └─────────────────────────────────────────┘
 
-### 要素一覧
+### Element List
 
-| エリア | 要素 | 内容 |
+| Area | Element | Content |
 |--------|------|------|
-| Header | Logo | 会社ロゴ |
-| Header | Nav | 5項目のナビゲーション |
-| Hero | H1 | メインキャッチコピー |
-| Hero | Button | 「詳しく見る」CTA |
-| Main | Cards | 3カラムのカード |
+| Header | Logo | Company logo |
+| Header | Nav | 5-item navigation |
+| Hero | H1 | Main headline |
+| Hero | Button | "Learn more" CTA |
+| Main | Cards | 3-column cards |
 ```
 
-#### HTML/CSS形式
+#### HTML/CSS format
 
-シンプルなHTMLワイヤーフレームを生成：
+Generate a simple HTML wireframe:
 
-- グレースケール配色
-- ボックスで要素を表現
-- ラベルで要素種別を明示
-- レスポンシブ対応（簡易版）
+- Grayscale color scheme.
+- Boxes to represent elements.
+- Labels to indicate element types.
+- Basic responsive support.
 
-### Step 5: デザイン要素抽出（オプション）
+### Step 5: Extract Design Elements (optional)
 
-デザイン分析が選択された場合、`browser_evaluate` または `browser_run_code` でページの computed styles を取得：
+When design analysis is selected, use `browser_evaluate` or `browser_run_code` to get the page's computed styles:
 
-#### 抽出対象
+#### Items to extract
 
-| カテゴリ | 取得項目 |
+| Category | Items to get |
 |----------|----------|
-| **色** | background-color、color、border-color、主要アクセントカラー |
-| **フォント** | font-family、font-size、font-weight、line-height |
-| **間隔** | margin、padding（主要コンポーネント単位） |
-| **サイズ** | width、height（主要セクション、カード等） |
+| **Colors** | background-color, color, border-color, main accent colors |
+| **Fonts** | font-family, font-size, font-weight, line-height |
+| **Spacing** | margin, padding (per major component) |
+| **Sizes** | width, height (main sections, cards, etc.) |
 
-#### 実装方法
+#### Implementation
 
 ```javascript
-// 全要素の computed styles を取得
+// Get computed styles for all elements
 const elements = document.querySelectorAll('*');
 const colors = new Set();
 const fonts = new Map();
@@ -216,7 +216,7 @@ const spacing = new Set();
 elements.forEach(el => {
   const styles = window.getComputedStyle(el);
 
-  // カラー抽出
+  // Extract colors
   const bgColor = styles.backgroundColor;
   const textColor = styles.color;
   const borderColor = styles.borderColor;
@@ -224,7 +224,7 @@ elements.forEach(el => {
   if (textColor) colors.add(textColor);
   if (borderColor && borderColor !== 'rgb(0, 0, 0)') colors.add(borderColor);
 
-  // フォント抽出
+  // Extract fonts
   const fontKey = `${styles.fontFamily}|${styles.fontSize}|${styles.fontWeight}`;
   fonts.set(fontKey, {
     family: styles.fontFamily,
@@ -233,7 +233,7 @@ elements.forEach(el => {
     lineHeight: styles.lineHeight
   });
 
-  // スペーシング抽出
+  // Extract spacing
   const margin = [styles.marginTop, styles.marginRight, styles.marginBottom, styles.marginLeft];
   const padding = [styles.paddingTop, styles.paddingRight, styles.paddingBottom, styles.paddingLeft];
   margin.forEach(val => { if (val !== '0px') spacing.add(val); });
@@ -241,145 +241,145 @@ elements.forEach(el => {
 });
 ```
 
-#### 出力形式
+#### Output format
 
-**基本分析**:
-- カラーパレット一覧（HEX/RGB形式）
-- タイポグラフィ一覧（フォントファミリーとサイズスケール）
+**Basic analysis:**
+- Color palette list (HEX/RGB format)
+- Typography list (font families and size scale)
 
-**詳細分析**:
-- 基本分析の内容
-- スペーシング一覧（使用されている間隔の値）
-- 主要要素のサイズ情報
-- CSS変数形式での出力（デザイントークン）
+**Detailed analysis:**
+- Everything in basic analysis
+- Spacing list (spacing values in use)
+- Size information for major elements
+- Output as CSS variables (design tokens)
 
-### Step 6: コンテンツ分析（オプション）
+### Step 6: Content Analysis (optional)
 
-コンテンツ分析が選択された場合、以下を生成：
+When content analysis is selected, generate the following:
 
-#### 簡易分析
+#### Basic analysis
 
 ```markdown
-## コンテンツ分析サマリー
+## Content Analysis Summary
 
-### ページの目的
-[ページが達成しようとしている目標]
+### Page Purpose
+[The goal the page is trying to achieve]
 
-### ターゲットユーザー
-[想定される読者・利用者]
+### Target Users
+[Assumed readers and users]
 
-### 主要メッセージ
-> [ページが伝えたいコアメッセージ]
+### Key Message
+> [The core message the page wants to convey]
 ```
 
-#### 詳細分析
+#### Detailed analysis
 
 ```markdown
-## コンテンツ分析サマリー
+## Content Analysis Summary
 
-### ページの目的
-[ページが達成しようとしている目標]
+### Page Purpose
+[The goal the page is trying to achieve]
 
-### ターゲットユーザー
-- [ユーザー1]
-- [ユーザー2]
+### Target Users
+- [User 1]
+- [User 2]
 
-### 主要メッセージ
-> [ページが伝えたいコアメッセージ]
+### Key Message
+> [The core message the page wants to convey]
 
 ---
 
-## セクション別コンテンツ分析
+## Per-Section Content Analysis
 
-### 1. [セクション名]
-| 項目 | 内容 |
+### 1. [Section Name]
+| Item | Content |
 |------|------|
-| **目的** | このセクションの役割 |
-| **コンテンツ要約** | 内容の要約（50-100文字） |
-| **キーワード** | 重要なキーワード |
-| **CTA** | 行動喚起の内容 |
-| **差別化ポイント** | 競合との違い（あれば） |
+| **Purpose** | The role of this section |
+| **Content Summary** | Summary of the content (50-100 characters) |
+| **Keywords** | Important keywords |
+| **CTA** | Call-to-action content |
+| **Differentiator** | Difference from competitors (if any) |
 
-### 2. [セクション名]
+### 2. [Section Name]
 ...
 
 ---
 
-## インサイト・改善提案
+## Insights and Improvement Suggestions
 
-### 強み
-- [良い点1]
-- [良い点2]
+### Strengths
+- [Good point 1]
+- [Good point 2]
 
-### 潜在的な改善点
-- [改善提案1]
-- [改善提案2]
+### Potential Improvements
+- [Improvement suggestion 1]
+- [Improvement suggestion 2]
 
-### UX観点
-- [ユーザー体験に関する所見]
+### UX Perspective
+- [Observations on user experience]
 ```
 
-#### 分析観点
+#### Analysis criteria
 
-コンテンツ分析では以下の観点で評価：
+Evaluate content from these perspectives:
 
-1. **目的の明確さ**: ページの目的が明確か
-2. **ターゲット適合**: 想定ユーザーに適切な内容か
-3. **メッセージの一貫性**: 主張が一貫しているか
-4. **CTA の効果**: 行動喚起が適切か
-5. **情報の構造化**: 情報が整理されているか
-6. **差別化**: 競合との違いが伝わるか
-7. **信頼性**: 数値・実績・第三者評価の有無
+1. **Clarity of purpose**: Is the page's purpose clear?
+2. **Target fit**: Is the content suitable for the intended users?
+3. **Message consistency**: Is the message consistent?
+4. **CTA effectiveness**: Is the call-to-action appropriate?
+5. **Information structure**: Is the information organized?
+6. **Differentiation**: Does it communicate differences from competitors?
+7. **Credibility**: Are there numbers, results, or third-party endorsements?
 
-### Step 7: 出力
+### Step 7: Output
 
-指定された形式でファイルを出力：
+Output files in the specified format:
 
 ```
 output/
-├── sitemap.md              # サイトマップ（Mermaid）
-├── sitemap.json            # サイトマップ（JSON）
+├── sitemap.md              # Sitemap (Mermaid)
+├── sitemap.json            # Sitemap (JSON)
 ├── wireframes/
-│   ├── index.md            # トップページ
-│   ├── about.md            # 会社概要
+│   ├── index.md            # Top page
+│   ├── about.md            # About Us
 │   └── ...
-├── wireframes-analyzed/    # 分析付き（詳細分析選択時）
+├── wireframes-analyzed/    # With analysis (when detailed analysis is selected)
 │   ├── index.md
 │   └── ...
-├── wireframes-html/        # HTML形式の場合
+├── wireframes-html/        # HTML format
 │   ├── index.html
 │   └── ...
-└── design-analysis/        # デザイン分析（選択時）
-    ├── design-system.md    # 統合デザインレポート
-    └── design-tokens.css   # CSS変数（詳細分析時）
+└── design-analysis/        # Design analysis (when selected)
+    ├── design-system.md    # Integrated design report
+    └── design-tokens.css   # CSS variables (detailed analysis only)
 ```
 
-## 注意事項
+## Notes
 
-- **認証が必要なページ**: クロール不可。公開ページのみ対象
-- **SPA（Single Page Application）**: 初期表示のみ取得可能
-- **動的コンテンツ**: スナップショット時点の状態を取得
-- **robots.txt**: 尊重し、disallowされているパスはスキップ
-- **レート制限**: ページ間に適度な待機時間を設ける（1-2秒）
-- **大規模サイト**: ページ数上限を設定（デフォルト20ページ）
+- **Pages requiring authentication**: Cannot crawl. Only public pages are supported.
+- **SPA (Single Page Application)**: Only the initial render can be captured.
+- **Dynamic content**: The state at the time of the snapshot is captured.
+- **robots.txt**: Respect it. Skip paths marked as disallowed.
+- **Rate limiting**: Add a reasonable wait between pages (1-2 seconds).
+- **Large sites**: Set a page limit (default: 20 pages).
 
-## 出力ディレクトリ
+## Output Directory
 
-ユーザーに確認するか、デフォルトでプロジェクトルートに `wireframe-output/` を作成。
+Ask the user, or create `wireframe-output/` in the project root by default.
 
-## クイックスタート例
+## Quick Start Example
 
 ```
-「https://example.com を分析して」
+"Analyze https://example.com"
 
-→ 以下を確認：
-1. クロール深度: 1階層
-2. サイトマップ: Mermaid
-3. ワイヤーフレーム: Markdown + ASCII
-4. コンテンツ分析: 詳細分析
+→ Confirm the following:
+1. Crawl depth: 1 level
+2. Sitemap: Mermaid
+3. Wireframe: Markdown + ASCII
+4. Content analysis: Detailed analysis
 
-→ 出力:
+→ Output:
 - sitemap.md
-- wireframes/*.md（レイアウト + 分析付き）
-- design-analysis/design-system.md（デザイン要素レポート）
+- wireframes/*.md (layout + with analysis)
+- design-analysis/design-system.md (design element report)
 ```

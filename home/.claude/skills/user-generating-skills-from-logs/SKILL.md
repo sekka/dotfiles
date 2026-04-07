@@ -1,114 +1,114 @@
 ---
 name: user-generating-skills-from-logs
-description: Claude Codeのセッション履歴を3軸分析（WHAT/HOW/FLOW）でパターン抽出し、スキルを自動生成。「履歴からスキル生成」「パターン抽出」で起動。
+description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Triggered by "generate skills from history" or "extract patterns".
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
 ---
 
 <objective>
-Claude Codeのセッション履歴を統計的に分析し、反復的なタスクパターンを特定してスキル化します。手動でのスキル作成では見落としがちな、実際の使用頻度に基づいた再利用可能なパターンを発見します。
+Statistically analyze Claude Code session history, identify repetitive task patterns, and turn them into skills. Discovers reusable patterns based on actual usage frequency that are easy to miss when creating skills manually.
 
-learnスキルとの補完関係: learnは現在のセッションからリアルタイムで知識を抽出するのに対し、このスキルは過去の全セッション履歴を横断的に分析して統計的なパターンを発見します。
+Relationship with the learn skill: The learn skill extracts knowledge in real time from the current session, while this skill analyzes all past session history across sessions to discover statistical patterns.
 </objective>
 
 <iron_law>
 
 ## Iron Law
 
-1. 1回限りの操作をスキル化しない
+1. Do not turn one-time operations into skills.
 
 </iron_law>
 
 <quick_start>
-起動方法:
+How to start:
 
 ```
-履歴からスキル生成
-セッションログからパターン抽出
+Generate skills from history
+Extract patterns from session logs
 ```
 
-基本的な実行フロー:
+Basic execution flow:
 
-1. スコープ選択（対話形式）
-2. セッション履歴とCLI履歴を収集
-3. 3軸分析（WHAT/HOW/FLOW）でパターン抽出
-4. スキル候補の評価と重複排除
-5. ユーザー選択でスキル生成
+1. Select scope (interactive)
+2. Collect session history and CLI history
+3. Extract patterns using 3-axis analysis (WHAT/HOW/FLOW)
+4. Evaluate skill candidates and remove duplicates
+5. Generate skills based on user selection
 
-分析対象データ:
-- `~/.claude/projects/*/sessions-index.json` — セッションメタデータ
-- `~/.claude/projects/*/[sessionId].jsonl` — セッション詳細
-- `~/.local/state/zsh/history` — CLI操作履歴（オプション）
+Data sources for analysis:
+- `~/.claude/projects/*/sessions-index.json` — Session metadata
+- `~/.claude/projects/*/[sessionId].jsonl` — Session details
+- `~/.local/state/zsh/history` — CLI operation history (optional)
 </quick_start>
 
 <workflow>
 <phase_1>
-**Phase 1: スコープ確認（対話）**
+**Phase 1: Confirm Scope (interactive)**
 
-AskUserQuestionでユーザーに選択肢を提示:
+Present options to the user with AskUserQuestion:
 
-**質問1: 分析対象プロジェクト**
-- 選択肢:
-  - "全プロジェクト（4件すべて）"
-  - "dotfiles のみ"
-  - "特定プロジェクトを指定"
+**Question 1: Target project**
+- Options:
+  - "All projects (all 4)"
+  - "dotfiles only"
+  - "Specify a particular project"
 
-**質問2: 分析期間**
-- 選択肢:
-  - "最近30日"
-  - "最近7日"
-  - "最近60日"
-  - "最近90日"
-  - "全期間"
+**Question 2: Analysis period**
+- Options:
+  - "Last 30 days"
+  - "Last 7 days"
+  - "Last 60 days"
+  - "Last 90 days"
+  - "All time"
 
-**質問3: CLI履歴を含めるか**
-- 選択肢:
-  - "含めない（セッションログのみ）"
-  - "含める（より詳細な分析）"
+**Question 3: Include CLI history?**
+- Options:
+  - "No (session logs only)"
+  - "Yes (more detailed analysis)"
 
-スコープ決定後、Phase 2へ進む。
+After deciding the scope, proceed to Phase 2.
 </phase_1>
 
 <phase_2>
-**Phase 2: データ収集**
+**Phase 2: Data Collection**
 
 <step_2_1>
-**Step 2-1: セッションメタデータ収集**
+**Step 2-1: Collect session metadata**
 
-データソース: `~/.claude/projects/*/sessions-index.json`
+Data source: `~/.claude/projects/*/sessions-index.json`
 
-フィルタリング:
-- `isSidechain == true` を除外
-- 期間外のセッションを除外
+Filtering:
+- Exclude entries where `isSidechain == true`
+- Exclude sessions outside the specified period
 
-firstPromptの扱い: テーマ推定補助のみ、生成物に直接転記禁止
+Handling firstPrompt: Use only to help estimate the theme. Do not copy it directly into generated content.
 </step_2_1>
 
 <step_2_2>
-**Step 2-2: history.jsonl分析（頻出プロンプト）**
+**Step 2-2: Analyze history.jsonl (frequent prompts)**
 
-最頻出のユーザー入力を特定:
+Identify the most frequent user inputs:
 
 ```bash
 jq -r 'select(.display | test("^[^/!]")) | .display[0:80]' ~/.claude/history.jsonl \
   | sort | uniq -c | sort -rn | head -30
 ```
 
-除外パターン:
-- `/` で始まるスラッシュコマンド
-- `!` で始まる履歴呼び出し
+Exclusion patterns:
+- Slash commands starting with `/`
+- History calls starting with `!`
 
-収集目的:
-- WHAT軸（目的）との照合に使用
-- summary と実際のプロンプトの一致度を確認
+Purpose:
+- Used to match the WHAT axis (purpose)
+- Verify alignment between summaries and actual prompts
 </step_2_2>
 
 <step_2_3>
-**Step 2-3: セッションJSONL深掘り（選択的）**
+**Step 2-3: Deep dive into session JSONL (selective)**
 
-対象: WHAT軸上位3グループから各5件、合計10件まで
+Target: Top 3 groups on the WHAT axis, 5 sessions each, up to 10 total.
 
-ツール使用頻度抽出:
+Extract tool usage frequency:
 ```bash
 jq -c 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_use") | .name' \
   ~/.claude/projects/{project}/{sessionId}.jsonl \
@@ -117,143 +117,143 @@ jq -c 'select(.type=="assistant") | .message.content[]? | select(.type=="tool_us
 </step_2_3>
 
 <step_2_4>
-**Step 2-4: CLI履歴収集（オプション）**
+**Step 2-4: Collect CLI history (optional)**
 
-データソース: `~/.local/state/zsh/history`
+Data source: `~/.local/state/zsh/history`
 
-抽出: git/テスト/ビルドコマンドの頻度
-目的: HOW軸の裏付け、セッション外パターン把握
+Extract: Frequency of git/test/build commands.
+Purpose: Support the HOW axis, understand patterns outside sessions.
 </step_2_4>
 </phase_2>
 
 <phase_3>
-**Phase 3: パターン抽出 — 3軸分析**
+**Phase 3: Pattern Extraction — 3-axis Analysis**
 
 <what_axis>
-**WHAT軸 — 目的クラスタリング**
+**WHAT Axis — Purpose Clustering**
 
-目的: セッションを「何をするため」でグルーピング。
+Goal: Group sessions by "what they are for".
 
-手順:
-1. 全summary列挙（firstPrompt参考）
-2. キーワード重複でグルーピング（2語以上一致）
-3. 代表テーマ名付与（日本語）
-4. 頻度ランキング
-5. プロンプト頻度と照合（summary vs 実際の入力）
+Steps:
+1. List all summaries (use firstPrompt as a reference)
+2. Group by overlapping keywords (2 or more words in common)
+3. Assign a representative theme name
+4. Rank by frequency
+5. Cross-check with prompt frequency (summary vs actual inputs)
 
-例: "Docker環境構築", "Docker設定修正" → "Docker環境"グループ
+Example: "Docker environment setup", "Docker config fix" → "Docker Environment" group
 </what_axis>
 
 <how_axis>
-**HOW軸 — 手段パターン**
+**HOW Axis — Method Patterns**
 
-目的: 「どのように」実現するかを特定。
+Goal: Identify "how" things are accomplished.
 
-手順:
-1. ツール使用頻度を横断比較
-2. 共通ツール組み合わせ特定（60%以上のセッションで上位3位）
-3. パターン命名
-   - `Task + Bash + Write` → "サブエージェント委譲"
-   - `Read + Grep + Edit` → "コード調査と編集"
-   - `Glob + Read + Write` → "ファイル横断処理"
-4. WHAT軸グループに紐付け
+Steps:
+1. Compare tool usage frequency across sessions
+2. Identify common tool combinations (top 3 in 60% or more of sessions)
+3. Name the patterns:
+   - `Task + Bash + Write` → "Subagent delegation"
+   - `Read + Grep + Edit` → "Code research and editing"
+   - `Glob + Read + Write` → "Cross-file processing"
+4. Link to WHAT axis groups
 </how_axis>
 
 <flow_axis>
-**FLOW軸 — 作業連鎖**
+**FLOW Axis — Task Chains**
 
-目的: 時系列パターンから反復・連鎖を発見。
+Goal: Discover repetitions and chains from time-series patterns.
 
-手順:
-1. 時系列整列（created順）
-2. WHATグループラベルのシーケンス分析
-3. 反復判定: 同一テーマが7日以内に3回以上 → 反復パターン
-4. 連鎖判定: 特定順序が3日以内に2回以上 → 連鎖パターン
-5. パターン分類:
-   - 反復: 定期的タスク（候補度高）
-   - 連鎖: ワークフロー（候補度中）
-   - 単発: 1回のみ（候補度低）
+Steps:
+1. Sort by time (chronological order)
+2. Analyze sequences of WHAT group labels
+3. Repetition detection: Same theme 3 or more times within 7 days → repetitive pattern
+4. Chain detection: Same order 2 or more times within 3 days → chain pattern
+5. Pattern classification:
+   - Repetitive: Regular task (high skill candidate)
+   - Chain: Workflow (medium skill candidate)
+   - One-off: Only once (low skill candidate)
 </flow_axis>
 </phase_3>
 
 <phase_4>
-**Phase 4: スキル適性評価 + 重複排除**
+**Phase 4: Skill Suitability Evaluation + Deduplication**
 
 <evaluation_criteria>
-**評価基準**
+**Evaluation Criteria**
 
-| 基準 | 採用（A） | 検討（B） | 不採用（C） |
+| Criterion | Adopt (A) | Consider (B) | Reject (C) |
 |------|-----------|-----------|-------------|
-| 頻度 | 5回以上 | 3-4回 | 2回以下 |
-| 一貫性 | ツール使用差分<30% | 30-50% | >50% |
-| 自動化可能率 | >70% | 40-70% | <40% |
+| Frequency | 5+ times | 3-4 times | 2 or fewer |
+| Consistency | Tool variance <30% | 30-50% | >50% |
+| Automation rate | >70% | 40-70% | <40% |
 
-判定: A評価2つ以上→採用、C評価2つ以上→不採用
-一貫性 = 1 - (標準偏差 / 平均)
+Decision: 2 or more A ratings → adopt, 2 or more C ratings → reject.
+Consistency = 1 - (standard deviation / mean)
 </evaluation_criteria>
 
 <duplicate_detection>
-**重複検出**
+**Duplicate Detection**
 
-手順:
-1. 既存スキル取得: `Glob: ~/dotfiles/home/.claude/skills/*/SKILL.md`
-2. 先頭10行読み込み（name/description抽出）
-3. キーワード照合:
-   - 完全一致: name一致 → 重複確定
-   - 部分一致: description 3語以上共通 → 重複の可能性
-   - 意味的類似性: 同義語チェック
-4. 重複時は候補除外し理由表示
+Steps:
+1. Get existing skills: `Glob: ~/dotfiles/home/.claude/skills/*/SKILL.md`
+2. Read the first 10 lines (extract name/description)
+3. Keyword matching:
+   - Exact match: name matches → confirmed duplicate
+   - Partial match: 3 or more words in common in description → possible duplicate
+   - Semantic similarity: Check synonyms
+4. When a duplicate is found, exclude the candidate and show the reason
 </duplicate_detection>
 
 <fallback>
-**フォールバック**
+**Fallback**
 
-候補2件未満時: 生成中止、分析結果のみ報告（WHAT/HOW/FLOWランキング）
+If fewer than 2 candidates are found: Stop generation, report analysis results only (WHAT/HOW/FLOW rankings).
 </fallback>
 </phase_4>
 
 <phase_5>
-**Phase 5: ユーザー選択**
+**Phase 5: User Selection**
 
-AskUserQuestionで候補を提示:
+Present candidates with AskUserQuestion:
 
-提示情報:
+Display information:
 ```
-候補1: docker-environment-setup
-概要: Docker環境の構築と設定を自動化
-頻度: 8回（30日間）
-関連セッション例:
-  - Docker Compose設定作成
-  - コンテナネットワーク設定
-  - イメージビルド最適化
+Candidate 1: docker-environment-setup
+Summary: Automates Docker environment setup and configuration
+Frequency: 8 times (30 days)
+Related session examples:
+  - Creating Docker Compose configuration
+  - Container network setup
+  - Image build optimization
 
-候補2: test-implementation-workflow
-概要: テスト実装の標準ワークフロー
-頻度: 5回（30日間）
-関連セッション例:
-  - ユニットテスト作成
-  - モックオブジェクト設定
-  - テストカバレッジ確認
-```
-
-除外された候補も表示:
-```
-除外された候補:
-- git-commit-automation: 既存スキル「learn」と重複
-- file-editing: 頻度不足（2回）
+Candidate 2: test-implementation-workflow
+Summary: Standard workflow for test implementation
+Frequency: 5 times (30 days)
+Related session examples:
+  - Creating unit tests
+  - Configuring mock objects
+  - Checking test coverage
 ```
 
-選択方式:
-- 複数選択可能
-- 「すべて生成」オプション
-- 「キャンセル」オプション
+Also show excluded candidates:
+```
+Excluded candidates:
+- git-commit-automation: Duplicate with existing skill "learn"
+- file-editing: Insufficient frequency (2 times)
+```
+
+Selection method:
+- Multiple selections allowed
+- "Generate all" option
+- "Cancel" option
 </phase_5>
 
 <phase_6>
-**Phase 6: スキル生成 + 品質検証**
+**Phase 6: Skill Generation + Quality Verification**
 
 <generation_format>
-**生成フォーマット**
+**Generation Format**
 
 frontmatter:
 ```yaml
@@ -264,168 +264,168 @@ allowed-tools: {extracted-from-HOW-axis}
 ---
 ```
 
-必須XMLタグ: objective, quick_start, workflow, success_criteria
+Required XML tags: objective, quick_start, workflow, success_criteria
 
-注意: firstPrompt直接転記禁止、パス抽象化、プロジェクト固有情報除去
+Note: Do not copy firstPrompt directly. Abstract paths. Remove project-specific information.
 </generation_format>
 
 <quality_checks>
-**品質チェック**
+**Quality Checks**
 
-検証項目: 必須タグ、Markdown見出し不使用、kebab-case name、トリガーフレーズ、firstPrompt転記なし、機密情報なし、500行以内
+Verification items: Required tags, no Markdown headings, kebab-case name, trigger phrases, no firstPrompt copied, no confidential information, under 500 lines.
 
-失敗時: エラー表示、修正案提示、再生成
+On failure: Show error, suggest fix, regenerate.
 </quality_checks>
 
 <file_output>
-**ファイル出力**
+**File Output**
 
-生成先: `~/dotfiles/home/.claude/skills/{skill-name}/SKILL.md`
+Output location: `~/dotfiles/home/.claude/skills/{skill-name}/SKILL.md`
 
-手順: mkdir → Write → chmod 644
+Steps: mkdir → Write → chmod 644
 
-完了メッセージに次のステップを含める（テスト実行、手動調整、git add）
+Include next steps in the completion message (run tests, manual adjustments, git add).
 </file_output>
 </phase_6>
 </workflow>
 
 <success_criteria>
-スキル生成が成功したと判定する基準:
+Criteria for judging that skill generation succeeded:
 
-**データ収集完了:**
-- [ ] sessions-index.json を正常に読み込み
-- [ ] 期間とプロジェクトフィルタを適用
-- [ ] 10件以上のセッションを収集
+**Data collection complete:**
+- [ ] sessions-index.json loaded successfully
+- [ ] Period and project filters applied
+- [ ] 10 or more sessions collected
 
-**パターン抽出成功:**
-- [ ] WHAT軸で3つ以上のグループを特定
-- [ ] HOW軸で2つ以上のパターンを特定
-- [ ] FLOW軸で反復または連鎖を1つ以上特定
+**Pattern extraction successful:**
+- [ ] 3 or more groups identified on the WHAT axis
+- [ ] 2 or more patterns identified on the HOW axis
+- [ ] 1 or more repetitions or chains identified on the FLOW axis
 
-**スキル生成品質:**
-- [ ] 2件以上の候補を生成
-- [ ] 重複検出で既存スキルと照合
-- [ ] 生成されたスキルがXML構造に準拠
-- [ ] 品質チェックをすべて通過
+**Skill generation quality:**
+- [ ] 2 or more candidates generated
+- [ ] Duplicate detection cross-checked with existing skills
+- [ ] Generated skills comply with XML structure
+- [ ] All quality checks passed
 
-**ユーザビリティ:**
-- [ ] ユーザーが候補から選択できた
-- [ ] 生成されたスキルがファイルに保存された
-- [ ] 次のステップが明確に提示された
+**Usability:**
+- [ ] User was able to select from candidates
+- [ ] Generated skills were saved to files
+- [ ] Next steps were clearly presented
 </success_criteria>
 
 <anti_patterns>
 <pitfall name="firstPrompt_transcription">
-❌ firstPromptをそのまま転記:
+❌ Copying firstPrompt directly:
 
 ```yaml
-description: Docker環境を構築してネットワーク設定してください
+description: Please set up Docker environment and configure the network
 ```
 
-✅ 一般化して記述:
+✅ Write in generalized form:
 
 ```yaml
-description: Docker環境の構築と設定を自動化。Docker Compose、ネットワーク設定、イメージビルド最適化に使用。
+description: Automates Docker environment setup and configuration. Used for Docker Compose, network settings, and image build optimization.
 ```
 </pitfall>
 
 <pitfall name="project_specific_paths">
-❌ プロジェクト固有のパスを含む:
+❌ Contains project-specific paths:
 
 ```xml
 <workflow>
-/Users/kei/dotfiles/scripts/setup.sh を実行
+Run /Users/kei/dotfiles/scripts/setup.sh
 </workflow>
 ```
 
-✅ 抽象化:
+✅ Abstract it:
 
 ```xml
 <workflow>
-プロジェクトルートの scripts/setup.sh を実行
+Run scripts/setup.sh in the project root
 </workflow>
 ```
 </pitfall>
 
 <pitfall name="overfit_to_single_session">
-❌ 単一セッションに過剰適合:
+❌ Over-fitted to a single session:
 
 ```xml
 <objective>
-tmux設定ファイルのステータスバー色を変更します。
+Change the status bar color in the tmux config file.
 </objective>
 ```
 
-✅ パターンとして一般化:
+✅ Generalize as a pattern:
 
 ```xml
 <objective>
-設定ファイルの編集と検証を標準化します。構文チェック、バックアップ、ロールバック機能を含みます。
+Standardize config file editing and validation. Includes syntax checks, backups, and rollback functionality.
 </objective>
 ```
 </pitfall>
 
 <pitfall name="insufficient_filtering">
-❌ isSidechain=true を除外し忘れ:
+❌ Forgetting to exclude isSidechain=true:
 
 ```
-全100セッションを分析 → 80件がサブエージェント実行
+Analyze all 100 sessions → 80 are subagent executions
 ```
 
-✅ 適切にフィルタ:
+✅ Filter properly:
 
 ```
-メインセッションのみ抽出（20件）→ 意味のあるパターン発見
+Extract main sessions only (20) → Find meaningful patterns
 ```
 </pitfall>
 
 <pitfall name="ignoring_tool_consistency">
-❌ ツール使用の一貫性を無視:
+❌ Ignoring tool usage consistency:
 
 ```
-候補: "ファイル処理"
-ツール: あるセッションではRead+Edit、別のセッションではBash+Write
-→ 一貫性なし（自動化困難）
+Candidate: "File processing"
+Tools: Read+Edit in some sessions, Bash+Write in others
+→ Inconsistent (hard to automate)
 ```
 
-✅ 一貫性を評価:
+✅ Evaluate consistency:
 
 ```
-ツール使用差分が50%超 → 不採用
-明確なパターンがある候補のみ採用
+Tool variance over 50% → Reject
+Only adopt candidates with a clear pattern
 ```
 </pitfall>
 
 <pitfall name="cli_history_overload">
-❌ CLI履歴を無制限に読み込み:
+❌ Reading CLI history without limits:
 
 ```bash
 Read: ~/.local/state/zsh/history
-→ 100万行、Bash出力30K制限でトランケート
+→ 1 million lines, truncated by 30K Bash output limit
 ```
 
-✅ 集計して読み込み:
+✅ Aggregate before reading:
 
 ```bash
 tail -10000 ~/.local/state/zsh/history | \
   awk '{print $2}' | sort | uniq -c | sort -rn | head -50
-→ 上位50コマンドのみ
+→ Top 50 commands only
 ```
 </pitfall>
 </anti_patterns>
 
 <reference_guides>
-関連する参照資料:
+Related reference materials:
 
-**スキル作成規約:**
-- [creating-agent-skills/SKILL.md](../creating-agent-skills/SKILL.md) — スキル作成の全体像
-- [creating-agent-skills/references/skill-structure.md](../creating-agent-skills/references/skill-structure.md) — XML構造要件
+**Skill creation guidelines:**
+- [creating-agent-skills/SKILL.md](../creating-agent-skills/SKILL.md) — Overview of skill creation
+- [creating-agent-skills/references/skill-structure.md](../creating-agent-skills/references/skill-structure.md) — XML structure requirements
 
-**補完スキル:**
-- [learn/SKILL.md](../learn/SKILL.md) — 現在のセッションからのリアルタイム抽出
+**Complementary skills:**
+- [learn/SKILL.md](../learn/SKILL.md) — Real-time extraction from the current session
 
-**データソース:**
-- `~/.claude/projects/*/sessions-index.json` — セッションメタデータ
-- `~/.claude/history.jsonl` — プロンプト履歴
-- `~/.local/state/zsh/history` — CLI操作履歴
+**Data sources:**
+- `~/.claude/projects/*/sessions-index.json` — Session metadata
+- `~/.claude/history.jsonl` — Prompt history
+- `~/.local/state/zsh/history` — CLI operation history
 </reference_guides>

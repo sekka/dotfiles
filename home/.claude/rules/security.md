@@ -1,10 +1,10 @@
 ---
-description: 外部ツール使用時のセキュリティ制約
+description: Security constraints when using external tools
 ---
 
-# セキュリティ原則
+# Security Principles
 
-## 外部ツール使用時の注意
+## Notes on Using External Tools
 
-- **Context7 / DeepWiki**: 公開OSSライブラリのみ問い合わせ対象。社内ライブラリ名は一般化する（例: `@company/auth` → "カスタム認証ライブラリ"）
-- **WebFetch**: 認証が必要なサイトは使用不可（Google Docs、Confluence、Jira、GitHubプライベートリポジトリ）
+- **Context7 / DeepWiki**: Only use for public OSS libraries. Generalize internal library names (e.g., `@company/auth` → "custom auth library")
+- **WebFetch**: Do not use for sites that require authentication (Google Docs, Confluence, Jira, GitHub private repositories)

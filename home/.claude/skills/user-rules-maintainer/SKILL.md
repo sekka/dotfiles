@@ -1,95 +1,95 @@
 ---
 name: user-rules-maintainer
 description: >
-  Harness（CLAUDE.md, rules, skills, memory）の鮮度維持と整合性チェックを行うスキル。
-  コードベースの実態とドキュメントの乖離を検出し、更新提案を行う。
-  修正はユーザー承認後にのみ適用する。
-  「ルール更新」「CLAUDE.mdチェック」「メモリ整理」「ドキュメントの鮮度チェック」
-  「ルールファイルをメンテして」「設定を見直したい」等のリクエストで使用する。
+  Keep the harness (CLAUDE.md, rules, skills, memory) fresh and consistent.
+  Detect gaps between the codebase and documentation, then propose updates.
+  Apply changes only after user approval.
+  Use when asked to "update rules", "check CLAUDE.md", "clean up memory",
+  "check if docs are stale", "maintain rule files", or "review settings".
 ---
 
 # Rules Maintainer
 
-Harness を実装の実態と照合し、陳腐化を検出・修正提案する。
-修正はユーザー承認後にのみ適用する。
+Compare the harness against the actual implementation. Detect outdated content and propose fixes.
+Apply fixes only after user approval.
 
 ## Iron Law
 
-1. ユーザー承認なしにルールファイルを変更しない
+1. Do not change rule files without user approval
 
-## フロー
+## Flow
 
 ```
-Phase 1〜3 は独立しており並列実行可能
+Phases 1-3 are independent and can run in parallel
 
-Phase 1: ルールファイル照合（CLAUDE.md, rules）
-Phase 2: スキル description 照合（skills/*/SKILL.md）
-Phase 3: メモリ整理（memory/）
+Phase 1: Check rule files (CLAUDE.md, rules)
+Phase 2: Check skill descriptions (skills/*/SKILL.md)
+Phase 3: Clean up memory (memory/)
     ↓
-構造化レポート出力 → ユーザー承認 → 修正適用
+Output structured report → User approval → Apply fixes
 ```
 
-## Phase 1: ルールファイル照合
+## Phase 1: Check Rule Files
 
-対象: `.claude/CLAUDE.md`, `home/.claude/CLAUDE.md`, `home/.claude/rules/*.md`
-存在しないファイルはスキップ。
+Targets: `.claude/CLAUDE.md`, `home/.claude/CLAUDE.md`, `home/.claude/rules/*.md`
+Skip files that do not exist.
 
-### チェック観点
+### Check Points
 
-1. **ディレクトリ構造** — コードブロック内のパスが実在するか Glob で確認
-2. **コマンド** — bash ブロック内のファイルパスが存在するか確認（実行はしない）
-3. **ツールチェーン** — 記載ツールが `which` でインストール確認
-4. **参照先** — harness 関連パス（`.claude/`, `home/.claude/`, `docs/`）への参照が有効か確認。コード例・コメント内の参照は除外
-5. **矛盾** — グローバルとプロジェクト固有 CLAUDE.md で同一トピックの矛盾がないか
+1. **Directory structure** — Use Glob to verify that paths inside code blocks actually exist
+2. **Commands** — Check that file paths in bash blocks exist (do not run them)
+3. **Toolchain** — Use `which` to confirm that listed tools are installed
+4. **References** — Check that references to harness-related paths (`.claude/`, `home/.claude/`, `docs/`) are valid. Exclude references inside code examples and comments.
+5. **Conflicts** — Check for contradictions on the same topic between global and project-specific CLAUDE.md
 
-## Phase 2: スキル description 照合
+## Phase 2: Check Skill Descriptions
 
-対象: `home/.claude/skills/*/SKILL.md` の frontmatter を抽出し解析。
-description の乖離チェックが必要なスキルのみ全文を読む。
+Targets: Extract and analyze frontmatter from `home/.claude/skills/*/SKILL.md`.
+Read the full file only for skills that need a description gap check.
 
-### チェック観点
+### Check Points
 
-1. **description と内容の乖離** — description のトリガー条件・機能がワークフローと合っているか
-2. **無効な参照** — allowed-tools やファイルパスが有効か
-3. **重複スキル** — 完全に機能が重複するペアのみ報告
+1. **Gap between description and content** — Do the trigger conditions and features in the description match the workflow?
+2. **Invalid references** — Are allowed-tools and file paths valid?
+3. **Duplicate skills** — Report only pairs that have completely overlapping functionality
 
-## Phase 3: メモリ整理
+## Phase 3: Clean Up Memory
 
-対象: `~/.claude/projects/-Users-kei-dotfiles/memory/`
-ディレクトリが空なら「メモリ未使用」と報告してスキップ。
+Target: `~/.claude/projects/-Users-kei-dotfiles/memory/`
+If the directory is empty, report "memory not used" and skip.
 
-### チェック観点
+### Check Points
 
-1. **陳腐化** — メモリ内のファイルパス・設定名が現コードベースに存在するか
-2. **重複** — 同じ情報を異なる表現で記録しているもの
-3. **MEMORY.md 整合性** — インデックスと実ファイルの 1:1 対応
-4. **分類の妥当性** — type（user/feedback/project/reference）が内容に合っているか
+1. **Outdated** — Do file paths and setting names in memory still exist in the current codebase?
+2. **Duplicates** — Items that record the same information in different wording
+3. **MEMORY.md consistency** — 1:1 match between the index and actual files
+4. **Classification validity** — Does the type (user/feedback/project/reference) match the content?
 
-## レポート出力
+## Report Output
 
 ```markdown
-## Phase N: [フェーズ名] 結果
+## Phase N: [Phase Name] Results
 
-| # | 種別 | 対象ファイル | 問題 | 提案 |
+| # | Type | Target File | Problem | Suggestion |
 |---|------|-----------|------|------|
-| 1 | 陳腐化 | .claude/CLAUDE.md:45 | `scripts/foo.sh` が存在しない | 該当行を削除 |
+| 1 | Outdated | .claude/CLAUDE.md:45 | `scripts/foo.sh` does not exist | Delete the line |
 
-問題なし: ✅ [チェック項目名]
+No issues: ✅ [check item name]
 ```
 
-問題ゼロの Phase は「✅ 全項目問題なし」と1行で報告。
+Phases with zero problems are reported in one line: "✅ All items OK".
 
-## 修正適用
+## Applying Fixes
 
-1. 「現在の記述」と「提案」の diff を提示
-2. 一括適用 or 個別選択を確認（AskUserQuestion）
-3. 承認された修正のみ適用
+1. Show a diff of "current text" vs "proposed text"
+2. Confirm whether to apply all at once or select individually (AskUserQuestion)
+3. Apply only approved fixes
 
-**修正はユーザー承認なしに実行しない。**
+**Do not apply fixes without user approval.**
 
-## スコープ外
+## Out of Scope
 
-- コードの品質レビュー（→ `/review-and-improve`）
-- 新しいルールの提案（既存の整合性チェックのみ）
-- Nix / Brewfile の内容検証（ツール存在確認のみ）
-- メモリの新規作成（整理のみ）
+- Code quality review (→ `/review-and-improve`)
+- Proposing new rules (this skill only checks existing consistency)
+- Validating Nix / Brewfile content (only checks that tools exist)
+- Creating new memory entries (only cleanup)

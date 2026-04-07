@@ -1,114 +1,114 @@
 ---
 name: user-preflight
-description: コミット前の統合チェック。lint/型チェック/変更レビュー/機密情報チェック/コミットメッセージ案を1コマンドで実行。「preflight」「コミット前チェック」「プリフライト」で起動。
+description: Pre-commit integrated check. Runs lint, type check, change review, secret scan, and draft commit message in one command. Triggered by "preflight" or "pre-commit check".
 allowed-tools: Bash, Read, Grep, Glob
 ---
 
 # Preflight
 
-コミット前の統合チェックを1コマンドで実行する。
+Run all pre-commit checks in one command.
 
 ## Iron Law
 
-1. チェック結果を改ざん・省略しない
-2. 失敗したチェックを無視してDONEを返さない
+1. Do not alter or omit check results
+2. Do not return DONE when a check has failed
 
-## フロー
+## Flow
 
 ```
-変更検出 → lint/format → 型チェック → 変更レビュー → 機密情報チェック → コミットメッセージ案 → 結果サマリー
+Detect changes → lint/format → type check → change review → secret scan → commit message draft → result summary
 ```
 
-## Phase 1: 変更検出
+## Phase 1: Detect Changes
 
 ```bash
 git status
-git diff --cached --name-only  # ステージ済み
-git diff --name-only           # 未ステージ
+git diff --cached --name-only  # staged
+git diff --name-only           # unstaged
 ```
 
-変更がなければ「変更なし」と報告してDONEで終了。
+If there are no changes, report "no changes" and exit with DONE.
 
-## Phase 2: lint/format チェック
+## Phase 2: lint/format Check
 
-プロジェクトのlintコマンドを検出して実行する。
+Detect and run the project's lint command.
 
-### 検出順序
+### Detection Order
 
-1. `package.json` scripts — `lint`, `format:check` 等
-2. `mise.toml` — `[tasks]` から lint/format 系タスクを探す
-3. `Makefile` — lint/format ターゲット
-4. 直接コマンド — dprint, oxlint, eslint, shfmt, shellcheck
+1. `package.json` scripts — `lint`, `format:check`, etc.
+2. `mise.toml` — Look for lint/format tasks in `[tasks]`
+3. `Makefile` — lint/format targets
+4. Direct commands — dprint, oxlint, eslint, shfmt, shellcheck
 
-見つからなければSKIPとして記録する。
+If none are found, record as SKIP.
 
-## Phase 3: 型チェック
+## Phase 3: Type Check
 
-型チェッカーがあれば実行する。
+Run the type checker if one exists.
 
-| 言語 | コマンド |
+| Language | Command |
 |------|---------|
 | TypeScript | `tsc --noEmit` |
-| Python | `pyright` または `mypy` |
+| Python | `pyright` or `mypy` |
 
-見つからなければSKIPとして記録する。
+If none is found, record as SKIP.
 
-## Phase 4: 変更レビュー（簡易）
+## Phase 4: Change Review (lightweight)
 
-`git diff --cached`（ステージ済み）または `git diff`（未ステージ）を読んで以下を確認する。
+Read `git diff --cached` (staged) or `git diff` (unstaged) and check the following.
 
-### チェック観点（grepベース）
+### Check Points (grep-based)
 
-- **デバッグコード残留**: `console.log`, `debugger`, `print(`, `TODO`, `FIXME`
-- **意図しない変更**: 関係ないファイルが含まれていないか（ファイル一覧で確認）
+- **Debug code remaining**: `console.log`, `debugger`, `print(`, `TODO`, `FIXME`
+- **Unintended changes**: Check the file list for unrelated files
 
-問題があればWARNINGとして件数を記録する。詳細なレビューは `/review-and-improve` に委譲。
+Record any problems as WARNING with a count. Delegate detailed review to `/review-and-improve`.
 
-## Phase 5: 機密情報チェック
+## Phase 5: Secret Scan
 
-ステージされたファイルに以下が含まれないかGrepで確認する。
+Use Grep to check that staged files do not contain the following.
 
 ```bash
 git diff --cached
 ```
 
-### チェック対象パターン
+### Patterns to Check
 
-- `.env` ファイルのステージング
-- `API_KEY`, `SECRET`, `TOKEN`, `PASSWORD` 等のキーワード（代入形式）
-- 秘密鍵ファイル（`-----BEGIN`, `.pem`, `.key`）
+- Staging of `.env` files
+- Keywords such as `API_KEY`, `SECRET`, `TOKEN`, `PASSWORD` (in assignment form)
+- Private key files (`-----BEGIN`, `.pem`, `.key`)
 
-検出したらWARNINGで報告する（ブロックはしない）。
+Report detections as WARNING (do not block).
 
-## Phase 6: コミットメッセージ案
+## Phase 6: Commit Message Draft
 
 ```bash
 git log --oneline -5
 ```
 
-既存のコミットスタイルを参照し、変更内容から1-2案を提案する。
+Look at the existing commit style and propose 1-2 candidates based on the changes.
 
-### よくあるプレフィックス
+### Common Prefixes
 
 `feat:`, `fix:`, `config:`, `refactor:`, `docs:`, `chore:`
 
-## Phase 7: 結果サマリー
+## Phase 7: Result Summary
 
 ```markdown
 ## Preflight Results
 
-| チェック | 結果 |
+| Check | Result |
 |---------|------|
 | lint/format | PASS / FAIL / SKIP |
-| 型チェック | PASS / FAIL / SKIP |
-| 変更レビュー | OK / WARNING(n件) |
-| 機密情報 | OK / WARNING(n件) |
+| Type check | PASS / FAIL / SKIP |
+| Change review | OK / WARNING(n items) |
+| Secret scan | OK / WARNING(n items) |
 
-### コミットメッセージ案
+### Commit Message Candidates
 - `feat: ...`
 - `fix: ...`
 
 ## Status: DONE
 ```
 
-FAILが1つでもあれば Status は `DONE_WITH_CONCERNS` とする。
+If there is even one FAIL, set Status to `DONE_WITH_CONCERNS`.

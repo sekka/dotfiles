@@ -1,25 +1,25 @@
-# セッションサマリー
+# Session Summary
 
-ユーザーが明示的にセッション終了を伝えた場合（「おわり」「終了」「また」等）、以下の手順でサマリーを保存する。`/clear` や途中の中断では保存しない。実質的な作業がなかった場合もスキップする。
+When the user explicitly signals the end of a session (「おわり」 (done), 「終了」 (end), 「また」 (see you), etc.), save a summary using the steps below. Do not save on `/clear` or mid-session interruptions. Skip if there was no meaningful work done.
 
-1. `.claude/sessions/` ディレクトリがなければ作成
-2. `git diff --name-only` で変更ファイル一覧を取得
-3. `.claude/sessions/YYYY-MM-DD-HHmm.md` に保存（現在時刻を使用）
+1. Create the `.claude/sessions/` directory if it does not exist
+2. Run `git diff --name-only` to get the list of changed files
+3. Save to `.claude/sessions/YYYY-MM-DD-HHmm.md` (use the current time)
 
 ```
 # Session Summary - YYYY-MM-DD HH:mm
 
-## やったこと
-（タスクの要約、2-5行）
+## What was done
+(Summary of the task, 2-5 lines)
 
-## 変更ファイル
-（git diff --name-only の結果。なければ「なし」）
+## Changed files
+(Output of git diff --name-only. Write "none" if empty)
 
-## 決定事項
-（設計・方針の判断。なければ「なし」）
+## Decisions
+(Design and policy decisions made. Write "none" if empty)
 
-## 未解決事項
-（残タスク、次セッションで対応すべきこと。なければ「なし」）
+## Unresolved items
+(Remaining tasks, things to handle in the next session. Write "none" if empty)
 ```
 
-保存後は「セッションサマリーを保存しました」と一言だけ報告する。
+After saving, report only one line: "Session summary saved."

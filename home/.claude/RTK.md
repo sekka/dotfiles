@@ -30,8 +30,8 @@ Refer to CLAUDE.md for full command reference.
 
 ## Important: Output Filtering
 
-rtkプロキシ経由の出力はトークン節約のためにフィルタリング・圧縮される。
-**出力が通常より短い・形式が異なるのはrtkの正常動作であり、ページ破損やエラーではない。**
+Output from the rtk proxy is filtered and compressed to save tokens.
+**Shorter or differently formatted output is normal rtk behavior, not a page error.**
 
-- 生の出力が必要な場合: `rtk proxy <cmd>` を使う
-- hook対象外のコマンド（curl, wget等）は素のまま実行される
+- If you need raw output: use `rtk proxy <cmd>`
+- Commands not covered by hooks (curl, wget, etc.) run without filtering

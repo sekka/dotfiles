@@ -2,80 +2,80 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-グローバル CLAUDE.md の内容を補完し、矛盾する場合はこのファイルが優先されます。
+This file supplements the global CLAUDE.md. If there is a conflict, this file takes priority.
 
-## コマンド
+## Commands
 
 ```bash
-./setup/setup.sh            # フルセットアップ実行
-mise run macos:check        # macOS defaults変更検出
-mise run macos:apply        # macOS設定適用
+./setup/setup.sh            # Run full setup
+mise run macos:check        # Detect macOS defaults changes
+mise run macos:apply        # Apply macOS settings
 bun scripts/development/lint-format.ts  # oxlint + dprint + shfmt + shellcheck
 
-# Nix（パッケージ管理）
-cd nix && ./update-nixpkgs.sh            # nixpkgs 更新（1週間遅延、安定版取得）
-cd nix && ./update-nixpkgs.sh --days 14  # 遅延日数を変更する場合
-cd nix && darwin-rebuild switch --flake . # Nix パッケージ適用
-cd nix && darwin-rebuild switch --rollback # ロールバック
+# Nix (package management)
+cd nix && ./update-nixpkgs.sh            # Update nixpkgs (1-week delay, gets stable version)
+cd nix && ./update-nixpkgs.sh --days 14  # Change the delay in days
+cd nix && darwin-rebuild switch --flake . # Apply Nix packages
+cd nix && darwin-rebuild switch --rollback # Rollback
 ```
 
-## ディレクトリ構造
+## Directory Structure
 
 ```
-home/             # デプロイ元テンプレート → setup/04_symlinks.sh で ~/ へ symlink
-  .claude/        # Claude Code設定（agents, rules, skills, hooks）→ ~/.claude/ へ
-  config/         # XDG設定（ghostty, nvim, yazi, zsh等）→ ~/.config/ へ
-nix/              # Nix パッケージ管理（nix-darwin + flakes, aarch64-darwin）
-  flake.nix       # エントリポイント（hosts/ から全ホストを自動検出）
-  flake.lock      # バージョン固定（自動生成、gitコミット対象）
-  hosts/          # ホスト別設定（common.nix + ホスト固有）
-setup/            # 番号付きセットアップスクリプト（01-04基盤, 10-開発, 20-AI）
-  Brewfile        # Homebrew パッケージ定義（GUI/Nix未移行分）
-scripts/          # 開発・運用ツール（TypeScript/Bun）
-  development/    # lint-format, compare-dirs 等
-  git/            # カスタムgitコマンド群
-  media/          # 画像・動画変換ツール
-  system/         # macOS設定・SSH・ZIP等
-.claude/          # 実行時状態（セッション、メモリ、プラン）※gitignore対象
+home/             # Deploy source templates → symlinked to ~/ by setup/04_symlinks.sh
+  .claude/        # Claude Code config (agents, rules, skills, hooks) → ~/.claude/
+  config/         # XDG config (ghostty, nvim, yazi, zsh, etc.) → ~/.config/
+nix/              # Nix package management (nix-darwin + flakes, aarch64-darwin)
+  flake.nix       # Entry point (auto-detects all hosts from hosts/)
+  flake.lock      # Version lock (auto-generated, committed to git)
+  hosts/          # Per-host config (common.nix + host-specific)
+setup/            # Numbered setup scripts (01-04 base, 10 dev, 20 AI)
+  Brewfile        # Homebrew package definitions (GUI / not yet migrated to Nix)
+scripts/          # Dev and ops tools (TypeScript/Bun)
+  development/    # lint-format, compare-dirs, etc.
+  git/            # Custom git commands
+  media/          # Image and video conversion tools
+  system/         # macOS settings, SSH, ZIP, etc.
+.claude/          # Runtime state (sessions, memory, plans) — gitignored
 ```
 
-## ツールチェーン
+## Toolchain
 
 - **Runtime:** Bun
-- **タスクランナー:** mise
+- **Task runner:** mise
 - **Lint:** oxlint (TS/JS), shellcheck (shell)
 - **Format:** dprint (MD/YAML/TOML) + shfmt (shell)
-- **Zsh プラグイン:** sheldon
-- **パッケージ:** Nix (nix-darwin, CLIツール) + Homebrew (setup/Brewfile, GUI/Nix未移行分)
+- **Zsh plugin manager:** sheldon
+- **Packages:** Nix (nix-darwin, CLI tools) + Homebrew (setup/Brewfile, GUI / not yet migrated to Nix)
 
-## 設計原則
+## Design Principles
 
-macOS専用・個人用途・GitHub公開リポジトリ。Linux/Windows互換性、マルチユーザー対応、エンタープライズ要件は考慮不要。
+macOS only. Personal use. Public GitHub repository. No need to consider Linux/Windows compatibility, multi-user support, or enterprise requirements.
 
-### 1. Mac専用前提
+### 1. macOS-Only Assumption
 
-- BSD系コマンドをそのまま使用（`stat -f%z`, `readlink`, `grep -E` 等）
-- macOS標準zshのビルトイン機能を活用
-- GNU coreutils の存在チェックやポータビリティ分岐は不要
+- Use BSD commands as-is (`stat -f%z`, `readlink`, `grep -E`, etc.)
+- Use built-in features of the macOS default zsh
+- No need to check for GNU coreutils or add portability branches
 
-### 2. YAGNI（You Aren't Gonna Need It）
+### 2. YAGNI (You Aren't Gonna Need It)
 
-明日使う予定がない機能は実装しない。過剰な抽象化・汎用化を避け、動作する最小限のコードを書く。
+Do not implement features you do not plan to use tomorrow. Avoid over-abstraction and over-generalization. Write the minimum code that works.
 
-### 3. 実用性重視（80%ルール）
+### 3. Pragmatism First (80% Rule)
 
-- 80%のユースケースをカバーすれば十分
-- 全エッジケースの網羅、完璧なエラーハンドリング、詳細すぎるログは不要
-- 例: タイムアウトは基本チェックのみ、パスバリデーションは基本サニタイズのみ
+- Covering 80% of use cases is enough
+- No need to cover all edge cases, add perfect error handling, or write very detailed logs
+- Example: basic check only for timeouts, basic sanitize only for path validation
 
-## セキュリティ方針
+## Security Policy
 
-個人環境・単一ユーザー前提。TOCTOU、権限昇格、競合状態は対応不要。
+Personal environment. Single user. No need to handle TOCTOU, privilege escalation, or race conditions.
 
-- **認証情報保護**: .gitignore + `chmod 600` + `umask 077`
-- **入力検証**: 基本的なサニタイズ（`${value//[^a-zA-Z0-9_-]/}`）で十分
-- 詳細な脅威モデリング・多層防御は過剰
+- **Credential protection**: .gitignore + `chmod 600` + `umask 077`
+- **Input validation**: Basic sanitize (`${value//[^a-zA-Z0-9_-]/}`) is enough
+- Detailed threat modeling and defense-in-depth are overkill
 
-## テスト方針
+## Test Policy
 
-手動テストのみ。自動テスト（CI/CD、bats-core等）は導入しない。
+Manual testing only. Do not introduce automated testing (CI/CD, bats-core, etc.).

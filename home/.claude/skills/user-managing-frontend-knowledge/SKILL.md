@@ -1,703 +1,703 @@
 ---
 name: user-managing-frontend-knowledge
-description: フロントエンド技術（CSS、JavaScript、HTML、パフォーマンス、アクセシビリティ）のナレッジベース管理。Web開発の実装タスクやコーディング作業時に自発的にナレッジベースを参照し、ベストプラクティスを適用することで作業の精度と速度を向上させる。URLや記事からの技術情報の要約・蓄積、質問への回答も行う。モダンCSS（Grid、Flexbox、@scope、View Transitions）、JavaScript パターン、Core Web Vitals、WCAG、ブラウザ互換性などに対応。
+description: Manage a knowledge base for frontend technologies (CSS, JavaScript, HTML, performance, accessibility). During web development tasks, consult the knowledge base proactively and apply best practices to improve accuracy and speed. Also summarizes and stores technical info from URLs and articles, and answers questions. Covers modern CSS (Grid, Flexbox, @scope, View Transitions), JavaScript patterns, Core Web Vitals, WCAG, and browser compatibility.
 disable-model-invocation: false
 ---
 
-# フロントエンドナレッジ管理
+# Frontend Knowledge Management
 
-## 概要
+## Overview
 
-フロントエンド技術のナレッジベースを管理するスキル。3つの主要機能を提供:
+A skill for managing a knowledge base of frontend technologies. Provides three main functions:
 
-1. **実装時の自発的参照**（最優先）: Web開発の実装タスク時にナレッジベースを参照し、ベストプラクティスを適用して作業の精度と速度を向上
-2. **収集・蓄積**: URLや記事からフロントエンド技術を要約してナレッジベースに追加
-3. **参照・回答**: 蓄積されたナレッジベースから質問に関連する情報を検索して回答
+1. **Proactive reference during implementation (highest priority)**: During web development tasks, refer to the knowledge base and apply best practices to improve accuracy and speed.
+2. **Collection and storage**: Summarize frontend technologies from URLs and articles and add them to the knowledge base.
+3. **Reference and Q&A**: Search the accumulated knowledge base for information related to a question and respond.
 
 ## Iron Law
 
-1. 古い情報で既存ナレッジを上書きしない
-2. 出典URLなしの情報を登録しない
+1. Do not overwrite existing knowledge with outdated information.
+2. Do not register information without a source URL.
 
-## 使用場面
+## When to Use
 
-### 実装タスク時の自発的参照（最優先）
+### Proactive reference during implementation tasks (highest priority)
 
-- Web開発の実装タスク（コンポーネント作成、レイアウト実装、アニメーション実装など）
-- コーディング作業時のベストプラクティス適用
-- 最新のCSS/JavaScript機能の活用
-- アクセシビリティやパフォーマンスへの配慮
+- Web development implementation tasks (creating components, implementing layouts, implementing animations, etc.)
+- Applying best practices during coding
+- Using the latest CSS/JavaScript features
+- Considering accessibility and performance
 
-**トリガー**: ユーザーからの実装依頼、コード作成タスク、機能追加など
+**Triggers**: Implementation requests from the user, code creation tasks, feature additions, etc.
 
-### 収集モード
+### Collection mode
 
-- URLが渡された場合: 「この記事を保存して」
-- 記事内容の追加: 「ナレッジに追加して」
-- ナレッジ整理: 「ナレッジを整理して」
+- When a URL is provided: "Save this article"
+- Adding article content: "Add to knowledge"
+- Organizing knowledge: "Organize the knowledge"
 
-### 参照モード（質問対応）
+### Reference mode (Q&A)
 
-- フロントエンド技術の質問
-- CSS、JavaScript、パフォーマンス、アクセシビリティに関する質問
-- 蓄積されたナレッジに基づく回答が必要な場合
+- Questions about frontend technologies
+- Questions about CSS, JavaScript, performance, accessibility
+- When an answer based on accumulated knowledge is needed
 
 ---
 
-# パート1: ナレッジ収集・蓄積
+# Part 1: Knowledge Collection and Storage
 
-## 実行モード
+## Execution Modes
 
-### 1. 追加モード（デフォルト）
+### 1. Add mode (default)
 
-- URLが渡された場合
-- 「この記事を保存して」「ナレッジに追加して」等の依頼
+- When a URL is provided
+- Requests such as "Save this article" or "Add to knowledge"
 
-### 2. 整理モード
+### 2. Organize mode
 
-- 「ナレッジを整理して」「重複を確認して」等の依頼
-- 特定カテゴリの整理: 「css-layout.md を整理して」
+- Requests such as "Organize the knowledge" or "Check for duplicates"
+- Organize a specific category: "Organize css-layout.md"
 
-## 収集フロー
+## Collection Flow
 
-### Step 1: 原文を raw/_inbox/ に保存
+### Step 1: Save the original to raw/_inbox/
 
-URLが渡された場合、`WebFetch` で内容を取得し、**そのまま** `raw/_inbox/YYYY-MM-DD-{slug}.md` として保存する。
+When a URL is provided, fetch the content with `WebFetch` and save it **as-is** to `raw/_inbox/YYYY-MM-DD-{slug}.md`.
 
-ファイルフォーマット:
+File format:
 
 ```markdown
 ---
-url: [取得元URL]
+url: [source URL]
 fetched_at: [YYYY-MM-DD]
-title: [記事タイトル]
+title: [article title]
 ---
 
-[本文または重要部分の抜粋]
+[Body text or important excerpts]
 ```
 
-**重要**: この段階では knowledge/ には書き込まない。要約・分類・統合は「コンパイルモード」で別途実施する。
+**Important**: Do not write to knowledge/ at this stage. Summarizing, classifying, and integrating is done separately in "compile mode".
 
-報告:
+Report:
 
 ```
-✅ raw/_inbox/ に保存しました
+✅ Saved to raw/_inbox/
 📁 raw/_inbox/2026-04-06-{slug}.md
-🔗 出典: [URL]
+🔗 Source: [URL]
 
-「inbox 処理して」と依頼すると knowledge/ に統合されます。
+Say "process inbox" to integrate it into knowledge/.
 ```
 
-### Step 2: 要約・構造化
+### Step 2: Summarize and structure
 
-**人間が直接参照できるデータ集**として、以下を意識:
+Write as a **data collection that humans can refer to directly**, keeping in mind:
 
-- 専門用語には簡潔な説明を添える
-- コード例は実際にコピペして使えるレベルに
-- 「なぜこの方法が良いのか」の理由を明記
-- ブラウザサポート状況は具体的に記載
+- Add concise explanations to technical terms.
+- Make code examples good enough to copy and paste.
+- Clearly state "why this approach is better".
+- List browser support status with specific details.
 
-以下のフォーマットで要約：
+Summarize in the following format:
 
 ```markdown
-## [テクニック名]
+## [Technique Name]
 
-> 出典: [URL]
-> 執筆日: [YYYY-MM-DD]（記事の公開日・更新日。不明な場合は「不明」）
-> 追加日: [YYYY-MM-DD]
+> Source: [URL]
+> Written: [YYYY-MM-DD] (article's publish/update date; "unknown" if unavailable)
+> Added: [YYYY-MM-DD]
 
-[1〜3文で概要を説明]
+[Overview in 1-3 sentences]
 
-### コード例
+### Code Example
 
 \```css
-/* または js/html */
-[実用的なコード例]
+/* or js/html */
+[Practical code example]
 \```
 
-### ユースケース
-- [具体的な使用場面1]
-- [具体的な使用場面2]
+### Use Cases
+- [Specific use case 1]
+- [Specific use case 2]
 
-### 注意点
-- [ブラウザサポート、制限事項など]
+### Notes
+- [Browser support, limitations, etc.]
 
 ---
 ```
 
-### Step 3: カテゴリ判定
+### Step 3: Determine category
 
-以下のカテゴリから最適なものを選択（新しい階層構造）：
+Choose the best category from the following (new hierarchy):
 
-| カテゴリ | ファイルパス | 対象 | キーワード |
+| Category | File path | Target | Keywords |
 |---------|-------------|------|-----------|
-| **CSS - レイアウト** | `knowledge/css/layout/` | Grid, Flexbox, Container Queries, full-bleed | レイアウト, 幅, 高さ, 中央寄せ, 全幅 |
-| **CSS - アニメーション** | `knowledge/css/animation/` | Transitions, View Transitions, Scroll-driven | 動き, アニメーション, 遷移, トランジション |
-| **CSS - ビジュアル** | `knowledge/css/visual/` | filter, clip-path, mask, shape | フィルター, マスク, 図形, 視覚効果 |
-| **CSS - タイポグラフィ** | `knowledge/css/typography/` | text-box, フォント, paint-order | 文字, フォント, テキスト |
-| **CSS - セレクタ** | `knowledge/css/selectors/` | @scope, :has, :is, :where | スコープ, セレクタ, 擬似クラス |
-| **CSS - 値** | `knowledge/css/values/` | clamp, viewport units, currentColor | 値, 単位, ビューポート, カスタムプロパティ |
-| **CSS - コンポーネント** | `knowledge/css/components/` | Popover, Anchor Positioning, field-sizing | UI, コンポーネント, ポップオーバー |
-| **CSS - テーマ** | `knowledge/css/theming/` | light-dark, color-scheme | テーマ, ダークモード, 配色 |
-| **HTML** | `knowledge/html/` | モダンHTML, セマンティック, dialog, details | HTML, マークアップ, 要素 |
-| **JavaScript - パターン** | `knowledge/javascript/patterns/` | DOM, イベント, 非同期, Utilities | JS, DOM, イベント, パターン |
-| **JavaScript - アニメーション** | `knowledge/javascript/animation/` | requestAnimationFrame, 補間 | JS アニメーション, 数学的補間 |
-| **パフォーマンス** | `knowledge/cross-cutting/performance/` | 最適化, Core Web Vitals, lazy-load | 速度, 最適化, LCP, CLS |
-| **アクセシビリティ** | `knowledge/cross-cutting/accessibility/` | WCAG, a11y, リンク | a11y, アクセシビリティ, WCAG |
-| **ブラウザ互換性** | `knowledge/cross-cutting/browser-compat/` | ブラウザバグ, 回避策, workarounds | バグ, 回避, Safari, iOS |
-| **Apple Style Guide** | `knowledge/apple-style-guide/` | Apple製品のライティング規約、UI用語、スタイルガイド | Apple, ライティング, UI用語, 製品名, スタイル規約, 表記 |
-| **Human Interface Guidelines** | `knowledge/human-interface-guidelines/` | Appleデザイン原則、iOS/macOS UI設計 | HIG, Apple design, iOS, macOS, SwiftUI, UIKit, アプリデザイン |
-| **Material Design 3** | `knowledge/material-design-3/` | Googleデザインシステム、Material You、デザイン哲学 | Material Design, Material You, Google, デザインシステム, Dynamic Color |
+| **CSS - Layout** | `knowledge/css/layout/` | Grid, Flexbox, Container Queries, full-bleed | layout, width, height, centering, full-width |
+| **CSS - Animation** | `knowledge/css/animation/` | Transitions, View Transitions, Scroll-driven | motion, animation, transition |
+| **CSS - Visual** | `knowledge/css/visual/` | filter, clip-path, mask, shape | filter, mask, shape, visual effects |
+| **CSS - Typography** | `knowledge/css/typography/` | text-box, fonts, paint-order | text, font |
+| **CSS - Selectors** | `knowledge/css/selectors/` | @scope, :has, :is, :where | scope, selector, pseudo-class |
+| **CSS - Values** | `knowledge/css/values/` | clamp, viewport units, currentColor | values, units, viewport, custom properties |
+| **CSS - Components** | `knowledge/css/components/` | Popover, Anchor Positioning, field-sizing | UI, component, popover |
+| **CSS - Theming** | `knowledge/css/theming/` | light-dark, color-scheme | theme, dark mode, color scheme |
+| **HTML** | `knowledge/html/` | Modern HTML, semantics, dialog, details | HTML, markup, elements |
+| **JavaScript - Patterns** | `knowledge/javascript/patterns/` | DOM, events, async, utilities | JS, DOM, events, patterns |
+| **JavaScript - Animation** | `knowledge/javascript/animation/` | requestAnimationFrame, interpolation | JS animation, mathematical interpolation |
+| **Performance** | `knowledge/cross-cutting/performance/` | optimization, Core Web Vitals, lazy-load | speed, optimization, LCP, CLS |
+| **Accessibility** | `knowledge/cross-cutting/accessibility/` | WCAG, a11y, links | a11y, accessibility, WCAG |
+| **Browser Compatibility** | `knowledge/cross-cutting/browser-compat/` | browser bugs, workarounds | bugs, workarounds, Safari, iOS |
+| **Apple Style Guide** | `knowledge/apple-style-guide/` | Apple product writing guidelines, UI terms, style guide | Apple, writing, UI terms, product names, style |
+| **Human Interface Guidelines** | `knowledge/human-interface-guidelines/` | Apple design principles, iOS/macOS UI design | HIG, Apple design, iOS, macOS, SwiftUI, UIKit |
+| **Material Design 3** | `knowledge/material-design-3/` | Google design system, Material You, design philosophy | Material Design, Material You, Google, Dynamic Color |
 
-### Step 4: 重複チェックと処理方針の決定
+### Step 4: Duplicate check and decide on a processing approach
 
-**重要**: ナレッジ追加前に必ず既存ナレッジとの重複をチェックする。
+**Important**: Always check for duplicates with existing knowledge before adding.
 
-#### 4-1. 既存ナレッジの検索
+#### 4-1. Search existing knowledge
 
-以下のコマンドで該当トピックの既存ファイルを検索：
+Use the following command to find existing files related to the topic:
 
 ```bash
-# キーワードで検索（例: Container Query）
+# Search by keyword (e.g.: Container Query)
 find knowledge -type f -name "*.md" | xargs grep -l "container.*query\|@container"
 
-# ファイル名で検索
+# Search by file name
 find knowledge -type f -name "*container*"
 ```
 
-#### 4-2. 処理方針の決定
+#### 4-2. Decide on a processing approach
 
-| 状況 | 対応 |
+| Situation | Action |
 |------|------|
-| **完全に新しい情報** | 新規ファイル作成 |
-| **既存ファイルに追記可能** | 既存ファイルの末尾に追加 |
-| **既存情報の更新** | 既存セクションを Edit ツールで更新 |
-| **複数記事の統合** | 情報を統合して1つのファイルを作成/更新 |
-| **古い情報の置き換え** | 古いセクションを削除し、新情報を追加 |
-| **明らかに古く有用でない** | ナレッジ化しない |
+| **Completely new information** | Create a new file |
+| **Can be added to an existing file** | Add to the end of the existing file |
+| **Update to existing information** | Update the existing section with the Edit tool |
+| **Integrate multiple articles** | Integrate information into one file (create or update) |
+| **Replacing old information** | Delete the old section and add new information |
+| **Clearly old and not useful** | Do not add to knowledge base |
 
-#### 4-3. 古い情報の判断基準
+#### 4-3. Criteria for "old and not useful"
 
-以下の場合は「古く有用でない」と判断し、ナレッジ化しない：
+Decide not to add to the knowledge base in the following cases:
 
-- **ブラウザサポートが終了した技術**（例: IE11専用のハック）
-- **非推奨になった API/構文**（公式ドキュメントで deprecated）
-- **より良い代替手段がある古い手法**（例: Polyfill が不要になった機能）
-- **セキュリティ上の問題がある実装**
-- **5年以上前の記事で、現在の標準と乖離している内容**
+- **Technologies with ended browser support** (e.g.: IE11-only hacks)
+- **Deprecated APIs/syntax** (marked as deprecated in official documentation)
+- **Old methods with better alternatives** (e.g.: features that no longer need a polyfill)
+- **Implementations with security issues**
+- **Articles more than 5 years old that diverge from current standards**
 
-ただし、以下は例外的に保存：
+Exceptions:
 
-- **歴史的価値のある情報**（「なぜこの書き方が避けられるようになったか」の理解）
-- **レガシーコード保守に必要な情報**（明示的に「レガシー」とタグ付け）
+- **Historically valuable information** (for understanding "why this approach is avoided now")
+- **Information needed for legacy code maintenance** (explicitly tagged "legacy")
 
-#### 4-4. 分割と統合の判断
+#### 4-4. Deciding when to split or merge
 
-**分割すべき場合**:
-- 1つのファイルが500行を超える
-- 複数の独立したトピックが含まれる
-- 異なるカテゴリに属する情報が混在
+**When to split:**
+- A file exceeds 500 lines
+- Contains multiple independent topics
+- Information from different categories is mixed in
 
-**統合すべき場合**:
-- 同じトピックが複数ファイルに分散している
-- 内容が薄い複数ファイルを1つにまとめた方が理解しやすい
-- 相互に強く関連するトピック（例: Container Query と Container Query Units）
+**When to merge:**
+- The same topic is spread across multiple files
+- Multiple thin files are easier to understand as one
+- Strongly related topics (e.g.: Container Query and Container Query Units)
 
-### Step 5: ファイル更新
+### Step 5: Update the file
 
-1. `~/.claude/skills/managing-frontend-knowledge/knowledge/[カテゴリ]/[ファイル名].md` を Read
-2. 処理方針に従って更新：
-   - **新規**: Write ツールで新規ファイル作成
-   - **追記**: Edit ツールで既存ファイルの末尾に追加
-   - **更新**: Edit ツールで既存セクションを置き換え
-   - **統合**: 複数ファイルの内容を統合して1つのファイルを作成
-3. ファイルが存在しない場合は新規作成し、YAML frontmatterを追加
-4. YAML frontmatter形式:
+1. Read `~/.claude/skills/managing-frontend-knowledge/knowledge/[category]/[filename].md`
+2. Update according to the processing approach:
+   - **New**: Create a new file with the Write tool
+   - **Append**: Add to the end of the existing file with the Edit tool
+   - **Update**: Replace the existing section with the Edit tool
+   - **Merge**: Merge content from multiple files into one
+3. If the file does not exist, create it and add YAML frontmatter.
+4. YAML frontmatter format:
    ```yaml
    ---
-   title: タイトル
-   category: css/layout (カテゴリパス)
-   tags: [タグ1, タグ2, タグ3]
-   browser_support: ブラウザ対応状況
+   title: Title
+   category: css/layout (category path)
+   tags: [tag1, tag2, tag3]
+   browser_support: Browser support status
    created: YYYY-MM-DD
    updated: YYYY-MM-DD
    ---
    ```
 
-### Step 6: 確認
+### Step 6: Confirm
 
-追加完了後、以下を報告：
+After the addition is complete, report:
 
-- 追加したテクニック名
-- 保存先カテゴリ
-- 要約内容のプレビュー
+- Name of the technique added
+- Target category
+- Preview of the summary
 
-## 複数テクニックを含む記事の場合
+## Articles with multiple techniques
 
-1つの記事に複数のテクニックがある場合：
+When a single article contains multiple techniques:
 
-- 各テクニックを個別エントリとして追加
-- 同じ出典URLを記載
-- 関連がある場合は相互参照を記載
+- Add each technique as a separate entry.
+- Include the same source URL.
+- Add cross-references if they are related.
 
-## 複数カテゴリにまたがる記事の場合
+## Articles spanning multiple categories
 
-記事の内容が複数のカテゴリに関連する場合は、**無理に1つのファイルに押し込めない**。
+When an article is relevant to multiple categories, **do not force it all into one file**.
 
-### 分割の判断基準
+### Criteria for splitting
 
-| 状況 | 対応 |
+| Situation | Action |
 |------|------|
-| 主題が1つで、他カテゴリは補足 | 主カテゴリに追加、他は参照リンクのみ |
-| 独立した複数のトピックを含む | 各カテゴリに分割して追加 |
-| カテゴリ間で密接に関連 | 各カテゴリに追加し、相互参照を記載 |
+| One main topic, other categories are supplementary | Add to main category, other categories get reference links only |
+| Contains multiple independent topics | Split and add to each category |
+| Closely related across categories | Add to each category and include cross-references |
 
-### 分割時のルール
+### Rules when splitting
 
-1. **各ファイルで自己完結させる**: そのファイルだけ読んでも理解できるように
-2. **重複は最小限に**: 共通部分は概要のみ、詳細は適切なカテゴリで
-3. **相互参照を明記**: 関連ナレッジへのリンクを必ず記載
+1. **Make each file self-contained**: Understandable by reading that file alone.
+2. **Minimize duplication**: Only overview for shared content, details in the appropriate category.
+3. **State cross-references clearly**: Always add links to related knowledge.
 
-### 分割例
+### Splitting example
 
-例: 「アクセシビリティを考慮したアニメーション実装」という記事
+Example: An article on "Implementing animations with accessibility in mind"
 
 ```
 accessibility-link-underline.md:
-  - prefers-reduced-motion の必要性と判定方法
-  - 関連: css-animation.md の「モーション軽減対応」
+  - Why prefers-reduced-motion is needed and how to detect it
+  - Related: "Motion reduction support" in css-animation.md
 
 css-animation.md:
-  - モーション軽減対応のCSS実装パターン
-  - 関連: accessibility-link-underline.md の「prefers-reduced-motion」
+  - CSS implementation patterns for motion reduction support
+  - Related: "prefers-reduced-motion" in accessibility-link-underline.md
 ```
 
-### 報告フォーマット
+### Report format
 
 ```
-✅ ナレッジを追加しました（2カテゴリに分割）
+✅ Added to knowledge (split into 2 categories)
 
 📁 accessibility-link-underline.md
-   📝 prefers-reduced-motion の考慮
+   📝 Consideration for prefers-reduced-motion
 
 📁 css-animation.md
-   📝 モーション軽減対応パターン
+   📝 Motion reduction support pattern
 
-🔗 相互参照を設定済み
+🔗 Cross-references set
 ```
 
-## 類似ナレッジの検出と統合（追加時）
+## Detecting and merging similar knowledge (at time of adding)
 
-追加前に既存ナレッジとの類似性を確認：
+Before adding, check for similarity with existing knowledge:
 
-### チェック項目
+### Check items
 
-1. **同一URL**: 既に存在する場合は更新として扱う
-2. **類似テクニック**: 同じ概念・機能を扱っている場合
+1. **Same URL**: If it already exists, treat as an update.
+2. **Similar technique**: If it covers the same concept or feature.
 
-### 類似が見つかった場合のアクション
+### Actions when a similar entry is found
 
-- **矛盾なし**: 既存エントリに統合して強化
-- **アップデート**: 新情報で既存を更新（旧情報は「以前の方法」として残す場合あり）
-- **矛盾あり**: 両論併記し、推奨を明示
-- **別観点**: 別エントリとして追加（相互参照を記載）
+- **No conflict**: Merge into existing entry to strengthen it.
+- **Update**: Update existing with new information (old information may remain as "previous method").
+- **Conflict**: Present both views and state the recommended one.
+- **Different perspective**: Add as a separate entry (include cross-reference).
 
-### 統合時の報告
-
-```
-🔄 類似ナレッジを検出・統合しました
-
-既存: 「CSS Grid の基本」（執筆: 2023-06）
-新規: 「Grid Layout 実践ガイド」（執筆: 2024-08）
-
-→ 統合: 「CSS Grid レイアウト完全ガイド」として強化
-  - 基本構文（既存）+ 実践パターン（新規）を統合
-  - ブラウザサポート情報を最新化
-```
-
-## カテゴリが不明な場合
-
-ユーザーに確認するか、最も近いカテゴリに追加。
-新カテゴリが必要な場合は `SKILL.md` のカテゴリ一覧も更新。
-
-## 出力例（追加モード）
+### Report when merging
 
 ```
-✅ ナレッジを追加しました
+🔄 Detected and merged similar knowledge
 
-📁 カテゴリ: css-layout.md
-📝 テクニック: Container Queries の実践的パターン
-🔗 出典: https://example.com/container-queries
+Existing: "CSS Grid Basics" (written: 2023-06)
+New: "Grid Layout Practical Guide" (written: 2024-08)
 
-### 追加内容プレビュー:
-> コンテナクエリを使用してコンポーネント単位の
-> レスポンシブデザインを実現する方法...
+→ Merged as "CSS Grid Layout Complete Guide"
+  - Basic syntax (existing) + practical patterns (new) merged
+  - Browser support information updated to latest
+```
+
+## When the category is unclear
+
+Ask the user or add to the closest category.
+If a new category is needed, also update the category list in `SKILL.md`.
+
+## Output example (Add mode)
+
+```
+✅ Added to knowledge
+
+📁 Category: css-layout.md
+📝 Technique: Practical patterns for Container Queries
+🔗 Source: https://example.com/container-queries
+
+### Added content preview:
+> A method to achieve component-level responsive design
+> using container queries...
 ```
 
 ---
 
-## コンパイルモード
+## Compile Mode
 
-`raw/_inbox/` に溜まった原文を knowledge/ に統合する。
+Integrate originals accumulated in `raw/_inbox/` into knowledge/.
 
-### トリガー
+### Triggers
 
-- 「inbox 処理して」「コンパイルして」「ナレッジ統合して」
-- 「raw を整理して」
+- "Process inbox", "Compile", "Integrate knowledge"
+- "Organize raw"
 
-### コンパイルフロー
+### Compile Flow
 
-1. **inbox の一覧取得**
+1. **Get inbox list**
 
    ```bash
    ls -la ~/.claude/skills/user-managing-frontend-knowledge/raw/_inbox/*.md 2>/dev/null
    ```
 
-   ファイルが0件の場合: 「inbox は空です」と報告して終了。
+   If 0 files: Report "inbox is empty" and finish.
 
-2. **各ファイルを順次処理**
+2. **Process each file in order**
 
-   `_inbox/` 内の各 `.md` ファイルに対して以下を実行:
+   For each `.md` file in `_inbox/`, do the following:
 
-   a. ファイルを Read
-   b. **Step 2: 要約・構造化**（既存ロジック）を適用
-   c. **Step 3: カテゴリ判定**（既存ロジック）を適用
-   d. **Step 4: 重複チェックと処理方針の決定**（既存ロジック）を適用
-   e. **Step 5: ファイル更新**（既存ロジック）で knowledge/ に統合
-   f. 元ファイルを `_archived/` に移動
+   a. Read the file
+   b. Apply **Step 2: Summarize and structure** (existing logic)
+   c. Apply **Step 3: Determine category** (existing logic)
+   d. Apply **Step 4: Duplicate check and decide on processing approach** (existing logic)
+   e. Integrate into knowledge/ with **Step 5: Update the file** (existing logic)
+   f. Move the original file to `_archived/`
 
    ```bash
    mv raw/_inbox/{filename}.md raw/_archived/{filename}.md
    ```
 
-3. **完了報告**
+3. **Completion report**
 
    ```
-   ✅ コンパイル完了
+   ✅ Compile complete
 
-   処理: N 件
-   📁 統合先カテゴリ:
-      - css/layout/: 2 件
-      - cross-cutting/accessibility/: 1 件
-   📦 raw/_archived/ に移動: N 件
+   Processed: N files
+   📁 Integrated into categories:
+      - css/layout/: 2 files
+      - cross-cutting/accessibility/: 1 file
+   📦 Moved to raw/_archived/: N files
    ```
 
-### 注意事項
+### Notes
 
-- **自動コンパイルしない**。必ずユーザー依頼で起動する
-- カテゴリ判定に迷ったら AskUserQuestion で確認
-- 1ファイルが複数カテゴリにまたがる場合は既存の「複数カテゴリにまたがる記事の場合」ルールを適用
-- 統合後は qmd embed を促す:
+- **Do not compile automatically**. Always start on user request.
+- If unsure about the category, ask with AskUserQuestion.
+- If one file spans multiple categories, apply the existing "articles spanning multiple categories" rule.
+- After integrating, prompt for qmd embed:
 
   ```
-  💡 knowledge/ が更新されました。検索インデックスを更新するには:
+  💡 knowledge/ has been updated. To update the search index:
      qmd embed
   ```
 
 ---
 
-## 整理モード
+## Organize Mode
 
-「ナレッジを整理して」「重複チェックして」等で発動。
+Triggered by "Organize the knowledge", "Check for duplicates", etc.
 
-### 整理タスク
+### Organize Tasks
 
-#### 1. 類似ナレッジの統合
+#### 1. Merge similar knowledge
 
-**統合プロセス:**
+**Merge process:**
 
-1. 類似エントリを検出したら内容を比較
-2. 矛盾がないか確認（矛盾がある場合は執筆日が新しい方を優先、または両論併記）
-3. 問題なければ1つの強いナレッジに統合
+1. When similar entries are detected, compare their content.
+2. Check for conflicts (if there is a conflict, prioritize the newer writing date, or present both views).
+3. If no issues, merge into one strong knowledge entry.
 
-**統合の判断基準:**
+**Criteria for merging:**
 
-- **同一テクニック**: 完全統合（より詳細・最新の情報を残す）
-- **アップデート関係**: 新情報で上書き、旧情報は「以前の方法」として注記
-- **補完関係**: 両方の知見を合わせてより包括的なエントリに
-- **矛盾あり**: 両論併記し、どちらが推奨かを明記
+- **Same technique**: Full merge (keep more detailed and up-to-date information)
+- **Update relationship**: Overwrite with new info, note old info as "previous method"
+- **Complementary relationship**: Combine knowledge from both for a more comprehensive entry
+- **Conflict**: Present both views and state which is recommended
 
-**統合後のフォーマット:**
+**Format after merging:**
 
 ```markdown
-## [テクニック名]
+## [Technique Name]
 
-> 出典: [URL1], [URL2]（複数の場合はカンマ区切り）
-> 執筆日: [最新の執筆日]（統合元: [日付1], [日付2]）
-> 追加日: [最初の追加日] / 統合日: [YYYY-MM-DD]
+> Source: [URL1], [URL2] (comma-separated for multiple)
+> Written: [most recent writing date] (merged from: [date1], [date2])
+> Added: [first added date] / Merged: [YYYY-MM-DD]
 
-[統合された包括的な説明]
+[Integrated comprehensive description]
 ```
 
-#### 2. 古い情報の更新
+#### 2. Update old information
 
-- 執筆日が2年以上前のエントリを優先確認
-- ブラウザサポートが変わったもの
-- より良い方法が登場したもの
-- 非推奨になったもの（削除 or 注記追加）
+- Check entries written more than 2 years ago first.
+- Look for changed browser support.
+- Look for better methods that have appeared.
+- Entries that are deprecated (delete or add a note).
 
-#### 3. カテゴリの再編成
+#### 3. Reorganize categories
 
-- 肥大化したカテゴリの分割提案
-- 誤分類の移動
-- 関連テクニックの相互参照追加
+- Suggest splitting categories that have grown too large.
+- Move misclassified entries.
+- Add cross-references between related techniques.
 
-#### 4. フォーマット統一
+#### 4. Unify formatting
 
-- コード例の書式統一
-- セクション構造の統一
-- 不足情報（ユースケース、注意点）の補完提案
+- Unify code example formatting.
+- Unify section structure.
+- Suggest filling in missing information (use cases, notes).
 
-#### 5. ドリフトチェック（raw 原文と wiki の乖離検出）
+#### 5. Drift check (detect divergence between raw originals and knowledge)
 
-`raw/_archived/` の原文と `knowledge/` の対応エントリを比較し、原文には書いてあるが wiki に反映されていない情報を発見する。
+Compare the originals in `raw/_archived/` with the corresponding entries in `knowledge/` to find information that is in the original but not reflected in the knowledge base.
 
-**手順**:
+**Steps:**
 
-1. `raw/_archived/` の各ファイルを順に確認
-2. ファイル内の URL から、knowledge/ で同じ URL を出典とするエントリを検索
+1. Go through each file in `raw/_archived/`
+2. For each URL in the file, search knowledge/ for entries with the same source URL:
    ```bash
-   grep -r "出典: {URL}" knowledge/
+   grep -r "Source: {URL}" knowledge/
    ```
-3. 原文と既存 wiki エントリを比較し、以下を抽出:
-   - 原文にあるが wiki に書かれていない技術ポイント
-   - 原文ではブラウザサポートが更新されているが wiki が古い
-   - 原文に追記されたサンプルコードがある
-4. 提案リストとして報告（自動で書き込まない）
+3. Compare the original with the existing knowledge entry and extract:
+   - Technical points in the original but not in the knowledge
+   - Browser support that was updated in the original but is still old in the knowledge
+   - Sample code added to the original
+4. Report as a suggestion list (do not write automatically)
 
-**報告例**:
+**Report example:**
 
 ```
-🔍 ドリフトチェック結果（3件の乖離を検出）
+🔍 Drift check results (3 divergences detected)
 
 1. raw/_archived/2026-03-15-grid-masonry.md
    ↔ knowledge/css/layout/grid-masonry.md
-   📌 原文に Safari 18 対応情報の追記あり（wiki は Safari 17 のまま）
+   📌 Original has Safari 18 support info added (knowledge still says Safari 17)
 
 2. ...
 
-更新を進めますか？ [y/N]
+Proceed with updates? [y/N]
 ```
 
-**重要**: 提案のみ。ユーザー承認なしに wiki を書き換えない。
+**Important**: Suggestions only. Do not rewrite the knowledge base without user approval.
 
-#### 6. 欠損補完候補
+#### 6. Missing content candidates
 
-knowledge/ 内の TBD・「不明」・空セクションを検出し、補完候補を提案する。
+Detect TBD, "unknown", and empty sections in knowledge/ and suggest candidates for completion.
 
-**手順**:
+**Steps:**
 
-1. 以下のパターンで knowledge/ 全体を検索:
+1. Search all of knowledge/ for the following patterns:
    ```bash
-   grep -rn "TBD\|TODO\|不明\|XXX\|要確認" knowledge/
+   grep -rn "TBD\|TODO\|unknown\|XXX\|needs review" knowledge/
    ```
-2. 各ヒットについて、対応する `raw/_archived/` 原文があれば該当箇所を抽出
-3. 補完候補を提案リストとして報告
+2. For each hit, if there is a corresponding original in `raw/_archived/`, extract the relevant part.
+3. Report the completion candidates as a suggestion list.
 
-**重要**: 提案のみ、自動補完しない。
+**Important**: Suggestions only. Do not auto-complete.
 
-#### 7. 新記事候補の発見
+#### 7. Find new article candidates
 
-`raw/_archived/` のうち knowledge/ に未統合のトピックを再評価する。
+Re-evaluate topics in `raw/_archived/` that have not been integrated into knowledge/.
 
-**手順**:
+**Steps:**
 
-1. `_archived/` 内の各ファイルについて、wiki 統合済みかチェック
-   - 出典 URL で knowledge/ を grep
-   - ヒットしなければ「未統合」
-2. 未統合の理由を推定:
-   - スコープ外で意図的にスキップ → 何もしない
-   - カテゴリ不明で保留 → 候補として提示
-3. 候補リストを報告し、ユーザーに統合可否を問う
+1. For each file in `_archived/`, check if it has been integrated into the knowledge base.
+   - Search knowledge/ with the source URL
+   - If not found, mark as "not integrated"
+2. Estimate the reason it was not integrated:
+   - Intentionally skipped as out of scope → do nothing
+   - On hold because the category was unclear → present as a candidate
+3. Report the candidate list and ask the user whether to integrate.
 
-**重要**: 自動で knowledge/ に追加しない。
+**Important**: Do not add to knowledge/ automatically.
 
-### 整理フロー
+### Organize Flow
 
-1. 対象カテゴリファイルを Read
-2. 以下を分析:
-   - 重複エントリ
-   - 古い情報（執筆日から2年以上経過、または執筆日不明で追加日から1年以上経過）
-   - フォーマット不統一
-   - 肥大化（20エントリ以上）
-3. 改善提案をリスト化
-4. ユーザー承認後に実行
+1. Read the target category file.
+2. Analyze:
+   - Duplicate entries
+   - Old information (written more than 2 years ago, or added more than 1 year ago with unknown writing date)
+   - Inconsistent formatting
+   - Large files (20 or more entries)
+3. List improvement suggestions.
+4. Execute after user approval.
 
-### 出力例（整理モード）
+### Output example (Organize mode)
 
 ```
-📊 css-layout.md の分析結果
+📊 Analysis results for css-layout.md
 
-エントリ数: 15件
-最終更新: 2025-01-15
+Entries: 15
+Last updated: 2025-01-15
 
-### 検出された課題
+### Issues detected
 
-1. 🔄 重複の可能性
-   - 「Flexbox gap」と「Flexbox の gap プロパティ」が類似
+1. 🔄 Possible duplicate
+   - "Flexbox gap" and "Flexbox gap property" are similar
 
-2. ⚠️ 古い情報
-   - 「IE対応のGrid fallback」（執筆: 2021-03）
-     → IE サポート終了済み、削除を推奨
+2. ⚠️ Old information
+   - "Grid fallback for IE" (written: 2021-03)
+     → IE support has ended; recommend deleting
 
-3. 📝 フォーマット不統一
-   - 3件のエントリに「ユースケース」セクションがない
+3. 📝 Inconsistent formatting
+   - 3 entries are missing the "Use Cases" section
 
-### 推奨アクション
-- [ ] 重複を統合する
-- [ ] 古い情報を削除する
-- [ ] フォーマットを統一する
+### Recommended actions
+- [ ] Merge duplicates
+- [ ] Delete old information
+- [ ] Unify formatting
 
-実行しますか？
+Proceed?
 ```
 
-### 定期整理の推奨
+### When to organize
 
-以下のタイミングで整理を実行:
+Consider organizing at these times:
 
-- カテゴリが20エントリを超えたとき
-- 3ヶ月に1回の定期メンテナンス
-- 大きな仕様変更があったとき（新ブラウザ機能など）
+- When a category exceeds 20 entries
+- Regular maintenance every 3 months
+- When there is a major spec change (new browser feature, etc.)
 
 ---
 
-# パート2: ナレッジ参照（実装時・回答時）
+# Part 2: Knowledge Reference (during implementation and Q&A)
 
-## 使い方
+## How to Use
 
-### 検索の優先順位
+### Search priority
 
-ナレッジ参照は以下の順序で行う:
+Follow this order when referring to knowledge:
 
-1. **`qmd-fe "..."` を最優先で使う**（セマンティック検索、トークン効率最大）
-2. キーワード検索が必要なら `qmd search -c frontend "..."`
-3. 上記で見つからない、または特定ファイル全体の文脈が必要な場合のみ Read で直読み
+1. **Use `qmd-fe "..."` first** (semantic search, maximum token efficiency)
+2. Use `qmd search -c frontend "..."` when keyword search is needed.
+3. Only Read directly when the above does not find results, or when the full context of a specific file is needed.
 
-**Read 直読みは最終手段**。297MD・17万語規模のナレッジを Read で総当たりするとトークンを大量消費する。
+**Direct Read is the last resort.** The knowledge base has 297 MD files with 170,000+ words. Doing a brute-force Read will consume a huge number of tokens.
 
-検索結果のスニペットだけで判断できれば Read 不要。必要な場合のみ `qmd get <file>` で該当ファイルを取得する。
+If the search result snippets are enough to make a decision, no Read is needed. Only use `qmd get <file>` to get the relevant file when necessary.
 
-### 実装タスク時の自発的参照（推奨）
+### Proactive reference during implementation tasks (recommended)
 
-Web開発の実装タスクやコーディング作業を行う際、以下の流れで自発的にナレッジベースを参照する：
+When performing web development implementation tasks or coding work, proactively refer to the knowledge base in the following flow:
 
-1. **タスク内容からキーワードを抽出**
-   - 例: 「レスポンシブなカードコンポーネント」→ Container Query、Grid、clamp()
-   - 例: 「アニメーション実装」→ View Transitions、prefers-reduced-motion
-   - 例: 「モーダル実装」→ dialog要素、Popover API
+1. **Extract keywords from the task**
+   - Example: "Responsive card component" → Container Query, Grid, clamp()
+   - Example: "Implement animation" → View Transitions, prefers-reduced-motion
+   - Example: "Implement modal" → dialog element, Popover API
 
-2. **該当カテゴリを特定** (上記カテゴリ一覧を参照)
+2. **Identify the relevant category** (refer to the category list above)
 
-3. **ナレッジファイルを Read**
-   - `~/.claude/skills/managing-frontend-knowledge/knowledge/` 内の該当ファイル
+3. **Read the knowledge file**
+   - The relevant file inside `~/.claude/skills/managing-frontend-knowledge/knowledge/`
 
-4. **ベストプラクティスを適用して実装**
-   - ナレッジに基づいた最新の手法を使用
-   - ブラウザサポート情報を考慮
-   - アクセシビリティやパフォーマンスの考慮事項を反映
+4. **Apply best practices and implement**
+   - Use up-to-date methods based on the knowledge
+   - Consider browser support information
+   - Apply accessibility and performance considerations
 
-**効果**: 作業の精度向上、実装速度向上、最新のベストプラクティス適用
+**Effect**: Improved work accuracy, faster implementation, application of the latest best practices.
 
-### 質問への回答時
+### When answering questions
 
-1. ユーザーの質問からキーワードを抽出
-2. 上記カテゴリ一覧から該当するファイルを特定
-3. `~/.claude/skills/managing-frontend-knowledge/knowledge/` 内の該当ファイルを Read
-4. 蓄積された知識を基に回答
+1. Extract keywords from the user's question.
+2. Identify the relevant file from the category list above.
+3. Read the relevant file inside `~/.claude/skills/managing-frontend-knowledge/knowledge/`
+4. Answer based on the accumulated knowledge.
 
-### ディレクトリ構造
+### Directory Structure
 
 ```
 knowledge/
-├── INDEX.md                          # 全体インデックス
+├── INDEX.md                          # Overall index
 ├── css/
-│   ├── layout/                       # Grid, Flexbox, 配置
-│   ├── animation/                    # Transitions, アニメーション
+│   ├── layout/                       # Grid, Flexbox, positioning
+│   ├── animation/                    # Transitions, animations
 │   ├── visual/                       # filter, mask, shape
-│   ├── typography/                   # フォント, テキスト
-│   ├── selectors/                    # @scope, :has, 擬似クラス
-│   ├── values/                       # clamp, 単位, カスタムプロパティ
+│   ├── typography/                   # fonts, text
+│   ├── selectors/                    # @scope, :has, pseudo-classes
+│   ├── values/                       # clamp, units, custom properties
 │   ├── components/                   # Popover, Anchor Positioning
-│   └── theming/                      # light-dark, テーマ
+│   └── theming/                      # light-dark, themes
 ├── javascript/
-│   ├── patterns/                     # DOM, イベント, パターン
-│   └── animation/                    # requestAnimationFrame, 補間
-├── html/                             # モダンHTML, セマンティック
+│   ├── patterns/                     # DOM, events, patterns
+│   └── animation/                    # requestAnimationFrame, interpolation
+├── html/                             # Modern HTML, semantics
 ├── cross-cutting/
-│   ├── performance/                  # 最適化, Core Web Vitals
+│   ├── performance/                  # optimization, Core Web Vitals
 │   ├── accessibility/                # WCAG, a11y
-│   └── browser-compat/               # ブラウザバグ, 回避策
-├── apple-style-guide/               # Appleライティング規約
-├── human-interface-guidelines/      # Apple HIG、デザイン原則
-└── material-design-3/               # Material Design 3、デザイン哲学
+│   └── browser-compat/               # browser bugs, workarounds
+├── apple-style-guide/               # Apple writing guidelines
+├── human-interface-guidelines/      # Apple HIG, design principles
+└── material-design-3/               # Material Design 3, design philosophy
 ```
 
-## 回答フォーマット
+## Answer Format
 
 ```markdown
-## [質問に対する回答]
+## [Answer to the question]
 
-[説明]
+[Explanation]
 
-### コード例
+### Code Example
 
 \```css
-/* または js/html */
+/* or js/html */
 \```
 
-### ユースケース
-- [具体的な使用場面]
+### Use Cases
+- [Specific use case]
 
-### 参考
-- [出典URL（あれば）]
+### References
+- [Source URL (if available)]
 ```
 
-## 該当カテゴリがない場合
+## When there is no matching category
 
-1. 一般的な知識で回答
-2. 「ナレッジベースに該当情報がありません」と伝える
-3. 必要に応じてナレッジ収集機能での追加を提案
+1. Answer with general knowledge.
+2. Tell the user "There is no matching information in the knowledge base."
+3. If needed, suggest adding it using the collection feature.
 
-## 複数カテゴリにまたがる場合
+## When spanning multiple categories
 
-関連する複数のファイルを Read して総合的に回答する。
-例: 「スクロールアニメーション」→ `css-animation.md` + `performance.md`
+Read multiple relevant files and give a comprehensive answer.
+Example: "Scroll animation" → `css-animation.md` + `performance.md`
 
-## 注意事項
+## Notes
 
-- カテゴリファイルが存在しない場合はエラーにせず、ある情報で回答
-- 出典URLがある場合は必ず記載
-- コード例は実用的なものを優先
+- If a category file does not exist, do not error; answer with whatever information is available.
+- Always include the source URL when available.
+- Prefer practical code examples.
 
 ---
 
-## qmd による検索（セマンティック検索）
+## Semantic Search with qmd
 
-ファイルを直接読む代わりに qmd セマンティック検索を使うとトークンを大幅削減できる。
-qmd v2 は統一インデックス（`~/.cache/qmd/index.sqlite`）に複数コレクションを保持する設計。
-フロントエンドナレッジは `frontend` コレクションとして登録されている。
+Using qmd semantic search instead of directly reading files can greatly reduce token usage.
+qmd v2 is designed to hold multiple collections in a unified index (`~/.cache/qmd/index.sqlite`).
+Frontend knowledge is registered as the `frontend` collection.
 
 ```bash
-# コレクション未登録の場合（初回・新規マシン）
+# If the collection is not registered (first time / new machine)
 ~/dotfiles/setup/21_qmd.sh
 
-# セマンティック検索（推奨。qmd-fe = qmd query -c frontend のエイリアス）
+# Semantic search (recommended. qmd-fe = alias for qmd query -c frontend)
 qmd-fe "CSS animation performance"
 
-# キーワード検索（BM25、高速）
+# Keyword search (BM25, fast)
 qmd search -c frontend "Grid layout"
 
-# 単一ファイルの取得
+# Get a single file
 qmd get knowledge/css/layout/container-query.md
 
-# ナレッジが更新されたとき（差分インデックス + 埋め込み更新）
+# When knowledge is updated (incremental index + embedding update)
 qmd update
 qmd embed
 
-# 完全再構築
+# Full rebuild
 qmd collection remove frontend && ~/dotfiles/setup/21_qmd.sh
 
-# インデックスの状態確認
+# Check index status
 qmd status
 qmd collection list
 ```

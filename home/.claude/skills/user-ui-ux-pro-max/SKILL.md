@@ -9,7 +9,7 @@ Comprehensive design guide for web and mobile applications. Contains 50+ styles,
 
 ## Iron Law
 
-1. プロジェクトの既存デザインシステムを無視しない
+1. Do not ignore the project's existing design system
 
 ## When to Apply
 

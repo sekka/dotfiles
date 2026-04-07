@@ -1,59 +1,59 @@
 ---
 name: user-liteparse
-description: PDF、PPTX、DOCX、XLSX ファイルを読む必要があるとき自動的に起動。liteparse CLI でドキュメントをテキスト変換してから処理する。「PDFを読んで」「このPPTXの内容を確認」「ドキュメントを要約」で起動。
+description: Activated automatically when reading PDF, PPTX, DOCX, or XLSX files. Converts documents to text using the liteparse CLI before processing. Triggered by "read this PDF", "check this PPTX", or "summarize this document".
 disable-model-invocation: false
 allowed-tools: Bash(lit:*), Bash(npx:*), Read, Write
 ---
 
-# liteparse - ドキュメントパーサー
+# liteparse - Document Parser
 
-PDF、PPTX、DOCX、XLSX をテキストに変換して Claude Code で扱えるようにする。
+Converts PDF, PPTX, DOCX, and XLSX files to text so Claude Code can process them.
 
 ## Iron Law
 
-1. バイナリファイルを直接読もうとしない
+1. Do not try to read binary files directly
 
-## 使い方
+## Usage
 
-ユーザーからドキュメントファイル（PDF/PPTX/DOCX/XLSX）を読むよう依頼されたら、以下の手順で処理する。
+When the user asks you to read a document file (PDF/PPTX/DOCX/XLSX), follow these steps.
 
-### 手順
+### Steps
 
-1. **liteparse でテキスト変換**
+1. **Convert to text with liteparse**
 
-`lit` コマンドが使えるか確認し、使えなければ `npx` で実行:
+Check if the `lit` command is available. If not, use `npx`:
 
 ```bash
-# lit が使える場合
+# When lit is available
 lit parse <file_path>
 
-# lit が使えない場合
+# When lit is not available
 npx -y @llamaindex/liteparse parse <file_path>
 ```
 
-2. **特定ページのみ必要な場合**
+2. **When only specific pages are needed**
 
 ```bash
 lit parse <file_path> --target-pages "1-5,10"
 ```
 
-3. **出力をファイルに保存したい場合**
+3. **When you want to save the output to a file**
 
 ```bash
 lit parse <file_path> -o <output_path>.md
 ```
 
-4. **変換結果を読み取り、ユーザーの依頼に応じて処理する**
+4. **Read the converted result and process it according to the user's request**
 
-## 対応フォーマット
+## Supported Formats
 
-- PDF（OCR 対応）
+- PDF (OCR supported)
 - PPTX
 - DOCX
 - XLSX
-- 画像（JPG, PNG 等 — OCR で読み取り）
+- Images (JPG, PNG, etc. — read via OCR)
 
-## 注意事項
+## Notes
 
-- 大きなドキュメントは `--target-pages` で必要なページだけ変換する
-- 変換結果が長い場合はファイルに保存してから Read で読む
+- For large documents, use `--target-pages` to convert only the pages you need
+- If the converted result is long, save it to a file first and then read it with the Read tool

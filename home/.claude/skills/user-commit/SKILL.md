@@ -1,80 +1,80 @@
 ---
 name: user-commit
-description: 変更を論理単位で分析し、適切に分割してコミット。「コミットして」「commit」で起動。
+description: Analyze changes by logical unit and commit them in appropriate groups. Triggered by "commit this" or "commit".
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git reset:*)
 model: haiku
 ---
 
-変更内容を論理単位で分析し、関連する変更ごとにまとめてコミットしてください。
+Analyze the changes by logical unit and commit related changes together.
 
 ## Iron Law
 
-1. 機密情報を含むファイルはステージしない
-2. 未確認の変更をコミットしない
+1. Do not stage files that contain sensitive information
+2. Do not commit changes that have not been reviewed
 
-## Step 1: 変更内容の確認
+## Step 1: Review Changes
 
-1. `git status` で変更ファイルを確認
-2. `git diff HEAD` で全変更の詳細を確認
-3. `git log --oneline -10` で直近のコミットスタイルを確認
-4. **除外チェック**:
-   - デバッグログ、一時コード、コメントアウトされたコードは除外
-   - 機密情報（APIキー、パスワード等）は除外
-   - `.gitignore` 対象ファイルは除外
+1. Check changed files with `git status`
+2. Check all change details with `git diff HEAD`
+3. Check recent commit style with `git log --oneline -10`
+4. **Exclusion check**:
+   - Exclude debug logs, temporary code, and commented-out code
+   - Exclude sensitive information (API keys, passwords, etc.)
+   - Exclude files covered by `.gitignore`
 
-## Step 2: 論理単位の分析と分割判断
+## Step 2: Analyze Logical Units and Decide How to Split
 
-変更を論理単位に分類する。以下の基準で分割・統合を判断：
+Classify changes into logical units. Use the following criteria to decide whether to split or combine:
 
-**同一コミットにまとめる基準:**
-- 同じ目的・動機の変更（例: 機能Aの実装 + そのテスト）
-- 片方だけでは意味をなさない変更（例: リネーム + 参照更新）
-- 依存関係がある変更（例: ユーティリティ追加 + それを使う実装）
+**Criteria for combining into one commit:**
+- Changes with the same purpose or motivation (example: implementing feature A + its tests)
+- Changes that have no meaning without each other (example: rename + update references)
+- Changes with dependencies (example: add utility + implementation that uses it)
 
-**別コミットに分離する基準:**
-- 独立した目的の変更（例: バグ修正 + 無関係なリファクタ）
-- 異なるスコープの変更（例: 本体コード変更 + 設定ファイル整理）
-- ロールバック粒度を保ちたい変更
+**Criteria for separating into different commits:**
+- Changes with independent purposes (example: bug fix + unrelated refactor)
+- Changes with different scopes (example: main code change + config file cleanup)
+- Changes where you want to preserve rollback granularity
 
-**1コミットで十分なケース:**
-- 全変更が同一目的で密結合している場合は無理に分割しない
+**Cases where one commit is enough:**
+- Do not force a split when all changes are tightly coupled for the same purpose
 
-## Step 3: コミット実行
+## Step 3: Execute Commits
 
-分割する場合は依存順にコミット：
-1. 基盤（ライブラリ、設定、型定義）
-2. 実装
-3. テスト
-4. ドキュメント
+When splitting, commit in dependency order:
+1. Foundation (libraries, config, type definitions)
+2. Implementation
+3. Tests
+4. Documentation
 
-各コミットで `git add <specific-files>` → `git commit` を実行。
+Run `git add <specific-files>` → `git commit` for each commit.
 
-## コミットメッセージ規約
+## Commit Message Rules
 
-- プレフィックス: `feat`, `fix`, `refactor`, `perf`, `style`, `docs`, `test`, `build`, `chore`, `config`, `ui`, `a11y`, `security`, `hotfix`, `revert`
-- 日本語で記載。現在形（"added" ではなく "add"）
-- 1行目は72文字以下。何を・なぜ変更したか明確に
-- 必要に応じて本文で詳細を補足（空行で区切る）
+- Prefix: `feat`, `fix`, `refactor`, `perf`, `style`, `docs`, `test`, `build`, `chore`, `config`, `ui`, `a11y`, `security`, `hotfix`, `revert`
+- Write in present tense ("add" not "added")
+- First line is 72 characters or less. Clearly state what and why was changed
+- Add details in the body if needed (separated by a blank line)
 
-### 良い例
-
-```
-feat: ユーザープロフィール編集機能を追加
-
-プロフィール画像のアップロードと基本情報の更新が可能に。
-バリデーションとエラーハンドリングを実装。
-```
+### Good Examples
 
 ```
-refactor: 認証ミドルウェアをクラスベースに移行
+feat: add user profile edit feature
 
-テスト容易性の向上とDI対応のため。既存の関数型実装を置き換え。
+Users can now upload a profile image and update basic info.
+Validation and error handling are implemented.
 ```
 
-### 避けるべき例
+```
+refactor: migrate auth middleware to class-based
+
+For better testability and DI support. Replaces the existing function-based implementation.
+```
+
+### Examples to Avoid
 
 ```
-❌ chore: いろいろ修正
-❌ fix: バグ修正
-❌ update: コード更新
+❌ chore: fix various things
+❌ fix: bug fix
+❌ update: update code
 ```

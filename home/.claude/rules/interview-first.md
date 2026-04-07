@@ -1,25 +1,25 @@
 ---
-description: 新機能設計時のインタビューファースト原則
+description: Interview-first principle when designing new features
 ---
 
-# インタビューファースト原則
+# Interview-First Principle
 
-タスク開始時、すぐに実装に取りかからず、まずユーザーにインタビューして要件を明確化する。
+At the start of a task, do not begin implementation right away. First, interview the user to clarify requirements.
 
-## いつ適用するか
+## When to apply
 
-- 新機能の設計・実装を依頼されたとき
-- 曖昧さや複数の解釈が残る要件を受けたとき
-- 要件が1行の指示や「〜してほしい」のような概要レベルのとき
+- When asked to design or implement a new feature
+- When requirements are ambiguous or have multiple interpretations
+- When requirements are at a high level, such as a one-line instruction or "I want you to do X"
 
-## いつ適用しないか
+## When not to apply
 
-- 具体的な手順が明示されているとき（「このファイルのN行目をXに変更して」等）
-- バグ修正で再現手順が明確なとき
-- 既に十分なコンテキストがあるとき
+- When specific steps are clearly stated (e.g., "Change line N of this file to X")
+- When a bug has clear reproduction steps
+- When there is already enough context
 
-## インタビューの進め方
+## How to conduct the interview
 
-1. **目的を明示してから開始**: 「〜を正確に理解するために質問させてください」と宣言
-2. **表面的・自明な質問を避け、最大3問に絞る**: コードや文脈から読み取れることは自分で調べる。ユーザーにしか答えられない判断・意図・優先度を聞く
-3. **終了条件**: 十分な情報が得られたら切り上げて次に進む。「他に確認したいことはありますか？」で終了の機会を与える
+1. **State your purpose before starting**: Declare "Let me ask some questions to understand X correctly"
+2. **Avoid obvious questions. Limit to 3 questions maximum**: Look up things you can find in the code or context yourself. Only ask about judgments, intentions, and priorities that only the user can answer
+3. **Know when to stop**: Once you have enough information, stop and move forward. End with "Is there anything else you want me to confirm?"

@@ -1,42 +1,42 @@
-# スキル完了ステータスプロトコル
+# Skill Completion Status Protocol
 
-全スキル（スラッシュコマンド）の出力末尾に統一ステータスを付与する。
+Add a unified status at the end of all skill (slash command) outputs.
 
-## ステータス定義
+## Status definitions
 
-| ステータス | 意味 |
+| Status | Meaning |
 |---|---|
-| `DONE` | 正常完了。懸念事項なし |
-| `DONE_WITH_CONCERNS` | 完了したが注意すべき点あり |
-| `BLOCKED` | 続行不可能な障害が発生 |
-| `NEEDS_CONTEXT` | 判断に必要な情報が不足 |
+| `DONE` | Completed normally. No concerns |
+| `DONE_WITH_CONCERNS` | Completed, but there are points to note |
+| `BLOCKED` | A problem occurred that prevents continuation |
+| `NEEDS_CONTEXT` | Not enough information to make a decision |
 
-## 出力フォーマット
+## Output format
 
-スキル出力の末尾に以下を追加する：
+Add the following at the end of skill output:
 
 ```
 ## Status: DONE
 ```
 
-`DONE` 以外の場合は理由を付記する：
+For anything other than `DONE`, add the reason:
 
 ```
 ## Status: DONE_WITH_CONCERNS
-- 懸念点1
-- 懸念点2
+- Concern 1
+- Concern 2
 ```
 
 ```
 ## Status: BLOCKED
-{続行できない理由}
+{Reason why continuation is not possible}
 ```
 
 ```
 ## Status: NEEDS_CONTEXT
-{必要な情報・確認事項}
+{Information or confirmation needed}
 ```
 
-## 適用範囲
+## Scope
 
-`~/.claude/skills/` 配下の全スキルファイルに適用する。
+Apply to all skill files under `~/.claude/skills/`.
