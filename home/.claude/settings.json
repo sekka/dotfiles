@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
-    "ENABLE_TOOL_SEARCH": "auto:5",
+    "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_NO_FLICKER": "1",
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000"
   },
@@ -11,13 +11,13 @@
   },
   "permissions": {
     "allow": [
-      "Skill(user-commit)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(difit-here)",
+      "Skill(review-pr)",
+      "Skill(user-commit)",
       "Skill(user-generating-skills-from-logs)",
       "Skill(user-managing-frontend-knowledge)",
-      "Skill(review-pr)",
       "Skill(user-review-and-improve)",
       "WebSearch",
       "mcp__chrome-devtools__*",
