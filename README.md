@@ -18,7 +18,7 @@
 ./setup/04_symlinks.sh
 
 # 4. Claude Code公式版のインストール
-./setup/06_claude.sh
+./setup/20_claude.sh
 ```
 
 ## ⚡ 自動機能
@@ -106,7 +106,7 @@ Claude Code は公式推奨の方法でインストールされます：
 
 ```bash
 # セットアップスクリプトで自動インストール
-./setup/06_claude.sh
+./setup/20_claude.sh
 ```
 
 ### 環境変数の設定

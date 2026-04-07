@@ -29,7 +29,7 @@ nix/              # Nix パッケージ管理（nix-darwin + flakes, aarch64-dar
   flake.nix       # エントリポイント（hosts/ から全ホストを自動検出）
   flake.lock      # バージョン固定（自動生成、gitコミット対象）
   hosts/          # ホスト別設定（common.nix + ホスト固有）
-setup/            # 番号付きセットアップスクリプト（01〜08、順序通りに実行）
+setup/            # 番号付きセットアップスクリプト（01-04基盤, 10-開発, 20-AI）
   Brewfile        # Homebrew パッケージ定義（GUI/Nix未移行分）
 scripts/          # 開発・運用ツール（TypeScript/Bun）
   development/    # lint-format, compare-dirs 等

@@ -28,11 +28,13 @@ bun の global bin (`~/.cache/.bun/bin`) は `home/config/zsh/00_environment.zsh
 ## セットアップ（初回 / 新規マシン）
 
 ```bash
-~/dotfiles/setup/setup-qmd.sh
+~/dotfiles/setup/setup.sh 21
+# または直接実行
+~/dotfiles/setup/21_qmd.sh
 ```
 
 - 既に `frontend` コレクションが登録済みなら自動スキップ（冪等）
-- `setup/06_claude.sh` から自動的に呼び出される
+- `setup/setup.sh` のステップ 21 として独立実行される
 - 初回は埋め込みベクター生成で数分かかる
 - インデックス保存先: `~/.cache/qmd/index.sqlite`（コレクション名で分離）
 
@@ -68,7 +70,7 @@ qmd update      # 差分インデックス
 qmd embed       # 差分埋め込み
 
 # ナレッジを大幅削除・再編成したとき（完全再構築）
-qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh
+qmd collection remove frontend && ~/dotfiles/setup/21_qmd.sh
 ```
 
 ---
@@ -86,9 +88,9 @@ qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh
 | 症状                       | 対処                                                                          |
 | -------------------------- | ----------------------------------------------------------------------------- |
 | `qmd: command not found`   | `bun install -g @tobilu/qmd` を実行。`~/.cache/.bun/bin` が PATH にあるか確認 |
-| 埋め込み生成が途中で失敗   | `~/dotfiles/setup/setup-qmd.sh` を再実行（差分のみ再生成、復旧可能）          |
+| 埋め込み生成が途中で失敗   | `~/dotfiles/setup/21_qmd.sh` を再実行（差分のみ再生成、復旧可能）             |
 | 検索結果が古い             | `qmd update && qmd embed` で差分更新                                          |
-| インデックスを完全リセット | `qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh`             |
+| インデックスを完全リセット | `qmd collection remove frontend && ~/dotfiles/setup/21_qmd.sh`                |
 | 全コレクションをリセット   | `qmd cleanup` でキャッシュクリア後、再セットアップ                            |
 
 ---
@@ -96,4 +98,4 @@ qmd collection remove frontend && ~/dotfiles/setup/setup-qmd.sh
 ## SQLite は git 管理しない
 
 統一インデックスは `~/.cache/qmd/index.sqlite` に置かれる（dotfiles 外）。
-各環境で `setup-qmd.sh` を実行してローカルに生成する。
+各環境で `21_qmd.sh` を実行してローカルに生成する。
