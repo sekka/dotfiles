@@ -26,16 +26,15 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ## Git & バージョン管理
 
-| スキル                                        | 説明                        | いつ使う？                                                                                                    |
-| --------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `/ship`                                       | preflight→commit→review一括 | 実装完了時。preflight・commit・軽量レビューを1パイプラインで実行。master/main/develop上では自動でブランチ作成 |
-| `/harness-ship`                               | harness変更を自動PR化       | .claude/配下の変更時。branch→commit→push→PR→squash mergeまで完全自動化                                        |
-| `/commit`                                     | 論理単位でコミット          | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応                      |
-| `/commit-commands:commit`                     | gitコミット実行             | シンプルなコミット操作                                                                                        |
-| `/commit-commands:commit-push-pr`             | commit + push + PR一括      | 実装完了からPR作成まで一気に進めたいとき                                                                      |
-| `/commit-commands:clean_gone`                 | gone ブランチ一括削除       | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                                            |
-| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド          | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                                            |
-| `/superpowers:using-git-worktrees`            | git worktree構築            | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                                    |
+| スキル                                        | 説明                            | いつ使う？                                                                                   |
+| --------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `/ship`                                       | preflight→commit→review→deliver | preflight・commit・レビュー後にdelivery方法を選択（push/merge/local/done）。引数で直指定も可 |
+| `/commit`                                     | 論理単位でコミット              | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応     |
+| `/commit-commands:commit`                     | gitコミット実行                 | シンプルなコミット操作                                                                       |
+| `/commit-commands:commit-push-pr`             | commit + push + PR一括          | 実装完了からPR作成まで一気に進めたいとき                                                     |
+| `/commit-commands:clean_gone`                 | gone ブランチ一括削除           | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                           |
+| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド              | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                           |
+| `/superpowers:using-git-worktrees`            | git worktree構築                | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                   |
 
 ---
 
@@ -76,7 +75,7 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | ------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/developing-frontend`         | フロントエンドUI実装     | React/Vue/Next.jsでのUI実装、パフォーマンス最適化、アクセシビリティ対応。TypeScript、コンポーネント設計、状態管理、Tailwind CSSまでカバー            |
 | `/managing-frontend-knowledge` | フロントエンド知識ベース | CSS・JS・HTMLのベストプラクティスを蓄積・参照。モダンCSS（Grid、Flexbox、@scope、View Transitions）、Core Web Vitals、WCAG等。実装中に自動参照される |
-| `/ui-ux-pro-max`               | UI/UXデザイン知識DB      | 50+スタイル、161カラーパレット、57フォントペアリング、99UXガイドライン等のデータベース。10スタック（React、Next.js、Vue、Svelte、Tailwind等）対応    |
+| `/ui-ux-pro-max` (plugin)      | UI/UXデザイン知識DB      | プラグイン版（ui-ux-pro-max-skill）。50+スタイル、161カラーパレット、57フォントペアリング、99UXガイドライン。10スタック対応                          |
 
 ---
 
