@@ -17,6 +17,10 @@ Run preflight → commit → review as a single pipeline.
 2. Do not falsify or omit any Phase results
 3. Do not auto-fix issues found in Phase 3 (already committed — fix in a separate commit)
 
+## References
+
+- [corrections.md](./corrections.md) — Known pitfalls and past mistakes. Read before running the pipeline.
+
 ## Flow
 
 ```

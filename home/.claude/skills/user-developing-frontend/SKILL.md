@@ -156,3 +156,4 @@ import userEvent from '@testing-library/user-event';
 
 - [PATTERNS.md](./PATTERNS.md) - Implementation patterns
 - [PERFORMANCE.md](./PERFORMANCE.md) - Performance checklist
+- [corrections.md](./corrections.md) - Known pitfalls and past mistakes
