@@ -44,9 +44,9 @@ export function parseArgs(args: string[]): {
     return null;
   }
 
-  const url = args[0];
-  const count = parseInt(args[1], 10);
-  const interval = parseInt(args[2], 10);
+  const url = args[0]!;
+  const count = parseInt(args[1]!, 10);
+  const interval = parseInt(args[2]!, 10);
 
   // count と interval のバリデーション
   if (Number.isNaN(count) || Number.isNaN(interval) || count <= 0 || interval < 0) {
@@ -59,7 +59,7 @@ export function parseArgs(args: string[]): {
 
   // 残りの引数を解析
   for (let i = 3; i < args.length; i++) {
-    const arg = args[i];
+    const arg = args[i]!;
     if (arg === "--auth") {
       useAuth = true;
     } else if (arg.startsWith("--profile=")) {
@@ -174,20 +174,20 @@ export async function extractScores(jsonFile: string): Promise<Record<string, nu
 
     const scores: Record<string, number> = {};
 
-    if (categories.performance?.score !== undefined) {
-      scores.performance = Math.floor(categories.performance.score * 100);
+    if (categories["performance"]?.score !== undefined) {
+      scores["performance"] = Math.floor(categories["performance"].score * 100);
     }
-    if (categories.accessibility?.score !== undefined) {
-      scores.accessibility = Math.floor(categories.accessibility.score * 100);
+    if (categories["accessibility"]?.score !== undefined) {
+      scores["accessibility"] = Math.floor(categories["accessibility"].score * 100);
     }
     if (categories["best-practices"]?.score !== undefined) {
       scores["best-practices"] = Math.floor(categories["best-practices"].score * 100);
     }
-    if (categories.seo?.score !== undefined) {
-      scores.seo = Math.floor(categories.seo.score * 100);
+    if (categories["seo"]?.score !== undefined) {
+      scores["seo"] = Math.floor(categories["seo"].score * 100);
     }
-    if (categories.pwa?.score !== undefined) {
-      scores.pwa = Math.floor(categories.pwa.score * 100);
+    if (categories["pwa"]?.score !== undefined) {
+      scores["pwa"] = Math.floor(categories["pwa"].score * 100);
     }
 
     return scores;
@@ -332,20 +332,20 @@ export async function main(): Promise<number> {
   for (const result of results) {
     summary += `ファイル: ${result.file}\n`;
     if (result.scores) {
-      if (result.scores.performance !== undefined) {
-        summary += `  Performance: ${result.scores.performance}%\n`;
+      if (result.scores["performance"] !== undefined) {
+        summary += `  Performance: ${result.scores["performance"]}%\n`;
       }
-      if (result.scores.accessibility !== undefined) {
-        summary += `  Accessibility: ${result.scores.accessibility}%\n`;
+      if (result.scores["accessibility"] !== undefined) {
+        summary += `  Accessibility: ${result.scores["accessibility"]}%\n`;
       }
       if (result.scores["best-practices"] !== undefined) {
         summary += `  Best Practices: ${result.scores["best-practices"]}%\n`;
       }
-      if (result.scores.seo !== undefined) {
-        summary += `  SEO: ${result.scores.seo}%\n`;
+      if (result.scores["seo"] !== undefined) {
+        summary += `  SEO: ${result.scores["seo"]}%\n`;
       }
-      if (result.scores.pwa !== undefined) {
-        summary += `  PWA: ${result.scores.pwa}%\n`;
+      if (result.scores["pwa"] !== undefined) {
+        summary += `  PWA: ${result.scores["pwa"]}%\n`;
       }
     }
     summary += "\n";

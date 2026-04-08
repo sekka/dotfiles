@@ -34,7 +34,7 @@ export function parseArgs(args: string[]): {
   }
 
   if (args.length === 1) {
-    const arg = args[0];
+    const arg = args[0] ?? "";
     // 数値の場合はHEAD~Nとして扱う
     if (/^\d+$/.test(arg)) {
       return { headRef: "HEAD", fromRef: `HEAD~${arg}` };
@@ -44,7 +44,7 @@ export function parseArgs(args: string[]): {
   }
 
   // 2つの引数: args[0]がHEAD、args[1]がFROM
-  return { headRef: args[0], fromRef: args[1] };
+  return { headRef: args[0] ?? "", fromRef: args[1] ?? "" };
 }
 
 /**

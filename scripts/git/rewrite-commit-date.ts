@@ -49,8 +49,8 @@ export function parseArgs(args: string[]): {
     }
     return {
       committerDateNow: true,
-      commitHash: args[1],
-      newDate: args[2],
+      commitHash: args[1] ?? "",
+      newDate: args[2] ?? "",
     };
   } else {
     if (args.length !== 2) {
@@ -58,8 +58,8 @@ export function parseArgs(args: string[]): {
     }
     return {
       committerDateNow: false,
-      commitHash: args[0],
-      newDate: args[1],
+      commitHash: args[0] ?? "",
+      newDate: args[1] ?? "",
     };
   }
 }

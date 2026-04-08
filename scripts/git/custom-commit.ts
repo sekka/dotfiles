@@ -47,18 +47,18 @@ export function parseArgs(
 ): { authorDate: string; committerDate: string; message: string } | null {
   if (args.length === 2) {
     // 2引数: 日時 メッセージ
-    const date = appendTokyoTimezone(args[0]);
+    const date = appendTokyoTimezone(args[0] ?? "");
     return {
       authorDate: date,
       committerDate: date,
-      message: args[1],
+      message: args[1] ?? "",
     };
   } else if (args.length === 3) {
     // 3引数: 著者日時 コミッター日時 メッセージ
     return {
-      authorDate: appendTokyoTimezone(args[0]),
-      committerDate: appendTokyoTimezone(args[1]),
-      message: args[2],
+      authorDate: appendTokyoTimezone(args[0] ?? ""),
+      committerDate: appendTokyoTimezone(args[1] ?? ""),
+      message: args[2] ?? "",
     };
   }
 

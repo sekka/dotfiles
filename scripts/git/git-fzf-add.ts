@@ -56,9 +56,9 @@ export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
   }
 
   const input = files.join("\0");
-  const fzfCmd = process.env.TMUX ? "fzf-tmux" : "fzf";
+  const fzfCmd = process.env["TMUX"] ? "fzf-tmux" : "fzf";
   const args = [
-    ...(process.env.TMUX ? ["-p", "90%,90%", "--"] : []),
+    ...(process.env["TMUX"] ? ["-p", "90%,90%", "--"] : []),
     "--read0",
     "--print0",
     "--multi",

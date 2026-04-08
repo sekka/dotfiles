@@ -5,8 +5,8 @@
  */
 
 const CLAUDE_ICON_PATHS = [
-  `${process.env.HOME}/dotfiles/assets/icons/claude.svg`,
-  `${process.env.HOME}/dotfiles/assets/icons/claude.png`,
+  `${process.env["HOME"]}/dotfiles/assets/icons/claude.svg`,
+  `${process.env["HOME"]}/dotfiles/assets/icons/claude.png`,
 ];
 
 // タイムアウト設定（ミリ秒）
@@ -39,20 +39,20 @@ function validateHookInput(data: unknown): asserts data is HookInput {
 
   const input = data as Record<string, unknown>;
 
-  if (typeof input.hook_event_name !== "string") {
+  if (typeof input["hook_event_name"] !== "string") {
     throw new Error("Invalid input: missing or invalid hook_event_name");
   }
 
   // オプショナルフィールドの型チェック
-  if (input.tool_name !== undefined && typeof input.tool_name !== "string") {
+  if (input["tool_name"] !== undefined && typeof input["tool_name"] !== "string") {
     throw new Error("Invalid input: tool_name must be string");
   }
 
-  if (input.notification_type !== undefined && typeof input.notification_type !== "string") {
+  if (input["notification_type"] !== undefined && typeof input["notification_type"] !== "string") {
     throw new Error("Invalid input: notification_type must be string");
   }
 
-  if (input.message !== undefined && typeof input.message !== "string") {
+  if (input["message"] !== undefined && typeof input["message"] !== "string") {
     throw new Error("Invalid input: message must be string");
   }
 }
@@ -153,7 +153,7 @@ async function readStdinWithTimeout(): Promise<string> {
     }, STDIN_TIMEOUT_MS);
 
     // データ読み込み
-    process.stdin.on("data", (chunk) => {
+    process.stdin.on("data", (chunk: Buffer) => {
       chunks.push(chunk);
     });
 

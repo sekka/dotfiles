@@ -79,7 +79,7 @@ export function getMainRepoPath(worktreePath: string): string | null {
     const content = readFileSync(gitFilePath, "utf-8");
     // gitdir: /path/to/main/.git/worktrees/branch-name の形式
     const match = content.match(/gitdir:\s*(.+)/);
-    if (match) {
+    if (match && match[1]) {
       // .git/worktrees/... の部分を削除してメインリポジトリのパスを取得
       const gitDir = match[1].trim();
       return gitDir.replace(/\/.git\/worktrees\/.*$/, "");
