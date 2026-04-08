@@ -48,29 +48,54 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
     return;
   }
 
+  const bindCmd = `ctrl-m:execute:
+      (grep -o '[a-f0-9]\\{7\\}' | head -1 |
+      xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
+      {}
+FZF-EOF`;
+
   // tmuxセッション内ならpopup表示、外なら通常のfzf
   if (process.env.TMUX) {
-    await $`echo ${logOutput} | fzf-tmux -p 90%,90% -- --ansi \
-    --no-sort \
-    --reverse \
-    --tiebreak=index \
-    --bind=ctrl-s:toggle-sort \
-    --bind "ctrl-m:execute:
-      (grep -o '[a-f0-9]\\{7\\}' | head -1 |
-      xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
-      {}
-FZF-EOF"`.nothrow();
+    const proc = Bun.spawn(
+      [
+        "fzf-tmux",
+        "-p",
+        "90%,90%",
+        "--",
+        "--ansi",
+        "--no-sort",
+        "--reverse",
+        "--tiebreak=index",
+        "--bind=ctrl-s:toggle-sort",
+        "--bind",
+        bindCmd,
+      ],
+      {
+        stdin: new Response(logOutput),
+        stdout: "inherit",
+        stderr: "inherit",
+      },
+    );
+    await proc.exited;
   } else {
-    await $`echo ${logOutput} | fzf --ansi \
-    --no-sort \
-    --reverse \
-    --tiebreak=index \
-    --bind=ctrl-s:toggle-sort \
-    --bind "ctrl-m:execute:
-      (grep -o '[a-f0-9]\\{7\\}' | head -1 |
-      xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
-      {}
-FZF-EOF"`.nothrow();
+    const proc = Bun.spawn(
+      [
+        "fzf",
+        "--ansi",
+        "--no-sort",
+        "--reverse",
+        "--tiebreak=index",
+        "--bind=ctrl-s:toggle-sort",
+        "--bind",
+        bindCmd,
+      ],
+      {
+        stdin: new Response(logOutput),
+        stdout: "inherit",
+        stderr: "inherit",
+      },
+    );
+    await proc.exited;
   }
 }
 
