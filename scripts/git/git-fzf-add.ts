@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * git-fzf-add - Simple-Git + Execa版
+ * git-fzf-add - Bun built-in API版
  *
  * Gitの変更ファイルをfzfで選択してステージングする
  *
@@ -12,18 +12,17 @@
  *   Ctrl+D  - 選択ファイルのdiffを表示
  */
 
-import simpleGit from "simple-git";
-import { execa } from "execa";
-
-const git = simpleGit();
-
 /**
  * gitリポジトリ内かどうかを確認
  */
 export async function isGitRepository(): Promise<boolean> {
   try {
-    await git.revparse(["--git-dir"]);
-    return true;
+    const proc = Bun.spawn(["git", "rev-parse", "--git-dir"], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const exitCode = await proc.exited;
+    return exitCode === 0;
   } catch {
     return false;
   }
@@ -34,8 +33,14 @@ export async function isGitRepository(): Promise<boolean> {
  */
 export async function getChangedFiles(): Promise<string[]> {
   try {
-    const diff = await git.diff(["--name-only", "--diff-filter=ACMRU"]);
-    return diff.split("\n").filter((f) => f.length > 0);
+    const proc = Bun.spawn(["git", "diff", "--name-only", "--diff-filter=ACMRU"], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const text = await new Response(proc.stdout).text();
+    const exitCode = await proc.exited;
+    if (exitCode !== 0) return [];
+    return text.split("\n").filter((f) => f.length > 0);
   } catch {
     return [];
   }
@@ -43,7 +48,7 @@ export async function getChangedFiles(): Promise<string[]> {
 
 /**
  * fzfでファイルを選択
- * Execa の input パラメータを直接使用して null byte を安全に処理
+ * Bun.spawn の stdin に null byte 区切りの入力を渡して安全に処理
  */
 export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
   if (files.length === 0) {
@@ -67,12 +72,17 @@ export async function selectFilesWithFzf(files: string[]): Promise<string[]> {
   ];
 
   try {
-    // Shell を経由せず、Execa の input パラメータを直接使用
+    // Shell を経由せず、Bun.spawn の stdin パラメータを直接使用
     // これにより null byte を安全に処理でき、shell injection リスクが低減される
-    const { stdout } = await execa(fzfCmd, args, {
-      input: input,
-      reject: false,
+    const proc = Bun.spawn([fzfCmd, ...args], {
+      stdin: new Response(input),
+      stdout: "pipe",
+      stderr: "inherit",
     });
+    // stdout を先に読み切ってから exited を待つ (pipe buffer 溢れによる deadlock 防止)
+    // fzf が Esc などで非ゼロ終了しても throw しない
+    const stdout = await new Response(proc.stdout).text();
+    await proc.exited;
     return stdout.split("\0").filter((f) => f.length > 0);
   } catch {
     return [];
@@ -88,8 +98,12 @@ export async function stageFiles(files: string[]): Promise<boolean> {
   }
 
   try {
-    await git.add(files);
-    return true;
+    const proc = Bun.spawn(["git", "add", "--", ...files], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const exitCode = await proc.exited;
+    return exitCode === 0;
   } catch {
     return false;
   }
