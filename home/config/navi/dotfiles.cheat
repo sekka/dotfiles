@@ -16,7 +16,7 @@ fshow
 gifit
 
 # カレントリポジトリのGit差分をdifitで表示（ブランチ文脈を自動判定）
-difit-here.sh
+bun ~/dotfiles/scripts/git/difit-here.ts
 
 # ブランチを作成してチェックアウト
 git checkout -b <branch-name>
