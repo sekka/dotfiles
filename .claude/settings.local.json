@@ -26,6 +26,7 @@
       "Bash(rtk proxy:*)",
       "Bash(shellcheck:*)",
       "Skill(schedule)",
+      "Skill(user-harness-ship)",
       "WebFetch(domain:agent-browser.io)",
       "WebFetch(domain:bun.com)",
       "WebFetch(domain:dev.to)",
