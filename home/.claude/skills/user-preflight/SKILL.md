@@ -19,6 +19,10 @@ Run all pre-commit checks in one command.
 Detect changes → lint/format → type check → change review → secret scan → commit message draft → result summary
 ```
 
+## References
+
+- [corrections.md](./corrections.md) — Known pitfalls and past mistakes. Read before running checks.
+
 ## Phase 1: Detect Changes
 
 ```bash

@@ -2,14 +2,23 @@
 name: user-harness-ship
 description: >
   Ship harness changes (.claude/ skills, rules, memory, CLAUDE.md, etc.)
-  through branch creation → commit → push → PR → squash merge → return to master, all in one command.
-  Triggered by "harness-ship", "ハーネスシップ", "harness PR", "harness をshipして".
+  through branch creation → commit → merge/PR → return to master, all in one command.
+  Supports `local` argument for local merge without push/PR.
+  Triggered by "harness-ship", "ハーネスシップ", "harness PR", "harness をshipして", "harness-ship local".
 allowed-tools: Bash
 ---
 
 # Harness Ship
 
-Ship harness changes through branch → PR → squash merge in a single command.
+Ship harness changes through branch → commit → merge in a single command.
+
+## Modes
+
+| Mode | Trigger | Flow |
+|------|---------|------|
+| **Remote** | `/harness-ship remote` | branch → commit → push → PR → squash merge |
+| **Local** | `/harness-ship local` | branch → commit → local merge → delete branch |
+| **No argument** | `/harness-ship` | Ask the user: "Local merge or PR?" before proceeding |
 
 ## Iron Law
 
@@ -25,11 +34,13 @@ Phase 2: Create branch (harness/YYYY-MM-DD-{summary})
     ↓
 Phase 3: Stage + commit (harness: prefix)
     ↓
-Phase 4: Push + create PR
+    ├─ Remote mode ─→ Phase 4a: Push + create PR
+    │                     ↓
+    │                 Phase 5a: Squash merge + delete branch + return to master
+    │
+    └─ Local mode ──→ Phase 4b: Checkout master + merge + delete branch
     ↓
-Phase 5: Squash merge + delete branch + return to master
-    ↓
-Phase 6: Report (PR URL + file list)
+Phase 6: Report
 ```
 
 ## Phase 1: Detect Changes
@@ -74,7 +85,7 @@ Commit message format: `harness: {description}` (fixed prefix)
 
 Example: `harness: add user-harness-ship skill`
 
-## Phase 4: Push + Create PR
+## Phase 4a: Push + Create PR (Remote mode)
 
 ```bash
 git push -u origin {branch-name}
@@ -99,7 +110,7 @@ EOF
 )"
 ```
 
-## Phase 5: Merge + Cleanup
+## Phase 5a: Merge + Cleanup (Remote mode)
 
 ```bash
 gh pr merge --squash --delete-branch
@@ -107,7 +118,28 @@ git checkout master
 git pull origin master
 ```
 
+## Phase 4b: Local Merge (Local mode)
+
+Save the current branch name for return, then merge into master.
+
+```bash
+original_branch=$(git branch --show-current)  # save for return
+git checkout master
+git merge --no-ff {branch-name}
+git branch -d {branch-name}
+```
+
+If not on master before Phase 2, return to the original branch after merge:
+
+```bash
+git checkout {original_branch}
+```
+
+On merge conflict: abort merge, report conflict, and stop.
+
 ## Phase 6: Report
+
+### Remote mode
 
 ```
 PR: https://github.com/.../pull/NNN
@@ -118,16 +150,28 @@ Changed files:
   [rules]   home/.claude/rules/bar.md
 ```
 
+### Local mode
+
+```
+Branch: harness/YYYY-MM-DD-{summary} → merged into master (local)
+
+Changed files:
+  [skills]  home/.claude/skills/user-harness-ship/SKILL.md
+  [rules]   home/.claude/rules/bar.md
+```
+
 ## Edge Cases
 
 | Situation | Action |
 |-----------|--------|
+| No argument | Ask "Local merge or PR?" before proceeding |
 | No harness changes | Exit with "no harness changes" |
 | Harness + app code mixed | Confirm, then harness only or abort |
-| Push failure | Report error and stop; branch/commit remain local |
-| gh CLI not authenticated | Show `gh auth status` and stop |
+| Push failure (remote) | Report error and stop; branch/commit remain local |
+| gh CLI not authenticated (remote) | Show `gh auth status` and stop |
+| Merge conflict (local) | Abort merge, report conflict, and stop |
 | Branch name collision | Append `-2` suffix and retry |
-| Not on master | Branch from current branch (no master enforcement) |
+| Not on master | Branch from current branch; return to original branch after merge |
 
 ## Status
 
