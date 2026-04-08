@@ -5,7 +5,7 @@ description: Use when an X (Twitter) post URL is shared and content extraction i
 
 # X Post Fetching Skill
 
-Extract data from X post URLs. Prefer the agent-browser CLI. Fall back to Playwright MCP only if it fails.
+Extract data from X post URLs. Fallback order: agent-browser CLI → playwright-cli → Playwright MCP.
 
 ## Iron Law
 
@@ -16,16 +16,19 @@ Extract data from X post URLs. Prefer the agent-browser CLI. Fall back to Playwr
 ```dot
 digraph fetch_flow {
   "URL received" [shape=doublecircle];
-  "CLI success?" [shape=diamond];
-  "Run agent-browser CLI" [shape=box];
-  "Run Playwright MCP" [shape=box];
   "Format & output" [shape=box];
+  "Report failure" [shape=box];
 
   "URL received" -> "Run agent-browser CLI";
-  "Run agent-browser CLI" -> "CLI success?" ;
+  "Run agent-browser CLI" -> "CLI success?";
   "CLI success?" -> "Format & output" [label="yes"];
-  "CLI success?" -> "Run Playwright MCP" [label="no"];
-  "Run Playwright MCP" -> "Format & output";
+  "CLI success?" -> "Run playwright-cli" [label="no"];
+  "Run playwright-cli" -> "playwright-cli success?";
+  "playwright-cli success?" -> "Format & output" [label="yes"];
+  "playwright-cli success?" -> "Run Playwright MCP" [label="no"];
+  "Run Playwright MCP" -> "MCP success?";
+  "MCP success?" -> "Format & output" [label="yes"];
+  "MCP success?" -> "Report failure" [label="no"];
 }
 ```
 
@@ -71,11 +74,23 @@ agent-browser close
 ```
 
 - The `agent-browser` command is resolved via a mise shim. No need to hardcode the path.
+- When using `snapshot`, always pass `-i -c` for compact output (reduces token consumption by ~16%).
+- When fetching multiple posts in parallel subagents, pass `--session <unique-name>` per agent to avoid state mixing.
 - The daemon persists, so when fetching multiple posts in sequence, use `open` to navigate to the next URL and `close` only at the end.
 
-## Step 2: Playwright MCP (fallback)
+## Step 2: playwright-cli (fallback)
 
 Use only if Step 1 fails (`command not found`, non-zero exit code, or `error` key in result).
+
+```bash
+playwright-cli open TARGET_URL
+playwright-cli eval 'extraction logic (JS)'
+playwright-cli close
+```
+
+## Step 3: Playwright MCP (last resort)
+
+Use only if Step 2 also fails.
 
 ```
 1. mcp__playwright__browser_navigate → TARGET_URL
@@ -83,7 +98,7 @@ Use only if Step 1 fails (`command not found`, non-zero exit code, or `error` ke
 3. mcp__playwright__browser_close → close session (required)
 ```
 
-## Step 3: Format and Output
+## Step 4: Format and Output
 
 If image → display `/tmp/x_post_image.png` with Read. If video → metadata only.
 
@@ -102,7 +117,8 @@ If image → display `/tmp/x_post_image.png` with Read. If video → metadata on
 | Error | Action |
 |--------|------|
 | `article not found` | Check the URL or retry |
-| `command not found: agent-browser` | Fall back to Step 2 |
+| `command not found: agent-browser` | Fall back to Step 2 (playwright-cli) |
+| `command not found: playwright-cli` | Fall back to Step 3 (Playwright MCP) |
 | Timeout | Increase the `agent-browser wait` timeout and retry |
 
 ## Limitations

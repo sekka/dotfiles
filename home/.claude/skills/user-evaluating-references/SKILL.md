@@ -33,11 +33,14 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 
 ```
 1. Try WebFetch → 200 OK → done
-2. WebFetch fails (403/429/empty response) → get with chrome MCP (claude-in-chrome / chrome-devtools)
-3. All fail → report failure reason to user and stop
+2. WebFetch fails (403/429/empty response) → try agent-browser CLI with `-i -c`
+3. agent-browser fails → try playwright-cli
+4. playwright-cli fails → try Playwright MCP
+5. Playwright MCP fails → get with chrome MCP (chrome-devtools)
+6. All fail → report failure reason to user and stop
 ```
 
-**Quick Evaluation**: Try WebFetch only (speed first). Fall back to chrome MCP only on failure.
+**Quick Evaluation**: Try WebFetch first; on failure, try agent-browser CLI only (skip steps 4-6 for speed).
 **Deep Research**: Try all schemes.
 
 ---
