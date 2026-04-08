@@ -55,15 +55,15 @@ run = "pnpm dlx browserslist@latest --update-db"
 # --------------------------------------
 [tasks.dev-ports]
 description = "リッスン中のポート一覧（dev serverのみ・色付き表）"
-run = "ports"
+run = "pnpm dlx port-whisperer"
 
 [tasks.dev-ports-all]
 description = "全リッスンポート（system含む）"
-run = "ports --all"
+run = "pnpm dlx port-whisperer --all"
 
 [tasks.dev-ports-clean]
 description = "孤児/zombie devプロセスを掃除"
-run = "ports clean"
+run = "pnpm dlx port-whisperer clean"
 
 [tasks.gh-list-deploy]
 description = "デプロイの実行履歴を表示する"
@@ -111,11 +111,11 @@ git log \
 # コードレビューツール
 [tasks.git-util-difit-browser]
 description = "コードレビューを開く"
-run = "difit"
+run = "pnpm dlx difit"
 
 [tasks.git-util-difit-tui]
 description = "コードレビューをTUIで開く"
-run = "difit --tui"
+run = "pnpm dlx difit --tui"
 
 [tasks.git-util-difit-here]
 description = "カレントリポジトリのGit差分をdifitで表示"
@@ -128,7 +128,7 @@ run = "hub browse $(ghq list | fzf | cut -d '/' -f 2,3)"
 # Claude Code関係のファイルを一覧表示
 [tasks.llm-claude-ccexp]
 description = "Claude Code関係のファイルを一覧表示"
-run = "ccexp"
+run = "pnpm dlx ccexp"
 
 # --------------------------------------
 # LLM/AI関連
@@ -136,12 +136,12 @@ run = "ccexp"
 # Claude Codeセッション検索
 [tasks.llm-claude-ccsearch]
 description = "Claude Codeのセッション検索・共有"
-run = "ccsearch"
+run = "pnpm dlx ccsearch"
 
 # Claude Code使用状況
 [tasks.llm-claude-ccusage]
 description = "Claude Codeのセッション使用状況を表示"
-run = "ccusage"
+run = "pnpm dlx ccusage"
 
 # RTK トークン節約量レポート
 [tasks.llm-rtk-gain]
@@ -511,17 +511,16 @@ go = "latest"
 "npm:@github/copilot" = "latest"       # GitHub Copilot CLI
 "npm:@google/gemini-cli" = "latest"    # Google Gemini CLI
 "npm:@openai/codex" = "latest"         # OpenAI Codex コーディングエージェント
+"npm:@endorhq/rover" = "latest"        # AIコードレビューエージェント              https://github.com/endorhq/rover
 "npm:@mixedbread/mgrep" = "latest"     # セマンティックコード検索
 # "npm:@byterover/cipher" = "latest"   # AI暗号化ツール                            https://github.com/campfirein/cipher
 # "npm:@letta-ai/letta-code" = "latest" # AIメモリ付きコーディング                 https://github.com/letta-ai/letta-code
 
 # --- Claude Code エコシステム ---
-"npm:cc-wrapped" = "latest"            # CC 使用統計ラップ                         https://github.com/numman-ali/cc-wrapped
-"npm:ccexp" = "latest"                 # CC 関連ファイル一覧                       https://zenn.dev/nyatinte/articles/launch-ccexp
 "npm:ccmanager" = "latest"             # CC セッション管理                         https://zenn.dev/kbwok/articles/33fad69555d005
-"npm:ccsearch" = "latest"              # CC セッション検索・共有                   https://zenn.dev/suthio/articles/126bc21f0741a6
-"npm:ccusage" = "latest"               # CC 使用量レポート                         https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
+"npm:@sasazame/ccresume" = "latest"    # CC セッション再開ツール                   https://zenn.dev/sasazame/articles/3634040f7fb4da
 "npm:claude-code-monitor" = "latest"   # CC リアルタイム監視                       https://github.com/onikan27/claude-code-monitor
+"npm:codemass" = "latest"              # コードベース規模分析                      https://x.com/kenn/status/1953281949566706030
 "npm:ui-skills" = "latest"             # UI コンポーネントスキル                   https://www.ui-skills.com/
 "npm:vibe-kanban" = "latest"           # バイブコーディング用カンバン              https://www.vibekanban.com/
 
@@ -531,11 +530,15 @@ go = "latest"
 "npm:@playwright/cli" = "latest"       # Playwright CLI                            https://github.com/microsoft/playwright-cli
 "npm:playwright" = "latest"            # Playwright コアライブラリ
 
+# --- テスト ---
+"npm:@antiwork/shortest" = "latest"    # AI自然言語E2Eテスト                       https://github.com/antiwork/shortest
+
 # --- MCP ---
 "npm:ctx7" = "latest"                  # Context7 ドキュメント取得CLI              https://context7.com/?tab=skills
+"npm:mmcp" = "latest"                  # MCP サーバー管理                          https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
 
 # --- Git ---
-"npm:difit" = "latest"                 # Diff ビューア（レビューコメント付き）     https://zenn.dev/yoshiko/articles/difit-from-reviewit
+"npm:czg" = "latest"                   # コミットメッセージ支援（git-cz の後継）
 "npm:git-cz" = "latest"                # Git commit支援
 "npm:git-diff-archive" = "latest"      # Git差分アーカイブ
 
@@ -546,7 +549,6 @@ go = "latest"
 
 # --- パフォーマンス ---
 "npm:lighthouse" = "latest"            # パフォーマンス測定
-"npm:unlighthouse" = "latest"          # サイト全体のLighthouseスキャン
 
 # --- パッケージ管理 ---
 "npm:fixpack" = "latest"               # package.json整理
@@ -555,7 +557,6 @@ go = "latest"
 
 # --- Web / ネットワーク ---
 "npm:caniuse-cmd" = "latest"           # ブラウザ互換性チェック
-"npm:port-whisperer" = "latest"        # ポート使用状況確認                        https://github.com/LarsenCundric/port-whisperer
 "npm:vercel" = "latest"                # Vercel CLI
 
 # --- メディア ---
