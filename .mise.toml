@@ -7,7 +7,7 @@ run = "scripts/system/macos/check-defaults.sh"
 
 [tasks."macos:snapshot-before"]
 description = "設定変更前のスナップショットを取得（pdef用）"
-run = "scripts/system/macos/snapshot-before.sh"
+run = "bun scripts/system/snapshot-before.ts"
 
 [tasks."macos:snapshot-after"]
 description = "設定変更後のスナップショットを取得して差分を生成（pdef用）"
