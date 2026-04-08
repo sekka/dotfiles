@@ -511,16 +511,10 @@ go = "latest"
 "npm:@github/copilot" = "latest"       # GitHub Copilot CLI
 "npm:@google/gemini-cli" = "latest"    # Google Gemini CLI
 "npm:@openai/codex" = "latest"         # OpenAI Codex コーディングエージェント
-"npm:@endorhq/rover" = "latest"        # AIコードレビューエージェント              https://github.com/endorhq/rover
-"npm:@mixedbread/mgrep" = "latest"     # セマンティックコード検索
-# "npm:@byterover/cipher" = "latest"   # AI暗号化ツール                            https://github.com/campfirein/cipher
+# "npm:@byterover/byterover-cli" = "latest" # AI暗号化ツール                       https://github.com/campfirein/byterover-cli
 # "npm:@letta-ai/letta-code" = "latest" # AIメモリ付きコーディング                 https://github.com/letta-ai/letta-code
 
 # --- Claude Code エコシステム ---
-"npm:ccmanager" = "latest"             # CC セッション管理                         https://zenn.dev/kbwok/articles/33fad69555d005
-"npm:@sasazame/ccresume" = "latest"    # CC セッション再開ツール                   https://zenn.dev/sasazame/articles/3634040f7fb4da
-"npm:claude-code-monitor" = "latest"   # CC リアルタイム監視                       https://github.com/onikan27/claude-code-monitor
-"npm:codemass" = "latest"              # コードベース規模分析                      https://x.com/kenn/status/1953281949566706030
 "npm:ui-skills" = "latest"             # UI コンポーネントスキル                   https://www.ui-skills.com/
 "npm:vibe-kanban" = "latest"           # バイブコーディング用カンバン              https://www.vibekanban.com/
 
@@ -529,9 +523,6 @@ go = "latest"
 "npm:@playwright/mcp" = "latest"       # Playwright MCP サーバー                   https://github.com/microsoft/playwright-mcp/
 "npm:@playwright/cli" = "latest"       # Playwright CLI                            https://github.com/microsoft/playwright-cli
 "npm:playwright" = "latest"            # Playwright コアライブラリ
-
-# --- テスト ---
-"npm:@antiwork/shortest" = "latest"    # AI自然言語E2Eテスト                       https://github.com/antiwork/shortest
 
 # --- MCP ---
 "npm:ctx7" = "latest"                  # Context7 ドキュメント取得CLI              https://context7.com/?tab=skills
