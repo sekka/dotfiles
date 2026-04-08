@@ -23,7 +23,8 @@
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
-      "mcp__plugin_context7_context7__*"
+      "mcp__plugin_context7_context7__*",
+      "mcp__sem__*"
     ],
     "deny": [
       "Bash(do:*)",
