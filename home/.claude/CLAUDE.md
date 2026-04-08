@@ -77,7 +77,8 @@ See section 4 for delegation rules by subagent type (researcher / implementer / 
 - For new feature requests, clarify requirements by interviewing the user before implementing. (Details: `.claude/rules/interview-first.md`)
 - Always confirm ambiguous requirements with AskUserQuestion before starting work.
 - Do not send confidential information (API keys, environment variables, customer data, internal URLs) to external tools.
-- When given a URL, use browser automation without hesitation. Execute, do not just suggest. Priority order: (1) agent-browser CLI (best token efficiency) → (2) Playwright MCP → (3) chrome MCP (chrome-devtools)
+- When given a URL, use browser automation without hesitation. Execute, do not just suggest. Priority order: (1) agent-browser CLI with `-i -c` (fastest, compact output) → (2) playwright-cli (lower token baseline) → (3) Playwright MCP → (4) chrome MCP (chrome-devtools)
+- When running agent-browser in parallel (subagents, multiple panes), always pass `--session <unique-name>` to isolate browser state. Without it, concurrent commands share one session and data will mix.
 - Write tests before implementing (TDD). Do not defer failing tests — fix them immediately.
 
 ---

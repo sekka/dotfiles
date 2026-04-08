@@ -32,14 +32,15 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:note.com)",
       "WebFetch(domain:playwright.dev)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:search.nixos.org)",
+      "WebFetch(domain:suntory-n-water.com)",
       "WebFetch(domain:x.com)",
       "WebFetch(domain:zenn.dev)",
-      "mcp__playwright__*",
-      "WebFetch(domain:note.com)"
+      "mcp__playwright__*"
     ],
     "deny": [],
     "ask": []
