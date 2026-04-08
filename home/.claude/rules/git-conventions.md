@@ -15,7 +15,6 @@ Use `{prefix}/{kebab-case-summary}`.
 | `hotfix/` | Urgent production fix |
 | `perf/` | Performance improvement |
 | `test/` | Adding or updating tests |
-| `harness/` | `.claude/` harness changes (skills, rules, memory, CLAUDE.md) |
 
 - Use kebab-case: `feat/add-ship-skill`, not `feat/addShipSkill`
 - Keep it short but descriptive (3-5 words max)

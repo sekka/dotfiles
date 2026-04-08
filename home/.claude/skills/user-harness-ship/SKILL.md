@@ -30,9 +30,9 @@ Ship harness changes through branch → commit → merge in a single command.
 ```
 Phase 1: Detect changes
     ↓ no harness changes → exit with "no changes"
-Phase 2: Create branch (harness/YYYY-MM-DD-{summary})
+Phase 2: Create branch (config/YYYY-MM-DD-{summary})
     ↓
-Phase 3: Stage + commit (harness: prefix)
+Phase 3: Stage + commit (config: prefix)
     ↓
     ├─ Remote mode ─→ Phase 4a: Push + create PR
     │                     ↓
@@ -63,7 +63,7 @@ git status --porcelain | awk '{print $2}'
 
 ## Phase 2: Create Branch
 
-Naming: `harness/YYYY-MM-DD-{kebab-case-summary}`
+Naming: `config/YYYY-MM-DD-{kebab-case-summary}`
 
 Auto-generate summary:
 - Skills only → `add-{skill-name}` (multiple: `add-skills`)
@@ -74,16 +74,16 @@ Auto-generate summary:
 If branch name already exists, append `-2`, `-3`, etc. When not on master, branch from the current branch (do not force master base).
 
 ```bash
-git checkout -b harness/YYYY-MM-DD-{summary}
+git checkout -b config/YYYY-MM-DD-{summary}
 ```
 
 ## Phase 3: Stage + Commit
 
 Stage only harness files detected in Phase 1 using individual `git add` commands.
 
-Commit message format: `harness: {description}` (fixed prefix)
+Commit message format: `config: {description}` (fixed prefix)
 
-Example: `harness: add user-harness-ship skill`
+Example: `config: user-harness-ship スキルを追加`
 
 ## Phase 4a: Push + Create PR (Remote mode)
 
@@ -95,7 +95,7 @@ On push failure: report error and stop. Local branch and commit remain intact.
 On gh CLI auth failure: show `gh auth status` output and stop.
 
 ```bash
-gh pr create --title "harness: {same as commit message}" --body "$(cat <<'EOF'
+gh pr create --title "config: {same as commit message}" --body "$(cat <<'EOF'
 ## Summary
 
 ### Skills
@@ -143,7 +143,7 @@ On merge conflict: abort merge, report conflict, and stop.
 
 ```
 PR: https://github.com/.../pull/NNN
-Branch: harness/YYYY-MM-DD-{summary} → squash merged into master
+Branch: config/YYYY-MM-DD-{summary} → squash merged into master
 
 Changed files:
   [skills]  home/.claude/skills/user-harness-ship/SKILL.md
@@ -153,7 +153,7 @@ Changed files:
 ### Local mode
 
 ```
-Branch: harness/YYYY-MM-DD-{summary} → merged into master (local)
+Branch: config/YYYY-MM-DD-{summary} → merged into master (local)
 
 Changed files:
   [skills]  home/.claude/skills/user-harness-ship/SKILL.md
