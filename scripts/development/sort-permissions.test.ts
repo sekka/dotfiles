@@ -1,5 +1,5 @@
 /**
- * sort-permissions.ts のテストスイート
+ * sort-permissions.sh のテストスイート
  */
 
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
@@ -20,7 +20,7 @@ afterAll(async () => {
   await cleanupTempDir(testDir);
 });
 
-describe("sort-permissions.ts", () => {
+describe("sort-permissions.sh", () => {
   it("既ソート済みのファイルは変更されない", async () => {
     const testFile = resolve(testDir, ".claude", "settings.local.json");
     const content = {
@@ -31,20 +31,23 @@ describe("sort-permissions.ts", () => {
     };
 
     writeFileSync(testFile, JSON.stringify(content, null, 2) + "\n");
-    const originalContent = Bun.file(testFile).text();
+    const originalContent = await Bun.file(testFile).text();
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-      stdout: "pipe",
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+        stdout: "pipe",
+      },
+    );
+    const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
 
     // 既にソート済みの場合、ファイルは変更されない
     expect(originalContent).toBe(finalContent);
-    expect(result.exitCode).toBe(0);
+    expect(exitCode).toBe(0);
   });
 
   it("逆順のpermissionsは正しくソートされる", async () => {
@@ -59,10 +62,13 @@ describe("sort-permissions.ts", () => {
     writeFileSync(testFile, JSON.stringify(content, null, 2) + "\n");
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+      },
+    );
+    const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
     const parsed = JSON.parse(finalContent);
@@ -70,7 +76,7 @@ describe("sort-permissions.ts", () => {
     // ソートされているはず
     expect(parsed.permissions.allow).toEqual(["Bash(cat:*)", "Bash(ls:*)", "Bash(mkdir:*)"]);
     expect(parsed.permissions.deny).toEqual(["Read(./.env.*)", "Read(./.env.local)"]);
-    expect(result.exitCode).toBe(0);
+    expect(exitCode).toBe(0);
   });
 
   it("無効なJSONはエラーを返す", async () => {
@@ -78,13 +84,16 @@ describe("sort-permissions.ts", () => {
     writeFileSync(testFile, "{ invalid json }");
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-      stderr: "pipe",
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+        stderr: "pipe",
+      },
+    );
+    const exitCode = await proc.exited;
 
-    expect(result.exitCode).toBe(1);
+    expect(exitCode).toBe(1);
   });
 
   it("対象外のファイル名は処理スキップされる", async () => {
@@ -92,25 +101,31 @@ describe("sort-permissions.ts", () => {
     writeFileSync(testFile, JSON.stringify({ test: true }, null, 2));
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+      },
+    );
+    const exitCode = await proc.exited;
 
     // 対象外ファイルでも成功を返す
-    expect(result.exitCode).toBe(0);
+    expect(exitCode).toBe(0);
   });
 
   it("存在しないファイルは成功を返す", async () => {
     const testFile = resolve(testDir, ".claude", "nonexistent.json");
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+      },
+    );
+    const exitCode = await proc.exited;
 
-    expect(result.exitCode).toBe(0);
+    expect(exitCode).toBe(0);
   });
 
   it("空のpermissionsは処理されない", async () => {
@@ -126,30 +141,36 @@ describe("sort-permissions.ts", () => {
     const originalContent = await Bun.file(testFile).text();
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", testFile],
-      cwd: resolve(__dirname, "../.."),
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
+      {
+        cwd: resolve(__dirname, "../.."),
+      },
+    );
+    const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
 
     // 空配列の場合は変更されない
     expect(originalContent).toBe(finalContent);
-    expect(result.exitCode).toBe(0);
+    expect(exitCode).toBe(0);
   });
 
   it("パストラバーサル攻撃は検出される", async () => {
     const maliciousPath = resolve(testDir, "../../../.claude/settings.local.json");
 
     // スクリプトを実行
-    const result = await Bun.run({
-      cmd: ["bun", "scripts/development/sort-permissions.ts", "--file", maliciousPath],
-      cwd: resolve(__dirname, "../.."),
-    });
+    const proc = Bun.spawn(
+      ["bash", "scripts/development/sort-permissions.sh", "--file", maliciousPath],
+      {
+        cwd: resolve(__dirname, "../.."),
+      },
+    );
+    const exitCode = await proc.exited;
 
     // パストラバーサルは失敗する（または対象外として処理）
     // テストの性質上、このテストは実際のホームディレクトリ構造に依存する可能性がある
     // ここでは、成功するか失敗するかのいずれかであることを確認
-    expect([0, 1]).toContain(result.exitCode);
+    expect([0, 1]).toContain(exitCode);
   });
 });
