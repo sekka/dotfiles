@@ -24,11 +24,7 @@
 		"moduleResolution": "bundler",
 
 		// Output settings
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"outDir": "./dist",
-		"rootDir": "./",
+		"noEmit": true,
 
 		// Other options
 		"esModuleInterop": true,
