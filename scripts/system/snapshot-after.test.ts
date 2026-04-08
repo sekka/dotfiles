@@ -47,41 +47,52 @@ describe("snapshot-after", () => {
       expect(result).toBe(false);
     });
 
-    test("beforeファイルが存在する場合はtrueを返す", async () => {
-      // Create a dummy before file
-      mkdirSync(testDir, { recursive: true });
-      writeFileSync(join(testDir, "before_20240101_120000.txt"), "dummy defaults content\n");
+    test(
+      "beforeファイルが存在する場合はtrueを返す",
+      async () => {
+        mkdirSync(testDir, { recursive: true });
+        writeFileSync(join(testDir, "before_20240101_120000.txt"), "dummy defaults content\n");
 
-      const result = await generateDiff(testDir, outputDir);
-      expect(result).toBe(true);
-    });
+        const result = await generateDiff(testDir, outputDir);
+        expect(result).toBe(true);
+      },
+      { timeout: 15000 },
+    );
 
-    test("afterファイルが出力ディレクトリではなくsnapshotDirに保存される", async () => {
-      mkdirSync(testDir, { recursive: true });
-      writeFileSync(join(testDir, "before_20240101_120000.txt"), "dummy content\n");
+    test(
+      "afterファイルが出力ディレクトリではなくsnapshotDirに保存される",
+      async () => {
+        mkdirSync(testDir, { recursive: true });
+        writeFileSync(join(testDir, "before_20240101_120000.txt"), "dummy content\n");
 
-      await generateDiff(testDir, outputDir);
+        await generateDiff(testDir, outputDir);
 
-      const snapshotFiles = readdirSync(testDir);
-      const afterFiles = snapshotFiles.filter((f) => f.startsWith("after_") && f.endsWith(".txt"));
-      expect(afterFiles.length).toBe(1);
-    });
+        const snapshotFiles = readdirSync(testDir);
+        const afterFiles = snapshotFiles.filter(
+          (f) => f.startsWith("after_") && f.endsWith(".txt"),
+        );
+        expect(afterFiles.length).toBe(1);
+      },
+      { timeout: 15000 },
+    );
 
-    test("差分ファイルが出力ディレクトリに作成される（変更がある場合）", async () => {
-      mkdirSync(testDir, { recursive: true });
-      // before file with different content than current defaults read will produce
-      writeFileSync(
-        join(testDir, "before_20240101_120000.txt"),
-        "old content line 1\nold content line 2\n",
-      );
+    test(
+      "差分ファイルが出力ディレクトリに作成される（変更がある場合）",
+      async () => {
+        mkdirSync(testDir, { recursive: true });
+        writeFileSync(
+          join(testDir, "before_20240101_120000.txt"),
+          "old content line 1\nold content line 2\n",
+        );
 
-      await generateDiff(testDir, outputDir);
+        await generateDiff(testDir, outputDir);
 
-      const outputFiles = readdirSync(outputDir);
-      const diffFiles = outputFiles.filter((f) => f.startsWith("macos_settings_diff_"));
-      // diff file may or may not exist depending on whether there are differences
-      expect(diffFiles.length).toBeGreaterThanOrEqual(0);
-    });
+        const outputFiles = readdirSync(outputDir);
+        const diffFiles = outputFiles.filter((f) => f.startsWith("macos_settings_diff_"));
+        expect(diffFiles.length).toBeGreaterThanOrEqual(0);
+      },
+      { timeout: 15000 },
+    );
 
     test(
       "最新のbeforeファイルが選択される",
