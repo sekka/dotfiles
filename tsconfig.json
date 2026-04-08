@@ -34,6 +34,7 @@
   },
   "include": [
     "home/.claude/statusline/**/*.ts",
+    "home/.claude/hooks/**/*.ts",
     "home/.claude/lib/**/*.ts", // APEX メソドロジー用タスク管理ライブラリ
     "scripts/**/*.ts"
   ],

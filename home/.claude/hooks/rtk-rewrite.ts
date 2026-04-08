@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+export {};
 
 /**
  * RTK auto-rewrite hook (PreToolUse:Bash)
