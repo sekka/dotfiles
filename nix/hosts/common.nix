@@ -131,6 +131,7 @@
       NSAutomaticCapitalizationEnabled = false;      # 自動大文字化を無効化
       NSAutomaticQuoteSubstitutionEnabled = false;   # スマート引用符を無効化
       NSAutomaticDashSubstitutionEnabled = false;    # スマートダッシュを無効化
+      NSAutomaticPeriodSubstitutionEnabled = false;  # ピリオドの自動置換を無効化
       NSNavPanelExpandedStateForSaveMode = true;     # 保存ダイアログを常に展開表示
       NSNavPanelExpandedStateForSaveMode2 = true;    # 同上（新API）
       "com.apple.mouse.tapBehavior" = 1;             # タップでクリック
@@ -139,8 +140,9 @@
 
     # --- Dock ---
     dock = {
-      autohide = true;  # Dock を自動的に隠す
-      tilesize = 20;    # アイコンサイズ（小さめ）
+      autohide = true;     # Dock を自動的に隠す
+      tilesize = 20;       # アイコンサイズ（小さめ）
+      show-recents = false; # 最近使ったアプリを非表示
     };
 
     # --- Finder ---
@@ -151,7 +153,7 @@
       _FXShowPosixPathInTitle = true;        # タイトルバーにフルパスを表示
       FXDefaultSearchScope = "SCcf";         # 検索時にカレントフォルダをデフォルトに
       FXEnableExtensionChangeWarning = false; # 拡張子変更時の警告を無効化
-      FXPreferredViewStyle = "clmv";         # カラム表示をデフォルトに
+      FXPreferredViewStyle = "Nlsv";         # リスト表示をデフォルトに
     };
 
     # --- スクリーンショット ---
@@ -192,6 +194,7 @@
         # nix-darwin の NSGlobalDomain モジュールに未定義のキー
         PMPrintingExpandedStateForPrint = true;   # 印刷ダイアログを常に展開表示
         PMPrintingExpandedStateForPrint2 = true;  # 同上（新API）
+        WebAutomaticSpellingCorrectionEnabled = false; # WebView 内スペル自動修正を無効化
       };
       "com.apple.TextEdit" = {
         RichText = 0;                   # プレーンテキストモードをデフォルトに
