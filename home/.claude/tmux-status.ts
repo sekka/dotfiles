@@ -9,7 +9,6 @@ const CRED_FILE = `${HOME}/.claude/.credentials.json`;
 const CACHE_FRESH_MS = 5 * 60 * 1000;
 const CACHE_STALE_MS = 60 * 60 * 1000;
 const API_TIMEOUT = 5000;
-const MIN_API_INTERVAL = 30 * 1000;
 
 // ============================================================================
 // Types
@@ -43,7 +42,7 @@ const t = {
 // Format Helpers
 // ============================================================================
 
-function braille(pct: number, len = 5): string {
+export function tmuxBraille(pct: number, len = 5): string {
   const chars = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣷", "⣿"];
   const steps = len * (chars.length - 1);
   const cur = Math.round((pct / 100) * steps);
@@ -55,7 +54,7 @@ function braille(pct: number, len = 5): string {
   return `${color}${bar}${t.reset}`;
 }
 
-function resetTime(resetsAt: string): string {
+export function resetTime(resetsAt: string): string {
   const diff = new Date(resetsAt).getTime() - Date.now();
   if (diff <= 0) return "now";
   const h = Math.floor(diff / 3600000);
@@ -66,7 +65,7 @@ function resetTime(resetsAt: string): string {
   return `${m}m`;
 }
 
-function resetDate(resetsAt: string): string {
+export function resetDate(resetsAt: string): string {
   const rd = new Date(resetsAt);
   const now = new Date();
   const time = rd.toLocaleString("ja-JP", {
@@ -136,13 +135,7 @@ async function readCache(): Promise<{
   }
 }
 
-let lastApiCall = 0;
-
 async function fetchAndCacheLimits(): Promise<void> {
-  const now = Date.now();
-  if (now - lastApiCall < MIN_API_INTERVAL) return;
-  lastApiCall = now;
-
   const token = await getToken();
   if (!token) return;
 
@@ -171,7 +164,7 @@ async function fetchAndCacheLimits(): Promise<void> {
 // ============================================================================
 
 function formatLimit(label: string, limit: LimitEntry, staleMark: string): string {
-  let s = `${t.gray}${label}${staleMark}:${t.reset}${braille(limit.utilization)} ${t.white}${limit.utilization}%${t.reset}`;
+  let s = `${t.gray}${label}${staleMark}:${t.reset}${tmuxBraille(limit.utilization)} ${t.white}${limit.utilization}%${t.reset}`;
   if (limit.resets_at) {
     s += ` ${t.gray}(${resetDate(limit.resets_at)}|${resetTime(limit.resets_at)})${t.reset}`;
   }

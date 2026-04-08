@@ -50,11 +50,11 @@ const c = {
 // Format Helpers
 // ============================================================================
 
-function tokensK(n: number): string {
+export function tokensK(n: number): string {
   return (n / 1000).toFixed(1);
 }
 
-function elapsed(ms: number): string {
+export function elapsed(ms: number): string {
   const s = Math.floor(ms / 1000);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
@@ -64,7 +64,7 @@ function elapsed(ms: number): string {
     : `${m}:${String(sec).padStart(2, "0")}`;
 }
 
-function braille(pct: number, len = 5): string {
+export function braille(pct: number, len = 5): string {
   const chars = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣷", "⣿"];
   const steps = len * (chars.length - 1);
   const cur = Math.round((pct / 100) * steps);

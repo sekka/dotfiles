@@ -1,5 +1,3 @@
-import { existsSync } from "fs";
-
 const GIT_TIMEOUT = 5000;
 
 export interface GitStatus {
@@ -77,10 +75,6 @@ async function getDiffStats(cwd: string): Promise<string | null> {
 }
 
 export async function getGitStatus(cwd: string): Promise<GitStatus> {
-  if (!existsSync(`${cwd}/.git`)) {
-    return { branch: "", aheadBehind: null, diffStats: null };
-  }
-
   try {
     const branch = (
       await run(["git", "--no-optional-locks", "branch", "--show-current"], cwd)
