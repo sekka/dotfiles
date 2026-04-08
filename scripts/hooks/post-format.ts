@@ -38,7 +38,7 @@ async function main() {
     const ext = getExtension(filePath);
     if (!FORMATTABLE_EXTENSIONS.has(ext)) process.exit(0);
 
-    // Exclude settings.json (handled by sort-permissions.sh)
+    // Exclude settings.json (handled by sort-permissions.ts)
     if (
       filePath.endsWith(".claude/settings.json") ||
       filePath.endsWith(".claude/settings.local.json")

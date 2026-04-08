@@ -1,5 +1,5 @@
 /**
- * sort-permissions.sh のテストスイート
+ * sort-permissions.ts のテストスイート
  */
 
 import { afterAll, beforeAll, describe, expect, it } from "bun:test";
@@ -20,7 +20,7 @@ afterAll(async () => {
   await cleanupTempDir(testDir);
 });
 
-describe("sort-permissions.sh", () => {
+describe("sort-permissions.ts", () => {
   it("既ソート済みのファイルは変更されない", async () => {
     const testFile = resolve(testDir, ".claude", "settings.local.json");
     const content = {
@@ -34,13 +34,10 @@ describe("sort-permissions.sh", () => {
     const originalContent = await Bun.file(testFile).text();
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-        stdout: "pipe",
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+      stdout: "pipe",
+    });
     const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
@@ -62,12 +59,9 @@ describe("sort-permissions.sh", () => {
     writeFileSync(testFile, JSON.stringify(content, null, 2) + "\n");
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+    });
     const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
@@ -84,13 +78,10 @@ describe("sort-permissions.sh", () => {
     writeFileSync(testFile, "{ invalid json }");
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-        stderr: "pipe",
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+      stderr: "pipe",
+    });
     const exitCode = await proc.exited;
 
     expect(exitCode).toBe(1);
@@ -101,12 +92,9 @@ describe("sort-permissions.sh", () => {
     writeFileSync(testFile, JSON.stringify({ test: true }, null, 2));
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+    });
     const exitCode = await proc.exited;
 
     // 対象外ファイルでも成功を返す
@@ -117,12 +105,9 @@ describe("sort-permissions.sh", () => {
     const testFile = resolve(testDir, ".claude", "nonexistent.json");
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+    });
     const exitCode = await proc.exited;
 
     expect(exitCode).toBe(0);
@@ -141,12 +126,9 @@ describe("sort-permissions.sh", () => {
     const originalContent = await Bun.file(testFile).text();
 
     // スクリプトを実行
-    const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", testFile],
-      {
-        cwd: resolve(__dirname, "../.."),
-      },
-    );
+    const proc = Bun.spawn(["bun", "scripts/development/sort-permissions.ts", "--file", testFile], {
+      cwd: resolve(__dirname, "../.."),
+    });
     const exitCode = await proc.exited;
 
     const finalContent = await Bun.file(testFile).text();
@@ -161,7 +143,7 @@ describe("sort-permissions.sh", () => {
 
     // スクリプトを実行
     const proc = Bun.spawn(
-      ["bash", "scripts/development/sort-permissions.sh", "--file", maliciousPath],
+      ["bun", "scripts/development/sort-permissions.ts", "--file", maliciousPath],
       {
         cwd: resolve(__dirname, "../.."),
       },
