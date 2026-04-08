@@ -19,7 +19,7 @@ import { $ } from "bun";
  * // cleanup はテスト終了後に cleanupTempDir() で実施
  */
 export async function createTempDir(prefix: string): Promise<string> {
-	return await mkdtemp(join(tmpdir(), prefix));
+  return await mkdtemp(join(tmpdir(), prefix));
 }
 
 /**
@@ -32,7 +32,7 @@ export async function createTempDir(prefix: string): Promise<string> {
  * await cleanupTempDir(tempDir);
  */
 export async function cleanupTempDir(dir: string): Promise<void> {
-	await rm(dir, { recursive: true, force: true });
+  await rm(dir, { recursive: true, force: true });
 }
 
 /**
@@ -55,16 +55,16 @@ export async function cleanupTempDir(dir: string): Promise<void> {
  * // tempDir はGitリポジトリとして使用可能
  */
 export async function setupGitRepo(dir: string): Promise<void> {
-	const originalCwd = process.cwd();
-	process.chdir(dir);
+  const originalCwd = process.cwd();
+  process.chdir(dir);
 
-	try {
-		await $`git init`.quiet();
-		await $`git config user.email "test@example.com"`.quiet();
-		await $`git config user.name "Test User"`.quiet();
-	} finally {
-		process.chdir(originalCwd);
-	}
+  try {
+    await $`git init`.quiet();
+    await $`git config user.email "test@example.com"`.quiet();
+    await $`git config user.name "Test User"`.quiet();
+  } finally {
+    process.chdir(originalCwd);
+  }
 }
 
 /**
@@ -81,7 +81,7 @@ export async function setupGitRepo(dir: string): Promise<void> {
  * await cleanupTempDir(repoDir); // テスト終了後はクリーンアップ
  */
 export async function createTempGitRepo(prefix: string): Promise<string> {
-	const tempDir = await createTempDir(prefix);
-	await setupGitRepo(tempDir);
-	return tempDir;
+  const tempDir = await createTempDir(prefix);
+  await setupGitRepo(tempDir);
+  return tempDir;
 }
