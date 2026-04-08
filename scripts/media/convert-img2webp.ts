@@ -98,6 +98,14 @@ export async function convertToWebp(imageFile: string): Promise<boolean> {
  * メイン関数
  */
 export async function main(): Promise<number> {
+  // cwebpの存在確認
+  const checkCwebp = await $`command -v cwebp`.quiet().nothrow();
+  if (checkCwebp.exitCode !== 0) {
+    console.error("エラー: cwebpが見つかりません。");
+    console.error("インストール: brew install webp");
+    return 1;
+  }
+
   // カレントディレクトリのPNG・JPGファイルを検索（大文字・小文字両対応）
   const glob = new Glob("**/*.{png,PNG,jpg,JPG,jpeg,JPEG}");
   const imageFiles: string[] = [];

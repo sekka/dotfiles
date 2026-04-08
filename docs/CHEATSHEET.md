@@ -55,7 +55,7 @@
 | `fgco`          | Git checkout（fbr のエイリアス）                   | `fgco`          |
 | `fgcor`         | Git checkout リモート含む                          | `fgcor`         |
 | `gifit`         | コミット範囲を選択して difit で差分確認            | `gifit`         |
-| `difit-here.sh` | 今いるリポジトリのブランチ文脈に応じた diff を表示 | `difit-here.sh` |
+| `difit-here.ts` | 今いるリポジトリのブランチ文脈に応じた diff を表示 | `difit-here.ts` |
 
 #### 開発ツール
 

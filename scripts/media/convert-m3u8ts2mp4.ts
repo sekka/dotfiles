@@ -64,6 +64,14 @@ export async function convertM3u8ToMp4(m3u8File: string): Promise<boolean> {
  * メイン関数
  */
 export async function main(): Promise<number> {
+  // ffmpegの存在確認
+  const checkFfmpeg = await $`command -v ffmpeg`.quiet().nothrow();
+  if (checkFfmpeg.exitCode !== 0) {
+    console.error("エラー: ffmpegが見つかりません。");
+    console.error("インストール: brew install ffmpeg");
+    return 1;
+  }
+
   // カレントディレクトリのm3u8ファイルを検索
   const glob = new Glob("**/*.m3u8");
   const m3u8Files: string[] = [];
