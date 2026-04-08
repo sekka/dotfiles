@@ -1,173 +1,208 @@
 #!/usr/bin/env bun
 
+import { homedir } from "os";
+import { chmod, mkdir } from "fs/promises";
+
+const HOME = homedir();
+const CACHE_FILE = `${HOME}/.claude/data/usage-limits-cache.json`;
+const CRED_FILE = `${HOME}/.claude/.credentials.json`;
+const CACHE_FRESH_MS = 5 * 60 * 1000;
+const CACHE_STALE_MS = 60 * 60 * 1000;
+const API_TIMEOUT = 5000;
+const MIN_API_INTERVAL = 30 * 1000;
+
 // ============================================================================
-// tmux-status.ts - Claude Code rate limits in tmux color format
+// Types
 // ============================================================================
 
-import {
-	getPeriodCost,
-	getTodayCost,
-	getCacheWithInfo,
-	getCachedUsageLimits,
-} from "./statusline/api.ts";
-import { formatResetTime, formatResetDateOnly, formatCostValue } from "./statusline/format.ts";
+interface LimitEntry {
+  utilization: number;
+  resets_at: string | null;
+}
+
+interface UsageLimits {
+  five_hour: LimitEntry | null;
+  seven_day: LimitEntry | null;
+  seven_day_sonnet: LimitEntry | null;
+}
 
 // ============================================================================
-// Tmux Color Codes
+// Tmux Colors
 // ============================================================================
 
-const tmux = {
-	gray: "#[fg=colour240]",
-	white: "#[fg=white]",
-	brightWhite: "#[fg=brightwhite]",
-	yellow: "#[fg=yellow]",
-	orange: "#[fg=colour208]",
-	red: "#[fg=brightred]",
-	default: "#[default]",
+const t = {
+  gray: "#[fg=colour240]",
+  white: "#[fg=white]",
+  yellow: "#[fg=yellow]",
+  orange: "#[fg=colour208]",
+  red: "#[fg=brightred]",
+  reset: "#[default]",
 } as const;
 
 // ============================================================================
-// Braille Progress Bar with Tmux Colors
+// Format Helpers
 // ============================================================================
 
-function formatBrailleProgressBarTmux(percentage: number, length = 5): string {
-	const brailleChars = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣷", "⣿"];
-	const totalSteps = length * (brailleChars.length - 1);
-	const currentStep = Math.round((percentage / 100) * totalSteps);
-
-	const fullBlocks = Math.floor(currentStep / (brailleChars.length - 1));
-	const partialIndex = currentStep % (brailleChars.length - 1);
-	const emptyBlocks = length - fullBlocks - (partialIndex > 0 ? 1 : 0);
-
-	const fullPart = "⣿".repeat(fullBlocks);
-	const partialPart = partialIndex > 0 ? brailleChars[partialIndex] : "";
-	const emptyPart = "⣀".repeat(emptyBlocks);
-	const bar = `${fullPart}${partialPart}${emptyPart}`;
-
-	// Progressive color: 0-50% gray, 51-70% yellow, 71-90% orange, 91-100% red
-	let color = tmux.gray;
-	if (percentage > 50 && percentage <= 70) {
-		color = tmux.yellow;
-	} else if (percentage > 70 && percentage <= 90) {
-		color = tmux.orange;
-	} else if (percentage > 90) {
-		color = tmux.red;
-	}
-
-	return `${color}${bar}${tmux.default}`;
+function braille(pct: number, len = 5): string {
+  const chars = ["⣀", "⣄", "⣤", "⣦", "⣶", "⣷", "⣿"];
+  const steps = len * (chars.length - 1);
+  const cur = Math.round((pct / 100) * steps);
+  const full = Math.floor(cur / (chars.length - 1));
+  const partial = cur % (chars.length - 1);
+  const empty = len - full - (partial > 0 ? 1 : 0);
+  const bar = "⣿".repeat(full) + (partial > 0 ? chars[partial] : "") + "⣀".repeat(empty);
+  const color = pct > 90 ? t.red : pct > 70 ? t.orange : pct > 50 ? t.yellow : t.gray;
+  return `${color}${bar}${t.reset}`;
 }
 
-function withTimeout<T>(promise: Promise<T>, ms = 1000): Promise<T | null> {
-	return Promise.race([
-		promise,
-		new Promise<null>((resolve) => setTimeout(() => resolve(null), ms)),
-	]);
+function resetTime(resetsAt: string): string {
+  const diff = new Date(resetsAt).getTime() - Date.now();
+  if (diff <= 0) return "now";
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const d = Math.floor(h / 24);
+  if (d > 0) return `${d}d${h % 24}h`;
+  if (h > 0) return `${h}h${m}m`;
+  return `${m}m`;
 }
 
-// ============================================================================
-// Main Output Function
-// ============================================================================
-
-async function generateTmuxStatus(): Promise<string> {
-	const { data: limits, staleness, ageMs } = await getCacheWithInfo();
-
-	// キャッシュが古い場合はバックグラウンドで更新をトリガー（fire-and-forget）
-	if (staleness !== "fresh") {
-		getCachedUsageLimits().catch(() => {});
-	}
-
-	if (staleness === "expired" || !limits) {
-		return "";
-	}
-
-	// Stale suffix: "(Xm ago)"
-	const staleLabel =
-		staleness === "stale" ? `${tmux.gray}(${Math.floor(ageMs / 60000)}m ago)${tmux.default}` : "";
-	// "?" marker appended to label names when stale
-	const staleMark = staleness === "stale" ? "?" : "";
-
-	const parts: string[] = [];
-
-	// LMT (5-hour limit)
-	if (limits.five_hour) {
-		const bar = formatBrailleProgressBarTmux(limits.five_hour.utilization, 5);
-		let lmt = `${tmux.gray}LMT${staleMark}:${tmux.default}${bar} ${tmux.white}${limits.five_hour.utilization}%${tmux.default}`;
-
-		if (limits.five_hour.resets_at) {
-			const resetDate = formatResetDateOnly(limits.five_hour.resets_at);
-			const timeLeft = formatResetTime(limits.five_hour.resets_at);
-			lmt += ` ${tmux.gray}(${resetDate}|${timeLeft})${tmux.default}`;
-
-			// Add period cost
-			try {
-				const periodCost = await withTimeout(getPeriodCost(limits.five_hour.resets_at), 500);
-				if (periodCost !== null && periodCost >= 0.01) {
-					lmt += ` ${tmux.gray}$${tmux.white}${formatCostValue(periodCost)}${tmux.default}`;
-				}
-			} catch {
-				// Gracefully ignore period cost errors
-			}
-		}
-
-		parts.push(lmt);
-	}
-
-	// DAY (daily cost)
-	try {
-		const todayCost = await withTimeout(getTodayCost(), 500);
-		if (todayCost !== null && todayCost >= 0.01) {
-			parts.push(
-				`${tmux.gray}DAY${staleMark}:${tmux.gray}$${tmux.white}${formatCostValue(todayCost)}${tmux.default}`,
-			);
-		}
-	} catch {
-		// Gracefully ignore daily cost errors
-	}
-
-	// WK (7-day limit)
-	if (limits.seven_day) {
-		const bar = formatBrailleProgressBarTmux(limits.seven_day.utilization, 5);
-		let wk = `${tmux.gray}WK${staleMark}:${tmux.default}${bar} ${tmux.white}${limits.seven_day.utilization}%${tmux.default}`;
-
-		if (limits.seven_day.resets_at) {
-			const resetDate = formatResetDateOnly(limits.seven_day.resets_at);
-			const timeLeft = formatResetTime(limits.seven_day.resets_at);
-			wk += ` ${tmux.gray}(${resetDate}|${timeLeft})${tmux.default}`;
-		}
-
-		parts.push(wk);
-	}
-
-	// WKS (7-day Sonnet limit)
-	if (limits.seven_day_sonnet) {
-		const bar = formatBrailleProgressBarTmux(limits.seven_day_sonnet.utilization, 5);
-		let wks = `${tmux.gray}WKS${staleMark}:${tmux.default}${bar} ${tmux.white}${limits.seven_day_sonnet.utilization}%${tmux.default}`;
-
-		if (limits.seven_day_sonnet.resets_at) {
-			const resetDate = formatResetDateOnly(limits.seven_day_sonnet.resets_at);
-			const timeLeft = formatResetTime(limits.seven_day_sonnet.resets_at);
-			wks += ` ${tmux.gray}(${resetDate}|${timeLeft})${tmux.default}`;
-		}
-
-		parts.push(wks);
-	}
-
-	// Append stale age indicator at the end
-	if (staleLabel) {
-		parts.push(staleLabel);
-	}
-
-	return parts.join(" ");
+function resetDate(resetsAt: string): string {
+  const rd = new Date(resetsAt);
+  const now = new Date();
+  const time = rd.toLocaleString("ja-JP", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Tokyo",
+    hour12: false,
+  });
+  const dateStr = rd.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
+  const nowStr = now.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo" });
+  if (dateStr === nowStr) return time;
+  const mo = rd
+    .toLocaleDateString("ja-JP", { month: "numeric", timeZone: "Asia/Tokyo" })
+    .replace(/月/g, "");
+  const da = rd
+    .toLocaleDateString("ja-JP", { day: "numeric", timeZone: "Asia/Tokyo" })
+    .replace(/日/g, "");
+  return `${mo}/${da} ${time}`;
 }
 
 // ============================================================================
-// Entry Point
+// Credentials
 // ============================================================================
+
+async function getToken(): Promise<string | null> {
+  try {
+    const creds = await Bun.file(CRED_FILE).json();
+    const token = creds?.claudeAiOauth?.accessToken;
+    return typeof token === "string" && token.length >= 20 ? token : null;
+  } catch {
+    try {
+      const proc = Bun.spawn({
+        cmd: ["security", "find-generic-password", "-s", "Claude Code-credentials", "-w"],
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+      const out = await new Response(proc.stdout).text();
+      if ((await proc.exited) !== 0) return null;
+      const creds = JSON.parse(out.trim());
+      const token = creds?.claudeAiOauth?.accessToken;
+      return typeof token === "string" && token.length >= 20 ? token : null;
+    } catch {
+      return null;
+    }
+  }
+}
+
+// ============================================================================
+// Cache & API
+// ============================================================================
+
+type Staleness = "fresh" | "stale" | "expired";
+
+async function readCache(): Promise<{
+  data: UsageLimits | null;
+  staleness: Staleness;
+  ageMs: number;
+}> {
+  try {
+    const cache: { data: UsageLimits; timestamp: number } = await Bun.file(CACHE_FILE).json();
+    const age = Date.now() - cache.timestamp;
+    if (age < CACHE_FRESH_MS) return { data: cache.data, staleness: "fresh", ageMs: age };
+    if (age < CACHE_STALE_MS) return { data: cache.data, staleness: "stale", ageMs: age };
+    return { data: null, staleness: "expired", ageMs: age };
+  } catch {
+    return { data: null, staleness: "expired", ageMs: Infinity };
+  }
+}
+
+let lastApiCall = 0;
+
+async function fetchAndCacheLimits(): Promise<void> {
+  const now = Date.now();
+  if (now - lastApiCall < MIN_API_INTERVAL) return;
+  lastApiCall = now;
+
+  const token = await getToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/api/oauth/usage", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "anthropic-beta": "oauth-2025-04-20",
+      },
+      signal: AbortSignal.timeout(API_TIMEOUT),
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    await mkdir(`${HOME}/.claude/data`, { recursive: true, mode: 0o700 });
+    await Bun.write(CACHE_FILE, JSON.stringify({ data, timestamp: Date.now() }));
+    await chmod(CACHE_FILE, 0o600);
+  } catch {
+    // Silently fail — cache stays as-is
+  }
+}
+
+// ============================================================================
+// Main
+// ============================================================================
+
+function formatLimit(label: string, limit: LimitEntry, staleMark: string): string {
+  let s = `${t.gray}${label}${staleMark}:${t.reset}${braille(limit.utilization)} ${t.white}${limit.utilization}%${t.reset}`;
+  if (limit.resets_at) {
+    s += ` ${t.gray}(${resetDate(limit.resets_at)}|${resetTime(limit.resets_at)})${t.reset}`;
+  }
+  return s;
+}
 
 try {
-	const output = await generateTmuxStatus();
-	console.log(output);
+  const cache = await readCache();
+
+  if (cache.staleness !== "fresh") {
+    fetchAndCacheLimits().catch(() => {});
+  }
+
+  if (!cache.data || cache.staleness === "expired") {
+    console.log("");
+    process.exit(0);
+  }
+
+  const mark = cache.staleness === "stale" ? "?" : "";
+  const parts: string[] = [];
+
+  if (cache.data.five_hour) parts.push(formatLimit("LMT", cache.data.five_hour, mark));
+  if (cache.data.seven_day) parts.push(formatLimit("WK", cache.data.seven_day, mark));
+  if (cache.data.seven_day_sonnet)
+    parts.push(formatLimit("WKS", cache.data.seven_day_sonnet, mark));
+
+  if (cache.staleness === "stale") {
+    parts.push(`${t.gray}(${Math.floor(cache.ageMs / 60000)}m ago)${t.reset}`);
+  }
+
+  console.log(parts.join(" "));
 } catch {
-	// Never crash, output empty string on any error
-	console.log("");
+  console.log("");
 }

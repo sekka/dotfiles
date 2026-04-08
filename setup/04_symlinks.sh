@@ -108,7 +108,6 @@ CLAUDE_FILES=(
   settings.json
   settings.local.json
   statusline.ts
-  statusline-config.json
   tmux-status.ts
 )
 
