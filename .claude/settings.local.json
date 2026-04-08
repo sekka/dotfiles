@@ -27,6 +27,7 @@
       "Skill(schedule)",
       "WebFetch(domain:agent-browser.io)",
       "WebFetch(domain:dev.to)",
+      "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:playwright.dev)",
