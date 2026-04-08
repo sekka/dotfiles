@@ -27,7 +27,7 @@ export function sortArraysInJson(value: unknown): unknown {
  * copy content back to dotfiles source and recreate the symlink.
  */
 export function repairSymlinkIfNeeded(filePath: string): void {
-  const home = process.env.HOME ?? "";
+  const home = process.env["HOME"] ?? "";
   const liveFile = resolve(home, ".claude/settings.json");
   const dotfilesSource = resolve(home, "dotfiles/home/.claude/settings.json");
 
@@ -106,11 +106,11 @@ if (import.meta.main) {
   let filePath = "";
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--file" && args[i + 1]) {
-      filePath = args[i + 1];
+      filePath = args[i + 1] ?? "";
       break;
     }
     if (args[i]?.startsWith("--file=")) {
-      filePath = args[i].slice("--file=".length);
+      filePath = (args[i] ?? "").slice("--file=".length);
       break;
     }
   }

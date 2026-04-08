@@ -12,7 +12,7 @@ import { $ } from "bun";
 
 export const DEPRECATED_TOOLS = ["agent-browser", "pinchtab"] as const;
 
-export const FOSSIL_MCP_PATH = join(process.env.HOME ?? "", ".local", "bin", "fossil-mcp");
+export const FOSSIL_MCP_PATH = join(process.env["HOME"] ?? "", ".local", "bin", "fossil-mcp");
 
 const log = (msg: string) => console.log(`\x1b[1;34m[cleanup]\x1b[0m ${msg}`);
 

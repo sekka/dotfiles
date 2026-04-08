@@ -19,7 +19,7 @@ import { join } from "node:path";
 import { $ } from "bun";
 import { parseArgs as nodeParseArgs } from "node:util";
 
-const DEFAULT_SNAPSHOT_DIR = join(process.env.HOME ?? "", ".dotfiles-macos-snapshots");
+const DEFAULT_SNAPSHOT_DIR = join(process.env["HOME"] ?? "", ".dotfiles-macos-snapshots");
 
 /**
  * コマンドライン引数をパースする

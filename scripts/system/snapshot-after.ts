@@ -19,8 +19,8 @@ import { join } from "node:path";
 import { $ } from "bun";
 import { parseArgs as nodeParseArgs } from "node:util";
 
-const DEFAULT_SNAPSHOT_DIR = join(process.env.HOME ?? "", ".dotfiles-macos-snapshots");
-const DEFAULT_OUTPUT_DIR = join(process.env.HOME ?? "", "Desktop");
+const DEFAULT_SNAPSHOT_DIR = join(process.env["HOME"] ?? "", ".dotfiles-macos-snapshots");
+const DEFAULT_OUTPUT_DIR = join(process.env["HOME"] ?? "", "Desktop");
 
 /**
  * コマンドライン引数をパースする
@@ -61,7 +61,7 @@ export async function generateDiff(snapshotDir: string, outputDir: string): Prom
       .sort()
       .reverse();
     if (beforeFiles.length > 0) {
-      latestBefore = join(snapshotDir, beforeFiles[0]);
+      latestBefore = join(snapshotDir, beforeFiles[0] ?? "");
     }
   } catch {
     // directory doesn't exist or is unreadable
