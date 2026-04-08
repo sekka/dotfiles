@@ -11,4 +11,4 @@ run = "bun scripts/system/snapshot-before.ts"
 
 [tasks."macos:snapshot-after"]
 description = "設定変更後のスナップショットを取得して差分を生成（pdef用）"
-run = "scripts/system/macos/snapshot-after.sh"
+run = "bun scripts/system/snapshot-after.ts"
