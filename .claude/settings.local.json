@@ -26,6 +26,7 @@
       "Bash(shellcheck:*)",
       "Skill(schedule)",
       "WebFetch(domain:agent-browser.io)",
+      "WebFetch(domain:bun.com)",
       "WebFetch(domain:dev.to)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
