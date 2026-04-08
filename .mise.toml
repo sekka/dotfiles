@@ -3,7 +3,7 @@
 
 [tasks."macos:check"]
 description = "現在のmacOS設定がデフォルトから変更されているかチェック"
-run = "scripts/system/macos/check-defaults.sh"
+run = "bun scripts/system/check-defaults.ts"
 
 [tasks."macos:snapshot-before"]
 description = "設定変更前のスナップショットを取得（pdef用）"
