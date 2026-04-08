@@ -63,7 +63,7 @@
           },
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/rtk-rewrite.sh"
+            "command": "bun $HOME/.claude/hooks/rtk-rewrite.ts"
           }
         ]
       },
@@ -164,7 +164,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/scripts/save-progress.sh"
+            "command": "bash $HOME/.claude/hooks/save-progress.sh"
           }
         ]
       }

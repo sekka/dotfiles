@@ -9,6 +9,7 @@
       "Bash(agent-browser wait:*)",
       "Bash(brew deps:*)",
       "Bash(brew list:*)",
+      "Bash(bun test:*)",
       "Bash(claude --version)",
       "Bash(claude mcp:*)",
       "Bash(darwin-rebuild build:*)",
@@ -37,7 +38,8 @@
       "WebFetch(domain:search.nixos.org)",
       "WebFetch(domain:x.com)",
       "WebFetch(domain:zenn.dev)",
-      "mcp__playwright__*"
+      "mcp__playwright__*",
+      "WebFetch(domain:note.com)"
     ],
     "deny": [],
     "ask": []
