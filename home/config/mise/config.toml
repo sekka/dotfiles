@@ -48,22 +48,22 @@ node.verify = false
 [tasks.browserslist]
 alias = "bl"
 description = "Browserslist更新"
-run = "npx browserslist@latest --update-db"
+run = "pnpm dlx browserslist@latest --update-db"
 
 # --------------------------------------
 # dev: port-whisperer (ports CLI)
 # --------------------------------------
 [tasks.dev-ports]
 description = "リッスン中のポート一覧（dev serverのみ・色付き表）"
-run = "ports"
+run = "pnpm dlx port-whisperer"
 
 [tasks.dev-ports-all]
 description = "全リッスンポート（system含む）"
-run = "ports --all"
+run = "pnpm dlx port-whisperer --all"
 
 [tasks.dev-ports-clean]
 description = "孤児/zombie devプロセスを掃除"
-run = "ports clean"
+run = "pnpm dlx port-whisperer clean"
 
 [tasks.gh-list-deploy]
 description = "デプロイの実行履歴を表示する"
@@ -111,11 +111,11 @@ git log \
 # コードレビューツール
 [tasks.git-util-difit-browser]
 description = "コードレビューを開く"
-run = "difit"
+run = "pnpm dlx difit"
 
 [tasks.git-util-difit-tui]
 description = "コードレビューをTUIで開く"
-run = "difit --tui"
+run = "pnpm dlx difit --tui"
 
 [tasks.git-util-difit-here]
 description = "カレントリポジトリのGit差分をdifitで表示"
@@ -128,25 +128,20 @@ run = "hub browse $(ghq list | fzf | cut -d '/' -f 2,3)"
 # Claude Code関係のファイルを一覧表示
 [tasks.llm-claude-ccexp]
 description = "Claude Code関係のファイルを一覧表示"
-run = "ccexp"
+run = "pnpm dlx ccexp"
 
 # --------------------------------------
 # LLM/AI関連
 # --------------------------------------
-# Claude Code再開ツール
-[tasks.llm-claude-ccresume]
-description = "Claude Codeのclaude --resumeを使いやすくする"
-run = "ccresume"
-
 # Claude Codeセッション検索
 [tasks.llm-claude-ccsearch]
 description = "Claude Codeのセッション検索・共有"
-run = "ccsearch"
+run = "pnpm dlx ccsearch"
 
 # Claude Code使用状況
 [tasks.llm-claude-ccusage]
 description = "Claude Codeのセッション使用状況を表示"
-run = "ccusage"
+run = "pnpm dlx ccusage"
 
 # RTK トークン節約量レポート
 [tasks.llm-rtk-gain]
@@ -167,15 +162,10 @@ run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/d
 description = "dotfiles/.claude/settings.local.json の permissions を辞書順ソート"
 run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/.claude/settings.local.json"
 
-# codemass
-[tasks.llm-codemass]
-description = "codemassを起動"
-run = "codemass"
-
-# cc-sdd
-[tasks.ccsdd-install]
-description = "cc-sddを導入"
-run = "npx cc-sdd@latest --lang ja --kiro-dir docs"
+# cc-lens
+[tasks.llm-cclens]
+description = "cc-lensでClaude Codeセッションを可視化"
+run = "pnpm dlx cc-lens"
 
 # --------------------------------------
 # mise自体の管理
@@ -256,8 +246,8 @@ run = "rtop"
 alias = "ulh"
 description = "サイト全体のLighthouseスキャン（Unlighthouse）"
 run = """
-echo "使用方法: npx unlighthouse --site <URL>"
-echo "例: npx unlighthouse --site https://example.com"
+echo "使用方法: pnpm dlx unlighthouse --site <URL>"
+echo "例: pnpm dlx unlighthouse --site https://example.com"
 """
 
 # Lighthouseでサイト全体をスキャン（CI用）
@@ -268,7 +258,7 @@ if [ -z "$UNLIGHTHOUSE_SITE" ]; then
   echo "❌ Error: UNLIGHTHOUSE_SITE 環境変数を設定してください"
   exit 1
 fi
-npx unlighthouse --site "$UNLIGHTHOUSE_SITE" --build-static
+pnpm dlx unlighthouse --site "$UNLIGHTHOUSE_SITE" --build-static
 """
 
 # --------------------------------------
@@ -287,7 +277,7 @@ if [ -z "$url" ]; then
     exit 1
   fi
 fi
-npx github:syuya2036/ogp-preview "$url"
+pnpm dlx github:syuya2036/ogp-preview "$url"
 """
 
 # --------------------------------------
@@ -343,11 +333,24 @@ description = "homeのシンボリックリンクを作成"
 run = "bash ~/dotfiles/setup/04_symlinks.sh"
 
 # --------------------------------------
+# AI エージェント管理
+# --------------------------------------
+[tasks.ai-squad]
+alias = "squad"
+description = "claude-squad TUIを起動（複数AIエージェントの並行管理）"
+run = "cs"
+
+[tasks.ai-squad-auto]
+alias = "squady"
+description = "claude-squad を自動承認モードで起動（-y）"
+run = "cs -y"
+
+# --------------------------------------
 # Docker/Container
 # --------------------------------------
 # Colima起動
 [tasks.docker-colima-start]
-alias = "cs"
+alias = "col"
 description = "Colimaを起動（Docker Desktop代替）"
 run = "colima start"
 
@@ -498,92 +501,96 @@ run = 'curl -fsSL https://raw.githubusercontent.com/niklasberglund/xcode-clean.s
 
 [tools]
 # グローバルにインストールするツールを定義
-# 例:
-# node = "lts"           # Node.js LTS版
-# python = "3.12"        # Python 3.12
-# ruby = "3.3"           # Ruby 3.3
-# go = "1.22"            # Go 1.22
-# rust = "stable"        # Rust安定版
+# ※ "npm:" は mise の backend 名であり npm/pnpm の選択とは無関係
 
-# === JavaScript ランタイム ===
+# ============================================
+# Language Runtimes
+# ============================================
 node = ["24", "lts", "22", "20", "18"]
 deno = "latest"
 bun = "latest"
 # npm = "latest"
-
-# === ビルドツール ===
-"npm:node-gyp" = "latest"
-
-# === AI/LLM ツール ===
-"npm:@antiwork/shortest" = "latest"   # https://github.com/antiwork/shortest
-"npm:@github/copilot" = "latest"
-"npm:@google/gemini-cli" = "latest"
-"npm:@mixedbread/mgrep" = "latest"    # Semantic search tool for Claude Code
-"npm:@openai/codex" = "latest"
-# "npm:@byterover/cipher" = "latest"    # https://github.com/campfirein/cipher
-"npm:@endorhq/rover" = "latest"       # https://github.com/endorhq/rover
-# "npm:@letta-ai/letta-code" = "latest" # https://github.com/letta-ai/letta-code
-"npm:agent-browser" = "latest"        # https://github.com/vercel-labs/agent-browser  # AIエージェント向けブラウザ自動化CLI
-yt-dlp = { version = "latest", rename_exe = "yt-dlp" }  # https://github.com/yt-dlp/yt-dlp  # 動画ダウンローダー
-"npm:@playwright/mcp" = "latest"      # https://github.com/microsoft/playwright-mcp/
-"npm:@playwright/cli" = "latest"      # https://github.com/microsoft/playwright-cli
-"npm:playwright" = "latest"            # Playwright core library (for Node.js headless scripts)
-"npm:@sasazame/ccresume" = "latest"   # https://zenn.dev/sasazame/articles/3634040f7fb4da
-"npm:cc-sdd" = "latest"               # https://github.com/gotalab/cc-sdd/blob/main/tools/cc-sdd/README_ja.md
-"npm:cc-wrapped" = "latest"           # https://github.com/numman-ali/cc-wrapped
-"npm:ccexp" = "latest"                # https://zenn.dev/nyatinte/articles/launch-ccexp
-"npm:ccmanager" = "latest"            # https://zenn.dev/kbwok/articles/33fad69555d005
-"npm:ccsearch" = "latest"             # https://zenn.dev/suthio/articles/126bc21f0741a6
-"npm:ccusage" = "latest"              # https://zenn.dev/ryoppippi/articles/6c9a8fe6629cd6
-"npm:claude-code-monitor" = "latest"  # https://github.com/onikan27/claude-code-monitor
-"npm:codemass" = "latest"             # https://x.com/kenn/status/1953281949566706030
-"npm:mmcp" = "latest"                 # https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
-"npm:ui-skills" = "latest"            # https://www.ui-skills.com/
-"npm:vibe-kanban" = "latest"          # https://www.vibekanban.com/
-
-# === 開発ツール ===
-"npm:caniuse-cmd" = "latest"          # ブラウザ互換性チェック
-"npm:ctx7" = "latest"                 # https://context7.com/?tab=skills
-"npm:czg" = "latest"                  # コミットメッセージ支援（git-cz の後継）
-"npm:difit" = "latest"                # https://zenn.dev/yoshiko/articles/difit-from-reviewit
-"npm:fixpack" = "latest"              # package.json整理
-"npm:git-cz" = "latest"               # Git commit支援
-"npm:git-diff-archive" = "latest"     # Git差分アーカイブ
-"npm:lighthouse" = "latest"           # パフォーマンス測定
-"npm:unlighthouse" = "latest"         # サイト全体のLighthouseスキャン
-"npm:markdownlint-cli" = "latest"     # Markdown リンター
-"npm:npm-check" = "latest"            # npm依存関係チェック
-"npm:npm-check-updates" = "latest"    # npm更新チェック
-"npm:oxfmt" = "latest"                # Formatter
-"npm:oxlint" = "latest"               # Linter
-"npm:port-whisperer" = "latest"       # https://github.com/LarsenCundric/port-whisperer  # ports/whoisonport CLI
-"npm:vercel" = "latest"               # Vercel CLI
-
-# === 画像処理 ===
-"npm:imageoptim-cli" = "latest"       # 画像最適化
-
-# === Rust ===
 rust = "stable"
+go = "latest"
+
+# ============================================
+# npm packages
+# ============================================
+
+# --- ビルドツール ---
+"npm:node-gyp" = "latest"              # ネイティブアドオンビルドツール
+
+# --- AI/LLM CLI ---
+"npm:@github/copilot" = "latest"       # GitHub Copilot CLI
+"npm:@google/gemini-cli" = "latest"    # Google Gemini CLI
+"npm:@openai/codex" = "latest"         # OpenAI Codex コーディングエージェント
+# "npm:@byterover/byterover-cli" = "latest" # AI暗号化ツール                       https://github.com/campfirein/byterover-cli
+# "npm:@letta-ai/letta-code" = "latest" # AIメモリ付きコーディング                 https://github.com/letta-ai/letta-code
+
+# --- Claude Code エコシステム ---
+"npm:ui-skills" = "latest"             # UI コンポーネントスキル                   https://www.ui-skills.com/
+"npm:vibe-kanban" = "latest"           # バイブコーディング用カンバン              https://www.vibekanban.com/
+
+# --- ブラウザ自動化 ---
+"npm:agent-browser" = "latest"         # AIエージェント向けブラウザ自動化CLI       https://github.com/vercel-labs/agent-browser
+"npm:@playwright/mcp" = "latest"       # Playwright MCP サーバー                   https://github.com/microsoft/playwright-mcp/
+"npm:@playwright/cli" = "latest"       # Playwright CLI                            https://github.com/microsoft/playwright-cli
+"npm:playwright" = "latest"            # Playwright コアライブラリ
+
+# --- MCP ---
+"npm:ctx7" = "latest"                  # Context7 ドキュメント取得CLI              https://context7.com/?tab=skills
+"npm:mmcp" = "latest"                  # MCP サーバー管理                          https://zenn.dev/kou_pg_0131/articles/mmcp-introduction
+
+# --- Git ---
+"npm:czg" = "latest"                   # コミットメッセージ支援（git-cz の後継）
+"npm:git-cz" = "latest"                # Git commit支援
+"npm:git-diff-archive" = "latest"      # Git差分アーカイブ
+
+# --- Lint / Format ---
+"npm:markdownlint-cli" = "latest"      # Markdown リンター
+"npm:oxfmt" = "latest"                 # Oxc Formatter
+"npm:oxlint" = "latest"                # Oxc Linter
+
+# --- パフォーマンス ---
+"npm:lighthouse" = "latest"            # パフォーマンス測定
+
+# --- パッケージ管理 ---
+"npm:fixpack" = "latest"               # package.json整理
+"npm:npm-check" = "latest"             # npm依存関係チェック
+"npm:npm-check-updates" = "latest"     # npm更新チェック
+
+# --- Web / ネットワーク ---
+"npm:caniuse-cmd" = "latest"           # ブラウザ互換性チェック
+"npm:vercel" = "latest"                # Vercel CLI
+
+# --- メディア ---
+"npm:imageoptim-cli" = "latest"        # 画像最適化
+yt-dlp = { version = "latest", rename_exe = "yt-dlp" }  # 動画ダウンローダー       https://github.com/yt-dlp/yt-dlp
+
+# ============================================
+# Cargo packages
+# ============================================
 
 # --- ファイル操作 ---
-"cargo:filetree" = "latest"     # ファイルツリーエクスプローラー（TUI）
+"cargo:filetree" = "latest"            # ファイルツリーエクスプローラー（TUI）
 
-# --- Git関連 ---
-"cargo:keifu" = "latest"        # Git commit graphs
-"cargo:needle-cli" = "latest"   # GitHub PRs レビュー支援
-"cargo:https://github.com/anatawa12/git-vrc" = "latest"
+# --- Git ---
+"cargo:keifu" = "latest"               # Git commit graphs
+"cargo:needle-cli" = "latest"          # GitHub PRs レビュー支援
+"cargo:https://github.com/anatawa12/git-vrc" = "latest"  # VRChat用Gitツール
 
 # --- 開発ツール ---
-"cargo:cargo-update" = "latest" # cargo パッケージ更新管理
-"cargo:hx" = "latest"           # Hex Viewer
+"cargo:cargo-update" = "latest"        # cargo パッケージ更新管理
+"cargo:hx" = "latest"                  # Hex Viewer
 
 # --- ネットワーク/HTTP ---
-"cargo:ruget" = "latest"        # すごいwget
+"cargo:ruget" = "latest"               # すごいwget
 
 # --- システムモニタ ---
-"cargo:rtop" = "latest"         # システムモニタリング
+"cargo:rtop" = "latest"                # システムモニタリング
 
-# === Go ===
+# ============================================
+# Go packages
+# ============================================
 # ※ Go製CLIツールの多くは Nix (nix/hosts/common.nix) で管理
-go = "latest"  # Go本体
 "go:github.com/d-kuro/gwq/cmd/gwq" = "latest"  # Git worktree管理

@@ -23,7 +23,7 @@ export function parseArgs(args: string[]): string | null {
   if (args.length !== 1) {
     return null;
   }
-  return args[0];
+  return args[0] ?? null;
 }
 
 /**

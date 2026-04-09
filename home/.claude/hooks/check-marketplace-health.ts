@@ -26,14 +26,14 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 // HOME 環境変数の検証
-const HOME = process.env.HOME;
+const HOME = process.env["HOME"];
 if (!HOME) {
   console.error("Error: HOME environment variable is not set");
   process.exit(0);
 }
 
 const KNOWN_MARKETPLACES_PATH = join(HOME, ".claude", "plugins", "known_marketplaces.json");
-const TIMEOUT_MS = Number.parseInt(process.env.CLAUDE_GIT_TIMEOUT || "15000", 10);
+const TIMEOUT_MS = Number.parseInt(process.env["CLAUDE_GIT_TIMEOUT"] || "15000", 10);
 const CACHE_DURATION_MS = 60 * 60 * 1000; // 1時間
 const CACHE_FILE = join(HOME, ".claude", "plugins", ".marketplace-health-cache.json");
 
@@ -85,7 +85,7 @@ function saveCache(cache: Record<string, CacheEntry>): void {
     });
   } catch (error) {
     console.warn("Failed to save cache");
-    if (process.env.DEBUG) {
+    if (process.env["DEBUG"]) {
       console.debug(
         `[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
       );
@@ -116,7 +116,7 @@ function loadKnownMarketplaces(): KnownMarketplaces | null {
     return JSON.parse(content);
   } catch (error) {
     console.error("Failed to read known_marketplaces.json");
-    if (process.env.DEBUG) {
+    if (process.env["DEBUG"]) {
       console.debug(
         `[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
       );
@@ -335,7 +335,7 @@ function main() {
     process.exit(0);
   } catch (error) {
     console.error("Unexpected error in marketplace health check");
-    if (process.env.DEBUG) {
+    if (process.env["DEBUG"]) {
       console.debug(
         `[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
       );

@@ -3,6 +3,7 @@ name: user-commit
 description: Analyze changes by logical unit and commit them in appropriate groups. Triggered by "commit this" or "commit".
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git reset:*)
 model: haiku
+effort: low
 ---
 
 Analyze the changes by logical unit and commit related changes together.

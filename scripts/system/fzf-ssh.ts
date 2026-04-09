@@ -53,7 +53,7 @@ export async function selectHostWithFzf(hosts: string[]): Promise<string | null>
   // tmuxセッション内ならpopup表示、外なら通常のfzf
   const input = hosts.join("\n");
   let result: Awaited<ReturnType<typeof $>>;
-  if (process.env.TMUX) {
+  if (process.env["TMUX"]) {
     result = await $`echo ${input} | fzf-tmux -p 90%,90% -- \
     --preview "grep -A 10 '^Host {}' ${SSH_CONFIG_PATH}" \
     --preview-window=right:40%:wrap \

@@ -7,18 +7,17 @@ log_section "10: Dev tools setup"
 
 # --- CotEditor コマンドラインツール ---
 
-COT_SOURCE="/Applications/CotEditor.app/Contents/SharedSupport/bin/cot"
-COT_TARGET="/opt/homebrew/bin/cot"
+ensure_symlink \
+  "/Applications/CotEditor.app/Contents/SharedSupport/bin/cot" \
+  "/opt/homebrew/bin/cot" \
+  "cot" sudo
 
-if [[ ! -f $COT_SOURCE ]]; then
-  log_warn "CotEditor が見つかりません: $COT_SOURCE"
-elif [[ -L $COT_TARGET ]]; then
-  log_skip "cot コマンドは既にインストール済み"
-else
-  log_info "cot シンボリックリンクを作成しています..."
-  sudo ln -s "$COT_SOURCE" "$COT_TARGET"
-  log_info "cot コマンドをインストールしました"
-fi
+# --- claude-squad cs コマンド ---
+
+ensure_symlink \
+  "$(brew --prefix)/bin/claude-squad" \
+  "$(brew --prefix)/bin/cs" \
+  "cs"
 
 # --- mise ランタイム更新 ---
 

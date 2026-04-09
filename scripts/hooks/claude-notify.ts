@@ -5,8 +5,8 @@
  */
 
 const CLAUDE_ICON_PATHS = [
-  `${process.env.HOME}/dotfiles/assets/icons/claude.svg`,
-  `${process.env.HOME}/dotfiles/assets/icons/claude.png`,
+  `${process.env["HOME"]}/dotfiles/assets/icons/claude.svg`,
+  `${process.env["HOME"]}/dotfiles/assets/icons/claude.png`,
 ];
 
 // タイムアウト設定（ミリ秒）
@@ -39,20 +39,20 @@ function validateHookInput(data: unknown): asserts data is HookInput {
 
   const input = data as Record<string, unknown>;
 
-  if (typeof input.hook_event_name !== "string") {
+  if (typeof input["hook_event_name"] !== "string") {
     throw new Error("Invalid input: missing or invalid hook_event_name");
   }
 
   // オプショナルフィールドの型チェック
-  if (input.tool_name !== undefined && typeof input.tool_name !== "string") {
+  if (input["tool_name"] !== undefined && typeof input["tool_name"] !== "string") {
     throw new Error("Invalid input: tool_name must be string");
   }
 
-  if (input.notification_type !== undefined && typeof input.notification_type !== "string") {
+  if (input["notification_type"] !== undefined && typeof input["notification_type"] !== "string") {
     throw new Error("Invalid input: notification_type must be string");
   }
 
-  if (input.message !== undefined && typeof input.message !== "string") {
+  if (input["message"] !== undefined && typeof input["message"] !== "string") {
     throw new Error("Invalid input: message must be string");
   }
 }
@@ -95,6 +95,7 @@ async function showNotification(title: string, message: string): Promise<void> {
  *
  * settings.json の hooks 設定:
  * - Stop: Claude Code の作業完了時
+ * - StopFailure: APIエラー（rate limit、認証失敗等）による停止時
  * - Notification: 各種通知イベント（matcher で条件指定）
  *   - permission_prompt: 権限リクエスト時（PermissionRequest hook は使用しない）
  *   - idle_prompt: アイドル状態時
@@ -107,6 +108,13 @@ async function handleHook(input: HookInput): Promise<void> {
   switch (input.hook_event_name) {
     case "Stop":
       await showNotification("Claude Code", "作業が完了しました");
+      break;
+
+    case "StopFailure":
+      await showNotification(
+        "Claude Code - エラー停止",
+        input.message || "APIエラーにより停止しました",
+      );
       break;
 
     case "Notification": {
@@ -153,7 +161,7 @@ async function readStdinWithTimeout(): Promise<string> {
     }, STDIN_TIMEOUT_MS);
 
     // データ読み込み
-    process.stdin.on("data", (chunk) => {
+    process.stdin.on("data", (chunk: Buffer) => {
       chunks.push(chunk);
     });
 

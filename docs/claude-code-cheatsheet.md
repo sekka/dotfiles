@@ -26,16 +26,15 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ## Git & バージョン管理
 
-| スキル                                        | 説明                        | いつ使う？                                                                                                    |
-| --------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `/ship`                                       | preflight→commit→review一括 | 実装完了時。preflight・commit・軽量レビューを1パイプラインで実行。master/main/develop上では自動でブランチ作成 |
-| `/harness-ship`                               | harness変更を自動PR化       | .claude/配下の変更時。branch→commit→push→PR→squash mergeまで完全自動化                                        |
-| `/commit`                                     | 論理単位でコミット          | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応                      |
-| `/commit-commands:commit`                     | gitコミット実行             | シンプルなコミット操作                                                                                        |
-| `/commit-commands:commit-push-pr`             | commit + push + PR一括      | 実装完了からPR作成まで一気に進めたいとき                                                                      |
-| `/commit-commands:clean_gone`                 | gone ブランチ一括削除       | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                                            |
-| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド          | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                                            |
-| `/superpowers:using-git-worktrees`            | git worktree構築            | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                                    |
+| スキル                                        | 説明                            | いつ使う？                                                                                   |
+| --------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `/ship`                                       | preflight→commit→review→deliver | preflight・commit・レビュー後にdelivery方法を選択（push/merge/local/done）。引数で直指定も可 |
+| `/commit`                                     | 論理単位でコミット              | 変更を分析し、適切な単位に分割してコミットメッセージを生成。日本語コミットメッセージ対応     |
+| `/commit-commands:commit`                     | gitコミット実行                 | シンプルなコミット操作                                                                       |
+| `/commit-commands:commit-push-pr`             | commit + push + PR一括          | 実装完了からPR作成まで一気に進めたいとき                                                     |
+| `/commit-commands:clean_gone`                 | gone ブランチ一括削除           | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                           |
+| `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド              | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                           |
+| `/superpowers:using-git-worktrees`            | git worktree構築                | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                   |
 
 ---
 
@@ -76,7 +75,7 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | ------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/developing-frontend`         | フロントエンドUI実装     | React/Vue/Next.jsでのUI実装、パフォーマンス最適化、アクセシビリティ対応。TypeScript、コンポーネント設計、状態管理、Tailwind CSSまでカバー            |
 | `/managing-frontend-knowledge` | フロントエンド知識ベース | CSS・JS・HTMLのベストプラクティスを蓄積・参照。モダンCSS（Grid、Flexbox、@scope、View Transitions）、Core Web Vitals、WCAG等。実装中に自動参照される |
-| `/ui-ux-pro-max`               | UI/UXデザイン知識DB      | 50+スタイル、161カラーパレット、57フォントペアリング、99UXガイドライン等のデータベース。10スタック（React、Next.js、Vue、Svelte、Tailwind等）対応    |
+| `/ui-ux-pro-max` (plugin)      | UI/UXデザイン知識DB      | プラグイン版（ui-ux-pro-max-skill）。50+スタイル、161カラーパレット、57フォントペアリング、99UXガイドライン。10スタック対応                          |
 
 ---
 
@@ -141,27 +140,35 @@ Claude が内部で起動する専門エージェント（`home/.claude/agents/`
 
 外部ツール連携:
 
-| プラグイン           | 用途                                           | 使い方のヒント                                       |
-| -------------------- | ---------------------------------------------- | ---------------------------------------------------- |
-| **Context7**         | ライブラリ公式ドキュメント・最新コード例の取得 | 公開OSSのみ。社内ライブラリ名は一般化して問い合わせ  |
-| **Chrome DevTools**  | ブラウザ開発者ツール操作                       | パフォーマンス分析、ネットワーク監視、コンソール確認 |
-| **Claude in Chrome** | ブラウザ自動化                                 | スクリーンショット、フォーム操作、ページ内容取得     |
-| **DeepWiki**         | GitHubリポジトリのドキュメント参照             | リポジトリ構造の理解、質問応答                       |
-| **Figma**            | Figmaデザインの読み書き                        | MCP経由でデザインデータを取得・操作                  |
-| **markitdown**       | URI → Markdown変換                             | Webページやファイルをマークダウンとして取得          |
-| **draw.io**          | ダイアグラム・フローチャート作成               | アーキテクチャ図やフロー図の作成・編集               |
+| プラグイン           | 用途                                           | 使い方のヒント                                                                   |
+| -------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Context7**         | ライブラリ公式ドキュメント・最新コード例の取得 | 公開OSSのみ。社内ライブラリ名は一般化して問い合わせ                              |
+| **sem**              | 関数・クラス単位のセマンティックコード解析     | `sem_diff` でエンティティ差分、`sem_impact` で影響範囲、`sem_context` で依存解析 |
+| **Chrome DevTools**  | ブラウザ開発者ツール操作                       | パフォーマンス分析、ネットワーク監視、コンソール確認                             |
+| **Claude in Chrome** | ブラウザ自動化                                 | スクリーンショット、フォーム操作、ページ内容取得                                 |
+| **DeepWiki**         | GitHubリポジトリのドキュメント参照             | リポジトリ構造の理解、質問応答                                                   |
+| **Figma**            | Figmaデザインの読み書き                        | MCP経由でデザインデータを取得・操作                                              |
+| **markitdown**       | URI → Markdown変換                             | Webページやファイルをマークダウンとして取得                                      |
+| **draw.io**          | ダイアグラム・フローチャート作成               | アーキテクチャ図やフロー図の作成・編集                                           |
 
 ---
 
 ## Hooks（自動実行）
 
-| Hook                         | タイミング   | 役割                                                                           |
-| ---------------------------- | ------------ | ------------------------------------------------------------------------------ |
-| **RTK (Rust Token Killer)**  | PreToolUse   | Bashコマンドを自動プロキシして出力をフィルタリング・圧縮（トークン節約60-90%） |
-| **protect-sensitive**        | PreToolUse   | 機密ファイルへの誤操作を保護（Edit/Write/Read）                                |
-| **validate-command**         | PreToolUse   | 実行Bashコマンドの検証                                                         |
-| **claude-notify**            | Stop / 通知  | タスク完了・権限確認等の通知                                                   |
-| **check-marketplace-health** | SessionStart | マーケットプレイスの健全性チェック                                             |
+| Hook                         | タイミング   | 役割                                                                             |
+| ---------------------------- | ------------ | -------------------------------------------------------------------------------- |
+| **RTK (Rust Token Killer)**  | PreToolUse   | Bashコマンドを自動プロキシして出力をフィルタリング・圧縮（トークン節約60-90%）   |
+| **protect-sensitive**        | PreToolUse   | 機密ファイルへの誤操作を保護（Edit/Write/Read）                                  |
+| **validate-command**         | PreToolUse   | 実行Bashコマンドの検証                                                           |
+| **post-format**              | PostToolUse  | Edit/Write後にdprint/shfmtで自動フォーマット                                     |
+| **auto-lint-hook**           | PostToolUse  | Edit/Write後にoxlint+tscで自動lint（プロジェクトローカル）                       |
+| **circuit-breaker**          | PostToolUse  | Bash実行後の異常検知・ブレーカー                                                 |
+| **commit-reminder**          | Stop         | セッション終了時にコミット漏れを警告                                             |
+| **claude-notify**            | Stop / 通知  | タスク完了・権限確認等の通知                                                     |
+| **check-marketplace-health** | SessionStart | マーケットプレイスの健全性チェック                                               |
+| **check-memory-health**      | SessionStart | MEMORY.mdのリンク切れ確認 + 2週間ごとのコードベース整合性リマインダー            |
+| **sync-external-skills**     | SessionStart | 外部GitHubリポジトリからスキルを24時間キャッシュ付きで自動同期（difit-review等） |
+| **save-progress**            | PreCompact   | コンテキスト圧縮前に進行状況を保存                                               |
 
 ---
 
@@ -238,5 +245,5 @@ Claude が内部で起動する専門エージェント（`home/.claude/agents/`
 
 ---
 
-**最終更新**: 2026-04-07
+**最終更新**: 2026-04-09
 **管理**: このファイルは定期的にメンテナンスされます。新機能追加時は随時更新。

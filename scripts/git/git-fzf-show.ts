@@ -55,7 +55,7 @@ export async function showCommitsWithFzf(logOutput: string): Promise<void> {
 FZF-EOF`;
 
   // tmuxセッション内ならpopup表示、外なら通常のfzf
-  if (process.env.TMUX) {
+  if (process.env["TMUX"]) {
     const proc = Bun.spawn(
       [
         "fzf-tmux",

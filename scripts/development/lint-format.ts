@@ -139,6 +139,27 @@ async function runDprint(files: string[], mode: Mode, verbose: boolean): Promise
 }
 
 /**
+ * tsc でTypeScript全体の型チェック
+ * 注: 単一ファイルモード（--file）では実行しない
+ */
+async function runTsc(verbose: boolean): Promise<LintResult> {
+  const args = ["bunx", "tsc", "--noEmit"];
+
+  if (verbose) {
+    console.log(`🔧 Running: ${args.join(" ")}`);
+  }
+
+  const result = await runCommand(args);
+
+  return {
+    tool: "tsc",
+    success: result.success,
+    output: result.stdout,
+    error: result.stderr,
+  };
+}
+
+/**
  * oxlint でTypeScript/JavaScript/JSONをLint
  */
 async function runOxlint(files: string[], verbose: boolean): Promise<LintResult> {
@@ -411,11 +432,15 @@ async function processFiles(files: string[], options: Options): Promise<boolean>
     ...(groups.get("json") || []),
   ];
   if (tsJsJsonFiles.length > 0) {
-    const [lintResult, formatResult] = await Promise.all([
+    // tsc は全体チェック時のみ実行（単一ファイルモードでは対象外）
+    const tsJsPromises: Promise<LintResult>[] = [
       runOxlint(tsJsJsonFiles, options.verbose),
       runOxfmt(tsJsJsonFiles, options.mode, options.verbose),
-    ]);
-    results.push(lintResult, formatResult);
+    ];
+    if (!options.file) {
+      tsJsPromises.push(runTsc(options.verbose));
+    }
+    results.push(...(await Promise.all(tsJsPromises)));
   }
 
   // Shell scripts → shfmt + shellcheck (並列実行)

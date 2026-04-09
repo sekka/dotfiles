@@ -46,14 +46,15 @@
     "deny": [],
     "ask": []
   },
-  "enableAllProjectMcpServers": false,
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "chrome-devtools",
     "context7",
     "deepwiki",
     "filesystem",
     "markitdown",
-    "sequential-thinking"
+    "sequential-thinking",
+    "sem"
   ],
   "disabledMcpjsonServers": [
     "better-icons",

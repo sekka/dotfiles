@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+export {};
 
 // PostToolUse hook: auto-format files after Edit|Write
 // stdin: { tool_name, tool_input: { file_path } }
@@ -49,7 +50,7 @@ async function main() {
     const proc = Bun.spawnSync({
       cmd: [
         "bun",
-        `${process.env.HOME}/dotfiles/scripts/development/lint-format.ts`,
+        `${process.env["HOME"]}/dotfiles/scripts/development/lint-format.ts`,
         "--file",
         filePath,
         "--mode=fix",

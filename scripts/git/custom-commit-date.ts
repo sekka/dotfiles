@@ -46,8 +46,8 @@ export function parseArgs(args: string[]): {
     }
     return {
       committerDateNow: true,
-      date: args[1],
-      message: args[2],
+      date: args[1] ?? "",
+      message: args[2] ?? "",
     };
   } else {
     // 通常モード: 2引数必要
@@ -56,8 +56,8 @@ export function parseArgs(args: string[]): {
     }
     return {
       committerDateNow: false,
-      date: args[0],
-      message: args[1],
+      date: args[0] ?? "",
+      message: args[1] ?? "",
     };
   }
 }
@@ -98,7 +98,7 @@ export async function commitWithDate(
 
     // committerDateNow が false の場合のみコミッター日時を設定
     if (!committerDateNow) {
-      env.GIT_COMMITTER_DATE = date;
+      env["GIT_COMMITTER_DATE"] = date;
     }
 
     // 情報を表示

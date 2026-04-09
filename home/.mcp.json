@@ -26,6 +26,9 @@
     "markitdown": {
       "command": "uvx",
       "args": ["--python", "3.13", "markitdown-mcp"]
+    },
+    "sem": {
+      "command": "sem-mcp"
     }
   }
 }

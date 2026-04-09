@@ -172,13 +172,16 @@ function formatLimit(label: string, limit: LimitEntry, staleMark: string): strin
 }
 
 try {
-  const cache = await readCache();
+  let cache = await readCache();
 
-  if (cache.staleness !== "fresh") {
+  if (cache.staleness === "expired") {
+    await fetchAndCacheLimits();
+    cache = await readCache();
+  } else if (cache.staleness === "stale") {
     fetchAndCacheLimits().catch(() => {});
   }
 
-  if (!cache.data || cache.staleness === "expired") {
+  if (!cache.data) {
     console.log("");
     process.exit(0);
   }

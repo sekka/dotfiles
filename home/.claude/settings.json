@@ -3,7 +3,8 @@
   "env": {
     "ENABLE_TOOL_SEARCH": "true",
     "CLAUDE_CODE_NO_FLICKER": "1",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000"
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000",
+    "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
   },
   "attribution": {
     "commit": "",
@@ -23,7 +24,8 @@
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
-      "mcp__plugin_context7_context7__*"
+      "mcp__plugin_context7_context7__*",
+      "mcp__sem__*"
     ],
     "deny": [
       "Bash(do:*)",
@@ -126,6 +128,17 @@
         ]
       }
     ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+            "async": true
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "permission_prompt|idle_prompt|auth_success|elicitation_dialog",
@@ -156,9 +169,29 @@
             "async": true
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/sync-external-skills.ts",
+            "async": true
+          }
+        ]
       }
     ],
     "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/save-progress.sh"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
       {
         "matcher": "*",
         "hooks": [
@@ -172,7 +205,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "$HOME/.claude/statusline.ts"
+    "command": "$HOME/.claude/statusline.ts",
+    "refreshInterval": 30
   },
   "enabledPlugins": {
     "commit-commands@claude-plugins-official": true,
@@ -220,6 +254,9 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "plansDirectory": "./plans",
-  "skipAutoPermissionPrompt": true
+  "showThinkingSummaries": true,
+  "skipAutoPermissionPrompt": true,
+  "model": "opusplan"
 }

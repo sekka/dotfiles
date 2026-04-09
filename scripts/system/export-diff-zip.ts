@@ -31,10 +31,10 @@ export function parseArgs(args: string[]): { ref1: string; ref2: string } | null
   }
 
   if (args.length === 1) {
-    return { ref1: "HEAD", ref2: args[0] };
+    return { ref1: "HEAD", ref2: args[0]! };
   }
 
-  return { ref1: args[0], ref2: args[1] };
+  return { ref1: args[0]!, ref2: args[1]! };
 }
 
 /**

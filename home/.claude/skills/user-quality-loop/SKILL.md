@@ -2,6 +2,7 @@
 name: user-quality-loop
 description: Run format, lint, and typecheck in an automatic loop. Triggered by "quality loop", "run lint", "format and check", or "format code".
 allowed-tools: Bash, Read, Edit, Glob
+effort: low
 ---
 
 # Quality Loop

@@ -25,7 +25,7 @@ async function main() {
 
   Bun.spawnSync([
     "bun",
-    `${process.env.HOME}/dotfiles/scripts/development/lint-format.ts`,
+    `${process.env["HOME"]}/dotfiles/scripts/development/lint-format.ts`,
     "--mode=fix",
     `--file=${filePath}`,
   ]);

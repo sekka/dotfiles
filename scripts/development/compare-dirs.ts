@@ -49,7 +49,7 @@ export function parseArgs(
     return null;
   }
 
-  return { algo, dir1: remaining[0], dir2: remaining[1] };
+  return { algo, dir1: remaining[0]!, dir2: remaining[1]! };
 }
 
 /**

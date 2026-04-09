@@ -3,6 +3,7 @@ name: user-liteparse
 description: Activated automatically when reading PDF, PPTX, DOCX, or XLSX files. Converts documents to text using the liteparse CLI before processing. Triggered by "read this PDF", "check this PPTX", or "summarize this document".
 disable-model-invocation: false
 allowed-tools: Bash(lit:*), Bash(npx:*), Read, Write
+effort: low
 ---
 
 # liteparse - Document Parser

@@ -2,6 +2,7 @@
 
 ## 1. Core Principles
 
+- **Read before modify**: Never modify code you have not read in the current session. Always use Read to understand the existing code before making changes.
 - **Simplicity first**: Keep changes as simple as possible. Minimize the code affected.
 - **No shortcuts**: Find the root cause. Avoid temporary fixes.
 - **Minimize impact**: Change only what is needed. Do not introduce new bugs.
