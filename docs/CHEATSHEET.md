@@ -344,6 +344,30 @@ tmux 用サイドバープラグイン。セッション切り替え・エージ
 - ペインボーダーで `opensessions-sidebar` タイトル検出 → 表示名を `opensessions` に短縮
 - プラグイン起動: `~/.tmux/plugins/opensessions/opensessions.tmux`
 
+#### claude-squad
+
+複数の AI エージェント（Claude Code / Codex / Gemini / Aider）をタスクごとの独立した git worktree で並行管理するターミナルアプリ。
+
+```bash
+cs          # TUI 起動（mise: squad）
+cs -y       # 全インスタンス自動承認モード（mise: squady）
+```
+
+**TUI 操作:**
+
+| キー    | 機能                       |
+| ------- | -------------------------- |
+| `n`     | 新しいインスタンスを作成   |
+| `d`     | インスタンスを削除         |
+| `↑↓`    | インスタンス選択           |
+| `Enter` | 選択インスタンスにアタッチ |
+| `q`     | 終了                       |
+
+**備考:**
+
+- tcmux が claude-squad のセッションを自動検出 → status bar のエージェント件数に反映
+- opensessions サイドバーにも claude-squad セッションが表示される
+
 ---
 
 ## 便利な組み合わせ
@@ -373,7 +397,15 @@ tmux 用サイドバープラグイン。セッション切り替え・エージ
    mrun               # mise タスク実行
    ```
 
-4. **履歴活用**
+4. **並行 AI エージェントワークフロー**
+   ```bash
+   cs                 # claude-squad TUI を起動
+   # n → タスク名入力 → Claude Code が worktree で並行作業
+   # Prefix o → s    # opensessions でセッション一覧を確認
+   # status bar      # tcmux がエージェント件数をリアルタイム表示
+   ```
+
+5. **履歴活用**
    ```bash
    Ctrl+R             # コマンド履歴を fzf で検索
    !!                 # 直前のコマンド実行

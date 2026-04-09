@@ -3,6 +3,7 @@ cask_args appdir: "/Applications"
 # === tmux ===
 tap "k1LoW/tap"
 brew "k1LoW/tap/tcmux"   # https://github.com/k1LoW/tcmux                   # tmuxウィンドウのAIエージェントステータス表示
+brew "claude-squad"      # https://github.com/smtg-ai/claude-squad           # 複数AIエージェントをtmuxワークスペースで並行管理
 
 # === ターミナル ===
 brew "rtk"                # https://github.com/rtk-ai/rtk                    # LLMトークン消費を60-90%削減するCLIプロキシ

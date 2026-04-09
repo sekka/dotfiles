@@ -333,11 +333,24 @@ description = "homeのシンボリックリンクを作成"
 run = "bash ~/dotfiles/setup/04_symlinks.sh"
 
 # --------------------------------------
+# AI エージェント管理
+# --------------------------------------
+[tasks.ai-squad]
+alias = "squad"
+description = "claude-squad TUIを起動（複数AIエージェントの並行管理）"
+run = "cs"
+
+[tasks.ai-squad-auto]
+alias = "squady"
+description = "claude-squad を自動承認モードで起動（-y）"
+run = "cs -y"
+
+# --------------------------------------
 # Docker/Container
 # --------------------------------------
 # Colima起動
 [tasks.docker-colima-start]
-alias = "cs"
+alias = "col"
 description = "Colimaを起動（Docker Desktop代替）"
 run = "colima start"
 
