@@ -27,6 +27,10 @@ interface HookInput {
       cache_read_input_tokens: number;
     } | null;
   };
+  rate_limits?: {
+    five_hour?: { used_percentage?: number; resets_at?: string | null };
+    seven_day?: { used_percentage?: number; resets_at?: string | null };
+  };
 }
 
 // ============================================================================
@@ -129,6 +133,11 @@ async function main() {
     line2 += ` ${c.white(tokensK(contextTokens))}${c.gray("K/")}${c.gray(tokensK(winSize))}${c.gray("K")}`;
     line2 += ` ${lbl("IN")}${c.white(tokensK(inTokens))}${c.gray("K")}`;
     line2 += ` ${lbl("OUT")}${c.white(tokensK(outTokens))}${c.gray("K")}`;
+
+    const rl = data.rate_limits?.five_hour;
+    if (rl?.used_percentage != null) {
+      line2 += ` ${lbl("LMT")}${braille(rl.used_percentage)} ${c.white(String(rl.used_percentage))}${c.gray("%")}`;
+    }
 
     console.log(`${line1}\n${line2}`);
   } catch {

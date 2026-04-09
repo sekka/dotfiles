@@ -95,6 +95,7 @@ async function showNotification(title: string, message: string): Promise<void> {
  *
  * settings.json の hooks 設定:
  * - Stop: Claude Code の作業完了時
+ * - StopFailure: APIエラー（rate limit、認証失敗等）による停止時
  * - Notification: 各種通知イベント（matcher で条件指定）
  *   - permission_prompt: 権限リクエスト時（PermissionRequest hook は使用しない）
  *   - idle_prompt: アイドル状態時
@@ -107,6 +108,13 @@ async function handleHook(input: HookInput): Promise<void> {
   switch (input.hook_event_name) {
     case "Stop":
       await showNotification("Claude Code", "作業が完了しました");
+      break;
+
+    case "StopFailure":
+      await showNotification(
+        "Claude Code - エラー停止",
+        input.message || "APIエラーにより停止しました",
+      );
       break;
 
     case "Notification": {
