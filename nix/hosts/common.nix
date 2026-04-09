@@ -116,6 +116,12 @@
     tmuxPlugins.tmux-fzf       # https://github.com/sainnhe/tmux-fzf     # fzfでtmux操作
   ];
 
+  # --- 環境変数 ---
+  environment.variables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
+
   # =============================================
   # macOS defaults
   # =============================================
