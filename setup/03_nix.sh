@@ -68,7 +68,6 @@ fi
 # --- Homebrew から Nix 移行済みパッケージの削除 ---
 # ※ このリストは nix/hosts/common.nix の environment.systemPackages と対応
 
-INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
 NIX_MANAGED_BREWS=(
   # common.nix の environment.systemPackages と対応
   aria2 awscli bandwhich bat btop cabextract cdrtools colima coreutils
@@ -83,8 +82,9 @@ NIX_MANAGED_BREWS=(
   wget wimlib xh yamllint yarn yazi yt-dlp zenith zoxide
 )
 
+INSTALLED_BREWS=$(brew list --formula 2>/dev/null)
 for pkg in "${NIX_MANAGED_BREWS[@]}"; do
-  if grep -q "^${pkg}$" <<<"$INSTALLED_BREWS"; then
+  if grep -qx "$pkg" <<<"$INSTALLED_BREWS"; then
     log_info "$pkg を Homebrew からアンインストールしています（Nix で管理）..."
     brew uninstall --ignore-dependencies "$pkg"
   fi
