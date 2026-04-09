@@ -17,6 +17,20 @@ log_section() { echo -e "\n${BLUE}===== $* =====${NC}"; }
 
 is_installed() { command -v "$1" &>/dev/null; }
 
+# Usage: ensure_symlink <source> <target> <label> [sudo]
+ensure_symlink() {
+  local src="$1" tgt="$2" label="$3" use_sudo="${4:-}"
+  if [[ ! -f $src ]]; then
+    log_warn "${label} が見つかりません: $src"
+  elif [[ -e $tgt || -L $tgt ]]; then
+    log_skip "${label} コマンドは既にインストール済み"
+  else
+    log_info "${label} シンボリックリンクを作成しています..."
+    ${use_sudo:+sudo} ln -s "$src" "$tgt"
+    log_info "${label} コマンドをインストールしました"
+  fi
+}
+
 source_nix_daemon() {
   if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
     # shellcheck source=/dev/null
