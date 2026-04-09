@@ -230,6 +230,9 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "plansDirectory": "./plans",
-  "skipAutoPermissionPrompt": true
+  "showThinkingSummaries": true,
+  "skipAutoPermissionPrompt": true,
+  "model": "opusplan"
 }
