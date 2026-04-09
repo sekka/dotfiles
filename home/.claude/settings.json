@@ -54,6 +54,7 @@
       "Bash(wget:*)"
     ]
   },
+  "model": "opusplan",
   "hooks": {
     "PreToolUse": [
       {
@@ -257,6 +258,5 @@
   "effortLevel": "high",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
-  "skipAutoPermissionPrompt": true,
-  "model": "opusplan"
+  "skipAutoPermissionPrompt": true
 }
