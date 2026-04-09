@@ -9,7 +9,7 @@ source "$(dirname "$0")/lib/common.sh"
 COLLECTION_NAME="frontend"
 KNOWLEDGE_DIR="$HOME/.claude/skills/user-managing-frontend-knowledge/knowledge"
 
-export PATH="$HOME/.cache/.bun/bin:$PATH"
+export PATH="$HOME/.bun/bin:$HOME/.cache/.bun/bin:$PATH"
 
 if ! is_installed qmd; then
   log_info "qmd CLI をインストールしています..."
