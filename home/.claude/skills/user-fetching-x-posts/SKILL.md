@@ -1,6 +1,7 @@
 ---
 name: user-fetching-x-posts
 description: Use when an X (Twitter) post URL is shared and content extraction is needed. Triggers on x.com or twitter.com URLs pointing to individual posts/statuses.
+effort: low
 ---
 
 # X Post Fetching Skill
