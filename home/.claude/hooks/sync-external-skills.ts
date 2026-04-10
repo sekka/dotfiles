@@ -63,6 +63,12 @@ const EXTERNAL_SKILLS: ExternalSkill[] = [
       { src: "skills/difit-review/agents/openai.yaml", dest: "agents/openai.yaml" },
     ],
   },
+  {
+    name: "grill-me",
+    repo: "mattpocock/skills",
+    branch: "main",
+    files: [{ src: "grill-me/SKILL.md", dest: "SKILL.md" }],
+  },
 ];
 
 /**
