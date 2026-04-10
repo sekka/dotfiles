@@ -2,8 +2,9 @@
 completer.hist
 Brewfile.lock.json
 
-# External skills (managed by sync-external-skills.ts hook)
-home/.claude/skills/difit-review/
+# External skills (user-* 以外を ignore)
+home/.claude/skills/*/
+!home/.claude/skills/user-*/
 
 # Claude Code セッション固有データ
 .claude/memory/
