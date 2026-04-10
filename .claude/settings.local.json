@@ -41,7 +41,10 @@
       "WebFetch(domain:suntory-n-water.com)",
       "WebFetch(domain:x.com)",
       "WebFetch(domain:zenn.dev)",
-      "mcp__playwright__*"
+      "mcp__playwright__*",
+      "WebFetch(domain:docs.coderabbit.ai)",
+      "Skill(codex:rescue)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []
