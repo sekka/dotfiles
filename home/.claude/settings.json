@@ -217,10 +217,11 @@
     "claude-md-management@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false,
+    "playwright@claude-plugins-official": true,
     "codex@openai-codex": true,
     "ui-ux-pro-max@ui-ux-pro-max-skill": true,
-    "coderabbit@claude-plugins-official": true
+    "coderabbit@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -257,6 +258,7 @@
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
   "skipAutoPermissionPrompt": true
