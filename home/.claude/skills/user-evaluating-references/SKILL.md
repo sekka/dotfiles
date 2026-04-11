@@ -6,12 +6,13 @@ disable-model-invocation: false
 
 <objective>
 Evaluate the reference value of a URL, article, tool, or post. Decide whether to adopt it for the current environment.
-Two modes: Quick Evaluation (light reference check) and Deep Research (detailed analysis for adoption).
+Three modes: Quick Evaluation (light reference check), Deep Research (detailed analysis for adoption), and OSS Project Wiki (comprehensive external-view report for a GitHub repo).
 </objective>
 
 <quick_start>
 **Quick Evaluation**: Share a URL and ask "Is this useful?"
 **Deep Research**: Share a URL and say "I want to use this", "I want to adopt this", or "Research this"
+**OSS Project Wiki**: Share a GitHub repo URL and say "document this", "wiki化", "まとめて", "解析してまとめて"
 
 **Trigger phrases:**
 
@@ -19,7 +20,8 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 |--------|----------------|
 | Quick Evaluation | "Is this useful?", "Is this a good reference?", "What do you think?", "Can I use this?", "Evaluate this" |
 | Deep Research | "I want to use this", "I want to adopt this", "Research this", "I'm interested", "Check if this is implementable" |
-| Auto detection | URL + short question → Quick / URL + detailed background → Deep |
+| OSS Project Wiki | GitHub URL + "document this", "wiki化して", "まとめて", "解析してまとめて", "どんなプロジェクト", "comprehensive summary" |
+| Auto detection | URL + short question → Quick / URL + detailed background → Deep / GitHub URL + "wiki/document/まとめ" → OSS Wiki |
 </quick_start>
 
 ## Iron Law
@@ -29,7 +31,7 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 
 <workflow>
 
-## Content Retrieval Flow (Common to Both Modes)
+## Content Retrieval Flow (Common to All Modes)
 
 ```
 1. Try WebFetch → 200 OK → done
@@ -42,6 +44,7 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 
 **Quick Evaluation**: Try WebFetch first; on failure, try agent-browser CLI only (skip steps 4-6 for speed).
 **Deep Research**: Try all schemes.
+**OSS Project Wiki**: Prefer `gh` CLI for repo facts; fall back to this flow for README/blog content.
 
 ---
 
@@ -137,6 +140,48 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 
 ---
 
+## Mode 3: OSS Project Wiki
+
+**Purpose:** Given a GitHub repository URL, produce a comprehensive Japanese wiki-style report that captures what the project is, how it works, how it compares to alternatives, and how the community receives it.
+
+**Trigger condition:** The URL matches `github.com/{owner}/{repo}` AND the user's message contains wiki/document/まとめ intent. If the URL is a GitHub repo but the intent is adoption-for-own-use, prefer Mode 2 (Deep Research) instead.
+
+**Flow:**
+1. Gather repo metadata via `gh` CLI (stars, description, topics, recent commits, latest release)
+2. Fetch `README.md` and skim top-level directory structure for architecture signals
+3. Identify 3-5 similar/competing projects (web search)
+4. Search community reactions — X/Twitter, Hacker News, Reddit, Japanese tech blogs (Zenn/Qiita). Note both positive and negative voices.
+5. Render the structured wiki (section list below) in **Japanese**
+6. Output to stdout. Do NOT auto-save to disk. If the user asks to save, ask for a destination path.
+
+**Wiki section list (required order):**
+
+1. **要約** — One-paragraph essence of the project
+2. **これは何のためのプロダクトか** — Problem the project solves and why it matters
+3. **何ができるのか** — Concrete feature list
+4. **どうやって実現しているのか** — Architecture, key components, notable implementation choices
+5. **類似プロジェクト比較** — Table comparing 3-5 alternatives across 5-7 axes (license, scope, maturity, differentiator, etc.)
+6. **新規性・革新性** — What is genuinely new
+7. **差別化ポイント** — Winning angles and trade-offs
+8. **コミュニティの反応** — Supporters vs. critics, with source citations
+9. **制約・注意点** — Technical limitations and operational pitfalls
+10. **参考リソース** — Primary sources, explainer articles, comparison posts. Note source type and access date.
+
+**Quality guardrails:**
+- Every claim in sections 5, 8, 10 must cite a source URL.
+- Prefer `gh api` and `gh repo view` over scraping for repo facts.
+- If community-reaction search yields nothing, write "確認できず" rather than fabricating.
+- Section 5 comparison must include at least one axis where the target project is *weaker* than an alternative — avoid marketing-only tone.
+
+**Output format:** The wiki itself (markdown), followed by one trailing line:
+
+```
+---
+保存する場合は保存先パスを指定してください。
+```
+
+---
+
 ## Skill Boundaries
 
 **evaluating-references vs researching-creative-cases:**
@@ -147,6 +192,10 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 - evaluating-references: Value judgment — "Is this useful?"
 - analyzing-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
 
+**Mode 2 (Deep Research) vs Mode 3 (OSS Project Wiki):**
+- Mode 2: "Should I adopt this for my environment?" → compares against the user's own dotfiles/skills/Brewfile
+- Mode 3: "What is this project, objectively?" → comprehensive external-view wiki, independent of the user's environment
+
 </workflow>
 
 <success_criteria>
@@ -156,4 +205,10 @@ Two modes: Quick Evaluation (light reference check) and Deep Research (detailed 
 - State adoption/rejection recommendation with rationale
 - Attach an overview-level implementation plan when adopting
 - Include comparison with existing environment (CLAUDE.md, Brewfile, skills/)
+
+**OSS Project Wiki:**
+- All 10 sections present, in order, in Japanese
+- Sections 5, 8, 10 cite source URLs for every claim
+- Section 5 comparison table includes at least one weakness axis for the target project
+- Output ends with the save-prompt trailing line; no auto-save
 </success_criteria>
