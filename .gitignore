@@ -17,6 +17,7 @@ home/.claude/state/
 reports/
 plans/
 .playwright-mcp/
+.playwright-cli/
 
 # TTS テストで生成される音声ファイル
 *.wav
