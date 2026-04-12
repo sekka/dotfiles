@@ -54,7 +54,7 @@
       "Bash(wget:*)"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -257,7 +257,7 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,

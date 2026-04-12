@@ -44,7 +44,8 @@
       "mcp__playwright__*",
       "WebFetch(domain:docs.coderabbit.ai)",
       "Skill(codex:rescue)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Read(//Users/kei/.local/share/claude/versions/**)"
     ],
     "deny": [],
     "ask": []
