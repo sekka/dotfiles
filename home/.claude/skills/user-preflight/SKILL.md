@@ -47,6 +47,16 @@ Detect and run the project's lint command.
 
 If none are found, record as SKIP.
 
+## Phase 2.5: Dead Code Check (opt-in)
+
+Run only when the project explicitly opts in by having a `knip.json`, `knip.jsonc`, `.knip.json`, or a `knip` section in `package.json`. Skip otherwise — knip produces many false positives on codebases with external entry points (CLI scripts, hooks, harness-invoked files).
+
+- Command: `knip --reporter compact --no-exit-code`
+- Report findings as WARNING (never block, never auto-delete)
+- Deletion is always a manual decision after human review
+
+If no knip config is detected, record as SKIP.
+
 ## Phase 3: Type Check
 
 Run the type checker if one exists.
@@ -105,6 +115,7 @@ Look at the existing commit style and propose 1-2 candidates based on the change
 | Check | Result |
 |---------|------|
 | lint/format | PASS / FAIL / SKIP |
+| Dead code (knip) | PASS / WARNING(n items) / SKIP |
 | Type check | PASS / FAIL / SKIP |
 | Change review | OK / WARNING(n items) |
 | Secret scan | OK / WARNING(n items) |

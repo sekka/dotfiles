@@ -547,6 +547,7 @@ go = "latest"
 "npm:git-diff-archive" = "latest"      # Git差分アーカイブ
 
 # --- Lint / Format ---
+"npm:knip" = "latest"                  # 未使用コード / 依存 / export 検出
 "npm:markdownlint-cli" = "latest"      # Markdown リンター
 "npm:oxfmt" = "latest"                 # Oxc Formatter
 "npm:oxlint" = "latest"                # Oxc Linter
