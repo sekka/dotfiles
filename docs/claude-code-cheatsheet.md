@@ -81,16 +81,40 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ## デザイン & Figma
 
-| スキル                                    | 説明                        | いつ使う？                                                                                                                 |
-| ----------------------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `/designing-ui`                           | UI/コンポーネント設計       | ワイヤーフレーム、レイアウト、デザインシステム、レスポンシブ、インタラクションパターンの設計。実装可能な形でデザインを出力 |
-| `/working-with-figma`                     | Figmaデザインの高忠実度実装 | FigmaのMCPツールを使い、デザインカンプ通りにコード実装。「Figma通りに」で起動                                              |
-| `/figma:figma-implement-design`           | FigmaノードからUIコード生成 | 特定のFigmaデザインノードを1:1でコードに変換                                                                               |
-| `/figma:figma-use`                        | Figma Plugin API実行        | Figmaプラグインの操作を実行                                                                                                |
-| `/figma:figma-generate-design`            | WebページをFigmaに変換      | 既存のWebページからFigmaデザインを生成                                                                                     |
-| `/figma:figma-generate-library`           | Figmaライブラリ構築         | デザインシステム・コンポーネントライブラリをFigma上に作成                                                                  |
-| `/figma:figma-code-connect`               | FigmaとコードのCode Connect | FigmaコンポーネントとコードのCode Connect関連付けを管理                                                                    |
-| `/figma:figma-create-design-system-rules` | Figma-to-codeルール生成     | プロジェクト固有のFigma→コード変換ルールを作成                                                                             |
+### デザイン制作フロー（この順番で使う）
+
+```
+① /spec-from-brief      クライアント指示 → RTM（要件定義）
+② /analyzing-websites   参考サイト調査 → ギャップを埋めるための根拠収集
+③ /designing-ui         RTMを元にワイヤーフレーム・コンポーネント設計
+④ /building-figma       設計をFigma上に実装（Plugin API経由）
+⑤ /working-with-figma   FigmaデザインをHTMLコードに変換
+```
+
+> **迷ったとき**: 「何を作るか決める」→ ①②③ / 「Figmaで作る」→ ④ / 「コードに落とす」→ ⑤
+
+| スキル                                    | 説明                          | いつ使う？                                                                                                                                             |
+| ----------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/spec-from-brief`                        | クライアント指示→要件定義     | **プロジェクト開始時・既存RTMの精度向上時**。指示書の全要件を BINDING/SUPPLEMENTED/PENDING に分類し、行番号引用付きでRTM化。カバレッジ定量チェック付き |
+| `/analyzing-websites`                     | 参考サイト分析                | 指示書が沈黙している箇所のギャップを埋めたいとき。競合・同ジャンルサイトを調査してSUPPLEMENTED根拠を集める                                             |
+| `/designing-ui`                           | UI/コンポーネント設計         | RTMとワイヤーフレームが揃ってからデザインに入るとき。ワイヤーフレーム、レイアウト、レスポンシブ、インタラクションパターンの設計                        |
+| `/building-figma`                         | FigmaへPlugin API経由でビルド | スタイルガイドとワイヤーフレームが確定した後。Figmaにコンポーネント・デザインシステム・ページを直接作成する                                            |
+| `/working-with-figma`                     | Figmaデザインの高忠実度実装   | FigmaデザインをHTMLコードに変換するとき。「Figma通りに実装して」で起動                                                                                 |
+| `/figma:figma-implement-design`           | FigmaノードからUIコード生成   | 特定のFigmaデザインノードを1:1でコードに変換                                                                                                           |
+| `/figma:figma-use`                        | Figma Plugin API実行          | Figmaプラグインの低レベル操作を実行。`/building-figma`の内部で使用される                                                                               |
+| `/figma:figma-generate-design`            | WebページをFigmaに変換        | 既存のWebページからFigmaデザインを生成                                                                                                                 |
+| `/figma:figma-generate-library`           | Figmaライブラリ構築           | デザインシステム・コンポーネントライブラリをFigma上に作成                                                                                              |
+| `/figma:figma-code-connect`               | FigmaとコードのCode Connect   | FigmaコンポーネントとコードのCode Connect関連付けを管理                                                                                                |
+| `/figma:figma-create-design-system-rules` | Figma-to-codeルール生成       | プロジェクト固有のFigma→コード変換ルールを作成                                                                                                         |
+
+#### `/spec-from-brief` が解決する問題
+
+| 問題                                                         | 解決方法                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| 「この要件はクライアントが言ったの？それとも勝手に足した？」 | 全要件にBINDING/SUPPLEMENTED/PENDINGを付与し、行番号で引用     |
+| 「指示書の要件が全部specに入っているか分からない」           | カバレッジマトリクスで 指示書リーフ要件/RTM行数 を定量チェック |
+| 「調査で補完した根拠が残っていない」                         | SUPPLEMENTEDテーブルに調査サイト名・観察内容を記録             |
+| 「既存のRTMが指示書と乖離してきた」                          | `/spec-from-brief`の「既存RTM監査モード」で乖離を検出          |
 
 ### Designer Skills Collection（プラグイン）
 

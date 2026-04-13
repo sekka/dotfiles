@@ -18,12 +18,17 @@ Before touching Figma, confirm these documents exist:
 
 | Document | Purpose |
 |----------|---------|
+| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/spec-from-brief` to create it. |
 | Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
 | Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
 | Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
 | Target Persona | 誰のためのUIか（年齢層・スキル・感覚派/合理派・情報密度の好み）LOCKED |
 
-Do NOT start building until the style direction is LOCKED. Building without locked specs wastes work.
+**RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
+
+Use the `/spec-from-brief` skill to create or audit the RTM before starting Figma work.
+
+Do NOT start building until the style direction is LOCKED and the RTM coverage is ≥ 100%.
 
 ---
 
