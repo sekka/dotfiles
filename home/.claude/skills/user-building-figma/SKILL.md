@@ -401,6 +401,15 @@ mcp__figma__create_design_system_rules(options?)
 
 ---
 
+## AI Image Editing & Prototyping Workflow
+
+When the task involves photo editing, illustration vectorizing, or preparing multiple design directions for review, see:
+`references/figma-ai-image-workflow.md`
+
+Key tools covered: Glass effect, Remove background, Vectorize, Erase object, Expand image, Figma Make embed in FigJam.
+
+---
+
 ## Checklist Before Each `use_figma` Call
 
 - [ ] `return` sends output (NOT `figma.closePlugin()`)
