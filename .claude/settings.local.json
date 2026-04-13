@@ -41,7 +41,8 @@
       "WebFetch(domain:photoshopvip.net)",
       "WebFetch(domain:gist.github.com)",
       "Bash(wait)",
-      "WebFetch(domain:registry.npmjs.org)"
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:azukiazusa.dev)"
     ],
     "deny": [],
     "ask": []
