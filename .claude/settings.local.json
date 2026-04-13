@@ -18,6 +18,7 @@
       "Bash(dprint fmt:*)",
       "Bash(gh repo:*)",
       "Bash(mise install:*)",
+      "Bash(mise task:*)",
       "Bash(mise tasks:*)",
       "Bash(nix search:*)",
       "Bash(qmd embed:*)",
@@ -25,6 +26,7 @@
       "Bash(qmd query:*)",
       "Bash(rtk proxy:*)",
       "Bash(shellcheck:*)",
+      "Skill(codex:rescue)",
       "Skill(schedule)",
       "Skill(user-harness-ship)",
       "WebFetch(domain:agent-browser.io)",
@@ -32,20 +34,16 @@
       "WebFetch(domain:dev.to)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:docs.coderabbit.ai)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:note.com)",
       "WebFetch(domain:playwright.dev)",
       "WebFetch(domain:qiita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:search.nixos.org)",
-      "WebFetch(domain:suntory-n-water.com)",
       "WebFetch(domain:x.com)",
       "WebFetch(domain:zenn.dev)",
-      "mcp__playwright__*",
-      "WebFetch(domain:docs.coderabbit.ai)",
-      "Skill(codex:rescue)",
-      "Bash(node:*)",
-      "Read(//Users/kei/.local/share/claude/versions/**)"
+      "mcp__playwright__*"
     ],
     "deny": [],
     "ask": []
@@ -57,8 +55,8 @@
     "deepwiki",
     "filesystem",
     "markitdown",
-    "sequential-thinking",
-    "sem"
+    "sem",
+    "sequential-thinking"
   ],
   "disabledMcpjsonServers": [
     "better-icons",
