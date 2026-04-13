@@ -1,6 +1,6 @@
 ---
 name: user-cloning-website
-description: Use when analyzing a competitor or reference website for design tokens, layout patterns, and component screenshots. Extracts colors, typography, spacing, and captures component screenshots for design reference.
+description: Use when analyzing a competitor or reference website for design intelligence — design tokens, layout patterns, component screenshots, AI-powered tone/manner analysis, 7-axis evaluation scoring, and Design DNA. Accumulates results in ~/.claude/design-references/ for reuse. Also generates DESIGN.md for projects.
 effort: medium
 ---
 
@@ -19,19 +19,25 @@ Analyze a target website to extract design tokens (colors, typography, spacing) 
 digraph clone_flow {
   "Input confirmed" [shape=doublecircle];
   "Generate ANALYSIS.md" [shape=box];
-  "Report failure" [shape=box];
+  "Save to dotfiles" [shape=box];
 
   "Input confirmed" -> "Open & full-page screenshot";
   "Open & full-page screenshot" -> "Extract design tokens (JS eval)";
-  "Extract design tokens (JS eval)" -> "Eval success?";
-  "Eval success?" -> "Component screenshot loop" [label="yes"];
-  "Eval success?" -> "Simplified extraction" [label="no"];
-  "Simplified extraction" -> "Component screenshot loop";
-  "Component screenshot loop" -> "Animation & interaction notes";
-  "Animation & interaction notes" -> "Generate ANALYSIS.md";
-  "Generate ANALYSIS.md" -> "Reproduce component?" [label="done"];
+  "Extract design tokens (JS eval)" -> "Component screenshot loop";
+  "Component screenshot loop" -> "Grid extraction (Step 4b)";
+  "Grid extraction (Step 4b)" -> "Animation & interaction notes";
+  "Animation & interaction notes" -> "AI integrated analysis (Step 5b)";
+  "AI integrated analysis (Step 5b)" -> "7-axis evaluation (Step 5b)";
+  "7-axis evaluation (Step 5b)" -> "Component-level evaluation (Step 5c)";
+  "Component-level evaluation (Step 5c)" -> "Metadata generation (Step 5d)";
+  "Metadata generation (Step 5d)" -> "Motion language (Step 5e)";
+  "Motion language (Step 5e)" -> "Save to dotfiles (Step 5f)";
+  "Save to dotfiles (Step 5f)" -> "Generate ANALYSIS.md";
+  "Generate ANALYSIS.md" -> "Generate DESIGN.md?" [label="optional"];
+  "Generate DESIGN.md?" -> "Reproduce component?" [label="skip"];
+  "Generate DESIGN.md?" -> "Generate DESIGN.md (Step 7)";
+  "Generate DESIGN.md (Step 7)" -> "Reproduce component?";
   "Reproduce component?" -> "EnterWorktree + feature-dev" [label="yes"];
-  "Reproduce component?" -> "Report failure" [label="no"];
 }
 ```
 
@@ -122,6 +128,16 @@ agent-browser screenshot /tmp/clone-DOMAIN/footer.png
 Target sections (capture as many as exist): `nav`, `hero`, `cards`, `features`, `testimonials`, `footer`.
 Save component screenshots under `/tmp/clone-DOMAIN/components/` when there are multiple variants.
 
+## Step 4b: Grid Extraction
+
+Run the JS from `references/grid-extraction.md` via `agent-browser eval`:
+
+```bash
+agent-browser eval '<JS from references/grid-extraction.md>'
+```
+
+Save result as `grid.json` in the output directory. This feeds Step 5b and `tokens.yaml`.
+
 ## Step 5: Animation & Interaction Notes
 
 Run the following JS with `agent-browser eval` to record transition and animation patterns:
@@ -146,21 +162,86 @@ Run the following JS with `agent-browser eval` to record transition and animatio
 })()
 ```
 
-## Step 6: Generate Analysis Report
+## Step 5b: AI Integrated Analysis
 
-Write `/tmp/clone-{domain}/ANALYSIS.md` with the following structure:
+Follow `references/ai-analysis-prompt.md` exactly. Pass:
+- Full-page screenshot (image)
+- 2–3 component screenshots (nav, hero, main section)
+- Token JSON from Step 3
+- Grid JSON from Step 4b
+- Animation data from Step 5
 
+Save outputs:
+- Prose response → `{output_dir}/analysis.md`
+- YAML block → `{output_dir}/evaluation.yaml` (with site/date/dna/context/borrow/overall header fields added)
+
+## Step 5c: Component-Level Evaluation
+
+For each component screenshot taken in Step 4 (nav, hero, card, footer, etc.):
+1. Pass the component screenshot + component name to AI
+2. Ask AI to score on relevant axes (3–4 most applicable) and provide a `borrow_note`
+3. Save as `components/{name}.yaml` using the format in `references/evaluation-model.md`
+
+Prompt template:
 ```
+コンポーネント「{name}」のスクリーンショットを評価してください。
+references/evaluation-model.md の component.yaml 形式で出力してください。
+関連する3〜4軸でスコアを付け、borrow_value と borrow_note を含めてください。
+```
+
+## Step 5d: Metadata Generation
+
+AI generates a draft `metadata.yaml`. User confirms before saving.
+
+Prompt:
+```
+以下の情報を元に metadata.yaml を生成してください（references/evaluation-model.md の形式）:
+- site: {domain}
+- url: {full URL}
+- evaluation.yaml の overall, dna, context, borrow を引用
+- date: {today's date}
+- about_url: {if analyzed, else empty string}
+```
+
+## Step 5e: Motion Language
+
+Add `motion_language` field to the `motion.yaml` produced in Step 5.
+After saving the raw transition/animation data, append:
+
+```bash
+# Ask AI to add the motion_language field:
+# 「上記のtransitions/animationsデータを見て、このサイトのモーション言語を
+#   1〜2文で言語化してください（motion_language フィールドとして）」
+```
+
+Save the complete `motion.yaml` with the `motion_language` field added.
+
+## Step 5f: Save to dotfiles
+
+Follow the save procedure in `references/evaluation-model.md`:
+1. Determine slug from domain
+2. Create `~/.claude/design-references/{slug}/` with subdirectories
+3. Copy screenshots
+4. Write all YAML and Markdown files using Write tool
+
+## Step 6: Generate ANALYSIS.md
+
+Write `{output_dir}/ANALYSIS.md` as a human-readable summary. This is a convenience file
+for quick review — the authoritative data is in the YAML files and analysis.md.
+
+```markdown
 # Design Analysis: {pageTitle}
 
-**URL:** TARGET_URL
-**Meta:** {metaDescription}
+**URL:** {TARGET_URL}
+**Date:** {today}
+**Design DNA:** {dna from evaluation.yaml}
+**Overall Score:** {overall}/10
 
 ## Color Palette
 
 | Value | Type |
 |-------|------|
-| ... | background / text / border |
+| ...   | background / text / border |
 
 ## Typography
 
@@ -168,30 +249,42 @@ Write `/tmp/clone-{domain}/ANALYSIS.md` with the following structure:
 |-------------|----------------|
 | ...         | ...            |
 
-## Border Radius
+## Grid System
 
-| Value |
-|-------|
-| ...   |
+| Property    | Value |
+|-------------|-------|
+| Columns     | ...   |
+| Gutter      | ...   |
+| Max-width   | ...   |
+| Breakpoints | ...   |
+
+## 7-Axis Evaluation
+
+| Axis               | Score | Excellent | Weak |
+|--------------------|-------|-----------|------|
+| Visual Hierarchy   | .../10 | ... | ... |
+| Typography         | .../10 | ... | ... |
+| Color System       | .../10 | ... | ... |
+| Spacing / Rhythm   | .../10 | ... | ... |
+| Grid               | .../10 | ... | ... |
+| Emotional Impact   | .../10 | ... | ... |
+| Functional Clarity | .../10 | ... | ... |
+
+## Tone & Manner
+
+{from analysis.md}
 
 ## Key Components
 
-| Component | Screenshot |
-|-----------|------------|
-| nav       | nav.png    |
-| hero      | hero.png   |
-| ...       | ...        |
+| Component | Score (avg) | Borrow Value |
+|-----------|-------------|--------------|
+| nav       | .../10      | high/med/low |
+| hero      | .../10      | high/med/low |
+| ...       | ...         | ...          |
 
 ## Animation & Transitions
 
-(list transitions and animations found)
-
-## Design Pattern Observations
-
-- Grid system: ...
-- Card patterns: ...
-- CTA style: ...
-- (add observations)
+{motion_language from motion.yaml}
 ```
 
 ## Step 7: (Optional) Reproduce Component
@@ -213,7 +306,21 @@ If the user wants to build a specific component after analysis:
 ├── footer.png
 ├── components/
 │   └── *.png
-└── ANALYSIS.md
+├── ANALYSIS.md          ← human-readable summary
+└── (data also saved to ~/.claude/design-references/{slug}/)
+
+~/.claude/design-references/{slug}/
+├── metadata.yaml
+├── tokens.yaml
+├── evaluation.yaml
+├── analysis.md
+├── motion.yaml
+├── components/
+│   ├── {name}.yaml
+│   └── {name}.png
+└── screenshots/
+    ├── full-page.png
+    └── {component}.png
 ```
 
 ## Error Handling
