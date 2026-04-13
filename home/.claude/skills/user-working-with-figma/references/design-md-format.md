@@ -65,6 +65,10 @@ borrow: []                # e.g. [stripe-com/cta-style, notion-so/typography-rhy
 
 (Specific observations connecting visual choices to outcomes)
 
+## Motion
+
+(1–2 sentences describing the site's motion language — sourced from `motion.yaml` `motion_language` field)
+
 ## Changelog
 
 | Date | Change | Reason |
@@ -75,8 +79,9 @@ borrow: []                # e.g. [stripe-com/cta-style, notion-so/typography-rhy
 ## Generation from dotfiles reference
 
 When generating DESIGN.md from a dotfiles reference, pre-fill `tokens` and `grid` from
-`~/.claude/design-references/{slug}/tokens.yaml`, and pre-fill the prose sections from
-`~/.claude/design-references/{slug}/analysis.md`.
+`~/.claude/design-references/{slug}/tokens.yaml`, pre-fill the prose sections from
+`~/.claude/design-references/{slug}/analysis.md`, and pre-fill `## Motion` from
+`~/.claude/design-references/{slug}/motion.yaml` (`motion_language` field).
 
 Ask the user:
 1. Which reference(s) from `~/.claude/design-references/` to use as base

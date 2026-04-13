@@ -224,6 +224,8 @@ Follow the save procedure in `references/evaluation-model.md`:
 2. Create `~/.claude/design-references/{slug}/` with subdirectories
 3. Copy screenshots
 4. Write all YAML and Markdown files using Write tool
+   - When writing `tokens.yaml`, populate the `grid` section from `grid.json` (columns, gutter, max_width, breakpoints)
+   - `motion_language` from Step 5e goes into `motion.yaml`
 
 ## Step 6: Generate ANALYSIS.md
 
