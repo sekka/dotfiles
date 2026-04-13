@@ -162,6 +162,8 @@ Run the following JS with `agent-browser eval` to record transition and animatio
 })()
 ```
 
+Save result as `{output_dir}/motion-raw.json`. This feeds Step 5e.
+
 ## Step 5b: AI Integrated Analysis
 
 Follow `references/ai-analysis-prompt.md` exactly. Pass:
@@ -173,7 +175,8 @@ Follow `references/ai-analysis-prompt.md` exactly. Pass:
 
 Save outputs:
 - Prose response → `{output_dir}/analysis.md`
-- YAML block → `{output_dir}/evaluation.yaml` (with site/date/dna/context/borrow/overall header fields added)
+- YAML block → `{output_dir}/evaluation.yaml`
+  The AI output must include `site`, `date`, `dna`, `context`, `borrow`, and `overall` at the top level. If any are absent from the AI response, ask the user for values before saving.
 
 ## Step 5c: Component-Level Evaluation
 
@@ -191,7 +194,7 @@ references/evaluation-model.md の component.yaml 形式で出力してくださ
 
 ## Step 5d: Metadata Generation
 
-AI generates a draft `metadata.yaml`. User confirms before saving.
+AI generates a draft `metadata.yaml` and shows it to the user. Wait for confirmation before proceeding to Step 5f.
 
 Prompt:
 ```
@@ -205,16 +208,14 @@ Prompt:
 
 ## Step 5e: Motion Language
 
-Add `motion_language` field to the `motion.yaml` produced in Step 5.
-After saving the raw transition/animation data, append:
+After saving `motion-raw.json`, pass the transitions/animations data to AI with this prompt:
 
-```bash
-# Ask AI to add the motion_language field:
-# 「上記のtransitions/animationsデータを見て、このサイトのモーション言語を
-#   1〜2文で言語化してください（motion_language フィールドとして）」
+```
+上記の transitions/animations データを見て、このサイトのモーション言語を
+1〜2文で言語化してください（motion_language フィールドとして）。
 ```
 
-Save the complete `motion.yaml` with the `motion_language` field added.
+Append the returned `motion_language` value to `motion.yaml`.
 
 ## Step 5f: Save to dotfiles
 
