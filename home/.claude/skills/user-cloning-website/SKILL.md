@@ -18,7 +18,7 @@ Analyze a target website to extract design tokens (colors, typography, spacing) 
 ```dot
 digraph clone_flow {
   "Input confirmed" [shape=doublecircle];
-  "Generate ANALYSIS.md" [shape=box];
+  "Generate REPORT.md" [shape=box];
   "Save to dotfiles" [shape=box];
 
   "Input confirmed" -> "Open & full-page screenshot";
@@ -29,11 +29,12 @@ digraph clone_flow {
   "Animation & interaction notes" -> "AI integrated analysis (Step 5b)";
   "AI integrated analysis (Step 5b)" -> "7-axis evaluation (Step 5b)";
   "7-axis evaluation (Step 5b)" -> "Component-level evaluation (Step 5c)";
+  "7-axis evaluation (Step 5b)" -> "Motion language (Step 5e)";
   "Component-level evaluation (Step 5c)" -> "Metadata generation (Step 5d)";
-  "Metadata generation (Step 5d)" -> "Motion language (Step 5e)";
+  "Metadata generation (Step 5d)" -> "Save to dotfiles (Step 5f)";
   "Motion language (Step 5e)" -> "Save to dotfiles (Step 5f)";
-  "Save to dotfiles (Step 5f)" -> "Generate ANALYSIS.md";
-  "Generate ANALYSIS.md" -> "Generate DESIGN.md?" [label="optional"];
+  "Save to dotfiles (Step 5f)" -> "Generate REPORT.md";
+  "Generate REPORT.md" -> "Generate DESIGN.md?" [label="optional"];
   "Generate DESIGN.md?" -> "Reproduce component?" [label="skip"];
   "Generate DESIGN.md?" -> "Generate DESIGN.md (Step 7)";
   "Generate DESIGN.md (Step 7)" -> "Reproduce component?";
@@ -71,29 +72,21 @@ Run the following JS with `agent-browser eval`:
 ```javascript
 (() => {
   const els = [...document.querySelectorAll('*')];
-  const get = (el, prop) => getComputedStyle(el).getPropertyValue(prop).trim();
 
-  // Colors: collect unique non-transparent backgrounds + text colors
+  // Collect colors, typography, spacing in a single pass
   const colors = new Set();
-  els.slice(0, 200).forEach(el => {
-    ['background-color', 'color', 'border-color'].forEach(p => {
-      const v = get(el, p);
-      if (v && v !== 'rgba(0, 0, 0, 0)' && v !== 'transparent') colors.add(v);
-    });
-  });
-
-  // Typography
   const fonts = new Set();
   const sizes = new Set();
-  els.slice(0, 200).forEach(el => {
-    fonts.add(get(el, 'font-family'));
-    sizes.add(get(el, 'font-size'));
-  });
-
-  // Spacing
   const radii = new Set();
   els.slice(0, 200).forEach(el => {
-    const r = get(el, 'border-radius');
+    const style = getComputedStyle(el);
+    ['background-color', 'color', 'border-color'].forEach(p => {
+      const v = style.getPropertyValue(p).trim();
+      if (v && v !== 'rgba(0, 0, 0, 0)' && v !== 'transparent') colors.add(v);
+    });
+    fonts.add(style.getPropertyValue('font-family').trim());
+    sizes.add(style.getPropertyValue('font-size').trim());
+    const r = style.getPropertyValue('border-radius').trim();
     if (r && r !== '0px') radii.add(r);
   });
 
@@ -194,7 +187,7 @@ references/evaluation-model.md の component.yaml 形式で出力してくださ
 
 ## Step 5d: Metadata Generation
 
-AI generates a draft `metadata.yaml` and shows it to the user. Wait for confirmation before proceeding to Step 5f.
+AI generates a draft `metadata.yaml` and shows it to the user. If the user wants to review or override fields (especially `about_url`), wait for confirmation. Otherwise proceed to Step 5f.
 
 Prompt:
 ```
@@ -231,10 +224,11 @@ Follow the save procedure in `references/evaluation-model.md`:
    yq -o=json ~/.claude/design-references/{slug}/tokens.yaml > ~/.claude/design-references/{slug}/tokens.json
    ```
 
-## Step 6: Generate ANALYSIS.md
+## Step 6: Generate REPORT.md
 
-Write `{output_dir}/ANALYSIS.md` as a human-readable summary. This is a convenience file
+Write `{output_dir}/REPORT.md` as a human-readable summary. This is a convenience file
 for quick review — the authoritative data is in the YAML files and analysis.md.
+(Named REPORT.md to avoid collision with analysis.md on case-insensitive filesystems.)
 
 ```markdown
 # Design Analysis: {pageTitle}
@@ -327,7 +321,7 @@ If the user wants to build a specific component after analysis:
 ├── footer.png
 ├── components/
 │   └── *.png
-├── ANALYSIS.md          ← human-readable summary
+├── REPORT.md            ← human-readable summary
 └── (data also saved to ~/.claude/design-references/{slug}/)
 
 ~/.claude/design-references/{slug}/
@@ -350,6 +344,6 @@ If the user wants to build a specific component after analysis:
 |-------|--------|
 | `agent-browser` not found | Fall back to playwright-cli or Playwright MCP |
 | JS eval returns empty | Try simplified extraction (colors only) |
-| Screenshot fails | Note failure in ANALYSIS.md, continue with other sections |
+| Screenshot fails | Note failure in REPORT.md, continue with other sections |
 | CORS/CSP blocks JS | Document limitation, use visual analysis only |
 | Page requires login | Report to user — analysis limited to publicly visible content |
