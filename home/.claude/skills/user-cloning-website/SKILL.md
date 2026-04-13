@@ -226,6 +226,10 @@ Follow the save procedure in `references/evaluation-model.md`:
 4. Write all YAML and Markdown files using Write tool
    - When writing `tokens.yaml`, populate the `grid` section from `grid.json` (columns, gutter, max_width, breakpoints)
    - `motion_language` from Step 5e goes into `motion.yaml`
+5. Export `tokens.yaml` as `tokens.json` for programmatic use:
+   ```bash
+   yq -o=json ~/.claude/design-references/{slug}/tokens.yaml > ~/.claude/design-references/{slug}/tokens.json
+   ```
 
 ## Step 6: Generate ANALYSIS.md
 

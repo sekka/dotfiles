@@ -7,6 +7,7 @@
   {slug}/
     metadata.yaml
     tokens.yaml
+    tokens.json       ← AI/ツール向けJSONエクスポート
     evaluation.yaml
     analysis.md
     motion.yaml
@@ -168,3 +169,11 @@ cp "/tmp/clone-${DOMAIN}/nav.png" "$DIR/components/nav.png"
 
 Then write `metadata.yaml`, `tokens.yaml`, `evaluation.yaml`, `analysis.md`, `motion.yaml`,
 and each `components/{name}.yaml` using Write tool.
+
+Finally, export `tokens.yaml` as JSON for programmatic use and AI context injection:
+
+```bash
+yq -o=json "$DIR/tokens.yaml" > "$DIR/tokens.json"
+```
+
+`tokens.json` can be passed directly to AI agents as structured context, or consumed by tools like Figma Tokens / Style Dictionary.
