@@ -20,6 +20,10 @@
 
 Slug rule: replace `.` with `-` in domain (e.g. `stripe.com` → `stripe-com`).
 
+Each component subdirectory holds:
+- `{name}.yaml` — scores, borrow value, qualitative notes
+- `{name}.png` — screenshot of the component from the reference site
+
 ## metadata.yaml
 
 ```yaml
@@ -151,14 +155,15 @@ SLUG="stripe-com"
 DIR="$HOME/.claude/design-references/$SLUG"
 mkdir -p "$DIR/components" "$DIR/screenshots"
 
-# Copy screenshots
-cp /tmp/clone-{domain}/full-page.png "$DIR/screenshots/full-page.png"
-cp /tmp/clone-{domain}/hero.png "$DIR/screenshots/hero.png"
-# (repeat for each component screenshot)
+# Set DOMAIN to the actual domain being analyzed
+DOMAIN="stripe.com"  # replace with actual domain
+cp "/tmp/clone-${DOMAIN}/full-page.png" "$DIR/screenshots/full-page.png"
+cp "/tmp/clone-${DOMAIN}/hero.png" "$DIR/screenshots/hero.png"
+# (copy each component screenshot similarly)
 
 # Copy component screenshots
-cp /tmp/clone-{domain}/nav.png "$DIR/components/nav.png"
-# (repeat)
+cp "/tmp/clone-${DOMAIN}/nav.png" "$DIR/components/nav.png"
+# (repeat for each component)
 ```
 
 Then write `metadata.yaml`, `tokens.yaml`, `evaluation.yaml`, `analysis.md`, `motion.yaml`,
