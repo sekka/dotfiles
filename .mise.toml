@@ -12,3 +12,18 @@ run = "bun scripts/system/snapshot-before.ts"
 [tasks."macos:snapshot-after"]
 description = "設定変更後のスナップショットを取得して差分を生成（pdef用）"
 run = "bun scripts/system/snapshot-after.ts"
+
+[tasks.tornado]
+description = "Multi-agent dev: codex implements, claude reviews (arg: plan file path, or fzf if omitted)"
+run = """
+PLAN="${1:-}"
+if [ -z "$PLAN" ]; then
+  PLAN=$(find . -maxdepth 4 -name "*.md" 2>/dev/null | fzf --prompt="Select plan file > " --height=15 --preview="cat {}")
+fi
+if [ -z "$PLAN" ]; then
+  echo "No plan file selected. Exiting."
+  exit 1
+fi
+echo "Running tornado with: $PLAN"
+pnpm dlx @mizchi/tornado "$PLAN" --dev=codex --review=claude
+"""
