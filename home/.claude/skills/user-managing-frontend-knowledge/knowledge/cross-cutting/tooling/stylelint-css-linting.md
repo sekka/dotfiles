@@ -414,6 +414,82 @@ npx stylelint "**/*.css" --cache
 - バグの早期発見（構文エラー、重複など）
 - チーム全体でコーディング規約を自動的に統一
 
+---
+
+## Tailwind CSS v4 + Baseline Linting
+
+> 出典: https://zenn.dev/chot/articles/def4ba25143c5a
+> 執筆日: 2025年
+> 追加日: 2026-04-13
+
+Tailwind はユーティリティクラスを書くとき「裏側でどんな CSS プロパティが生成されているか意識しにくい」問題がある。生成 CSS を Stylelint で Baseline チェックすることで、ブラウザ非対応プロパティの混入を検知できる。
+
+### セットアップ
+
+```bash
+pnpm add -D stylelint stylelint-plugin-use-baseline @tailwindcss/cli
+pnpm add -D @csstools/stylelint-formatter-github  # GitHub アノテーション用
+```
+
+```json
+// .stylelintrc.json
+{
+  "plugins": ["stylelint-plugin-use-baseline"],
+  "rules": {
+    "plugin/use-baseline": [true, { "available": "widely" }]
+  }
+}
+```
+
+### 実行フロー
+
+```bash
+# 1. Tailwind で CSS を生成（tmp/ は .gitignore に追加）
+pnpm dlx @tailwindcss/cli -i ./src/app/globals.css -o ./tmp/tailwind.generated.css
+
+# 2. 生成ファイルをリント
+pnpm stylelint ./tmp/tailwind.generated.css
+```
+
+### GitHub Actions 統合
+
+```yaml
+- name: Tailwind CSS Baseline lint
+  run: |
+    pnpm dlx @tailwindcss/cli -i ./src/globals.css -o ./tmp/tw.css
+    pnpm stylelint ./tmp/tw.css --formatter @csstools/stylelint-formatter-github
+```
+
+### 例外設定：理由と MDN リンクを明記する
+
+```json
+{
+  "rules": {
+    "plugin/use-baseline": [true, {
+      "available": "widely",
+      "ignore": [
+        // 例: "field-sizing" — MDN: https://... / Safari 26.0 対応待ちのため許容
+      ]
+    }]
+  }
+}
+```
+
+### ポイント
+
+- `"available": "widely"` = Chrome・Edge・Firefox・Safari 全対応済みプロパティのみ許可
+- 初回実行時は検知数が多くなる（Tailwind が最新 CSS を積極採用するため）
+- ブロック一辺倒にせず「影響を精査してから例外追加」する運用が現実的
+
+| パッケージ | バージョン | 用途 |
+|-----------|-----------|------|
+| `stylelint` | 16.26.1+ | CSSリンター本体 |
+| `stylelint-plugin-use-baseline` | 1.1.3+ | Baseline準拠チェック |
+| `@tailwindcss/cli` | 4.x | CSS生成 |
+| `@csstools/stylelint-formatter-github` | — | CI アノテーション表示 |
+
+---
+
 ## 関連ナレッジ
 
 - [ESLint（JavaScript）](./eslint-javascript-linting.md)

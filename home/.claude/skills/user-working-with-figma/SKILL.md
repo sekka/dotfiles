@@ -176,6 +176,10 @@ color: #3b82f6;
 - [ ] Assets: Are SVG/images taken from actual files?
 - [ ] System UI: Are OS-rendered elements not implemented?
 - [ ] Code Connect: Were existing components reused?
+- [ ] Contrast: テキスト/背景のコントラスト比が 4.5:1 以上か（WCAG 1.4.3）
+- [ ] Motion: `prefers-reduced-motion: reduce` でアニメーションが無効化されるか（WCAG 2.3.3）
+- [ ] Keyboard: すべてのインタラクティブ要素にフォーカスインジケーターがあるか（WCAG 2.4.7）
+- [ ] Details: `references/a11y-checklist.md` を参照
 
 ## Guide for Requesters
 
