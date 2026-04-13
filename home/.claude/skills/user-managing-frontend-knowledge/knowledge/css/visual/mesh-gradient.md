@@ -194,3 +194,41 @@ animateMeshGradient(hero, 5000);
 - [backdrop-filter](./backdrop-filter.md) - グラデーション上のぼかし効果
 
 ---
+
+## メッシュグラデーション デザイン活用とオンラインツール集
+
+> 出典: https://photoshopvip.net/162936
+> 執筆日: 2025-02-25
+> 追加日: 2026-04-13
+
+メッシュグラデーションを手軽に生成・活用できるオンラインツールと、デザインへの応用ヒント。
+
+### デザイン活用の5つの観点
+
+1. **万能性** - どんなブランドにもマッチ。ポップ・ダーク・レトロ・高級感など幅広いスタイルに対応
+2. **個別適用** - ボタン・背景・アイコンなど UI 要素ごとに適用してブランドの一貫性を高める
+3. **空間デザイン** - 背景に使うと視線を引きつける。主張しすぎないよう色バランスに注意
+4. **視線誘導** - CTA 周囲に配置すると自然にフォーカルポイントへ視線を誘導できる
+5. **アニメーション** - マウス追従、CSS animation、SVGフィルター、GSAP/Three.js で動的に活用
+
+### アニメーション実装の選択肢
+
+- CSS `animation` / `background-position` → シンプルな動き
+- SVG フィルター → リアルタイム色変化
+- GSAP / Three.js → よりダイナミックなエフェクト
+
+> ポイント: ゆっくりした変化・なめらかな色変化を心がける
+
+### オンラインツール一覧
+
+| ツール名 | 特徴 |
+|---------|------|
+| Mesh Gradient Generator | CSS/SVG 出力、Figma にコピー可、ノイズ・ぼかし調整あり |
+| Mesher Tool | 色を自由に追加、CSS グラデーション生成 |
+| SVG and CSS Mesh Gradient Generator | 発色の良いグラデーション |
+| MagicPattern Mesh Gradients | ノイズ感（グレイン）付き CSS テクスチャ、CSS コードコピー可 |
+| Gradient Generator（OKLCH） | くすみのない OKLCH カラー使用、SVG/CSS エクスポート |
+| HD Gradients | 次世代 OKLCH カラー、UI デザイン向けプリセット豊富 |
+| CSS Shadow Gradients Generator | 疑似要素 + `linear-gradient` によるシャドウグラデーション |
+
+---
