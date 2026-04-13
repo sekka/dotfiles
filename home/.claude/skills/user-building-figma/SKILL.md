@@ -21,6 +21,7 @@ Before touching Figma, confirm these documents exist:
 | Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
 | Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
 | Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
+| Target Persona | 誰のためのUIか（年齢層・スキル・感覚派/合理派・情報密度の好み）LOCKED |
 
 Do NOT start building until the style direction is LOCKED. Building without locked specs wastes work.
 
@@ -198,6 +199,53 @@ header.counterAxisAlignItems = 'CENTER';
 | `lineHeight = 28` (bare number) | `lineHeight = { unit: 'PIXELS', value: 28 }` |
 | Color values `{ r: 255, g: 0, b: 0 }` | Colors are 0–1 range: `{ r: 1, g: 0, b: 0 }` |
 | Mutate fills/strokes in place | Clone array, modify, reassign: `frame.fills = [...frame.fills, newFill]` |
+| COLUMNS grid with `offset` | `offset` is invalid for `'CENTER'` alignment — omit it. CENTER auto-calculates margins from count/gutterSize/sectionSize |
+| ROWS grid without `offset` | ROWS requires `offset` even for `'MIN'` alignment — always include `offset: 0` |
+| `layoutWrap = 'WRAP'` grid with `FILL` children | Children with `layoutSizingHorizontal = 'FILL'` divide width equally — use `FIXED` width on children to get proper wrapping |
+
+---
+
+## Phase 3b: Layout Grids & Guides
+
+### Standard 12-Column Grid (1440px → 1200px content)
+
+```js
+// 12-col grid: 1440px frame, CENTER, 120px auto-margin, 24px gutter, 78px cols
+frame.layoutGrids = [
+  {
+    pattern: 'COLUMNS',
+    alignment: 'CENTER',   // auto-centers: margin = (1440 - 12*78 - 11*24) / 2 = 120px
+    count: 12,
+    gutterSize: 24,
+    sectionSize: 78,       // column width
+    visible: true,
+    color: { r: 0.01, g: 0.79, b: 0.59, a: 0.08 }, // subtle teal
+  },
+  {
+    pattern: 'ROWS',
+    alignment: 'MIN',
+    count: 200,            // enough to cover tall pages
+    gutterSize: 8,
+    sectionSize: 8,        // 8px baseline grid
+    offset: 0,             // REQUIRED even for MIN — omitting throws
+    visible: true,
+    color: { r: 1, g: 1, b: 1, a: 0.025 }, // barely visible
+  },
+];
+
+// Page-level guides (applied to page, not frame)
+page.guides = [
+  { axis: 'X', offset: 120 },   // left content margin
+  { axis: 'X', offset: 720 },   // center axis
+  { axis: 'X', offset: 1320 },  // right content margin
+  { axis: 'Y', offset: 72 },    // header bottom
+];
+```
+
+**Layout grid API rules:**
+- `COLUMNS` + `CENTER` alignment: **no `offset` field** — it's auto-calculated
+- `ROWS` + `MIN` alignment: **`offset` is required** (use `offset: 0`)
+- `page.guides` sets ruler guides at the page level (not on frames)
 
 ---
 
