@@ -101,7 +101,15 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 ⑤ /working-with-figma   FigmaデザインをHTMLコードに変換
 ```
 
-> **迷ったとき**: 「何を作るか決める」→ ①②③ / 「Figmaで作る」→ ④ / 「コードに落とす」→ ⑤
+**ツール選択チートシート（Figma関連）:**
+
+| やりたいこと                                   | ツール                                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| Figma → コード実装                             | `/working-with-figma`                                                         |
+| コード → Figma（プログラム的に構築）           | `/building-figma`（Plugin API）                                               |
+| コード → Figma（既存ページをスナップショット） | `/figma:figma-generate-design`（MCP、ステークホルダー確認・議論フェーズ向け） |
+
+> **迷ったとき**: 「何を作るか決める」→ ①②③ / 「Figmaで作る」→ ④ / 「コードに落とす」→ ⑤ / 「実装済みページをFigmaに書き出す」→ `/figma:figma-generate-design`
 > **②の使い分け**: デザインシステム・見た目の再現 → `/cloning-website` / 構造・コンテンツ把握 → `/analyzing-websites`
 
 | スキル                                    | 説明                           | いつ使う？                                                                                                                                             |
@@ -111,10 +119,10 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | `/analyzing-websites`                     | 参考サイト分析                 | 指示書が沈黙している箇所のギャップを埋めたいとき。競合・同ジャンルサイトを調査してSUPPLEMENTED根拠を集める                                             |
 | `/designing-ui`                           | UI/コンポーネント設計          | RTMとワイヤーフレームが揃ってからデザインに入るとき。ワイヤーフレーム、レイアウト、レスポンシブ、インタラクションパターンの設計                        |
 | `/building-figma`                         | FigmaへPlugin API経由でビルド  | スタイルガイドとワイヤーフレームが確定した後。Figmaにコンポーネント・デザインシステム・ページを直接作成する                                            |
-| `/working-with-figma`                     | Figmaデザインの高忠実度実装    | FigmaデザインをHTMLコードに変換するとき。「Figma通りに実装して」で起動                                                                                 |
+| `/working-with-figma`                     | Figmaデザインの高忠実度実装    | FigmaデザインをHTMLコードに変換するとき。「Figma通りに実装して」で起動。`generate_figma_design`（コード→Figma）のガイドも含む                          |
 | `/figma:figma-implement-design`           | FigmaノードからUIコード生成    | 特定のFigmaデザインノードを1:1でコードに変換                                                                                                           |
 | `/figma:figma-use`                        | Figma Plugin API実行           | Figmaプラグインの低レベル操作を実行。`/building-figma`の内部で使用される                                                                               |
-| `/figma:figma-generate-design`            | WebページをFigmaに変換         | 既存のWebページからFigmaデザインを生成                                                                                                                 |
+| `/figma:figma-generate-design`            | コード→Figmaスナップショット   | ローカルで動作中のページをキャプチャしてFigmaに書き出す（MCP経由）。議論フェーズ・ステークホルダー確認に最適。Node.js 24必須                           |
 | `/figma:figma-generate-library`           | Figmaライブラリ構築            | デザインシステム・コンポーネントライブラリをFigma上に作成                                                                                              |
 | `/figma:figma-code-connect`               | FigmaとコードのCode Connect    | FigmaコンポーネントとコードのCode Connect関連付けを管理                                                                                                |
 | `/figma:figma-create-design-system-rules` | Figma-to-codeルール生成        | プロジェクト固有のFigma→コード変換ルールを作成                                                                                                         |

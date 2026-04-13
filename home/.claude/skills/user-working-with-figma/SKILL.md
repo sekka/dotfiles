@@ -27,6 +27,15 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 | `mcp__figma__get_code_connect_map` | Get Figma node to code component mapping |
 | `mcp__figma__get_metadata` | Get layer info as XML (lightweight version for large designs) |
 | `mcp__figma__create_design_system_rules` | Auto-generate design system rules for the project |
+| `generate_figma_design` (Figma MCP remote) | **Code → Figma**: Captures a running local page via JS injection and creates a Figma design. Use for stakeholder review and discussion. Different namespace from `mcp__figma__*` tools above — provided by the remote MCP server. |
+
+## Tool Selection Cheat Sheet
+
+| Goal | Tool |
+|------|------|
+| Figma → Code (implement design) | `mcp__figma__implement_design` / `mcp__figma__get_design_context` |
+| Code → Figma (programmatic build) | `use_figma` Plugin API → see `user-building-figma` skill |
+| Code → Figma (capture existing page) | `generate_figma_design` (see section below) |
 
 ## Rate Limit Notes
 
@@ -72,6 +81,25 @@ mcp__figma__implement_design(nodeId, options?)
 - The tool controls the full workflow: frame analysis → code generation → file placement.
 - If the output needs polish (the ~15–20% gap), fall through to Steps 3–7 for targeted corrections.
 - Skip this step when: partial extraction, token-only audit, or the frame is highly complex with many interactive states.
+
+**2-Phase strategy for multi-language / CMS projects:**
+
+When the target is a framework (Laravel, Next.js, etc.), split into two phases rather than generating framework code directly:
+
+```
+Phase 1: Figma → HTML/CSS mock
+  - Use implement_design / get_design_context
+  - Check in browser, fix layout gaps
+  - Auto Layout in Figma is required for accurate extraction
+
+Phase 2: mock → framework integration
+  - Feed corrected mock into framework (Blade, JSX, etc.)
+  - Extract multi-language text strings
+  - Generate translation files
+
+Why split: Phase 1 fixes design gaps without touching framework complexity.
+Phase 2 can then focus on integration logic only.
+```
 
 ### Step 2: Preparation (First time only)
 
@@ -263,18 +291,56 @@ color: #3b82f6;
 - [ ] Assets: Are SVG/images taken from actual files?
 - [ ] System UI: Are OS-rendered elements not implemented?
 - [ ] Code Connect: Were existing components reused?
-- [ ] Contrast: テキスト/背景のコントラスト比が 4.5:1 以上か（WCAG 1.4.3）
-- [ ] Motion: `prefers-reduced-motion: reduce` でアニメーションが無効化されるか（WCAG 2.3.3）
-- [ ] Keyboard: すべてのインタラクティブ要素にフォーカスインジケーターがあるか（WCAG 2.4.7）
-- [ ] Details: `references/a11y-checklist.md` を参照
+- [ ] Contrast: text/background contrast ratio ≥ 4.5:1 (WCAG 1.4.3)
+- [ ] Motion: animations disabled when `prefers-reduced-motion: reduce` (WCAG 2.3.3)
+- [ ] Keyboard: all interactive elements have focus indicators (WCAG 2.4.7)
+- [ ] Details: see `references/a11y-checklist.md`
 
 ## Guide for Requesters
 
 Information needed for accurate implementation requests (URL, stack, Design Token, scope, etc.):
 `references/request-guide.md`
 
+## Code → Figma via MCP (generate_figma_design)
+
+A reverse workflow: capture a **running local page** and push it into Figma as a design.
+This is separate from the Plugin API approach in `user-building-figma`.
+
+### Prerequisites
+
+```bash
+# Node.js 24+ required
+node --version  # must be v24+
+
+# Add Figma MCP remote server (one-time)
+claude mcp add --transport http figma https://mcp.figma.com/mcp
+# Then authenticate in the browser when prompted
+```
+
+### When to use
+
+- Stakeholder review: quickly share current implementation as a Figma frame
+- Discussion phase: let non-developers inspect and annotate in Figma
+- Snapshot before a refactor
+
+### How it works
+
+1. Start your local dev server (`localhost:3000` etc.)
+2. Ask Claude Code: "このページをFigmaに書き出して"
+3. Claude calls `generate_figma_design` → JS is injected into the page → layout is captured
+4. Choose output: new Figma file / existing file / clipboard
+
+### Limitations
+
+- Requires a running local server (not a static file)
+- Requires a paid Figma plan (unverified — confirm before use on free tier)
+- Output is a visual snapshot, not editable components
+- Complex CSS (masks, clip-path, blend modes) may not transfer accurately
+- For fully editable design systems, use `user-building-figma` (Plugin API) instead
+
 ## Related Skills
 
 - **designing-ui**: Component spec definition, supplementing design intent
 - **developing-frontend**: Implementation details (React/Vue/CSS)
 - **managing-frontend-knowledge**: Reference for modern CSS techniques
+- **user-building-figma**: Code → Figma via Plugin API (programmatic component/design system construction)
