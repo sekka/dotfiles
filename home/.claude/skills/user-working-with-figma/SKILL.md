@@ -20,6 +20,7 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 
 | Tool | Use |
 |--------|------|
+| `mcp__figma__implement_design` | **Fast path**: End-to-end frame → code generation (analysis + codegen + file placement). React+Tailwind by default; customizable to Vue/iOS. ~95% accuracy for simple layouts, 80–85% for complex. |
 | `mcp__figma__get_design_context` | Get structured design information in React+Tailwind format |
 | `mcp__figma__get_screenshot` | Screenshot for visual layout verification |
 | `mcp__figma__get_variable_defs` | Bulk fetch of color, spacing, and typography variables |
@@ -35,6 +36,21 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` first, then `get_design_context`.
 
 ## Execution Flow
+
+### Step 0: Fast Path — `implement-design` (try first)
+
+When the goal is **full-frame implementation** (not partial extraction or token audit), try `implement-design` first:
+
+```
+mcp__figma__implement_design(nodeId, options?)
+  options.framework: "react" (default) | "vue" | "ios"
+  options.styling:   "tailwind" (default) | "css-modules" | ...
+```
+
+- Simple layouts: ~95% accuracy. Complex (deep Flexbox nesting, responsive breakpoints): 80–85%.
+- The tool controls the full workflow: frame analysis → code generation → file placement.
+- If the output needs polish (the ~15–20% gap), fall through to Steps 2–6 for targeted corrections.
+- Skip this step when: partial extraction, token-only audit, or the frame is highly complex with many interactive states.
 
 ### Step 1: Preparation (First time only)
 

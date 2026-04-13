@@ -279,6 +279,8 @@ const myContent = figma.createFrame();
 slot.appendChild(myContent);
 ```
 
+**Cross-page instance limitation:** `importComponentByKeyAsync` fails for same-file components (not in a published library). `comp.createInstance()` created while on a different page causes slot append errors. **Workaround:** build page content directly with the same Auto Layout helper functions for consistent structure.
+
 This enables the full programmatic workflow:
 - Claude builds component structure + marks slot frames with `[SLOT]` prefix
 - User converts to real slots with ⌘⇧S
@@ -366,6 +368,36 @@ return oxanium.map(f => f.fontName.style);
 **Common unavailable fonts (require commercial license):**
 - `DINNextW1G` — Monotype commercial. Use `Barlow Condensed` as alternative.
 - Custom brand fonts — Must be uploaded to Figma organization or use Google Fonts alternatives.
+
+---
+
+## Phase 8: Design System Rules Sync
+
+After the DS page is built and tokens/components are stable, sync the design system rules back to the project's AI config files.
+
+```
+mcp__figma__create_design_system_rules(options?)
+  options.clientLanguages:  ["TypeScript"] (default)
+  options.clientFrameworks: ["React"]      (default — change to Vue, etc. if needed)
+```
+
+**What it generates:**
+- Component path conventions ("use `src/components/Button` not inline divs")
+- Design token usage rules ("no hardcoded hex values — use CSS variables")
+- `get_design_context` / `get_metadata` / `get_screenshot` usage guidelines
+
+**Where it writes:**
+| Tool | File |
+|------|------|
+| Claude Code | `CLAUDE.md` |
+| Codex CLI | `AGENTS.md` |
+| Cursor | `.cursor/rules/figma-design-system.mdc` |
+
+**When to run:**
+- After Phase 6 (DS page is complete) — first-time setup
+- After any significant token or component rename
+
+**Skip if:** No codebase yet (pure Figma exploration). This tool analyzes the *code* side, not Figma.
 
 ---
 
