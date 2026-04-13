@@ -41,7 +41,7 @@
 - [ ] Visual Diff を実施（SKILL.md Step 8）:
   - ブラウザスクショ vs Figmaスクショ を比較
   - 7軸の差分スコアを確認
-  - delta ≤ -1 の軸があれば DESIGN.md 修正案を作成（Step 9）
+  - delta ≤ -2 の軸があれば DESIGN.md 修正案を作成（Step 9）
   - ユーザー承認後 DESIGN.md を更新（Step 10）
 
 ## 実装ガイドライン

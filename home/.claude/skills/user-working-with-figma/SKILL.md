@@ -44,12 +44,15 @@ For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` f
 1. Check if `./DESIGN.md` exists in the project root
 2. **If it does not exist**, offer to generate it:
    - Run `mcp__figma__get_variable_defs` to get design tokens
+     (**Starter/View/Collab seats**: counts against the 6/month limit — skip `create_design_system_rules` and use `get_metadata` instead when budget is tight)
    - Run `mcp__figma__get_screenshot` on the main frame(s)
-   - Run `mcp__figma__create_design_system_rules` if available
+   - Run `mcp__figma__create_design_system_rules` if available (Dev/Full seats only; skip for Starter seats)
    - Pass screenshots to AI with the analysis prompt from
      `user-cloning-website/references/ai-analysis-prompt.md`
    - Generate `./DESIGN.md` following `references/design-md-format.md`
+     (path resolution: `~/.claude/skills/` is the root for cross-skill references)
    - Save to project root
+   - Note: `tokens.spacing` values are not extractable from Figma variables alone — fill them in manually or ask the user after generation
 3. **Read `./DESIGN.md` fully** and treat its contents as hard constraints:
    - All `tokens` values override any guessed values
    - `grid` settings define the layout system
@@ -195,7 +198,7 @@ After user approves proposals from Step 9:
 | {today's date} | {what changed} | Visual Diff delta ≤ -2 on {axis} |
 ```
 
-4. Commit: `docs: Visual Diff フィードバックを DESIGN.md に反映`
+4. Ask the user to commit: `docs: Visual Diff フィードバックを DESIGN.md に反映`
 
 ### Step 11: Reverse Analysis (Optional)
 

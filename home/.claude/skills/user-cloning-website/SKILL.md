@@ -295,7 +295,7 @@ After saving to dotfiles, offer to generate `./DESIGN.md` for the current projec
 1. Ask: "DESIGN.md をプロジェクトルートに生成しますか？"
 2. If yes, ask: "ベースにする参照サイト: [{slug}] ← 今分析したサイト。他に追加しますか？"
 3. Ask: "プロジェクト固有のトークン上書きはありますか？（なければスキップ）"
-4. Generate `./DESIGN.md` following `references/design-md-format.md`:
+4. Generate `./DESIGN.md` following `user-working-with-figma/references/design-md-format.md`:
    - Pre-fill `tokens` and `grid` from `~/.claude/design-references/{slug}/tokens.yaml`
    - Pre-fill prose sections from `~/.claude/design-references/{slug}/analysis.md`
    - Set `references: [{slug}]`
