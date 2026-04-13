@@ -148,19 +148,18 @@ run = "pnpm dlx ccusage"
 description = "RTKのトークン節約量をグラフ付きで表示"
 run = "rtk gain --graph --quota"
 
-# home/.claude/ のグローバル設定ファイル（シンボリックリンク元）
-[tasks."llm-claude:sort-permissions-home-global"]
-description = "home/.claude/settings.json の permissions を辞書順ソート"
-run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/home/.claude/settings.json"
+# home/.claude/ のグローバル設定ファイル（settings.json + settings.local.json の両方をソート）
+[tasks."llm-claude:sort-permissions-home"]
+description = "home/.claude/ の settings.json と settings.local.json の permissions を辞書順ソート"
+run = """
+bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/home/.claude/settings.json
+bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/home/.claude/settings.local.json
+"""
 
-[tasks."llm-claude:sort-permissions-home-local"]
-description = "home/.claude/settings.local.json の permissions を辞書順ソート"
-run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/home/.claude/settings.local.json"
-
-# dotfilesプロジェクト自体の設定ファイル
-[tasks."llm-claude:sort-permissions-project-local"]
-description = "dotfiles/.claude/settings.local.json の permissions を辞書順ソート"
-run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$HOME/dotfiles/.claude/settings.local.json"
+# カレントプロジェクトの設定ファイル（任意のプロジェクトで使用可）
+[tasks."llm-claude:sort-permissions-current"]
+description = "カレントプロジェクトの .claude/settings.local.json の permissions を辞書順ソート"
+run = "bun $HOME/dotfiles/scripts/development/sort-permissions.ts --file=$PWD/.claude/settings.local.json"
 
 # cc-lens
 [tasks.llm-cclens]
