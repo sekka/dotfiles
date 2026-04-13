@@ -169,7 +169,7 @@ Follow `references/ai-analysis-prompt.md` exactly. Pass:
 Save outputs:
 - Prose response → `{output_dir}/analysis.md`
 - YAML block → `{output_dir}/evaluation.yaml`
-  The AI output must include `site`, `date`, `dna`, `context`, `borrow`, and `overall` at the top level. If any are absent from the AI response, ask the user for values before saving.
+  The AI output must include `dna`, `context`, `borrow`, and `overall`. If any are absent from the AI response, ask the user for values before saving. (`site` and `date` are added manually from the URL and today's date.)
 
 ## Step 5c: Component-Level Evaluation
 
