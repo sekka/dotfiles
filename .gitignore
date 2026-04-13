@@ -14,6 +14,7 @@ home/.claude/skills/*/
 .claude/sessions/
 .claude/worktrees/
 home/.claude/state/
+.superpowers/
 # デザインインテリジェンス参照ライブラリ（PNG・YAML・実行時データ。公開リポジトリに含めない）
 home/.claude/design-references/
 reports/
