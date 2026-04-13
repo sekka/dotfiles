@@ -25,8 +25,10 @@ Run this JS via `agent-browser eval` after Step 4 (component screenshots).
     }
   }
 
-  // Find grid elements
-  const candidates = [...document.querySelectorAll('*')].slice(0, 500);
+  // Find grid elements — restrict to container elements to avoid 500 getComputedStyle calls
+  const candidates = [...document.querySelectorAll(
+    'div, section, main, article, ul, ol, header, footer, nav, aside'
+  )].slice(0, 200);
   for (const el of candidates) {
     const style = getComputedStyle(el);
     if (style.display === 'grid') {
