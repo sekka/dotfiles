@@ -9,6 +9,7 @@
 
 ### Step 1: 前提確認
 
+- [ ] `./DESIGN.md` を読み込み済みか（SKILL.md Step 0 で実施）
 - [ ] 対象コンポーネント/画面を特定
 - [ ] 優先デバイス・テーマの有無
 - [ ] 動作環境（フレームワーク、ライブラリ）
@@ -37,6 +38,11 @@
 - [ ] 主要状態を確認: default / hover / focus / active / disabled
 - [ ] ブレークポイントごとの表示確認
 - [ ] ビルド・テスト・リントを実行
+- [ ] Visual Diff を実施（SKILL.md Step 8）:
+  - ブラウザスクショ vs Figmaスクショ を比較
+  - 7軸の差分スコアを確認
+  - delta ≤ -1 の軸があれば DESIGN.md 修正案を作成（Step 9）
+  - ユーザー承認後 DESIGN.md を更新（Step 10）
 
 ## 実装ガイドライン
 
@@ -100,7 +106,8 @@ interface ButtonProps {
 
 ### 残課題
 
-- dark テーマの対応が必要
+- （Visual Diff で検出されたが DESIGN.md 未更新の差分があれば記載）
+- 例: typography.line_height_body を 1.6 → 1.75 に修正予定
 ```
 
 ## 注意事項

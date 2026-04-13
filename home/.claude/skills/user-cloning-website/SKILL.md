@@ -288,7 +288,21 @@ for quick review — the authoritative data is in the YAML files and analysis.md
 {motion_language from motion.yaml}
 ```
 
-## Step 7: (Optional) Reproduce Component
+## Step 7: (Optional) Generate DESIGN.md
+
+After saving to dotfiles, offer to generate `./DESIGN.md` for the current project.
+
+1. Ask: "DESIGN.md をプロジェクトルートに生成しますか？"
+2. If yes, ask: "ベースにする参照サイト: [{slug}] ← 今分析したサイト。他に追加しますか？"
+3. Ask: "プロジェクト固有のトークン上書きはありますか？（なければスキップ）"
+4. Generate `./DESIGN.md` following `references/design-md-format.md`:
+   - Pre-fill `tokens` and `grid` from `~/.claude/design-references/{slug}/tokens.yaml`
+   - Pre-fill prose sections from `~/.claude/design-references/{slug}/analysis.md`
+   - Set `references: [{slug}]`
+   - Apply any user-specified overrides
+5. Save to `./DESIGN.md`
+
+## Step 8: (Optional) Reproduce Component
 
 If the user wants to build a specific component after analysis:
 
