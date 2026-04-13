@@ -34,7 +34,9 @@ Run this JS via `agent-browser eval` after Step 4 (component screenshots).
     if (style.display === 'grid') {
       const cols = style.gridTemplateColumns;
       if (cols && cols !== 'none' && cols !== '') {
-        const count = cols.trim().split(/\s+/).length;
+        const colStr = cols.trim();
+        const repeatMatch = colStr.match(/^repeat\(\s*(\d+)/);
+        const count = repeatMatch ? parseInt(repeatMatch[1]) : colStr.split(/\s+/).length;
         if (!result.columns || count > result.columns) result.columns = count;
         result.gutter = style.gap || style.columnGap || null;
       }
