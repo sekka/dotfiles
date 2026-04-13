@@ -40,7 +40,8 @@
       "mcp__plugin_playwright_playwright__*",
       "WebFetch(domain:photoshopvip.net)",
       "WebFetch(domain:gist.github.com)",
-      "Bash(wait)"
+      "Bash(wait)",
+      "WebFetch(domain:registry.npmjs.org)"
     ],
     "deny": [],
     "ask": []

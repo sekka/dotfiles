@@ -37,7 +37,28 @@ For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` f
 
 ## Execution Flow
 
-### Step 0: Fast Path — `implement-design` (try first)
+### Step 0: DESIGN.md Bootstrap + Read
+
+**Always run this before any implementation.**
+
+1. Check if `./DESIGN.md` exists in the project root
+2. **If it does not exist**, offer to generate it:
+   - Run `mcp__figma__get_variable_defs` to get design tokens
+     (**Starter/View/Collab seats**: counts against the 6/month limit — skip `create_design_system_rules` and use `get_metadata` instead when budget is tight)
+   - Run `mcp__figma__get_screenshot` on the main frame(s)
+   - Run `mcp__figma__create_design_system_rules` if available (Dev/Full seats only; skip for Starter seats)
+   - Pass screenshots to AI with the analysis prompt from
+     `user-cloning-website/references/ai-analysis-prompt.md`
+   - Generate `./DESIGN.md` following `references/design-md-format.md`
+     (path resolution: `~/.claude/skills/` is the root for cross-skill references)
+   - Save to project root
+   - Note: `tokens.spacing` values are not extractable from Figma variables alone — fill them in manually or ask the user after generation
+3. **Read `./DESIGN.md` fully** and treat its contents as hard constraints:
+   - All `tokens` values override any guessed values
+   - `grid` settings define the layout system
+   - Prose sections (`Tone & Manner`, `Designer Intent`, etc.) inform implementation decisions
+
+### Step 1: Fast Path — `implement-design` (try first)
 
 When the goal is **full-frame implementation** (not partial extraction or token audit), try `implement-design` first:
 
@@ -49,10 +70,10 @@ mcp__figma__implement_design(nodeId, options?)
 
 - Simple layouts: ~95% accuracy. Complex (deep Flexbox nesting, responsive breakpoints): 80–85%.
 - The tool controls the full workflow: frame analysis → code generation → file placement.
-- If the output needs polish (the ~15–20% gap), fall through to Steps 2–6 for targeted corrections.
+- If the output needs polish (the ~15–20% gap), fall through to Steps 3–7 for targeted corrections.
 - Skip this step when: partial extraction, token-only audit, or the frame is highly complex with many interactive states.
 
-### Step 1: Preparation (First time only)
+### Step 2: Preparation (First time only)
 
 When using Figma for the first time in a project:
 
@@ -63,7 +84,7 @@ When using Figma for the first time in a project:
 
 If a Code Connect mapping exists, reuse existing components as the first priority.
 
-### Step 2: Get Design Information
+### Step 3: Get Design Information
 
 **Important: Figma API responses consume a large number of tokens. Always delegate to a Sub Agent and return only a summary to the main session.**
 
@@ -74,7 +95,7 @@ Recommended fetch order:
 
 Details: `FETCHING.md` / `references/sub-agent-pattern.md`
 
-### Step 3: Token Saving for Large Designs
+### Step 4: Token Saving for Large Designs
 
 When the design is large and the `get_design_context` response becomes too big:
 
@@ -84,19 +105,19 @@ When the design is large and the `get_design_context` response becomes too big:
 3. Get details only for those nodes using mcp__figma__get_design_context
 ```
 
-### Step 4: Asset Handling
+### Step 5: Asset Handling
 
 - Use localhost URLs returned by MCP as-is
 - Do not add new icon packages (handle assets using the existing method)
 
 Details: `references/asset-handling.md`
 
-### Step 5: Exclude System UI
+### Step 6: Exclude System UI
 
 Do not implement OS-rendered elements such as the iOS home indicator or Android navigation bar.
 Details: `references/system-ui-exclusion.md`
 
-### Step 6: Code Implementation
+### Step 7: Code Implementation
 
 **WARNING: Do not write code without checking Figma first.**
 Do not fill in design details from internal knowledge or guesswork. Always check the relevant node with Figma MCP before implementing.
@@ -123,9 +144,75 @@ Implementation priority:
 8. Animations (transition, animation)
 ```
 
-### Step 7: Visual Diff Check (Optional)
+### Step 8: Visual Diff Check
 
-Take a screenshot of the implementation using Chrome DevTools MCP or Playwright MCP and compare it with the Figma design.
+Take screenshots of both the implementation and the Figma design, then score the delta per axis.
+
+```
+[Screenshot procedure]
+1. Open the implementation in browser
+2. Take a full-page or viewport screenshot with agent-browser or Playwright MCP
+3. Take a Figma screenshot with mcp__figma__get_screenshot for the same frame
+4. Compare the two images side by side
+```
+
+Score the delta on each of the 7 axes (scale: 0 = perfect match, -1 = minor gap, -2 = noticeable gap, -3 = major mismatch):
+
+| Axis | Delta | Note |
+|------|-------|------|
+| Visual Hierarchy | | |
+| Typography | | |
+| Color System | | |
+| Spacing / Rhythm | | |
+| Grid | | |
+| Emotional Impact | | |
+| Functional Clarity | | |
+
+If all deltas are 0 or -1, implementation is complete. If any delta ≤ -2, proceed to Step 9.
+
+### Step 9: Gap Proposals
+
+For each axis with delta ≤ -2, generate a DESIGN.md update proposal:
+
+```
+以下の差分を分析して、DESIGN.md への修正提案を作成してください。
+実装スクリーンショット: [path]
+Figma スクリーンショット: [path]
+差分軸: [axis name], delta: [score]
+
+DESIGN.md の tokens または prose セクションで修正すべき箇所を
+具体的な値（例: line_height_body: 1.6 → 1.75）で提案してください。
+```
+
+Present proposals to the user. Do NOT update DESIGN.md automatically — wait for approval.
+
+### Step 10: DESIGN.md Auto-Update
+
+After user approves proposals from Step 9:
+
+1. Open `./DESIGN.md`
+2. Apply only the approved changes
+3. Add an entry to the `Changelog` table:
+
+```markdown
+| {today's date} | {what changed} | Visual Diff delta ≤ -2 on {axis} |
+```
+
+4. Ask the user to commit: `docs: Visual Diff フィードバックを DESIGN.md に反映`
+
+### Step 11: Reverse Analysis (Optional)
+
+If the Visual Diff reveals a design intent in Figma that is NOT yet captured in DESIGN.md, run this prompt to propose new prose sections:
+
+```
+Figma デザインと実装の差分から、DESIGN.md に追加すべき
+デザイン意図（Tone & Manner, Emotional Value, Designer Intent）の
+記述を提案してください。
+現在の DESIGN.md: [paste current prose sections]
+Figma スクリーンショット: [image]
+```
+
+Present the proposal to the user. Apply only after approval.
 
 ## Implementation Guidelines
 
