@@ -248,6 +248,42 @@ slotFrame.layoutSizingHorizontal = 'FILL'; // set AFTER appendChild
 - After all `SectionWrapper` variants are created on the DS page
 - Say: "コンポーネント `SectionWrapper` の `[SLOT] body` フレームを `⌘⇧S` でスロットに変換してください"
 
+**Verifying slot conversion via Plugin API:**
+Although slots cannot be *created* programmatically, they CAN be *detected* after user converts them:
+
+```js
+const slotFrame = comp.children.find(c => c.name.includes('[SLOT]'));
+// After conversion: slotFrame.type === 'SLOT'  ✅
+// Before conversion: slotFrame.type === 'FRAME' ❌
+```
+
+Use this to confirm the user's action before proceeding to build instances.
+
+**Adding content to a slot via Plugin API (CONFIRMED WORKING):**
+Once the user converts a frame to a slot, you CAN append content to it programmatically on instances:
+
+```js
+// 1. Find the component
+const comp = page.findOne(n => n.name === 'DM/Common/SectionWrapper' && n.type === 'COMPONENT');
+
+// 2. Create an instance
+const instance = comp.createInstance();
+targetPage.appendChild(instance);
+
+// 3. Find the slot in the instance
+const slot = instance.children.find(c => c.type === 'SLOT');
+
+// 4. Append content to the slot — this WORKS ✅
+const myContent = figma.createFrame();
+// ... build content ...
+slot.appendChild(myContent);
+```
+
+This enables the full programmatic workflow:
+- Claude builds component structure + marks slot frames with `[SLOT]` prefix
+- User converts to real slots with ⌘⇧S
+- Claude continues building page instances and populates slot content programmatically
+
 ### Component Naming Convention
 
 ```
