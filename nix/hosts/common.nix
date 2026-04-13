@@ -53,6 +53,7 @@
     dprint          # https://github.com/dprint/dprint            # 高速コードフォーマッタ
     hgrep           # https://github.com/rhysd/hgrep              # grep + シンタックスハイライト
     jq              # https://github.com/jqlang/jq                # JSONプロセッサ
+    yq-go           # https://github.com/mikefarah/yq              # YAML/JSON/TOMLプロセッサ（yqコマンド）
     mise            # https://github.com/jdx/mise                 # タスクランナー・バージョン管理
     neovim          # https://github.com/neovim/neovim            # モダンVim
     pre-commit      # https://pre-commit.com                      # Gitフック管理ツール
