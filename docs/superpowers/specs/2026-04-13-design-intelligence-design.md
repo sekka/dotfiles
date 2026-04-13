@@ -247,6 +247,24 @@ If user provides an About/Press page URL:
 
 **Goal:** Establish DESIGN.md as the single source of truth. Solves the "inconsistent AI instructions" problem.
 
+### tokens.yaml → DESIGN.md mapping
+
+The reference library's `tokens.yaml` uses an array-of-objects format (raw extraction).
+DESIGN.md's frontmatter uses a flat key-value format (named tokens).
+Map between them as follows:
+
+| tokens.yaml field                       | DESIGN.md key            |
+| --------------------------------------- | ------------------------ |
+| `colors[].{type: "accent"}` value       | `tokens.colors.accent`   |
+| `colors[].{type: "text-primary"}` value | `tokens.colors.primary`  |
+| `colors[].{type: "background"}` value   | `tokens.colors.bg`       |
+| `font_sizes[0]` (smallest body size)    | `tokens.typography.body` |
+| `font_sizes[-1]` (largest)              | `tokens.typography.h1`   |
+| `border_radii[0]`                       | `tokens.border_radius`   |
+| `grid.*`                                | `grid.*` (direct copy)   |
+
+Always confirm the mapping with the user before writing DESIGN.md.
+
 ### Added to user-cloning-website
 
 After Phase 1 analysis, offer to generate `./DESIGN.md`:
@@ -285,11 +303,11 @@ Add Step 0 — DESIGN.md generation from Figma:
 2. Take Figma screenshot of the same frame
 3. Pass both to AI for side-by-side analysis
 4. AI scores the gap on each of the 7 axes
-5. Output: diff report with per-axis delta (e.g. `spacing: -2, typography: 0`)
+5. Output: diff report with per-axis delta on a -3 to 0 scale (0 = perfect match, -3 = major gap). Example: `spacing: -2, typography: 0`
 
 **Step 8 — DESIGN.md gap proposals**
 
-For each axis with a significant gap (delta ≤ -1 on the 1–10 scale):
+For each axis with a significant gap (delta ≤ -1 on the -3 to 0 scale):
 
 - AI proposes a specific DESIGN.md update that would prevent this gap
 - Example: "spacing_rhythm gap detected → suggest updating `spacing.section` from 64px to 56px"
