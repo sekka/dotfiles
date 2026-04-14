@@ -12,14 +12,14 @@ Claude Code を起動した状態で `/` を入力するとスキル一覧が表
 - `/superpowers:brainstorming` — 要件探索・設計
 - `/superpowers:writing-plans` — 実装計画の作成
 - `/superpowers:executing-plans` — 計画のレビュー付き実行
-- `/review-and-improve` — コードレビューと問題修正
-- `/commit` — 変更を論理単位で分析しコミット
+- `/user-dev-review` — コードレビューと問題修正
+- `/user-dev-commit` — 変更を論理単位で分析しコミット
 
 ---
 
 ## Step 2: 基本ワークフローを体験する
 
-基本フロー: `brainstorming → writing-plans → executing-plans → review-and-improve → commit`
+基本フロー: `brainstorming → writing-plans → executing-plans → user-dev-review → user-dev-commit`
 
 シンプルな変更なら途中のステップをスキップして、直接の実装指示から始めても構いません。
 各ユースケース（新機能・バグ修正・リファクタリング等）の詳細手順は [WORKFLOW.md](./WORKFLOW.md) を参照。

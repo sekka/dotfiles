@@ -52,7 +52,7 @@ commit / finishing-a-development-branch（コミット・PR作成）
   │     → finishing-a-development-branch → commit-push-pr
   │
   └─ フロントエンドを実装する
-        → (working-with-figma) → designing-ui → developing-frontend → visual-regression-test
+        → (user-figma-implement) → user-fe-design → user-fe-develop → user-fe-vrt
 ```
 
 ---
@@ -79,7 +79,7 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 - 各ステップに完了基準を設定する
 - 依存関係と実行順序を明確にする
 
-計画作成後は `/review-and-improve` でプランレビューを行うことを推奨。
+計画作成後は `/user-dev-review` でプランレビューを行うことを推奨。
 
 ### 3. executing-plans — 計画の実行
 
@@ -93,7 +93,7 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 
 ### 4. review-and-improve — レビューと改善
 
-スキル: `/review-and-improve`
+スキル: `/user-dev-review`
 
 実装後または実装中に品質チェックと改善を行う。
 
@@ -113,7 +113,7 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 
 ### 6. commit / PR作成
 
-スキル: `/commit`, `/superpowers:finishing-a-development-branch`, `/commit-commands:commit-push-pr`
+スキル: `/user-dev-commit`, `/superpowers:finishing-a-development-branch`, `/commit-commands:commit-push-pr`
 
 動作確認済みの変更をコミットし、必要であればPRを作成する。
 
@@ -128,9 +128,9 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 /superpowers:writing-plans           # 実装計画を作成
 /superpowers:using-git-worktrees     # （任意）隔離ブランチで作業
 /superpowers:executing-plans         # 計画をレビュー付きで実行
-/review-and-improve                  # レビューと修正
+/user-dev-review                     # レビューと修正
 /superpowers:verification-before-completion  # 動作確認
-/commit                              # コミット
+/user-dev-commit                     # コミット
 ```
 
 ### バグを修正する
@@ -139,7 +139,7 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 /superpowers:systematic-debugging    # 症状観察 → 仮説形成 → 最小再現 → 検証
 /superpowers:test-driven-development # テストを書いてから修正（Red → Green）
 /superpowers:verification-before-completion  # 修正確認
-/commit
+/user-dev-commit
 ```
 
 ### リファクタリングする
@@ -147,9 +147,9 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 ```
 /superpowers:writing-plans           # 改善対象・方法・完了基準を明確に
 /superpowers:executing-plans         # 実行
-/review-and-improve                  # 品質チェック
+/user-dev-review             # 品質チェック
 /superpowers:verification-before-completion  # 既存機能が壊れていないか確認
-/commit
+/user-dev-commit
 ```
 
 ### 複数タスクを並列で進める
@@ -165,8 +165,8 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 ```
 /superpowers:requesting-code-review  # レビュー依頼の形式化
 /superpowers:receiving-code-review   # フィードバックの整理・対応
-/pr-review-toolkit:review-pr         # PRのレビュー
-/review-and-improve                  # 自己レビュー
+/code-review:code-review             # PRのレビュー
+/user-dev-review             # 自己レビュー
 ```
 
 ### PR を作成する
@@ -179,12 +179,12 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 ### フロントエンドを実装する
 
 ```
-/working-with-figma                  # Figmaデザイン確認
-/designing-ui                        # UIコンポーネント設計
-/developing-frontend                 # 実装
-/visual-regression-test              # ビジュアル回帰テスト
-/improve-html                        # HTML品質改善（必要に応じて）
-/review-and-improve                  # レビュー
+/user-figma-implement             # Figmaデザイン確認
+/user-fe-design                   # UIコンポーネント設計
+/user-fe-develop                  # 実装
+/user-fe-vrt                      # ビジュアル回帰テスト
+/user-fe-html                     # HTML品質改善（必要に応じて）
+/user-dev-review                  # レビュー
 ```
 
 ---
@@ -207,13 +207,13 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 ### 実装中
 
 - [ ] テストを先に書いたか？（TDD: `/superpowers:test-driven-development`）
-- [ ] 不安な箇所はレビューしたか？（`/review-and-improve`）
+- [ ] 不安な箇所はレビューしたか？（`/user-dev-review`）
 
 ### 実装完了後
 
 - [ ] 実環境で動作確認したか？（`/superpowers:verification-before-completion`）
 - [ ] 変更が他の箇所を壊していないか確認したか？
-- [ ] コミットメッセージは適切か？（`/commit`）
+- [ ] コミットメッセージは適切か？（`/user-dev-commit`）
 
 ---
 

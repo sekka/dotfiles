@@ -26,9 +26,9 @@ Reference site analysis → dotfiles library → DESIGN.md → Figma implementat
 
 **Files changed:**
 
-- `home/.claude/skills/user-cloning-website/SKILL.md` — major revision (Phase 1 + 2)
-- `home/.claude/skills/user-working-with-figma/SKILL.md` — revision (Phase 3)
-- `home/.claude/skills/user-working-with-figma/IMPLEMENTING.md` — revision (Phase 3)
+- `home/.claude/skills/user-research-design-dna/SKILL.md` — major revision (Phase 1 + 2)
+- `home/.claude/skills/user-figma-implement/SKILL.md` — revision (Phase 3)
+- `home/.claude/skills/user-figma-implement/IMPLEMENTING.md` — revision (Phase 3)
 
 No new skill files. No new mise tasks.
 
@@ -174,7 +174,7 @@ dimensions:
 
 ---
 
-## Phase 1 — user-cloning-website: Core AI Analysis
+## Phase 1 — user-research-design-dna: Core AI Analysis
 
 **Goal:** Complete reference library accumulation. Usable immediately after this phase.
 
@@ -265,7 +265,7 @@ Map between them as follows:
 
 Always confirm the mapping with the user before writing DESIGN.md.
 
-### Added to user-cloning-website
+### Added to user-research-design-dna
 
 After Phase 1 analysis, offer to generate `./DESIGN.md`:
 
@@ -274,7 +274,7 @@ After Phase 1 analysis, offer to generate `./DESIGN.md`:
 3. Generate DESIGN.md in the standard format (YAML frontmatter + prose sections)
 4. Save to project root
 
-### Added to user-working-with-figma
+### Added to user-figma-implement
 
 Add Step 0 — DESIGN.md generation from Figma:
 
@@ -285,7 +285,7 @@ Add Step 0 — DESIGN.md generation from Figma:
 
 ---
 
-## Phase 3 — user-working-with-figma: Visual Diff + Loop
+## Phase 3 — user-figma-implement: Visual Diff + Loop
 
 **Goal:** Close the feedback loop. Precision improves with each iteration.
 
