@@ -19,7 +19,7 @@
 - Always start in Plan mode for tasks with 3 or more steps, or tasks that affect architecture.
 - If things go wrong in the middle, stop immediately and re-plan instead of pushing forward.
 - Write a detailed spec before implementing. Record it as a checkable plan.
-- After ExitPlanMode, suggest a plan review with `/review-and-improve`.
+- After ExitPlanMode, suggest a plan review with `user-dev-review`.
 
 ### Identify risks (during Plan)
 - In Plan mode, list 1-3 things that could go wrong, in addition to the implementation plan.
@@ -115,14 +115,14 @@ Check with the `/hooks` command. See RTK.md for details on rtk-rewrite.
 
 ## 5. Using Skills
 
-Custom skills (`~/.claude/skills/`) and plugin skills are matched automatically by each SKILL.md description. To call them explicitly, use a slash command (e.g., `/review-and-improve`, `/commit`, `/developing-frontend`). See `docs/claude-code-cheatsheet.md` for the full skill list.
+Custom skills (`~/.claude/skills/`) and plugin skills are matched automatically by each SKILL.md description. To call them explicitly, use a slash command (e.g., `user-dev-review`, `commit-commands:commit`, `user-fe-develop`). See `docs/claude-code-cheatsheet.md` for the full skill list.
 
 ---
 
 ## References
 
 - Security policy: `.claude/rules/security.md`
-- Subagent definitions: `.claude/agents/`
+- Subagent definitions: `home/.claude/agents/`
 - Skill list and usage: `docs/claude-code-cheatsheet.md`
 
 @RTK.md

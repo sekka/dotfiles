@@ -32,7 +32,7 @@ Report progress to the user at the start and end of each Phase. Report format:
 When the skill starts, **before any other work**, confirm the following. If it fails, report to the user immediately and stop:
 
 ```bash
-CHECK_HTML="$HOME/.claude/skills/improve-html/scripts/check-html.ts"
+CHECK_HTML="$HOME/.claude/skills/user-fe-html/scripts/check-html.ts"
 test -f "$CHECK_HTML" || { echo "ERROR: $CHECK_HTML not found"; exit 1; }
 command -v bun >/dev/null || { echo "ERROR: bun is not installed"; exit 1; }
 ```
@@ -153,5 +153,5 @@ custom_rules: []             # add custom rules
 - Rule definitions: `rules/*.yaml`
 - ARIA data: `data/aria-role-map.yaml`, `data/valid-aria-attrs.yaml`
 - APG patterns: `patterns/*.md`
-- CLI script: `~/.claude/skills/improve-html/scripts/check-html.ts`
+- CLI script: `~/.claude/skills/user-fe-html/scripts/check-html.ts`
 - a11y knowledge: `home/.claude/skills/user-fe-knowledge/knowledge/cross-cutting/accessibility/`
