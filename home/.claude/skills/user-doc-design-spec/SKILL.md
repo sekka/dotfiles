@@ -531,149 +531,19 @@ A skill for designing UIs that are not just visually appealing, but also impleme
 
 ## CSS Knowledge Reference
 
-When implementing designs with modern CSS techniques, you can use the `managing-frontend-knowledge` skill to refer to the knowledge base.
+When implementing designs with modern CSS techniques, use the `user-fe-knowledge` skill to search the knowledge base.
 
-**Note:** The knowledge is reference information and may be outdated or incomplete. Always check the latest information with Context7, MDN, etc. For UI patterns that can be done without JavaScript (accordion, popover, etc.), consider CSS implementations first.
+**Note:** Always verify with Context7 or MDN for the latest browser support. For UI patterns achievable without JavaScript (accordion, popover, etc.), prefer CSS-only implementations.
 
 ## Related Skills
 
-- **designing-brand**: Design systems at the brand level (color palette, typography foundations)
-- **developing-frontend**: Bridge to UI implementation (React/Vue/Tailwind)
-- **working-with-figma**: Implementation support using Figma design data
-- **managing-frontend-knowledge**: Reference for the latest CSS/JS technologies
-- **auditing-accessibility**: Accessibility audits and improvements
-
-## Skill Selection Guide
-
-Choose the right skill based on your task.
-
-### Recommended Skills by UI Design Workflow Phase
-
-| Work Phase | Main Skill | Supporting Skill | Output |
-|------------|---------|----------|------|
-| **1. Build brand foundation** | designing-brand | - | Color palette, typography, logo |
-| **2. Create wireframes** | designing-ui | - | Screen layout, layout options |
-| **3. Design design system** | designing-brand + designing-ui | - | Design tokens, component library |
-| **4. Implement UI** | developing-frontend | designing-ui, managing-frontend-knowledge | React/Vue/Tailwind code |
-| **5. Implement from Figma** | working-with-figma | designing-ui, developing-frontend | Component code |
-| **6. Accessibility audit** | auditing-accessibility | designing-ui | WCAG compliance report |
-
-### Skill Selection by Task
-
-#### Design Phase
-
-| Task | Recommended Skill | Reason |
-|------------|-----------|------|
-| Decide brand colors and logo | **designing-brand** | Main goal is establishing brand identity |
-| Draw screen wireframes | **designing-ui** | Main goal is information design and layout |
-| Define component states | **designing-ui** | Main goal is detailed UI component design |
-| Create design tokens | **designing-brand** → **designing-ui** | Brand foundation first, then UI implementation tokens |
-
-#### Implementation Phase
-
-| Task | Recommended Skill | Reason |
-|------------|-----------|------|
-| Learn the latest CSS/Tailwind techniques | **managing-frontend-knowledge** | Main goal is accessing technical information |
-| Implement components in React/Vue | **developing-frontend** | Main goal is writing code |
-| Convert Figma design to code | **working-with-figma** | Main goal is using Figma data |
-| Implement CSS animations | **developing-frontend** + **managing-frontend-knowledge** | Implementation + latest tech info |
-
-#### Quality Assurance Phase
-
-| Task | Recommended Skill | Reason |
-|------------|-----------|------|
-| Check WCAG accessibility | **auditing-accessibility** | Main goal is a11y audit |
-| Verify design system consistency | **designing-ui** | Review component design |
-| Verify responsive support | **designing-ui** + **developing-frontend** | Check both design and implementation |
-
-### Skill Combination Patterns
-
-#### Pattern 1: UI Design from Scratch
-
-```
-1. designing-brand (brand foundation)
-   ↓ Establish color palette and typography
-2. designing-ui (UI design)
-   ↓ Wireframes, component design
-3. developing-frontend (implementation)
-   ↓ Write React/Tailwind code
-4. auditing-accessibility (quality assurance)
-   ↓ Verify WCAG compliance
-```
-
-#### Pattern 2: Implement from Figma Design
-
-```
-1. working-with-figma (get design)
-   ↓ Extract design data from Figma
-2. designing-ui (create implementation specs)
-   ↓ Component specs, design tokens
-3. developing-frontend (implementation)
-   ↓ Write code
-```
-
-#### Pattern 3: Improve Existing UI
-
-```
-1. auditing-accessibility (evaluate current state)
-   ↓ Identify problems
-2. designing-ui (design improvements)
-   ↓ New UI design
-3. developing-frontend (implementation)
-   ↓ Apply improved code
-```
-
-### FAQ
-
-**Q: What is the difference between designing-brand and designing-ui?**
-
-- **designing-brand**: Visual identity for the whole brand (color system, typography foundation, logo)
-- **designing-ui**: Design of individual screens and components (wireframes, layout, interactions)
-
-**Q: Which skill should I use for CSS implementation information?**
-
-- **Look up the latest techniques**: managing-frontend-knowledge (info reference)
-- **Write implementation code**: developing-frontend (coding)
-- **Create design specs**: designing-ui (spec definition)
-
-**Q: Which skills do I need to implement a Figma design?**
-
-1. working-with-figma (get Figma data)
-2. designing-ui (fill in implementation specs)
-3. developing-frontend (code implementation)
-
-## Quick Reference
-
-### Typography Scale (Mobile-first)
-
-```
-Display: 36px/40px - Hero heading
-H1: 30px/36px - Page title
-H2: 24px/32px - Section heading
-H3: 20px/28px - Card title
-Body: 16px/24px - Standard text
-Small: 14px/20px - Secondary text
-Tiny: 12px/16px - Caption
-```
-
-### Spacing System (Tailwind-based)
-
-```
-0.25rem (4px)  - Tight spacing
-0.5rem  (8px)  - Small
-1rem    (16px) - Medium (standard)
-1.5rem  (24px) - Between sections
-2rem    (32px) - Large
-3rem    (48px) - Hero
-```
-
-### Component State Checklist
-
-- [ ] Default state
-- [ ] Hover/Focus states
-- [ ] Active/Pressed state
-- [ ] Disabled state
-- [ ] Loading state
-- [ ] Error state
-- [ ] Empty state
-- [ ] Dark mode variant (if needed)
+| Skill | When to use |
+|-------|-------------|
+| `user-research-design-dna` | Before designing — extract brand DNA (colors, typography, motion) from reference sites |
+| `user-doc-spec` | Convert client brief → RTM before creating design specs |
+| `user-figma-build` | After specs are defined — build design system in Figma (Code → Figma) |
+| `user-figma-gate` | After Figma is complete — RTM coverage gate before coding starts |
+| `user-figma-implement` | Convert completed Figma designs to HTML/CSS code (Figma → Code) |
+| `user-fe-develop` | Frontend implementation once design specs are ready |
+| `user-fe-knowledge` | Reference for modern CSS/JS techniques during implementation |
+| `user-fe-html` | HTML semantics and accessibility audit after implementation |
