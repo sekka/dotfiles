@@ -102,3 +102,64 @@ When generating DESIGN.md from Figma:
 When `./DESIGN.md` exists in a project, read it fully before any design or implementation work.
 It functions as a constraint: all token values, spacing, and grid decisions must match DESIGN.md
 unless the user explicitly overrides.
+
+## 3-Layer Architecture (Optional, for long-running projects)
+
+DESIGN.md alone is Layer 1. For multi-month or multi-contributor projects, add Layers 2–3:
+
+| Layer | Content | Purpose |
+|-------|---------|---------|
+| Layer 1: `DESIGN.md` | Core principles, tokens, prose | AI constraint source — already implemented |
+| Layer 2: `contracts/` | Per-component JSON specs | Type-safe component contracts linked to DESIGN.md rules |
+| Layer 3: `harness/` | Validation scripts + CI | Automated drift detection |
+
+### Layer 2: contracts/ format
+
+```json
+{
+  "id": "button",
+  "variants": {
+    "contained": {
+      "tokenRefs": { "bg": "color.primary.500", "radius": "radius.md" },
+      "tailwind": "inline-flex items-center justify-center gap-2 h-10 px-4"
+    }
+  },
+  "rules": [
+    { "id": "BTN_ICON_ONLY_ARIA_REQUIRED", "severity": "error" },
+    { "id": "SPACE_NO_PY_05_BTN", "severity": "error" }
+  ]
+}
+```
+
+Rules reference a shared prohibition registry (not duplicated per contract):
+
+```json
+{
+  "id": "AI_NO_CARD_COLOR_BAR_TOP",
+  "severity": "error",
+  "detector": "tailwind-class",
+  "pattern": "border-t-4",
+  "alternative": "border border-slate-200 only"
+}
+```
+
+`detector: "tailwind-class"` enables auto-detection (32 rules). Other detectors require manual review.
+
+### Layer 3: harness/ scripts
+
+| Script | Function |
+|--------|----------|
+| `design:check` | JSON schema compliance, rule ID uniqueness, reference integrity |
+| `design:drift` | Detects divergence between contracts and actual implementation files |
+| File-write hooks | Scan 32 auto-detectable patterns on every file save |
+| CI (GitHub Actions) | Full validation on every PR before merge |
+
+```jsonc
+// package.json
+"scripts": {
+  "design:check": "node harness/check.js",
+  "design:drift": "node harness/drift.js"
+}
+```
+
+**When to add Layer 2–3:** Projects lasting 2+ months, 2+ contributors, or when Visual Diff manual review (Layer 1 Step 8–9) becomes insufficient to catch AI-generated drift.

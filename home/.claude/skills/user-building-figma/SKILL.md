@@ -12,6 +12,14 @@ For the reverse direction (Figma → Code implementation), use the `user-working
 
 ---
 
+## Phase 0a: Figma Design Quality Standards
+
+Auto Layout + Variables + semantic naming → 32/35 quality score vs. 10/35 for unstructured designs.
+Full standards, spacing token system, letter-spacing rule, semantic naming guide, anti-patterns:
+`references/design-quality-standards.md`
+
+---
+
 ## Phase 0: Pre-Flight Requirements
 
 Before touching Figma, confirm these documents exist:
@@ -22,7 +30,7 @@ Before touching Figma, confirm these documents exist:
 | Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
 | Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
 | Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
-| Target Persona | 誰のためのUIか（年齢層・スキル・感覚派/合理派・情報密度の好み）LOCKED |
+| Target Persona | Who the UI is for (age group, skill level, sensory/rational preference, information density preference) — LOCKED |
 
 **RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
 
@@ -63,61 +71,11 @@ return {
 
 ### 2-1. Local Variables (Color Palette)
 
-```js
-function hexToRgb(hex) {
-  return {
-    r: parseInt(hex.slice(1, 3), 16) / 255,
-    g: parseInt(hex.slice(3, 5), 16) / 255,
-    b: parseInt(hex.slice(5, 7), 16) / 255,
-  };
-}
-
-const collection = figma.variables.createVariableCollection('DS/Colors');
-const modeId = collection.defaultModeId;
-
-const colors = [
-  { name: 'bg/primary', hex: '#090B0E', scopes: ['FRAME_FILL', 'SHAPE_FILL'] },
-  { name: 'text/primary', hex: '#FFFFFF', scopes: ['TEXT_FILL'] },
-  { name: 'accent/primary', hex: '#02CA96', scopes: ['FRAME_FILL', 'SHAPE_FILL', 'STROKE_COLOR'] },
-  // ... etc
-];
-
-for (const c of colors) {
-  const v = figma.variables.createVariable(c.name, collection, 'COLOR');
-  v.setValueForMode(modeId, hexToRgb(c.hex));
-  v.scopes = c.scopes; // ALWAYS set scopes explicitly — never leave as ALL_SCOPES
-}
-```
-
-**Scope rules (avoid polluting pickers):**
-
-| Variable type | Correct scopes |
-|--------------|----------------|
-| Background colors | `['FRAME_FILL', 'SHAPE_FILL']` |
-| Text colors | `['TEXT_FILL']` |
-| Accent/stroke | `['FRAME_FILL', 'SHAPE_FILL', 'STROKE_COLOR']` |
-| Spacing | `['GAP']` |
+`hexToRgb` helper + `createVariableCollection` + per-color scope assignment + scope rules: `references/token-setup.md`
 
 ### 2-2. Text Styles
 
-Always load fonts before creating text styles:
-
-```js
-await figma.loadFontAsync({ family: 'Oxanium', style: 'ExtraBold' });
-// If a font is unavailable, call listAvailableFontsAsync() to find alternatives
-const allFonts = await figma.listAvailableFontsAsync();
-```
-
-```js
-const ts = figma.createTextStyle();
-ts.name = 'dm/heading/h1-pc'; // Use slash-separated namespacing: project/role/variant
-ts.fontName = { family: 'Oxanium', style: 'ExtraBold' };
-ts.fontSize = 48;
-ts.lineHeight = { unit: 'PIXELS', value: 56 }; // NOT bare numbers
-ts.letterSpacing = { unit: 'PERCENT', value: 0 }; // NOT bare numbers
-```
-
-**Naming convention:** `{project}/{role}/{variant}` — e.g. `dm/heading/h1-pc`, `dm/label/nav`
+Always load fonts first (`loadFontAsync` / `listAvailableFontsAsync`). Full code: `references/token-setup.md`
 
 ---
 
@@ -127,72 +85,7 @@ ts.letterSpacing = { unit: 'PERCENT', value: 0 }; // NOT bare numbers
 
 **Always match the existing file's Auto Layout conventions.** Inspect before building (Phase 1).
 
-### Standard Section Pattern
-
-Observed from production Figma files:
-
-```js
-// Outer section frame (vertical stack, full width, auto height)
-const section = figma.createFrame();
-section.name = 'Section/News';
-section.layoutMode = 'VERTICAL';
-section.primaryAxisSizingMode = 'AUTO';   // height grows with content
-section.counterAxisSizingMode = 'FIXED';  // width fixed (e.g. 1440px)
-section.resize(1440, 100);                // height will auto-expand
-section.itemSpacing = 48;
-section.paddingTop = 96;
-section.paddingBottom = 96;
-section.paddingLeft = 0;
-section.paddingRight = 0;
-section.primaryAxisAlignItems = 'MIN';
-section.counterAxisAlignItems = 'CENTER'; // center children horizontally
-
-// After appending to parent:
-parent.appendChild(section);
-section.layoutSizingHorizontal = 'FILL'; // MUST be set AFTER appendChild
-```
-
-### Inner Container (for centered content with max-width)
-
-```js
-const container = figma.createFrame();
-container.name = 'container';
-container.layoutMode = 'VERTICAL';
-container.primaryAxisSizingMode = 'AUTO';
-container.counterAxisSizingMode = 'FIXED';
-container.resize(1200, 100); // content max-width
-container.itemSpacing = 32;
-container.fills = [];
-section.appendChild(container);
-container.layoutSizingHorizontal = 'FIXED'; // fixed inner width
-```
-
-### Horizontal Row
-
-```js
-const row = figma.createFrame();
-row.name = 'row';
-row.layoutMode = 'HORIZONTAL';
-row.primaryAxisSizingMode = 'AUTO';
-row.counterAxisSizingMode = 'AUTO';
-row.itemSpacing = 24;
-row.primaryAxisAlignItems = 'SPACE_BETWEEN';
-row.counterAxisAlignItems = 'CENTER';
-row.fills = [];
-```
-
-### Header Pattern
-
-```js
-const header = figma.createFrame();
-header.layoutMode = 'HORIZONTAL';
-header.primaryAxisSizingMode = 'FIXED';
-header.counterAxisSizingMode = 'FIXED';
-header.resize(1440, 72);
-header.paddingLeft = 40; header.paddingRight = 40;
-header.primaryAxisAlignItems = 'SPACE_BETWEEN';
-header.counterAxisAlignItems = 'CENTER';
-```
+Section, Container, Row, Header pattern examples: `references/auto-layout-patterns.md`
 
 ### Critical API Gotchas
 
@@ -212,45 +105,7 @@ header.counterAxisAlignItems = 'CENTER';
 
 ## Phase 3b: Layout Grids & Guides
 
-### Standard 12-Column Grid (1440px → 1200px content)
-
-```js
-// 12-col grid: 1440px frame, CENTER, 120px auto-margin, 24px gutter, 78px cols
-frame.layoutGrids = [
-  {
-    pattern: 'COLUMNS',
-    alignment: 'CENTER',   // auto-centers: margin = (1440 - 12*78 - 11*24) / 2 = 120px
-    count: 12,
-    gutterSize: 24,
-    sectionSize: 78,       // column width
-    visible: true,
-    color: { r: 0.01, g: 0.79, b: 0.59, a: 0.08 }, // subtle teal
-  },
-  {
-    pattern: 'ROWS',
-    alignment: 'MIN',
-    count: 200,            // enough to cover tall pages
-    gutterSize: 8,
-    sectionSize: 8,        // 8px baseline grid
-    offset: 0,             // REQUIRED even for MIN — omitting throws
-    visible: true,
-    color: { r: 1, g: 1, b: 1, a: 0.025 }, // barely visible
-  },
-];
-
-// Page-level guides (applied to page, not frame)
-page.guides = [
-  { axis: 'X', offset: 120 },   // left content margin
-  { axis: 'X', offset: 720 },   // center axis
-  { axis: 'X', offset: 1320 },  // right content margin
-  { axis: 'Y', offset: 72 },    // header bottom
-];
-```
-
-**Layout grid API rules:**
-- `COLUMNS` + `CENTER` alignment: **no `offset` field** — it's auto-calculated
-- `ROWS` + `MIN` alignment: **`offset` is required** (use `offset: 0`)
-- `page.guides` sets ruler guides at the page level (not on frames)
+12-column grid (1440px, CENTER, 24px gutter, 8px baseline) + page-level guides: `references/auto-layout-patterns.md`
 
 ---
 
@@ -268,90 +123,15 @@ in the Plugin API (`figma.createSlot()` does not exist).
 
 ### SectionWrapper Component Pattern
 
-```js
-const comp = figma.createComponent();
-comp.name = 'SectionWrapper';
-comp.layoutMode = 'VERTICAL';
-comp.primaryAxisSizingMode = 'AUTO';
-comp.counterAxisSizingMode = 'FIXED';
-comp.resize(1440, 100);
-comp.itemSpacing = 48;
-comp.paddingTop = 96; comp.paddingBottom = 96;
-comp.counterAxisAlignItems = 'CENTER';
-
-// Section heading (fixed, defined in component)
-const heading = figma.createFrame();
-heading.name = 'SectionHeader';
-// ... build heading with decorative lines + Oxanium text ...
-comp.appendChild(heading);
-
-// Slot placeholder (user converts this to a real slot)
-const slotFrame = figma.createFrame();
-slotFrame.name = '[SLOT] body'; // naming convention: [SLOT] prefix
-slotFrame.layoutMode = 'VERTICAL';
-slotFrame.primaryAxisSizingMode = 'AUTO';
-slotFrame.counterAxisSizingMode = 'FIXED';
-slotFrame.resize(1200, 100);
-slotFrame.fills = [{ type: 'SOLID', color: { r: 0.5, g: 0.5, b: 1 }, opacity: 0.1 }]; // visible hint
-comp.appendChild(slotFrame);
-slotFrame.layoutSizingHorizontal = 'FILL'; // set AFTER appendChild
-```
+Component creation, slot detection, and slot content in instances: `references/component-patterns.md`
 
 **When to call user for slot conversion:**
 - After all `SectionWrapper` variants are created on the DS page
 - Say: "コンポーネント `SectionWrapper` の `[SLOT] body` フレームを `⌘⇧S` でスロットに変換してください"
 
-**Verifying slot conversion via Plugin API:**
-Although slots cannot be *created* programmatically, they CAN be *detected* after user converts them:
-
-```js
-const slotFrame = comp.children.find(c => c.name.includes('[SLOT]'));
-// After conversion: slotFrame.type === 'SLOT'  ✅
-// Before conversion: slotFrame.type === 'FRAME' ❌
-```
-
-Use this to confirm the user's action before proceeding to build instances.
-
-**Adding content to a slot via Plugin API (CONFIRMED WORKING):**
-Once the user converts a frame to a slot, you CAN append content to it programmatically on instances:
-
-```js
-// 1. Find the component
-const comp = page.findOne(n => n.name === 'DM/Common/SectionWrapper' && n.type === 'COMPONENT');
-
-// 2. Create an instance
-const instance = comp.createInstance();
-targetPage.appendChild(instance);
-
-// 3. Find the slot in the instance
-const slot = instance.children.find(c => c.type === 'SLOT');
-
-// 4. Append content to the slot — this WORKS ✅
-const myContent = figma.createFrame();
-// ... build content ...
-slot.appendChild(myContent);
-```
-
-**Cross-page instance limitation:** `importComponentByKeyAsync` fails for same-file components (not in a published library). `comp.createInstance()` created while on a different page causes slot append errors. **Workaround:** build page content directly with the same Auto Layout helper functions for consistent structure.
-
-This enables the full programmatic workflow:
-- Claude builds component structure + marks slot frames with `[SLOT]` prefix
-- User converts to real slots with ⌘⇧S
-- Claude continues building page instances and populates slot content programmatically
-
 ### Component Naming Convention
 
-```
-{project}/{category}/{name}/{variant}
-
-Examples:
-  DM/Common/SectionWrapper/Default
-  DM/Common/Button/Primary
-  DM/Common/Button/Secondary
-  DM/Common/NewsRow/Default
-  DM/Navigation/Header/PC
-  DM/Navigation/Header/SP
-```
+`{project}/{category}/{name}/{variant}` — examples: `references/component-patterns.md`
 
 ---
 

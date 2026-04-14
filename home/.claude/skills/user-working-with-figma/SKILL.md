@@ -108,6 +108,9 @@ When using Figma for the first time in a project:
 ```
 1. Generate project rules with mcp__figma__create_design_system_rules
 2. Get existing component mapping with mcp__figma__get_code_connect_map
+   - Requires Figma Org or Enterprise plan (not available on Free/Professional)
+   - When available: returns Figma property → implementation snippets, import paths, custom instructions
+   - Provides the highest accuracy for component mapping — prioritize Code Connect over manual extraction
 ```
 
 If a Code Connect mapping exists, reuse existing components as the first priority.
@@ -125,12 +128,21 @@ Details: `FETCHING.md` / `references/sub-agent-pattern.md`
 
 ### Step 4: Token Saving for Large Designs
 
-When the design is large and the `get_design_context` response becomes too big:
+When the design is large and the `get_design_context` response becomes too big,
+use the 3-phase progressive extraction pattern:
 
 ```
-1. Get lightweight XML layer info first with mcp__figma__get_metadata
-2. Identify the required node IDs
-3. Get details only for those nodes using mcp__figma__get_design_context
+Phase 1 — Map: mcp__figma__get_metadata
+  → Lightweight XML, builds a structure map of the entire frame
+  → Identify logical section boundaries and their node IDs
+
+Phase 2 — Divide: split the frame into logical sections
+  → Break large frames into independently processable units
+  → Prioritize by render order (top → bottom)
+
+Phase 3 — Detail: mcp__figma__get_design_context per section
+  → Fetch full design context only for the current section
+  → Implement, validate, then proceed to the next section
 ```
 
 ### Step 5: Asset Handling
@@ -182,6 +194,20 @@ Take screenshots of both the implementation and the Figma design, then score the
 2. Take a full-page or viewport screenshot with agent-browser or Playwright MCP
 3. Take a Figma screenshot with mcp__figma__get_screenshot for the same frame
 4. Compare the two images side by side
+```
+
+**Optional: Computed Style Verification (for cross-framework implementations)**
+
+When implementing the same design for a second framework (e.g., Vue after React),
+extract computed CSS styles via Playwright MCP to eliminate interpretation differences:
+
+```
+1. Confirm the primary (React) output looks correct via screenshot
+2. Use Playwright MCP to extract computed styles from the rendered DOM:
+   - Exact px values, not Tailwind class names
+   - This computed output becomes the "ground truth" for the second framework
+3. Use computed CSS values to implement the target framework (Vue/iOS/etc.)
+   - Eliminates class-name-to-value ambiguity between frameworks
 ```
 
 Score the delta on each of the 7 axes (scale: 0 = perfect match, -1 = minor gap, -2 = noticeable gap, -3 = major mismatch):
@@ -244,57 +270,12 @@ Present the proposal to the user. Apply only after approval.
 
 ## Implementation Guidelines
 
-### Layout Implementation
-
-```css
-/* Figma Auto Layout → CSS Flexbox */
-direction: horizontal → flex-direction: row
-direction: vertical   → flex-direction: column
-spacing: 16           → gap: 1rem
-padding: [8, 16, 8, 16] → padding: 0.5rem 1rem
-
-/* Figma Constraints */
-Fill container → flex: 1 or width: 100%
-Fixed width    → width: [px]
-Hug contents   → width: fit-content
-```
-
-### Typography Implementation
-
-```css
-/* Apply Figma values directly to CSS */
-font-size: [Figma value]px
-line-height: [Figma value]px → recommended to convert to em: calc([value]px / [font-size]px)
-font-weight: [Figma weight]
-letter-spacing: [Figma value]px
-```
-
-### Color Implementation
-
-Prefer variables from `get_variable_defs`. Hardcoding is a last resort:
-```css
-/* Good: variable reference */
-color: var(--color-primary-500);
-background: var(--color-gray-100);
-
-/* If no Design Token, write HEX directly */
-color: #3b82f6;
-```
+Layout → Typography → Color detailed rules, letter-spacing % → em conversion, token path mapping:
+`references/implementation-guide.md`
 
 ## Quality Checklist
 
-- [ ] Spacing: Do Figma values match px units?
-- [ ] Typography: Are font family, size, and weight accurate?
-- [ ] Color: Are HEX values or tokens correct?
-- [ ] Layout: Do flex/grid direction and alignment match?
-- [ ] Responsive: Is the judgment between fixed size and flexible size correct?
-- [ ] Assets: Are SVG/images taken from actual files?
-- [ ] System UI: Are OS-rendered elements not implemented?
-- [ ] Code Connect: Were existing components reused?
-- [ ] Contrast: text/background contrast ratio ≥ 4.5:1 (WCAG 1.4.3)
-- [ ] Motion: animations disabled when `prefers-reduced-motion: reduce` (WCAG 2.3.3)
-- [ ] Keyboard: all interactive elements have focus indicators (WCAG 2.4.7)
-- [ ] Details: see `references/a11y-checklist.md`
+`references/quality-checklist.md` / `references/a11y-checklist.md`
 
 ## Guide for Requesters
 
@@ -303,40 +284,8 @@ Information needed for accurate implementation requests (URL, stack, Design Toke
 
 ## Code → Figma via MCP (generate_figma_design)
 
-A reverse workflow: capture a **running local page** and push it into Figma as a design.
-This is separate from the Plugin API approach in `user-building-figma`.
-
-### Prerequisites
-
-```bash
-# Node.js 24+ required
-node --version  # must be v24+
-
-# Add Figma MCP remote server (one-time)
-claude mcp add --transport http figma https://mcp.figma.com/mcp
-# Then authenticate in the browser when prompted
-```
-
-### When to use
-
-- Stakeholder review: quickly share current implementation as a Figma frame
-- Discussion phase: let non-developers inspect and annotate in Figma
-- Snapshot before a refactor
-
-### How it works
-
-1. Start your local dev server (`localhost:3000` etc.)
-2. Ask Claude Code: "このページをFigmaに書き出して"
-3. Claude calls `generate_figma_design` → JS is injected into the page → layout is captured
-4. Choose output: new Figma file / existing file / clipboard
-
-### Limitations
-
-- Requires a running local server (not a static file)
-- Requires a paid Figma plan (unverified — confirm before use on free tier)
-- Output is a visual snapshot, not editable components
-- Complex CSS (masks, clip-path, blend modes) may not transfer accurately
-- For fully editable design systems, use `user-building-figma` (Plugin API) instead
+Reverse workflow: capture a running local page and push it to Figma (stakeholder review, snapshot).
+Prerequisites (Node.js 24+), limitations, how it works: `references/code-to-figma.md`
 
 ## Related Skills
 
