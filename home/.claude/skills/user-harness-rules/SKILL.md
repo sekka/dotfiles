@@ -102,7 +102,7 @@ When repeated violation patterns are detected in Phases 1-3, propose escalation 
 
 ## Out of Scope
 
-- Code quality review (→ `/review-and-improve`)
+- Code quality review (→ `/user-dev-review`)
 - Proposing new rules (this skill only checks existing consistency)
 - Validating Nix / Brewfile content (only checks that tools exist)
 - Creating new memory entries (only cleanup)

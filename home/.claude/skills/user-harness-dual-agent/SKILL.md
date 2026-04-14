@@ -52,6 +52,12 @@ In that case, run it as a separate terminal with `! mise run tornado ./plan.md`.
 
 ## Step 3: After completion
 
-After the TUI exits, suggest checking the changed files with `/review-and-improve`.
+After the TUI exits, suggest checking the changed files with `/user-dev-review`.
 
-## Status: DONE
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — plan.md ready, tornado launched and TUI exited cleanly, and post-run review was suggested
+- `## Status: DONE_WITH_CONCERNS` — tornado completed but the post-run review found issues (list each)
+- `## Status: BLOCKED` — tornado TUI failed to start, or plan.md is missing and could not be created
+- `## Status: NEEDS_CONTEXT` — no plan file path provided and no current task context to generate one from

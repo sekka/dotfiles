@@ -77,7 +77,7 @@ Read `git diff --cached` (staged) or `git diff` (unstaged) and check the followi
 - **Debug code remaining**: `console.log`, `debugger`, `print(`, `TODO`, `FIXME`
 - **Unintended changes**: Check the file list for unrelated files
 
-Record any problems as WARNING with a count. Delegate detailed review to `/review-and-improve`.
+Record any problems as WARNING with a count. Delegate detailed review to `/user-dev-review`.
 
 ## Phase 5: Secret Scan
 
