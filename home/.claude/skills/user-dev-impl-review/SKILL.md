@@ -2,7 +2,7 @@
 name: user-dev-impl-review
 description: Implementation review gate before launch. Orchestrates visual regression (user-fe-vrt), HTML quality (user-fe-html), and code review (user-dev-review), then adds launch-specific checks (forms, redirects, OG tags, DNS, SSL, analytics). Triggered by "実装レビュー", "公開前チェック", "implementation review", or "launch check".
 argument-hint: [target-url] [figma-url]
-allowed-tools: Read, Glob, Grep, Bash, mcp__figma__get_file
+allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion, mcp__figma__get_file
 ---
 
 # Implementation Review Gate
@@ -13,7 +13,7 @@ Review the coded site against Figma and launch readiness before going live.
 
 1. BLOCKER findings must be resolved before launch — do not approve launch with open BLOCKERs
 2. This skill orchestrates other skills — it does not duplicate their logic
-3. Consolidated report is the single source of truth — do not mix findings from sub-skill runs with this report
+3. Consolidated report is the single source of truth — sub-skill findings are surfaced here, not in separate reports
 
 ## Trigger
 
@@ -24,6 +24,8 @@ Arguments:
 - `figma-url`: Figma file URL for visual comparison
 
 ## Process
+
+1. If either argument is missing, ask with AskUserQuestion
 
 Run all 4 phases in order. Collect findings. Output consolidated report.
 

@@ -2,7 +2,7 @@
 name: user-dev-design-review
 description: Design review gate before coding begins. Checks Figma design against RTM for requirement coverage, brand consistency, accessibility basics, and responsive coverage. Requires Figma MCP. Triggered by "デザインレビュー", "design review", "Figma check", or "コーディング前チェック".
 argument-hint: [rtm-file-path] [figma-url]
-allowed-tools: Read, Glob, Grep, mcp__figma__get_file, mcp__figma__get_file_nodes
+allowed-tools: Read, Glob, Grep, AskUserQuestion, mcp__figma__get_file, mcp__figma__get_file_nodes
 ---
 
 # Design Review Gate
