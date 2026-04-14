@@ -1,6 +1,11 @@
 ---
 name: user-dev-commit
-description: Analyze changes by logical unit and commit them in appropriate groups. Triggered by "commit this" or "commit".
+description: >
+  Creates git commits following project conventions: conventional commit format, Japanese commit messages,
+  one-commit-per-logical-change rule. Use this skill whenever the user says "commit", "コミット",
+  "git commit", "commit this", "save my changes", "check in", "commit and push", or asks you to record
+  their work in git. Also use proactively after completing a feature, fix, or refactor when the user
+  hasn't explicitly asked to commit yet — offer to commit the changes.
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git reset:*)
 model: haiku
 effort: low

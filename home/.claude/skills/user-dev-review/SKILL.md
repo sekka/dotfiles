@@ -1,6 +1,12 @@
 ---
 name: user-dev-review
-description: Review code and fix found problems. Use for checking session changes, quality checks, and security audits. Triggered by "review this", "quality check", or "security check".
+description: >
+  Review code and fix found problems. Use this skill whenever the user says "review my code",
+  "check my implementation", "is this correct", "quality check", "security check", "review this",
+  "look over my changes", or "finished implementing". Also use proactively after any feature, fix,
+  or refactor is completed — offer a review pass before moving to a PR or merge. Covers security
+  audits, correctness checks, performance analysis, and maintainability. When substantial code has
+  changed, suggest running this skill without waiting to be asked.
 allowed-tools: Read, Grep, Glob, Edit, Bash
 ---
 

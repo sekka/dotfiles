@@ -1,6 +1,13 @@
 ---
 name: user-research-animations
-description: "Analyze web animations and interactions from a technical perspective. Provides implementation approach, tech stack, and UX evaluation. Triggered by 'analyze this site's animations' or 'how to implement this motion'."
+description: >
+  Analyze web animations and interactions from a technical perspective. Use this skill whenever the
+  user shares a URL and asks about animations, says "analyze this site's animations", "find out what
+  technologies are being used", "describe the animations in words", "explain the motion", "how is
+  this animation built", "what CSS/JS drives this", "how to implement this motion", or "study the
+  animations on this site". Also use when researching animation techniques, CSS animation patterns,
+  scroll-driven animations, GSAP, Three.js, or WebGL effects. Provides implementation approach,
+  tech stack identification, and UX evaluation.
 ---
 
 # Web Animation Analysis Skill
@@ -344,11 +351,3 @@ gsap.to('.hero-bg', {
 - Prefer quantitative expressions (ms, px, %).
 - Keep UX evaluations objective.
 
----
-
-## Trigger Keywords
-
-- "Analyze this site's animations"
-- "Find out what technologies are being used"
-- "Describe the animations in words"
-- "Explain the motion"

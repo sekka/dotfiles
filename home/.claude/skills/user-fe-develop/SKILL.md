@@ -1,6 +1,12 @@
 ---
 name: user-fe-develop
-description: Help with frontend UI/UX implementation and optimization. Covers React/Vue/Next.js, performance, and accessibility. Use proactively when implementing components, building layouts, or optimizing performance — also triggered by questions about React, Vue, Next.js, Tailwind, animation, or accessibility in a web project.
+description: >
+  Help with frontend UI/UX implementation and optimization. Use this skill whenever the user says
+  "implement this feature", "build this component", "write the frontend code", "create this UI",
+  "code this up", "add this to the page", or asks for help with React, Vue, Next.js, Tailwind,
+  TypeScript, CSS, animation, or accessibility. Also use proactively when implementing components,
+  building layouts, managing state, optimizing performance, or writing frontend tests — even if the
+  user doesn't explicitly name a framework. Any frontend coding task is a trigger.
 disable-model-invocation: false
 ---
 
@@ -154,6 +160,4 @@ import userEvent from '@testing-library/user-event';
 
 ## Related Files
 
-- [PATTERNS.md](./PATTERNS.md) - Implementation patterns
-- [PERFORMANCE.md](./PERFORMANCE.md) - Performance checklist
 - [corrections.md](./corrections.md) - Known pitfalls and past mistakes
