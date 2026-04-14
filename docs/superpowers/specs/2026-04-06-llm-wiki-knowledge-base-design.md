@@ -1,7 +1,7 @@
 # LLM Wiki パターン導入によるフロントエンドナレッジ運用刷新
 
 **作成日**: 2026-04-06
-**対象スキル**: `home/.claude/skills/user-managing-frontend-knowledge`
+**対象スキル**: `home/.claude/skills/user-doc-fe-kb`
 **着想元**: Andrej Karpathy "LLM Knowledge Bases" パターン（2026-04-03）、関連派生投稿（Yuchen Jin, elvis, 大野修平, trkbt10）
 
 ---
@@ -10,7 +10,7 @@
 
 Karpathy が提唱した「LLM を**知識エンジニア**として使う」パターン（raw データ収集 → LLM が wiki にコンパイル → Q&A → 結果を wiki に還元 → linting で健全性維持）は、現在のフロントエンドナレッジ運用と高い親和性がある。
 
-既存スキル `user-managing-frontend-knowledge` を調査した結果：
+既存スキル `user-doc-fe-kb` を調査した結果：
 
 - **既存資産**: 297個のMDファイル / 約17万語（Karpathy例の半分弱の規模）
 - **既存スキル機能**: 収集モード（WebFetch→分類→統合）、整理モード（重複統合・古い情報削除・フォーマット統一）、参照モード
@@ -38,7 +38,7 @@ Karpathy が提唱した「LLM を**知識エンジニア**として使う」パ
 ### ディレクトリ構造（最終形）
 
 ```
-home/.claude/skills/user-managing-frontend-knowledge/
+home/.claude/skills/user-doc-fe-kb/
 ├── SKILL.md                        # 改訂（パート1収集モード差し替え＋パート2にqmd優先明記）
 ├── raw/                            # 【新設】生データ層
 │   ├── _inbox/                     # 未処理の原文。コンパイル対象
@@ -57,7 +57,7 @@ home/.claude/skills/user-managing-frontend-knowledge/
 ### qmd インデックス
 
 - パス: `~/.local/share/qmd/frontend.sqlite`（環境変数 `QMD_FRONTEND_INDEX` で指定済み）
-- 対象: `~/.claude/skills/user-managing-frontend-knowledge/knowledge/` のみ
+- 対象: `~/.claude/skills/user-doc-fe-kb/knowledge/` のみ
 - 環境変数とエイリアス（既存）:
   - `QMD_FRONTEND_INDEX` → `home/config/zsh/00_environment.zsh`
   - `qmd-fe` → `home/config/zsh/50_aliases.zsh`
@@ -74,7 +74,7 @@ home/.claude/skills/user-managing-frontend-knowledge/
 
 1. **scripts/setup-qmd.sh のバグ修正**
    - 現状: `SKILL_DIR="$HOME/.claude/skills/managing-frontend-knowledge"`
-   - 修正後: `SKILL_DIR="$HOME/.claude/skills/user-managing-frontend-knowledge"`
+   - 修正後: `SKILL_DIR="$HOME/.claude/skills/user-doc-fe-kb"`
 
 2. **setup.sh 系への統合**
    - `setup/06_claude.sh` の末尾に新セクション「qmd インデックス構築」を追加
@@ -107,8 +107,8 @@ home/.claude/skills/user-managing-frontend-knowledge/
 **作業項目**:
 
 1. **raw/ ディレクトリ初期化**
-   - `home/.claude/skills/user-managing-frontend-knowledge/raw/_inbox/` 作成
-   - `home/.claude/skills/user-managing-frontend-knowledge/raw/_archived/` 作成
+   - `home/.claude/skills/user-doc-fe-kb/raw/_inbox/` 作成
+   - `home/.claude/skills/user-doc-fe-kb/raw/_archived/` 作成
    - `raw/README.md` を執筆: 命名規則（`YYYY-MM-DD-{slug}.md`）、保存フォーマット（出典URL・取得日・原文 or 抜粋）、`_inbox` と `_archived` の役割
 
 2. **SKILL.md パート1「収集モード」の改訂**
@@ -161,7 +161,7 @@ home/.claude/skills/user-managing-frontend-knowledge/
 
 3. **`_inbox/` 件数の可視化（オプション）**
    - `_inbox/` の未処理件数が増えすぎたとき気づける仕組み
-   - `user-preflight` スキルへの組み込み or 日次レポート出力（具体方法は実装時に判断）
+   - `user-dev-preflight` スキルへの組み込み or 日次レポート出力（具体方法は実装時に判断）
 
 **完了基準**:
 
@@ -218,7 +218,7 @@ fi
 
 ### scripts/setup-qmd.sh の修正
 
-- バグ修正: `SKILL_DIR` のパスを `user-managing-frontend-knowledge` に変更
+- バグ修正: `SKILL_DIR` のパスを `user-doc-fe-kb` に変更
 - スタンドアロン実行は引き続き可能（手動再構築用）
 
 ---
