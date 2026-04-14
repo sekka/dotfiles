@@ -1,6 +1,6 @@
 ---
 name: user-doc-copy
-description: Generate per-page content drafts from an IA document and RTM. Output: Markdown copy draft with headline, body, CTA per section. Placeholders for missing assets marked with 📌 REQUIRED. Triggered by "コンテンツたたき台", "copy draft", "ライティング", or "content draft".
+description: Generate per-page content drafts from a confirmed IA document. Output: Markdown copy draft with headline, body, CTA per section. Placeholders for missing assets marked with 📌 REQUIRED. Triggered by "コンテンツたたき台", "copy draft", "ライティング", or "content draft".
 argument-hint: [ia-file-path] [--tone professional|friendly|premium]
 ---
 
@@ -12,7 +12,7 @@ Generate first-draft copy for every page in the IA, ready for client review and 
 
 1. Never fabricate specific facts — use placeholders for unknown data (employee count, founding year, etc.)
 2. Every placeholder must be marked `📌 REQUIRED:` so the client knows what to provide
-3. Primary output is a file saved to `~/prj/{slug}/copy-draft.md`. After saving, respond in chat with the file path only.
+3. Primary output is a file saved to `~/prj/{slug}/copy-draft.md`. After saving, respond in chat with the file path and next-step instruction only.
 4. Write in Japanese unless the client brief specifies another language
 
 ## Trigger
@@ -31,8 +31,8 @@ Tone guide:
 ## Process
 
 1. If IA path is missing, ask with AskUserQuestion
-2. Read IA file — extract page list and slug (from file path: parent directory name)
-3. Ask for client info if not derivable from IA: company name, USP (1–2 sentences), main CTA type
+2. Read IA file — extract page list and slug (from file path: parent directory name). If slug is ambiguous, ask the user: "スラッグ（プロジェクト識別子）を教えてください。"
+3. If not derivable from IA, ask with AskUserQuestion: company name, USP (1–2 sentences), main CTA type
 4. For each page in the page list, generate copy (see Output Format below)
 5. Save to `~/prj/{slug}/copy-draft.md`
 6. Print file path and note: "Send to the client to review and edit. Required items marked 📌 must be confirmed before design."
