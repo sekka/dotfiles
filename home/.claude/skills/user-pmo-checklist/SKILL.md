@@ -23,6 +23,8 @@ Arguments:
 
 If phase is missing or not one of the three options, ask with AskUserQuestion.
 
+Before generating, if the project name is not provided as an argument or derivable from context, ask with AskUserQuestion: "プロジェクト名を教えてください。". Use today's date for `{date}`.
+
 ## Kickoff Checklist
 
 Output when `phase = kickoff`:

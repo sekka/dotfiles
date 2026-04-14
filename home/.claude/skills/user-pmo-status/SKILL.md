@@ -33,12 +33,11 @@ No arguments required.
 ## Progress Calculation
 
 ```
+If total tasks = 0: show progress as "—"
 done_count = tasks where status = "done"
 total_count = total tasks
 progress = round(done_count / total_count * 100, -1)  # nearest 10%
 ```
-
-If no tasks exist yet, show progress as "—".
 
 ## Alert Logic
 
@@ -71,4 +70,5 @@ If a pmo.yaml is malformed or unreadable:
 Add one of the following at the end of every response:
 - `## Status: DONE` — dashboard output complete
 - `## Status: DONE_WITH_CONCERNS` — some files were unreadable (list them)
+- `## Status: NEEDS_CONTEXT` — required argument or context is missing (add what is needed)
 - `## Status: BLOCKED` — cannot read any project files (add reason)

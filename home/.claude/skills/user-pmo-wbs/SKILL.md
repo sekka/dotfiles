@@ -33,6 +33,7 @@ Supported deliverable types:
 - `service-site` — SaaS or service site
 - `video-production` — live-action video
 - `animation` — motion graphics / animated video
+- `motion-graphics` — alias for animation (same template)
 - `branding` — brand identity system
 - `logo-design` — logo only
 - `cms-setup` — CMS installation and configuration

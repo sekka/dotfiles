@@ -73,9 +73,20 @@ If no tasks fall in the current week for any member:
 No tasks scheduled for the week of {Monday date}. Check pmo.yaml deadlines.
 ```
 
+## Assignee Not in members.yaml
+
+If an assignee appears in pmo.yaml tasks but is not listed in members.yaml (or members.yaml does not exist):
+- Include them in the output using the 40h default capacity
+- Add a note: "⚠️ {name} — not in members.yaml, using 40h default"
+
+## Week Matching
+
+A task falls in the current week if its `deadline` field falls on any day Monday–Sunday of the current week. Use `deadline` as the scheduled-work proxy. Tasks with no `deadline` are excluded and listed under "Members with no tasks this week" for their assignee if no other tasks are assigned.
+
 ## Status
 
 Add one of the following at the end of every response:
 - `## Status: DONE` — workload output complete
 - `## Status: DONE_WITH_CONCERNS` — some files missing or unreadable (list them)
+- `## Status: NEEDS_CONTEXT` — required files not found and cannot proceed (add reason)
 - `## Status: BLOCKED` — cannot read project files (add reason)
