@@ -58,3 +58,11 @@ lit parse <file_path> -o <output_path>.md
 
 - For large documents, use `--target-pages` to convert only the pages you need
 - If the converted result is long, save it to a file first and then read it with the Read tool
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — document converted and processed successfully
+- `## Status: DONE_WITH_CONCERNS` — conversion succeeded but output was truncated or partial (e.g., OCR quality low, pages skipped)
+- `## Status: BLOCKED` — `lit` and `npx` are both unavailable, or the file does not exist
+- `## Status: NEEDS_CONTEXT` — no file path provided; cannot determine which document to parse

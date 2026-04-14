@@ -1,7 +1,14 @@
 ---
 name: user-fe-develop
-description: Help with frontend UI/UX implementation and optimization. Covers React/Vue/Next.js, performance, and accessibility. Use when building user interfaces or web applications.
+description: >
+  Help with frontend UI/UX implementation and optimization. Use this skill whenever the user says
+  "implement this feature", "build this component", "write the frontend code", "create this UI",
+  "code this up", "add this to the page", or asks for help with React, Vue, Next.js, Tailwind,
+  TypeScript, CSS, animation, or accessibility. Also use proactively when implementing components,
+  building layouts, managing state, optimizing performance, or writing frontend tests — even if the
+  user doesn't explicitly name a framework. Any frontend coding task is a trigger.
 disable-model-invocation: false
+effort: medium
 ---
 
 # Frontend Development and Performance Optimization
@@ -154,6 +161,12 @@ import userEvent from '@testing-library/user-event';
 
 ## Related Files
 
-- [PATTERNS.md](./PATTERNS.md) - Implementation patterns
-- [PERFORMANCE.md](./PERFORMANCE.md) - Performance checklist
 - [corrections.md](./corrections.md) - Known pitfalls and past mistakes
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — component or feature implemented, types defined, no accessibility regressions introduced
+- `## Status: DONE_WITH_CONCERNS` — implementation complete but with known limitations (e.g., performance not optimized, test coverage partial) — list each
+- `## Status: BLOCKED` — cannot implement without breaking an existing component or resolving a missing dependency
+- `## Status: NEEDS_CONTEXT` — target framework, design spec, or component requirements not specified; cannot start implementation

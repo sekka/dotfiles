@@ -6,6 +6,7 @@ description: >
   Apply changes only after user approval.
   Use when asked to "update rules", "check CLAUDE.md", "clean up memory",
   "check if docs are stale", "maintain rule files", or "review settings".
+effort: medium
 ---
 
 # Rules Maintainer
@@ -15,7 +16,7 @@ Apply fixes only after user approval.
 
 ## Iron Law
 
-1. Do not change rule files without user approval
+1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace
 
 ## Flow
 
@@ -101,7 +102,15 @@ When repeated violation patterns are detected in Phases 1-3, propose escalation 
 
 ## Out of Scope
 
-- Code quality review (→ `/review-and-improve`)
+- Code quality review (→ `/user-dev-review`)
 - Proposing new rules (this skill only checks existing consistency)
 - Validating Nix / Brewfile content (only checks that tools exist)
 - Creating new memory entries (only cleanup)
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all phases complete, report delivered, approved fixes applied
+- `## Status: DONE_WITH_CONCERNS` — report delivered, fixes proposed but awaiting user approval (list each proposed fix)
+- `## Status: BLOCKED` — cannot read rule files or skill directory (list the unreadable paths)
+- `## Status: NEEDS_CONTEXT` — scope not specified; clarify which harness components to check (rules / skills / memory / all)

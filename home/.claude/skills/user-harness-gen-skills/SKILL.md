@@ -3,6 +3,7 @@ name: user-harness-gen-skills
 description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Triggered by "generate skills from history" or "extract patterns".
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
+effort: high
 ---
 
 <objective>
@@ -15,7 +16,7 @@ Relationship with the learn skill: The learn skill extracts knowledge in real ti
 
 ## Iron Law
 
-1. Do not turn one-time operations into skills.
+1. Do not turn one-time operations into skills — skills exist to codify repeatable patterns; unique operations add noise and dilute the trigger matching quality.
 
 </iron_law>
 
@@ -415,17 +416,16 @@ tail -10000 ~/.local/state/zsh/history | \
 </anti_patterns>
 
 <reference_guides>
-Related reference materials:
-
-**Skill creation guidelines:**
-- [creating-agent-skills/SKILL.md](../creating-agent-skills/SKILL.md) — Overview of skill creation
-- [creating-agent-skills/references/skill-structure.md](../creating-agent-skills/references/skill-structure.md) — XML structure requirements
-
-**Complementary skills:**
-- [learn/SKILL.md](../learn/SKILL.md) — Real-time extraction from the current session
-
 **Data sources:**
 - `~/.claude/projects/*/sessions-index.json` — Session metadata
 - `~/.claude/history.jsonl` — Prompt history
 - `~/.local/state/zsh/history` — CLI operation history
 </reference_guides>
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — All selected skills were generated, quality-checked, and saved to `~/dotfiles/home/.claude/skills/`
+- `## Status: DONE_WITH_CONCERNS` — Skills generated but some quality checks raised warnings (e.g., possible duplicate, low frequency candidate included)
+- `## Status: BLOCKED` — Cannot proceed (e.g., no session data found, fewer than 2 candidates passed evaluation)
+- `## Status: NEEDS_CONTEXT` — Scope confirmation still needed (project target, period, or CLI history inclusion not answered)

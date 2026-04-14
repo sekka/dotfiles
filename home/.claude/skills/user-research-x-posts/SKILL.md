@@ -127,3 +127,11 @@ If image → display `/tmp/x_post_image.png` with Read. If video → metadata on
 - Public posts only (cannot fetch posts that require login)
 - Videos return metadata only
 - Reply chains return the main post only
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — post content extracted and formatted successfully
+- `## Status: DONE_WITH_CONCERNS` — content extracted but media could not be retrieved (e.g., video metadata only, image download failed)
+- `## Status: BLOCKED` — all three fetch methods failed (agent-browser, playwright-cli, Playwright MCP); post inaccessible
+- `## Status: NEEDS_CONTEXT` — no X/Twitter URL provided

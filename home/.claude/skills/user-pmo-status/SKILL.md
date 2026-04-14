@@ -1,6 +1,7 @@
 ---
 name: user-pmo-status
-description: Show a multi-project status dashboard. Reads ~/prj/*/pmo.yaml automatically. Flags projects with deadline within 2 weeks. Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard".
+description: Show a multi-project status dashboard. Reads ~/prj/*/pmo.yaml automatically. Flags projects with deadline within 2 weeks. Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard". Also use proactively at the start of weekly planning sessions or when the user mentions any project's status without asking for the dashboard.
+effort: low
 ---
 
 # Multi-Project Status Dashboard

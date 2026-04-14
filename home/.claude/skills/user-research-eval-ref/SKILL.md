@@ -2,6 +2,7 @@
 name: user-research-eval-ref
 description: Evaluate a URL, article, tool, or post as a reference and decide whether to adopt it. Triggered when a URL is shared with phrases like "is this useful", "I want to use this", "investigate this", or "I'm interested".
 disable-model-invocation: false
+effort: medium
 ---
 
 <objective>
@@ -52,9 +53,9 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 | Content type | Route to | How to decide |
 |--------------|--------------|---------|
-| Technical articles on CSS/JS/HTML/performance/accessibility | managing-frontend-knowledge | Detect by keywords in content |
-| Design examples, awards, creative works | researching-creative-cases | Detect by keywords in content |
-| Explicit request like "analyze the structure of this site" | analyzing-websites | Detect from user message |
+| Technical articles on CSS/JS/HTML/performance/accessibility | user-fe-knowledge | Detect by keywords in content |
+| Design examples, awards, creative works | user-research-creative | Detect by keywords in content |
+| Explicit request like "analyze the structure of this site" | user-research-websites | Detect from user message |
 
 → If applicable, launch the target skill using the Skill tool, then end evaluating-references here.
 
@@ -98,7 +99,7 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 **Summary:** [3 lines or less]
 
-**Recommended action:** [Adopt and use for ○○ / Recommend storing in managing-frontend-knowledge / For reference only / Out of scope]
+**Recommended action:** [Adopt and use for ○○ / Recommend storing in user-fe-knowledge / For reference only / Out of scope]
 ```
 
 ---
@@ -184,13 +185,13 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 ## Skill Boundaries
 
-**evaluating-references vs researching-creative-cases:**
-- evaluating-references: Evaluate a **single URL** actively shared by the user, against the user's own environment
-- researching-creative-cases: The system actively scrapes **multiple award sites** to collect and curate examples
+**user-research-eval-ref vs user-research-creative:**
+- user-research-eval-ref: Evaluate a **single URL** actively shared by the user, against the user's own environment
+- user-research-creative: The system actively scrapes **multiple award sites** to collect and curate examples
 
-**evaluating-references vs analyzing-websites:**
-- evaluating-references: Value judgment — "Is this useful?"
-- analyzing-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
+**user-research-eval-ref vs user-research-websites:**
+- user-research-eval-ref: Value judgment — "Is this useful?"
+- user-research-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
 
 **Mode 2 (Deep Research) vs Mode 3 (OSS Project Wiki):**
 - Mode 2: "Should I adopt this for my environment?" → compares against the user's own dotfiles/skills/Brewfile
@@ -212,3 +213,11 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 - Section 5 comparison table includes at least one weakness axis for the target project
 - Output ends with the save-prompt trailing line; no auto-save
 </success_criteria>
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — evaluation complete and recommendation delivered (Quick: structured card / Deep: adoption recommendation + plan / OSS Wiki: all 10 sections with citations)
+- `## Status: DONE_WITH_CONCERNS` — evaluation complete but content retrieval was partial (e.g., some sections blocked, community reaction data unavailable)
+- `## Status: BLOCKED` — cannot retrieve content after exhausting all fallback methods (WebFetch, agent-browser, playwright, Chrome MCP)
+- `## Status: NEEDS_CONTEXT` — no URL provided, or intent is ambiguous and mode cannot be determined

@@ -1,6 +1,11 @@
 ---
 name: user-dev-quality
-description: Run format, lint, and typecheck in an automatic loop. Triggered by "quality loop", "run lint", "format and check", or "format code".
+description: >
+  Run format, lint, and typecheck in an automatic loop. Use this skill whenever the user says
+  "run quality checks", "lint", "check my code", "is the code clean", "format and check",
+  "format code", "run lint", or "quality loop". Also use proactively before a PR, before merge,
+  before code review, or after any implementation work is complete — offer to run quality checks
+  to ensure the code is clean before it moves to the next stage.
 allowed-tools: Bash, Read, Edit, Glob
 effort: low
 ---
@@ -89,3 +94,11 @@ Record the result of each step (pass/fail, error count).
 ### Unresolved Issues (manual action needed)
 - [file:line] error description
 ```
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all checks pass (formatter, linter, type checker)
+- `## Status: DONE_WITH_CONCERNS` — all auto-fixable issues resolved, but manual fixes remain (list each unresolved issue)
+- `## Status: BLOCKED` — same error persisted after 3 retries and cannot be auto-fixed; manual intervention required
+- `## Status: NEEDS_CONTEXT` — no quality check commands found in the project; cannot determine how to run checks

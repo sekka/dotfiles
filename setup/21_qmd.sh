@@ -7,7 +7,7 @@
 source "$(dirname "$0")/lib/common.sh"
 
 COLLECTION_NAME="frontend"
-KNOWLEDGE_DIR="$HOME/.claude/skills/user-doc-fe-kb/knowledge"
+KNOWLEDGE_DIR="$HOME/.claude/skills/user-fe-knowledge/knowledge"
 
 export PATH="$HOME/.bun/bin:$HOME/.cache/.bun/bin:$PATH"
 

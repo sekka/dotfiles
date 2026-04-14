@@ -1,6 +1,6 @@
 ---
 name: user-doc-notion
-description: Use when you want to automatically generate Notion documentation with screenshots. Takes screenshots of all features in a target app/website and creates a user-friendly operation guide in Notion.
+description: Use when you want to automatically generate Notion documentation with screenshots. Takes screenshots of all features in a target app/website and creates a user-friendly operation guide in Notion. Use proactively when teams need to document operations for onboarding, handoff, or client delivery — triggered by 'Notionページに操作説明を作って', 'notionify', or 'screenshot して Notion にまとめて'.
 effort: high
 ---
 
@@ -218,4 +218,8 @@ Report the Notion page URL at the end of the run.
 
 ---
 
-## Status: DONE
+## Status
+
+- `DONE` — all features documented, Notion page created, all screenshots uploaded successfully
+- `DONE_WITH_CONCERNS` — page created but some screenshots failed to upload or some features were skipped (list what was skipped)
+- `BLOCKED` — `NOTION_TOKEN` not set, API connectivity failed, or Notion page creation returned an error (report the error)

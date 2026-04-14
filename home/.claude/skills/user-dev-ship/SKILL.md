@@ -5,6 +5,7 @@ description: >
   Auto-creates a branch when on master/main/develop.
   Triggered by "ship", "シップ", "shipして", "harness-ship", "ハーネスシップ".
 allowed-tools: Bash, Read, Grep, Glob, Edit
+effort: high
 ---
 
 # Ship
@@ -15,7 +16,7 @@ Run preflight → commit → review as a single pipeline, with optional delivery
 
 | Trigger | Delivery |
 |---------|----------|
-| `/ship` | Phase 3 の後に選択肢を提示 |
+| `/ship` | Present options after Phase 3 |
 | `/ship push` | push + create PR |
 | `/ship merge` | push + PR + squash merge + cleanup |
 | `/ship local` | local merge into master + cleanup |
@@ -43,21 +44,21 @@ Phase 2: Commit
     ↓
 Phase 3: Review (lightweight)
     ↓
-    引数なし → ユーザーに選択肢を提示（下記）
-    引数あり → 指定された delivery に直行
+    No args → Present delivery options to user (see below)
+    With args → Proceed directly to specified delivery
     ↓
 Phase 4: Deliver
     ├─ push  → push + create PR
     ├─ merge → push + PR + squash merge + cleanup
     ├─ local → checkout master + merge --no-ff + cleanup
-    └─ done  → delivery せず終了
+    └─ done  → no delivery, stop
     ↓
 Phase 5: Summary
 ```
 
-### Delivery prompt (引数なしの場合)
+### Delivery prompt (when invoked without args)
 
-Phase 3 完了後、以下の選択肢を提示する:
+After Phase 3 completes, present these options:
 
 ```
 Phase 0-3 complete. How would you like to deliver?
@@ -149,7 +150,7 @@ Follow `rules/git-conventions.md` for commit message format and prefixes.
 
 ## Phase 3: Review (Lightweight)
 
-Run a lightweight version of the `/review-and-improve` skill.
+Run a lightweight version of the `/user-dev-review` skill.
 
 Target only the committed diff:
 
@@ -287,6 +288,8 @@ Same table, with delivery row showing:
 
 ## Status
 
-- `DONE` — all Phases completed without issues
-- `DONE_WITH_CONCERNS` — Phase 1 had WARNINGs, or Phase 3 found issues
-- `BLOCKED` — Phase 1 had FAIL, push failed, gh not authenticated, or merge conflict
+Add one of the following at the end of every response:
+- `## Status: DONE` — all Phases completed without issues
+- `## Status: DONE_WITH_CONCERNS` — Phase 1 had WARNINGs, or Phase 3 found issues (list each)
+- `## Status: BLOCKED` — Phase 1 had FAIL, push failed, gh not authenticated, or merge conflict
+- `## Status: NEEDS_CONTEXT` — branch state unclear or required arguments not provided

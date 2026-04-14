@@ -2,6 +2,7 @@
 name: user-figma-implement
 description: Implement Figma designs as high-fidelity code. Triggered by requests to implement a Figma file, frame, or component, or phrases like "match the Figma design" or "implement this Figma". Uses the Figma MCP tool when available.
 disable-model-invocation: false
+effort: high
 ---
 
 # Figma Design Implementation Skill
@@ -34,7 +35,7 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 | Goal | Tool |
 |------|------|
 | Figma → Code (implement design) | `mcp__figma__implement_design` / `mcp__figma__get_design_context` |
-| Code → Figma (programmatic build) | `use_figma` Plugin API → see `user-building-figma` skill |
+| Code → Figma (programmatic build) | `use_figma` Plugin API → see `user-figma-build` skill |
 | Code → Figma (capture existing page) | `generate_figma_design` (see section below) |
 
 ## Rate Limit Notes
@@ -289,7 +290,15 @@ Prerequisites (Node.js 24+), limitations, how it works: `references/code-to-figm
 
 ## Related Skills
 
-- **designing-ui**: Component spec definition, supplementing design intent
-- **developing-frontend**: Implementation details (React/Vue/CSS)
-- **managing-frontend-knowledge**: Reference for modern CSS techniques
-- **user-building-figma**: Code → Figma via Plugin API (programmatic component/design system construction)
+- **user-doc-design-spec**: Component spec definition, supplementing design intent
+- **user-fe-develop**: Implementation details (React/Vue/CSS)
+- **user-fe-knowledge**: Reference for modern CSS techniques
+- **user-figma-build**: Code → Figma via Plugin API (programmatic component/design system construction)
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — implementation complete, all visual diff axes at 0 or -1, DESIGN.md reflects current state
+- `## Status: DONE_WITH_CONCERNS` — implementation complete but one or more visual diff axes at -2 or worse; proposals presented and awaiting approval (list affected axes)
+- `## Status: BLOCKED` — Figma MCP rate limit reached, node ID not provided, or required Figma data is inaccessible
+- `## Status: NEEDS_CONTEXT` — missing Figma node URL/ID or target tech stack; cannot begin implementation

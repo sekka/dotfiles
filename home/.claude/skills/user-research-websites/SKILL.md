@@ -1,7 +1,8 @@
 ---
 name: user-research-websites
-description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Can also summarize a page's purpose and target audience.
+description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Use proactively before competitive analysis, planning a redesign, or when a client asks to reference another site's structure — can also summarize a page's purpose and target audience.
 disable-model-invocation: false
+effort: high
 ---
 
 # Website Structure Analysis and Wireframe Creation
@@ -383,3 +384,11 @@ Ask the user, or create `wireframe-output/` in the project root by default.
 - wireframes/*.md (layout + with analysis)
 - design-analysis/design-system.md (design element report)
 ```
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — sitemap and wireframes generated and saved in the requested formats
+- `## Status: DONE_WITH_CONCERNS` — analysis complete but some pages were skipped (e.g., auth-required pages, crawl limit reached, robots.txt restrictions)
+- `## Status: BLOCKED` — cannot proceed (e.g., target URL is unreachable or requires authentication for all pages)
+- `## Status: NEEDS_CONTEXT` — no URL provided, or crawl depth / output format not confirmed

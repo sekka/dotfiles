@@ -1,6 +1,11 @@
 ---
 name: user-dev-commit
-description: Analyze changes by logical unit and commit them in appropriate groups. Triggered by "commit this" or "commit".
+description: >
+  Creates git commits following project conventions: conventional commit format, Japanese commit messages,
+  one-commit-per-logical-change rule. Use this skill whenever the user says "commit", "コミット",
+  "git commit", "commit this", "save my changes", "check in", "commit and push", or asks you to record
+  their work in git. Also use proactively after completing a feature, fix, or refactor when the user
+  hasn't explicitly asked to commit yet — offer to commit the changes.
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git reset:*)
 model: haiku
 effort: low
@@ -28,3 +33,11 @@ Analyze the changes by logical unit and commit related changes together.
 Follow `rules/git-conventions.md` for splitting, message format, and prefixes.
 
 Run `git add <specific-files>` → `git commit` for each commit.
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all commits created following project conventions
+- `## Status: DONE_WITH_CONCERNS` — committed, but some files were excluded (e.g., sensitive data, debug code) — list what was skipped
+- `## Status: BLOCKED` — sensitive information detected in staged files; commit aborted until resolved
+- `## Status: NEEDS_CONTEXT` — no staged or changed files to commit

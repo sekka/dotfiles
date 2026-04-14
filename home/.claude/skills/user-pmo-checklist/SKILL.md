@@ -1,7 +1,8 @@
 ---
 name: user-pmo-checklist
-description: Generate a phase-gate checklist for a web project. Phases: kickoff / pre-launch / handoff. Output: Markdown checklist ready to paste into a project doc. Triggered by "チェックリスト", "checklist", "キックオフ確認", "公開前確認", or "納品確認".
+description: Generate a phase-gate checklist for a web project. Phases: kickoff / pre-launch / handoff. Output: Markdown checklist ready to paste into a project doc. Triggered by "チェックリスト", "checklist", "キックオフ確認", "公開前確認", or "納品確認". Also use proactively when entering any project phase — offer to generate the checklist without waiting for an explicit request.
 argument-hint: [phase]
+effort: low
 ---
 
 # Phase Gate Checklist

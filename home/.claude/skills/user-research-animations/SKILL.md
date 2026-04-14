@@ -1,6 +1,14 @@
 ---
 name: user-research-animations
-description: "Analyze web animations and interactions from a technical perspective. Provides implementation approach, tech stack, and UX evaluation. Triggered by 'analyze this site's animations' or 'how to implement this motion'."
+description: >
+  Analyze web animations and interactions from a technical perspective. Use this skill whenever the
+  user shares a URL and asks about animations, says "analyze this site's animations", "find out what
+  technologies are being used", "describe the animations in words", "explain the motion", "how is
+  this animation built", "what CSS/JS drives this", "how to implement this motion", or "study the
+  animations on this site". Also use when researching animation techniques, CSS animation patterns,
+  scroll-driven animations, GSAP, Three.js, or WebGL effects. Provides implementation approach,
+  tech stack identification, and UX evaluation.
+effort: medium
 ---
 
 # Web Animation Analysis Skill
@@ -344,11 +352,11 @@ gsap.to('.hero-bg', {
 - Prefer quantitative expressions (ms, px, %).
 - Keep UX evaluations objective.
 
----
+## Status
 
-## Trigger Keywords
+Add one of the following at the end of every response:
+- `## Status: DONE` — animation analysis complete: description, tech stack inference, UX evaluation, and code example all provided
+- `## Status: DONE_WITH_CONCERNS` — analysis complete but some inferences could not be verified (e.g., source code access blocked, DOM inspection unavailable)
+- `## Status: BLOCKED` — cannot proceed (e.g., URL is inaccessible, video or code input is unreadable)
+- `## Status: NEEDS_CONTEXT` — no URL, video, code snippet, or animation description provided to analyze
 
-- "Analyze this site's animations"
-- "Find out what technologies are being used"
-- "Describe the animations in words"
-- "Explain the motion"

@@ -1,7 +1,14 @@
 ---
 name: user-dev-review
-description: Review code and fix found problems. Use for checking session changes, quality checks, and security audits. Triggered by "review this", "quality check", or "security check".
+description: >
+  Review code and fix found problems. Use this skill whenever the user says "review my code",
+  "check my implementation", "is this correct", "quality check", "security check", "review this",
+  "look over my changes", or "finished implementing". Also use proactively after any feature, fix,
+  or refactor is completed — offer a review pass before moving to a PR or merge. Covers security
+  audits, correctness checks, performance analysis, and maintainability. When substantial code has
+  changed, suggest running this skill without waiting to be asked.
 allowed-tools: Read, Grep, Glob, Edit, Bash
+effort: medium
 ---
 
 # Review & Improve
@@ -119,3 +126,11 @@ Skip this phase if no problems were found in Phase 4.
 |------|------|
 | 5 or fewer changed files | Complete within this skill |
 | 6 or more changed files, or architecture-level | Suggest delegating to a reviewer agent |
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — review complete, all passes finished, no Critical-level problems remain
+- `## Status: DONE_WITH_CONCERNS` — review complete, Warning-level issues remain that were not auto-fixed (list each)
+- `## Status: BLOCKED` — Critical-level problem found that could not be fixed (e.g., security vulnerability requiring architectural change or missing context)
+- `## Status: NEEDS_CONTEXT` — no changed files detected and no target files were specified; cannot determine review scope

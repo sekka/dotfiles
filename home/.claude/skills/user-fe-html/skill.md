@@ -1,6 +1,7 @@
 ---
 name: user-fe-html
 description: Check HTML semantics, accessibility, and ARIA attributes thoroughly and suggest improvements. Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
+effort: medium
 ---
 
 # HTML Semantics & Accessibility Check
@@ -9,7 +10,7 @@ Check markup semantics, accessibility, and ARIA attributes using rules. Provide 
 
 ## Iron Law
 
-1. Do not make HTML changes that affect appearance without permission
+1. Do not make HTML changes that affect appearance without permission — semantic changes (e.g., adding landmark roles, restructuring headings) can shift visual layout unexpectedly
 
 ## Progress Reporting Rules (Required)
 
@@ -32,7 +33,7 @@ Report progress to the user at the start and end of each Phase. Report format:
 When the skill starts, **before any other work**, confirm the following. If it fails, report to the user immediately and stop:
 
 ```bash
-CHECK_HTML="$HOME/.claude/skills/improve-html/scripts/check-html.ts"
+CHECK_HTML="$HOME/.claude/skills/user-fe-html/scripts/check-html.ts"
 test -f "$CHECK_HTML" || { echo "ERROR: $CHECK_HTML not found"; exit 1; }
 command -v bun >/dev/null || { echo "ERROR: bun is not installed"; exit 1; }
 ```
@@ -153,5 +154,13 @@ custom_rules: []             # add custom rules
 - Rule definitions: `rules/*.yaml`
 - ARIA data: `data/aria-role-map.yaml`, `data/valid-aria-attrs.yaml`
 - APG patterns: `patterns/*.md`
-- CLI script: `~/.claude/skills/improve-html/scripts/check-html.ts`
-- a11y knowledge: `home/.claude/skills/managing-frontend-knowledge/knowledge/cross-cutting/accessibility/`
+- CLI script: `~/.claude/skills/user-fe-html/scripts/check-html.ts`
+- a11y knowledge: `home/.claude/skills/user-fe-knowledge/knowledge/cross-cutting/accessibility/`
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — HTML check complete, accessibility report generated with all errors and warnings listed in priority order
+- `## Status: DONE_WITH_CONCERNS` — report generated but qualitative analysis found structural issues beyond automated rule violations (list them)
+- `## Status: BLOCKED` — `check-html.ts` script not found or `bun` is not installed
+- `## Status: NEEDS_CONTEXT` — target file, URL, or git diff not yet specified

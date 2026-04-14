@@ -1,6 +1,7 @@
 ---
 name: user-figma-build
-description: Build Figma design systems and page layouts via the Plugin API (use_figma). Use when creating Local Variables, Text Styles, components, Auto Layout frames, or full page designs directly inside Figma programmatically. The reverse of user-working-with-figma (Figma→Code). Triggered by phrases like "Figmaで作って", "Figmaに反映して", "コンポーネントを作って", "デザインシステムを構築して".
+description: Build Figma design systems and page layouts via the Plugin API (use_figma). Use when creating Local Variables, Text Styles, components, Auto Layout frames, or full page designs directly inside Figma programmatically. The reverse of user-figma-implement (Figma→Code). Triggered by phrases like "Figmaで作って", "Figmaに反映して", "コンポーネントを作って", "デザインシステムを構築して".
+effort: high
 ---
 
 # Building Figma Design Systems via Plugin API
@@ -8,7 +9,7 @@ description: Build Figma design systems and page layouts via the Plugin API (use
 This skill covers the **Code → Figma** direction: programmatically constructing design systems,
 components, and page layouts inside Figma using the `use_figma` tool.
 
-For the reverse direction (Figma → Code implementation), use the `user-working-with-figma` skill instead.
+For the reverse direction (Figma → Code implementation), use the `user-figma-implement` skill instead.
 
 ---
 
@@ -26,7 +27,7 @@ Before touching Figma, confirm these documents exist:
 
 | Document | Purpose |
 |----------|---------|
-| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/spec-from-brief` to create it. |
+| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/user-doc-spec` to create it. |
 | Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
 | Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
 | Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
@@ -34,9 +35,113 @@ Before touching Figma, confirm these documents exist:
 
 **RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
 
-Use the `/spec-from-brief` skill to create or audit the RTM before starting Figma work.
+Use the `/user-doc-spec` skill to create or audit the RTM before starting Figma work.
 
 Do NOT start building until the style direction is LOCKED and the RTM coverage is ≥ 100%.
+
+---
+
+## Phase 0b: Lo-fi Wireframe in Figma (Optional)
+
+Use when a text wireframe (`plans/06-wireframes.md`) exists but visual gray-box frames in Figma are needed — for stakeholder review before committing to visual direction.
+
+**Skip if:** Figma already has wireframe frames, or you are going straight to hi-fi.
+
+### Conventions
+
+| Element | Value |
+|---------|-------|
+| Background | `#FFFFFF` |
+| Image placeholder | `#BDBDBD` rectangle |
+| Body text placeholder | `#333333`, `fontSize: 14` |
+| Heading placeholder | `#333333`, `fontSize: 20–28` |
+| Spacing unit | 8px grid (`itemSpacing: 16 / 24 / 32`) |
+| Layout | Auto Layout only — no manual positioning |
+| Tokens / styles | None — gray-box only, no design system |
+
+### Page Setup
+
+```js
+const wireframePage = figma.createPage();
+wireframePage.name = '0_Wireframes';
+await figma.setCurrentPageAsync(wireframePage);
+
+// Gray helper (hex → 0-1 RGB)
+const g = hex => ({
+  r: parseInt(hex.slice(1,3),16)/255,
+  g: parseInt(hex.slice(3,5),16)/255,
+  b: parseInt(hex.slice(5,7),16)/255
+});
+```
+
+### Section Frame
+
+```js
+const makeSection = (name, bgHex='#FFFFFF') => {
+  const f = figma.createFrame();
+  f.name = name;
+  f.layoutMode = 'VERTICAL';
+  f.primaryAxisSizingMode = 'AUTO';   // height hugs content
+  f.counterAxisSizingMode = 'FIXED';  // width is fixed
+  f.resize(1440, 100);                // height placeholder; AUTO overrides
+  f.fills = [{ type:'SOLID', color: g(bgHex) }];
+  f.paddingTop = f.paddingBottom = 80;
+  f.paddingLeft = f.paddingRight = 120;
+  f.itemSpacing = 32;
+  return f;
+};
+```
+
+### Image Placeholder
+
+```js
+const makeImg = (w, h, label='Image') => {
+  const r = figma.createRectangle();
+  r.resize(w, h);
+  r.fills = [{ type:'SOLID', color: g('#BDBDBD') }];
+  r.name = `[IMG] ${label}`;
+  return r;
+};
+```
+
+### Text Placeholder
+
+```js
+const makeText = async (content, size=16) => {
+  await figma.loadFontAsync({ family:'Inter', style:'Regular' });
+  const t = figma.createText();
+  t.fontName = { family:'Inter', style:'Regular' };
+  t.characters = content;
+  t.fontSize = size;
+  t.fills = [{ type:'SOLID', color: g('#333333') }];
+  return t;
+};
+```
+
+### Desktop + Mobile Pair
+
+```js
+// Desktop (1440px) — append to wireframePage
+const desktop = figma.createFrame();
+desktop.name = 'TOP — Desktop';
+desktop.resize(1440, 900);
+desktop.layoutMode = 'VERTICAL';
+desktop.primaryAxisSizingMode = 'AUTO';
+desktop.itemSpacing = 0;
+wireframePage.appendChild(desktop);
+
+// Mobile (375px) — placed 40px to the right
+const mobile = figma.createFrame();
+mobile.name = 'TOP — Mobile';
+mobile.resize(375, 812);
+mobile.layoutMode = 'VERTICAL';
+mobile.primaryAxisSizingMode = 'AUTO';
+mobile.itemSpacing = 0;
+mobile.x = 1480;
+wireframePage.appendChild(mobile);
+```
+
+After each page, run `get_screenshot` to confirm layout before continuing.
 
 ---
 
@@ -252,3 +357,11 @@ Key tools covered: Glass effect, Remove background, Vectorize, Erase object, Exp
 - [ ] `await figma.setCurrentPageAsync(page)` for page switching
 - [ ] Every created/mutated node ID included in `return`
 - [ ] Working incrementally (one section per call, validate after each)
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all requested Figma frames, components, or design system elements built and visually validated via screenshot
+- `## Status: DONE_WITH_CONCERNS` — build complete but manual steps remain (e.g., user must convert `[SLOT]` frames to actual Slots via `⌘⇧S`) — list each
+- `## Status: BLOCKED` — Plugin API call failed, required font is unavailable, or RTM coverage is below 100% and style direction is not locked
+- `## Status: NEEDS_CONTEXT` — missing RTM, style direction, or wireframes required before building; cannot start Phase 1

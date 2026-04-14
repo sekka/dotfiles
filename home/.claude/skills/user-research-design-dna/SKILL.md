@@ -1,6 +1,6 @@
 ---
 name: user-research-design-dna
-description: Use when analyzing a competitor or reference website for design intelligence — design tokens, layout patterns, component screenshots, AI-powered tone/manner analysis, 7-axis evaluation scoring, and Design DNA. Accumulates results in ~/.claude/design-references/ for reuse. Also generates DESIGN.md for projects.
+description: Use when analyzing a competitor or reference website for design intelligence — design tokens, layout patterns, component screenshots, AI-powered tone/manner analysis, 7-axis evaluation scoring, and Design DNA. Triggered by "analyze this site's design", "extract design tokens from", "design DNA", "competitor design analysis", "design direction for project", "study the visual language of", "デザインDNA", "デザイン分析". Accumulates results in ~/.claude/design-references/ for reuse. Also generates DESIGN.md for projects.
 effort: medium
 ---
 
@@ -295,7 +295,7 @@ After saving to dotfiles, offer to generate `./DESIGN.md` for the current projec
 1. Ask: "DESIGN.md をプロジェクトルートに生成しますか？"
 2. If yes, ask: "ベースにする参照サイト: [{slug}] ← 今分析したサイト。他に追加しますか？"
 3. Ask: "プロジェクト固有のトークン上書きはありますか？（なければスキップ）"
-4. Generate `./DESIGN.md` following `user-working-with-figma/references/design-md-format.md`:
+4. Generate `./DESIGN.md` following `user-figma-implement/references/design-md-format.md`:
    - Pre-fill `tokens` and `grid` from `~/.claude/design-references/{slug}/tokens.yaml`
    - Pre-fill prose sections from `~/.claude/design-references/{slug}/analysis.md`
    - Set `references: [{slug}]`
@@ -347,3 +347,11 @@ If the user wants to build a specific component after analysis:
 | Screenshot fails | Note failure in REPORT.md, continue with other sections |
 | CORS/CSP blocks JS | Document limitation, use visual analysis only |
 | Page requires login | Report to user — analysis limited to publicly visible content |
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — design tokens extracted, screenshots captured, YAML files saved to `~/.claude/design-references/`, and REPORT.md generated
+- `## Status: DONE_WITH_CONCERNS` — analysis complete but some steps were skipped (e.g., JS eval blocked by CSP, screenshot failed for a component, evaluation.yaml fields required manual input)
+- `## Status: BLOCKED` — browser tool unavailable, target site requires login, or required tools (yq, ImageMagick) not installed
+- `## Status: NEEDS_CONTEXT` — target URL or analysis scope (colors / typography / layout / components / all) not yet confirmed

@@ -1,6 +1,7 @@
 ---
 name: user-pmo-workload
-description: Show member workload for the current week across all projects. Reads ~/prj/*/pmo.yaml and ~/prj/members.yaml. Flags overloaded members. Suggests reassignment if any member exceeds capacity. Triggered by "稼働確認", "workload", "メンバー工数", or "リソース確認".
+description: Show member workload for the current week across all projects. Reads ~/prj/*/pmo.yaml and ~/prj/members.yaml. Flags overloaded members. Suggests reassignment if any member exceeds capacity. Triggered by "稼働確認", "workload", "メンバー工数", or "リソース確認". Also use proactively before sprint planning or task assignment discussions.
+effort: low
 ---
 
 # Member Workload Visualizer

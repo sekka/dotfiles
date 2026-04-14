@@ -17,9 +17,11 @@
       "Skill(difit-here)",
       "Skill(review-pr)",
       "Skill(user-dev-commit)",
-      "Skill(user-harness-gen-skills)",
-      "Skill(user-doc-fe-kb)",
       "Skill(user-dev-review)",
+      "Skill(user-fe-knowledge)",
+      "Skill(user-harness-gen-skills)",
+      "Bash(mkdir:*)",
+      "Write",
       "WebSearch",
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
@@ -224,7 +226,8 @@
     "figma@claude-plugins-official": false,
     "frontend-design@claude-plugins-official": false,
     "claude-code-setup@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
