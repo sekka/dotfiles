@@ -205,7 +205,7 @@ Exceptions:
 
 ### Step 5: Update the file
 
-1. Read `~/.claude/skills/managing-frontend-knowledge/knowledge/[category]/[filename].md`
+1. Read `~/.claude/skills/user-fe-knowledge/knowledge/[category]/[filename].md`
 2. Update according to the processing approach:
    - **New**: Create a new file with the Write tool
    - **Append**: Add to the end of the existing file with the Edit tool
@@ -589,7 +589,7 @@ When performing web development implementation tasks or coding work, proactively
 2. **Identify the relevant category** (refer to the category list above)
 
 3. **Read the knowledge file**
-   - The relevant file inside `~/.claude/skills/managing-frontend-knowledge/knowledge/`
+   - The relevant file inside `~/.claude/skills/user-fe-knowledge/knowledge/`
 
 4. **Apply best practices and implement**
    - Use up-to-date methods based on the knowledge
@@ -602,7 +602,7 @@ When performing web development implementation tasks or coding work, proactively
 
 1. Extract keywords from the user's question.
 2. Identify the relevant file from the category list above.
-3. Read the relevant file inside `~/.claude/skills/managing-frontend-knowledge/knowledge/`
+3. Read the relevant file inside `~/.claude/skills/user-fe-knowledge/knowledge/`
 4. Answer based on the accumulated knowledge.
 
 ### Directory Structure

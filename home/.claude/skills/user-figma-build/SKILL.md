@@ -8,7 +8,7 @@ description: Build Figma design systems and page layouts via the Plugin API (use
 This skill covers the **Code → Figma** direction: programmatically constructing design systems,
 components, and page layouts inside Figma using the `use_figma` tool.
 
-For the reverse direction (Figma → Code implementation), use the `user-working-with-figma` skill instead.
+For the reverse direction (Figma → Code implementation), use the `user-figma-implement` skill instead.
 
 ---
 
@@ -26,7 +26,7 @@ Before touching Figma, confirm these documents exist:
 
 | Document | Purpose |
 |----------|---------|
-| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/spec-from-brief` to create it. |
+| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/user-doc-spec` to create it. |
 | Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
 | Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
 | Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
@@ -34,7 +34,7 @@ Before touching Figma, confirm these documents exist:
 
 **RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
 
-Use the `/spec-from-brief` skill to create or audit the RTM before starting Figma work.
+Use the `/user-doc-spec` skill to create or audit the RTM before starting Figma work.
 
 Do NOT start building until the style direction is LOCKED and the RTM coverage is ≥ 100%.
 

@@ -52,9 +52,9 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 | Content type | Route to | How to decide |
 |--------------|--------------|---------|
-| Technical articles on CSS/JS/HTML/performance/accessibility | managing-frontend-knowledge | Detect by keywords in content |
-| Design examples, awards, creative works | researching-creative-cases | Detect by keywords in content |
-| Explicit request like "analyze the structure of this site" | analyzing-websites | Detect from user message |
+| Technical articles on CSS/JS/HTML/performance/accessibility | user-fe-knowledge | Detect by keywords in content |
+| Design examples, awards, creative works | user-research-creative | Detect by keywords in content |
+| Explicit request like "analyze the structure of this site" | user-research-websites | Detect from user message |
 
 → If applicable, launch the target skill using the Skill tool, then end evaluating-references here.
 
@@ -98,7 +98,7 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 **Summary:** [3 lines or less]
 
-**Recommended action:** [Adopt and use for ○○ / Recommend storing in managing-frontend-knowledge / For reference only / Out of scope]
+**Recommended action:** [Adopt and use for ○○ / Recommend storing in user-fe-knowledge / For reference only / Out of scope]
 ```
 
 ---

@@ -217,7 +217,7 @@ Apple HIGの基本原則：
 
 ### 検索のヒント
 
-- `grep -r "キーワード" ~/.claude/skills/managing-frontend-knowledge/knowledge/human-interface-guidelines/`
+- `grep -r "キーワード" ~/.claude/skills/user-fe-knowledge/knowledge/human-interface-guidelines/`
 - Globパターン: `**/*button*.md`、`**/*color*.md`
 
 ## 更新履歴

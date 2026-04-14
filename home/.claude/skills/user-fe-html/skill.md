@@ -154,4 +154,4 @@ custom_rules: []             # add custom rules
 - ARIA data: `data/aria-role-map.yaml`, `data/valid-aria-attrs.yaml`
 - APG patterns: `patterns/*.md`
 - CLI script: `~/.claude/skills/improve-html/scripts/check-html.ts`
-- a11y knowledge: `home/.claude/skills/managing-frontend-knowledge/knowledge/cross-cutting/accessibility/`
+- a11y knowledge: `home/.claude/skills/user-fe-knowledge/knowledge/cross-cutting/accessibility/`

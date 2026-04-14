@@ -289,7 +289,7 @@ Prerequisites (Node.js 24+), limitations, how it works: `references/code-to-figm
 
 ## Related Skills
 
-- **designing-ui**: Component spec definition, supplementing design intent
-- **developing-frontend**: Implementation details (React/Vue/CSS)
-- **managing-frontend-knowledge**: Reference for modern CSS techniques
-- **user-building-figma**: Code → Figma via Plugin API (programmatic component/design system construction)
+- **user-doc-design-spec**: Component spec definition, supplementing design intent
+- **user-fe-develop**: Implementation details (React/Vue/CSS)
+- **user-fe-knowledge**: Reference for modern CSS techniques
+- **user-figma-build**: Code → Figma via Plugin API (programmatic component/design system construction)

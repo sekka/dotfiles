@@ -167,7 +167,7 @@ Signs you are polishing too much:
 
 ## Related Skills
 
-- `/developing-frontend` — for production-quality frontend work after the prototype is validated
+- `/user-fe-develop` — for production-quality frontend work after the prototype is validated
 - `/ship` — when the prototype is ready to clean up and merge
 
 ---
