@@ -8,6 +8,7 @@ description: >
   audits, correctness checks, performance analysis, and maintainability. When substantial code has
   changed, suggest running this skill without waiting to be asked.
 allowed-tools: Read, Grep, Glob, Edit, Bash
+effort: medium
 ---
 
 # Review & Improve

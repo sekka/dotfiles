@@ -5,6 +5,7 @@ description: >
   Auto-creates a branch when on master/main/develop.
   Triggered by "ship", "シップ", "shipして", "harness-ship", "ハーネスシップ".
 allowed-tools: Bash, Read, Grep, Glob, Edit
+effort: high
 ---
 
 # Ship

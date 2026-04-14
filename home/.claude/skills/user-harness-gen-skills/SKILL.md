@@ -3,6 +3,7 @@ name: user-harness-gen-skills
 description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Triggered by "generate skills from history" or "extract patterns".
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
+effort: high
 ---
 
 <objective>
@@ -15,7 +16,7 @@ Relationship with the learn skill: The learn skill extracts knowledge in real ti
 
 ## Iron Law
 
-1. Do not turn one-time operations into skills.
+1. Do not turn one-time operations into skills — skills exist to codify repeatable patterns; unique operations add noise and dilute the trigger matching quality.
 
 </iron_law>
 

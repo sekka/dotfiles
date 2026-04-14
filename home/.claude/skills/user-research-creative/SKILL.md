@@ -2,6 +2,7 @@
 name: user-research-creative
 description: Research the latest Japanese creative work (web, ads, products, music videos, landing pages, typography, packaging, spaces, UI/UX, exhibitions, etc.) from awards and trends. Generates a curated Markdown report. Suggests related fields. Useful for team inspiration, client proposals, and design trend analysis.
 disable-model-invocation: false
+effort: high
 ---
 
 <objective>

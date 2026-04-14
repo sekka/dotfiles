@@ -2,6 +2,7 @@
 name: user-fe-knowledge
 description: Manage a knowledge base for frontend technologies (CSS, JavaScript, HTML, performance, accessibility). During web development tasks, consult the knowledge base proactively and apply best practices to improve accuracy and speed. Also summarizes and stores technical info from URLs and articles, and answers questions. Covers modern CSS (Grid, Flexbox, @scope, View Transitions), JavaScript patterns, Core Web Vitals, WCAG, and browser compatibility.
 disable-model-invocation: false
+effort: medium
 ---
 
 # Frontend Knowledge Management

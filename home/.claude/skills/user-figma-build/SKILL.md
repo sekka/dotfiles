@@ -1,6 +1,7 @@
 ---
 name: user-figma-build
 description: Build Figma design systems and page layouts via the Plugin API (use_figma). Use when creating Local Variables, Text Styles, components, Auto Layout frames, or full page designs directly inside Figma programmatically. The reverse of user-figma-implement (Figma→Code). Triggered by phrases like "Figmaで作って", "Figmaに反映して", "コンポーネントを作って", "デザインシステムを構築して".
+effort: high
 ---
 
 # Building Figma Design Systems via Plugin API

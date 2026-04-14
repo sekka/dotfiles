@@ -2,6 +2,7 @@
 name: user-research-eval-ref
 description: Evaluate a URL, article, tool, or post as a reference and decide whether to adopt it. Triggered when a URL is shared with phrases like "is this useful", "I want to use this", "investigate this", or "I'm interested".
 disable-model-invocation: false
+effort: medium
 ---
 
 <objective>

@@ -7,6 +7,7 @@ description: >
   a second agent. Also use when the user wants to run codex for implementation while keeping claude
   for oversight and review. Trigger proactively when the task is large enough to benefit from parallel
   agent execution.
+effort: high
 ---
 
 # Tornado Skill

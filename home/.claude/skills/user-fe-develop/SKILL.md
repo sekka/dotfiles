@@ -8,6 +8,7 @@ description: >
   building layouts, managing state, optimizing performance, or writing frontend tests — even if the
   user doesn't explicitly name a framework. Any frontend coding task is a trigger.
 disable-model-invocation: false
+effort: medium
 ---
 
 # Frontend Development and Performance Optimization

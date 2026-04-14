@@ -8,6 +8,7 @@ description: >
   Triggered by '/user-harness-interview [plan-file]' or 'interview me about this plan'.
 argument-hint: [plan]
 model: opus
+effort: low
 ---
 
 ## What This Skill Does

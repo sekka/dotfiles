@@ -1,7 +1,8 @@
 ---
 name: user-doc-ia
-description: Generate an IA (information architecture) proposal from an RTM file. Input: RTM file path. Output: Mermaid sitemap + page list + navigation design + client-facing rationale + decision list, saved to ~/prj/{slug}/ia.md. Triggered by "IA作って", "サイトマップ", "information architecture", "ia plan", or "site structure".
+description: Generate an IA (information architecture) proposal from an RTM file. Input: RTM file path. Output: Mermaid sitemap + page list + navigation design + client-facing rationale + decision list, saved to ~/prj/{slug}/ia.md. Triggered by "IA作って", "サイトマップ", "information architecture", "ia plan", or "site structure". Also use proactively once the RTM is confirmed and design is about to start.
 argument-hint: [rtm-file-path]
+effort: medium
 ---
 
 # IA Planner — Information Architecture Generator

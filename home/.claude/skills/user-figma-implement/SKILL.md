@@ -2,6 +2,7 @@
 name: user-figma-implement
 description: Implement Figma designs as high-fidelity code. Triggered by requests to implement a Figma file, frame, or component, or phrases like "match the Figma design" or "implement this Figma". Uses the Figma MCP tool when available.
 disable-model-invocation: false
+effort: high
 ---
 
 # Figma Design Implementation Skill

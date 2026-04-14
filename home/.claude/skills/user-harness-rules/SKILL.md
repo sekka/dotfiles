@@ -6,6 +6,7 @@ description: >
   Apply changes only after user approval.
   Use when asked to "update rules", "check CLAUDE.md", "clean up memory",
   "check if docs are stale", "maintain rule files", or "review settings".
+effort: medium
 ---
 
 # Rules Maintainer
@@ -15,7 +16,7 @@ Apply fixes only after user approval.
 
 ## Iron Law
 
-1. Do not change rule files without user approval
+1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace
 
 ## Flow
 

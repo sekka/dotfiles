@@ -1,7 +1,8 @@
 ---
 name: user-doc-copy
-description: Generate per-page content drafts from a confirmed IA document. Output: Markdown copy draft with headline, body, CTA per section. Placeholders for missing assets marked with 📌 REQUIRED. Triggered by "コンテンツたたき台", "copy draft", "ライティング", or "content draft".
+description: Generate per-page content drafts from a confirmed IA document. Output: Markdown copy draft with headline, body, CTA per section. Placeholders for missing assets marked with 📌 REQUIRED. Triggered by "コンテンツたたき台", "copy draft", "ライティング", or "content draft". Also use proactively once the IA is approved and the client needs something to review.
 argument-hint: [ia-file-path] [--tone professional|friendly|premium]
+effort: medium
 ---
 
 # Content Draft Generator

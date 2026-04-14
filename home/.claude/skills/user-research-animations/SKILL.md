@@ -8,6 +8,7 @@ description: >
   animations on this site". Also use when researching animation techniques, CSS animation patterns,
   scroll-driven animations, GSAP, Three.js, or WebGL effects. Provides implementation approach,
   tech stack identification, and UX evaluation.
+effort: medium
 ---
 
 # Web Animation Analysis Skill

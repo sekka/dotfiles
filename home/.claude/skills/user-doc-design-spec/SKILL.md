@@ -2,6 +2,7 @@
 name: user-doc-design-spec
 description: Use when creating UI design documentation before Figma work or coding: text wireframes, layout specifications, design system definitions (colors, typography, spacing tokens), component state inventories, or design handoff documents. Outputs Markdown specs, not code. To generate UI code directly, use the frontend-design skill instead.
 disable-model-invocation: false
+effort: medium
 ---
 
 # UI Design Specification

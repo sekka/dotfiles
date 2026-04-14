@@ -3,6 +3,7 @@ name: user-figma-gate
 description: Use when Figma design is complete and coding is about to start, and both an RTM file and a Figma URL are available. Requires Figma MCP. Runs a PASS/FAIL gate: RTM requirement coverage, brand token consistency, accessibility basics, and responsive frame coverage. Outputs BLOCKER/WARNING findings. Not for informal design critique — requires hard requirements in RTM format.
 argument-hint: [rtm-file-path] [figma-url]
 allowed-tools: Read, Glob, Grep, AskUserQuestion, mcp__figma__get_file, mcp__figma__get_file_nodes
+effort: medium
 ---
 
 # Design Review Gate

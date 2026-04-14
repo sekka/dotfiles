@@ -1,6 +1,7 @@
 ---
 name: user-fe-html
 description: Check HTML semantics, accessibility, and ARIA attributes thoroughly and suggest improvements. Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
+effort: medium
 ---
 
 # HTML Semantics & Accessibility Check
@@ -9,7 +10,7 @@ Check markup semantics, accessibility, and ARIA attributes using rules. Provide 
 
 ## Iron Law
 
-1. Do not make HTML changes that affect appearance without permission
+1. Do not make HTML changes that affect appearance without permission — semantic changes (e.g., adding landmark roles, restructuring headings) can shift visual layout unexpectedly
 
 ## Progress Reporting Rules (Required)
 
