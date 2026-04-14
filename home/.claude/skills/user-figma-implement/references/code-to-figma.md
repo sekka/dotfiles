@@ -1,7 +1,7 @@
 # Code → Figma via MCP (generate_figma_design)
 
 A reverse workflow: capture a **running local page** and push it into Figma as a design.
-This is separate from the Plugin API approach in `user-building-figma`.
+This is separate from the Plugin API approach in `user-figma-build`.
 
 ## Prerequisites
 
@@ -33,4 +33,4 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp
 - Requires a paid Figma plan (unverified — confirm before use on free tier)
 - Output is a visual snapshot, not editable components
 - Complex CSS (masks, clip-path, blend modes) may not transfer accurately
-- For fully editable design systems, use `user-building-figma` (Plugin API) instead
+- For fully editable design systems, use `user-figma-build` (Plugin API) instead

@@ -11,7 +11,7 @@ Automatically research and document the latest Japanese creative work from major
 <quick_start>
 **Basic usage:**
 ```
-/researching-creative-cases
+/user-research-creative
 ```
 Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-web-creative-cases-YYYYMM-YYYYMM.md`
 
@@ -251,43 +251,43 @@ Compare with the previous file to identify new cases, new trends, and production
 <examples>
 **Example 1: Standard execution (Web-focused)**
 ```
-/researching-creative-cases
+/user-research-creative
 ```
 Output: `20260122-creative-cases-2025-12-2026-01.md` (20 cases from Dec 2025–Jan 2026)
 
 **Example 2: Advertising campaign focused**
 ```
-/researching-creative-cases --field advertising --period "last 3 months" --count 15
+/user-research-creative --field advertising --period "last 3 months" --count 15
 ```
 Output: `20260122-advertising-cases-2025-11-2026-01.md` (15 advertising cases from the last 3 months)
 
 **Example 3: Product design focused**
 ```
-/researching-creative-cases --field product --industry fashion --count 10
+/user-research-creative --field product --industry fashion --count 10
 ```
 Output: 10 product design cases from the fashion industry
 
 **Example 4: Typography and LP mix**
 ```
-/researching-creative-cases --field "typography,lp" --count 20
+/user-research-creative --field "typography,lp" --count 20
 ```
 Output: 20 mixed typography and LP cases
 
 **Example 5: MV/video focused (featured companies first)**
 ```
-/researching-creative-cases --field "mv" --period "last 3 months" --count 15
+/user-research-creative --field "mv" --period "last 3 months" --count 15
 ```
 Output: `20260122-mv-cases-2025-11-2026-01.md` (prioritizes work from Garden Eight, mount inc., IN FOCUS, etc.)
 
 **Example 6: Web + adjacent field suggestions**
 ```
-/researching-creative-cases --field "web" --adjacent-fields true
+/user-research-creative --field "web" --adjacent-fields true
 ```
 → Automatically includes MV/video, motion graphics, UI/UX in the research scope
 
 **Example 7: All fields (multiple)**
 ```
-/researching-creative-cases --field "web,advertising,mv,product" --count 30
+/user-research-creative --field "web,advertising,mv,product" --count 30
 ```
 Output: 30 comprehensive cases spanning 4 fields
 

@@ -184,13 +184,13 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 ## Skill Boundaries
 
-**evaluating-references vs researching-creative-cases:**
-- evaluating-references: Evaluate a **single URL** actively shared by the user, against the user's own environment
-- researching-creative-cases: The system actively scrapes **multiple award sites** to collect and curate examples
+**user-research-eval-ref vs user-research-creative:**
+- user-research-eval-ref: Evaluate a **single URL** actively shared by the user, against the user's own environment
+- user-research-creative: The system actively scrapes **multiple award sites** to collect and curate examples
 
-**evaluating-references vs analyzing-websites:**
-- evaluating-references: Value judgment — "Is this useful?"
-- analyzing-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
+**user-research-eval-ref vs user-research-websites:**
+- user-research-eval-ref: Value judgment — "Is this useful?"
+- user-research-websites: Structural analysis task — "Analyze the structure" or "Create a sitemap"
 
 **Mode 2 (Deep Research) vs Mode 3 (OSS Project Wiki):**
 - Mode 2: "Should I adopt this for my environment?" → compares against the user's own dotfiles/skills/Brewfile

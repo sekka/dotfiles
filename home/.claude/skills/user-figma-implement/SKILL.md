@@ -34,7 +34,7 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 | Goal | Tool |
 |------|------|
 | Figma → Code (implement design) | `mcp__figma__implement_design` / `mcp__figma__get_design_context` |
-| Code → Figma (programmatic build) | `use_figma` Plugin API → see `user-building-figma` skill |
+| Code → Figma (programmatic build) | `use_figma` Plugin API → see `user-figma-build` skill |
 | Code → Figma (capture existing page) | `generate_figma_design` (see section below) |
 
 ## Rate Limit Notes

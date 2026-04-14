@@ -63,7 +63,7 @@
 ```typescript
 // 1. BFS版スクリプトを読み込む
 Read({
-  file_path: "~/.claude/skills/analyzing-websites/scripts/deep-crawl-bfs.js"
+  file_path: "~/.claude/skills/user-research-websites/scripts/deep-crawl-bfs.js"
 });
 
 // 2. baseUrl と maxDepth を編集
@@ -95,7 +95,7 @@ mcp__plugin_playwright_playwright__browser_run_code({
 ```typescript
 // 1. スクリプトを読み込む
 Read({
-  file_path: "~/.claude/skills/analyzing-websites/scripts/deep-crawl-template.js"
+  file_path: "~/.claude/skills/user-research-websites/scripts/deep-crawl-template.js"
 });
 
 // 2. 内容を編集（baseUrl、knownPages等）
