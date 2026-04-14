@@ -10,7 +10,7 @@ Generate a complete IA proposal from a Requirements Traceability Matrix (RTM).
 
 ## Iron Law
 
-1. Never invent pages not traceable to the RTM — every proposed page must cite a BINDING or SUPPLEMENTED requirement
+1. Never invent pages not traceable to the RTM — every proposed page must cite a BINDING or SUPPLEMENTED requirement. Exception: TOP is always present as the structural root and does not require RTM traceability.
 2. Primary output is a file saved to `~/prj/{slug}/ia.md`. After saving, respond in chat with the file path only.
 3. Decision list must be explicit — never hide open questions in prose
 
@@ -25,7 +25,7 @@ Arguments:
 
 1. If RTM path is not provided, ask with AskUserQuestion
 2. Read the RTM file
-3. Extract: all BINDING pages/sections, SUPPLEMENTED structural decisions, PENDING items
+3. Extract: all BINDING pages/sections, SUPPLEMENTED structural decisions, PENDING items — PENDING items become candidates for Part 5 (Decision List)
 4. Infer slug from the file path (parent directory name). If unclear, ask the user.
 5. Generate the 5-part output (see below)
 6. Save to `~/prj/{slug}/ia.md`
@@ -39,7 +39,7 @@ Save all 5 parts to `~/prj/{slug}/ia.md` in this order.
 
 Hierarchical tree of all pages. Every node maps to a BINDING or SUPPLEMENTED requirement.
 
-```
+```mermaid
 graph TD
   TOP["TOP / ホーム"]
   TOP --> ABOUT["会社概要"]
@@ -55,15 +55,16 @@ Rules:
 - Orphan pages (no parent) go directly under TOP
 - Max depth: 3 levels (TOP → section → page)
 - Node labels use Japanese page names with path in quotes where helpful
+- Optional: annotate nodes with RTM ref in parentheses, e.g. `SERVICE["サービス (REQ-05)"]`
 
 ### Part 2: Page List
 
 One row per page. Every row must have a purpose and expected user action.
 
-| Page | Path | Purpose | Primary content | Expected user action |
-|---|---|---|---|---|
-| TOP | / | First impression, navigate to services | Hero, service overview, news | Click to Service or Contact |
-| 会社概要 | /about | Build trust | Company history, team, philosophy | Back-navigate or Contact |
+| Page | Path | Purpose | Primary content | Expected user action | RTM Ref |
+|---|---|---|---|---|---|
+| TOP | / | First impression, navigate to services | Hero, service overview, news | Click to Service or Contact | — (structural root) |
+| 会社概要 | /about | Build trust | Company history, team, philosophy | Back-navigate or Contact | REQ-03 |
 
 ### Part 3: Navigation Design
 
