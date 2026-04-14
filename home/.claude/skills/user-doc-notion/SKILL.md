@@ -218,4 +218,8 @@ Report the Notion page URL at the end of the run.
 
 ---
 
-## Status: DONE
+## Status
+
+- `DONE` — all features documented, Notion page created, all screenshots uploaded successfully
+- `DONE_WITH_CONCERNS` — page created but some screenshots failed to upload or some features were skipped (list what was skipped)
+- `BLOCKED` — `NOTION_TOKEN` not set, API connectivity failed, or Notion page creation returned an error (report the error)
