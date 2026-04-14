@@ -415,15 +415,6 @@ tail -10000 ~/.local/state/zsh/history | \
 </anti_patterns>
 
 <reference_guides>
-Related reference materials:
-
-**Skill creation guidelines:**
-- [creating-agent-skills/SKILL.md](../creating-agent-skills/SKILL.md) — Overview of skill creation
-- [creating-agent-skills/references/skill-structure.md](../creating-agent-skills/references/skill-structure.md) — XML structure requirements
-
-**Complementary skills:**
-- [learn/SKILL.md](../learn/SKILL.md) — Real-time extraction from the current session
-
 **Data sources:**
 - `~/.claude/projects/*/sessions-index.json` — Session metadata
 - `~/.claude/history.jsonl` — Prompt history
