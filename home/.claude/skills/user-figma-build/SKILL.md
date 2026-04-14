@@ -20,6 +20,26 @@ Full standards, spacing token system, letter-spacing rule, semantic naming guide
 
 ---
 
+## Phase 0: Pre-Flight Requirements
+
+Before touching Figma, confirm these documents exist:
+
+| Document | Purpose |
+|----------|---------|
+| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/spec-from-brief` to create it. |
+| Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
+| Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
+| Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
+| Target Persona | Who the UI is for (age group, skill level, sensory/rational preference, information density preference) — LOCKED |
+
+**RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
+
+Use the `/spec-from-brief` skill to create or audit the RTM before starting Figma work.
+
+Do NOT start building until the style direction is LOCKED and the RTM coverage is ≥ 100%.
+
+---
+
 ## Phase 0b: Lo-fi Wireframe in Figma (Optional)
 
 Use when a text wireframe (`plans/06-wireframes.md`) exists but visual gray-box frames in Figma are needed — for stakeholder review before committing to visual direction.
@@ -121,26 +141,6 @@ wireframePage.appendChild(mobile);
 ```
 
 After each page, run `get_screenshot` to confirm layout before continuing.
-
----
-
-## Phase 0: Pre-Flight Requirements
-
-Before touching Figma, confirm these documents exist:
-
-| Document | Purpose |
-|----------|---------|
-| **RTM / `plans/00-master-requirements.md`** | Requirements Traceability Matrix — every spec item traced to client brief or research. **Must exist before designing.** Use `/spec-from-brief` to create it. |
-| Style Direction (e.g. `plans/10-style-direction.md`) | Color palette, typography, decoration rules, motion — all LOCKED |
-| Wireframes (e.g. `plans/06-wireframes.md`) | Page structure, section order, breakpoints |
-| Decision log (e.g. `plans/05-decision-log.md`) | Design rationale, rejected alternatives |
-| Target Persona | Who the UI is for (age group, skill level, sensory/rational preference, information density preference) — LOCKED |
-
-**RTM (Requirements Traceability Matrix) is the authority.** If a Figma frame includes something not in the RTM, that's a scope creep bug. If the RTM has a ✅ BINDING item not yet in Figma, that's a defect.
-
-Use the `/spec-from-brief` skill to create or audit the RTM before starting Figma work.
-
-Do NOT start building until the style direction is LOCKED and the RTM coverage is ≥ 100%.
 
 ---
 

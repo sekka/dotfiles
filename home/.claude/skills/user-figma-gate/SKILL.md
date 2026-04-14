@@ -15,14 +15,6 @@ Review the completed Figma design against the RTM before coding begins.
 2. Every finding must cite the RTM requirement ID or DESIGN.md token it violates
 3. Output is a gate report — not suggestions, not preferences
 
-## Trigger
-
-Use when: Figma design is complete and coding is about to start.
-
-Arguments:
-- `rtm-file-path`: path to RTM Markdown file
-- `figma-url`: URL of the Figma file (e.g. `https://www.figma.com/file/...`)
-
 ## Process
 
 1. If either argument is missing, ask with AskUserQuestion
