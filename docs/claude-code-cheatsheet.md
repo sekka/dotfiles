@@ -84,17 +84,51 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 ---
 
+## ウェブ制作 上流工程
+
+### 制作フロー全体（超上流〜コーディング）
+
+```
+0️⃣ /user-doc-discovery      初回打ち合わせ前 → 業種・案件種別に合わせたヒアリング質問リスト生成
+        ↓ （打ち合わせ・ヒアリング）
+① /user-doc-spec            クライアントブリーフ → RTM（要件定義・BINDING/SUPPLEMENTED/PENDING）
+        ↓
+② /user-doc-ia              RTM → IA・サイトマップ生成（Mermaid図 + クライアント向け提案文）
+   /user-doc-copy           IA + RTM → コンテンツたたき台（ページ別コピー草案）
+        ↓
+③ /user-research-design-dna 競合・参考サイト → デザインDNA抽出（tokens/colors/typography/7軸評価）
+   /user-research-websites  参考サイト → サイトマップ・ワイヤーフレームとSUPPLEMENTED根拠収集
+④ /user-fe-design           RTMを元にワイヤーフレーム・コンポーネント設計
+⑤ /user-figma-build         設計をFigma上に実装（Plugin API経由）
+        ↓ [GATE: /user-dev-design-review — Figma ↔ RTM照合チェック]
+⑥ /user-figma-implement     FigmaデザインをHTMLコードに変換
+        ↓ [GATE: /user-dev-impl-review — コード ↔ Figma + 公開前品質チェック]
+```
+
+| スキル                    | 説明                     | いつ使う？                                                                                               |
+| ------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `/user-doc-discovery`     | ヒアリング質問リスト生成 | **初回打ち合わせ前**。案件種別・業種を渡すと、カスタマイズされたヒアリングシートを生成。Excel廃止        |
+| `/user-doc-ia`            | IA・サイトマップ提案     | `user-doc-spec`でRTM完成後。Mermaidサイトマップ + ナビ設計 + クライアント向け提案文を生成                |
+| `/user-doc-copy`          | コンテンツたたき台生成   | IAが確定した後。ページ別コピー草案（キャッチ・本文・CTA）を生成。トーン指定可能                          |
+| `/user-dev-design-review` | デザインレビューゲート   | **コーディング開始前**。FigmaがRTMの全要件をカバーしているか・ブランド整合・アクセシビリティ基礎を確認   |
+| `/user-dev-impl-review`   | 実装レビューゲート       | **公開前**。vrt + html + コード品質 + 公開前チェック（フォーム・OG・リダイレクト）をオーケストレーション |
+
+_ステップ①・③–⑥（`/user-doc-spec`〜`/user-figma-implement`）の詳細は「デザイン & Figma」セクション参照。_
+
+---
+
 ## デザイン & Figma
 
 ### デザイン制作フロー（この順番で使う）
 
+> フロー全体（ヒアリング〜コーディング）は「ウェブ制作 上流工程」セクション参照。以下はFigmaフェーズ（④–⑥）の詳細。
+
 ```
-① /user-doc-spec            クライアント指示 → RTM（要件定義）
-② /user-research-design-dna 競合・参考サイト → デザインDNA抽出（tokens/colors/typography/7軸評価）
-   /user-research-websites  参考サイト → サイトマップ・ワイヤーフレームとSUPPLEMENTED根拠収集
-③ /user-fe-design           RTMを元にワイヤーフレーム・コンポーネント設計
-④ /user-figma-build         設計をFigma上に実装（Plugin API経由）
-⑤ /user-figma-implement     FigmaデザインをHTMLコードに変換
+④ /user-fe-design           RTMを元にワイヤーフレーム・コンポーネント設計
+⑤ /user-figma-build         設計をFigma上に実装（Plugin API経由）
+        ↓ [GATE: /user-dev-design-review — Figma ↔ RTM照合チェック]
+⑥ /user-figma-implement     FigmaデザインをHTMLコードに変換
+        ↓ [GATE: /user-dev-impl-review — コード ↔ Figma + 公開前品質チェック]
 ```
 
 **ツール選択チートシート（Figma関連）:**
@@ -105,7 +139,7 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | コード → Figma（プログラム的に構築）           | `/user-figma-build`（Plugin API）                                             |
 | コード → Figma（既存ページをスナップショット） | `/figma:figma-generate-design`（MCP、ステークホルダー確認・議論フェーズ向け） |
 
-> **迷ったとき**: 「何を作るか決める」→ ①②③ / 「Figmaで作る」→ ④ / 「コードに落とす」→ ⑤ / 「実装済みページをFigmaに書き出す」→ `/figma:figma-generate-design`
+> **迷ったとき**: 「何を作るか決める」→ ①②③ / 「Figmaで作る」→ ⑤ / 「コードに落とす」→ ⑥ / 「実装済みページをFigmaに書き出す」→ `/figma:figma-generate-design`
 > **②の使い分け**: デザインシステム・見た目の再現 → `/user-research-design-dna` / 構造・コンテンツ把握 → `/user-research-websites`
 
 | スキル                                    | 説明                           | いつ使う？                                                                                                                                             |
@@ -146,6 +180,27 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | `/prototyping-testing:*` | `prototype-plan` / `experiment` / `evaluate`                  | プロトタイピング（戦略立案、A/Bテスト設計、ヒューリスティック評価）  |
 | `/design-ops:*`          | `plan-sprint` / `setup-workflow` / `handoff`                  | デザインオペレーション（スプリント計画、ワークフロー、ハンドオフ）   |
 | `/designer-toolkit:*`    | `write-case-study` / `build-presentation` / `write-rationale` | デザイナーツール（ケーススタディ、プレゼン資料、意思決定根拠文書）   |
+
+---
+
+## プロジェクト管理 (PMO)
+
+データストア: `~/prj/{name}/pmo.yaml`（案件ごと）/ `~/prj/members.yaml`（メンバー定義・共通）
+
+| スキル                | 説明                         | いつ使う？                                                                                                                            |
+| --------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `/user-pmo-wbs`       | WBS生成（領域横断）          | **案件キックオフ時**。案件種別（コーポレート/LP/動画/ブランディング等）を渡すと標準タスク分解を生成。未経験領域も対応。会話で調整可能 |
+| `/user-pmo-checklist` | フェーズゲートチェックリスト | **各フェーズ移行時**。`kickoff` / `pre-launch` / `handoff` のいずれかを指定し、必須確認項目をMarkdownで出力                           |
+| `/user-pmo-status`    | 複数案件進捗ダッシュボード   | **週次確認時**。`~/prj/*/pmo.yaml`を読んで全案件の進捗・期限・アラートを一覧表示。2週以内の期限は🔴                                   |
+| `/user-pmo-workload`  | メンバー稼働可視化           | アサイン調整時。メンバー別の週次割当時間・負荷率（%）を表示し、過負荷メンバーの調整案を提示                                           |
+
+**PMO データフロー:**
+
+```
+/user-pmo-wbs      → ~/prj/{name}/pmo.yaml を作成・更新
+/user-pmo-status   ← ~/prj/*/pmo.yaml を読み取り
+/user-pmo-workload ← ~/prj/*/pmo.yaml + ~/prj/members.yaml を読み取り
+```
 
 ---
 
