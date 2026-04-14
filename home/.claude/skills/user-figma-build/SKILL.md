@@ -20,6 +20,110 @@ Full standards, spacing token system, letter-spacing rule, semantic naming guide
 
 ---
 
+## Phase 0b: Lo-fi Wireframe in Figma (Optional)
+
+Use when a text wireframe (`plans/06-wireframes.md`) exists but visual gray-box frames in Figma are needed — for stakeholder review before committing to visual direction.
+
+**Skip if:** Figma already has wireframe frames, or you are going straight to hi-fi.
+
+### Conventions
+
+| Element | Value |
+|---------|-------|
+| Background | `#FFFFFF` |
+| Image placeholder | `#BDBDBD` rectangle |
+| Body text placeholder | `#333333`, `fontSize: 14` |
+| Heading placeholder | `#333333`, `fontSize: 20–28` |
+| Spacing unit | 8px grid (`itemSpacing: 16 / 24 / 32`) |
+| Layout | Auto Layout only — no manual positioning |
+| Tokens / styles | None — gray-box only, no design system |
+
+### Page Setup
+
+```js
+const wireframePage = figma.createPage();
+wireframePage.name = '0_Wireframes';
+await figma.setCurrentPageAsync(wireframePage);
+
+// Gray helper (hex → 0-1 RGB)
+const g = hex => ({
+  r: parseInt(hex.slice(1,3),16)/255,
+  g: parseInt(hex.slice(3,5),16)/255,
+  b: parseInt(hex.slice(5,7),16)/255
+});
+```
+
+### Section Frame
+
+```js
+const makeSection = (name, bgHex='#FFFFFF') => {
+  const f = figma.createFrame();
+  f.name = name;
+  f.layoutMode = 'VERTICAL';
+  f.primaryAxisSizingMode = 'AUTO';   // height hugs content
+  f.counterAxisSizingMode = 'FIXED';  // width is fixed
+  f.resize(1440, 100);                // height placeholder; AUTO overrides
+  f.fills = [{ type:'SOLID', color: g(bgHex) }];
+  f.paddingTop = f.paddingBottom = 80;
+  f.paddingLeft = f.paddingRight = 120;
+  f.itemSpacing = 32;
+  return f;
+};
+```
+
+### Image Placeholder
+
+```js
+const makeImg = (w, h, label='Image') => {
+  const r = figma.createRectangle();
+  r.resize(w, h);
+  r.fills = [{ type:'SOLID', color: g('#BDBDBD') }];
+  r.name = `[IMG] ${label}`;
+  return r;
+};
+```
+
+### Text Placeholder
+
+```js
+const makeText = async (content, size=16) => {
+  await figma.loadFontAsync({ family:'Inter', style:'Regular' });
+  const t = figma.createText();
+  t.fontName = { family:'Inter', style:'Regular' };
+  t.characters = content;
+  t.fontSize = size;
+  t.fills = [{ type:'SOLID', color: g('#333333') }];
+  return t;
+};
+```
+
+### Desktop + Mobile Pair
+
+```js
+// Desktop (1440px) — append to wireframePage
+const desktop = figma.createFrame();
+desktop.name = 'TOP — Desktop';
+desktop.resize(1440, 900);
+desktop.layoutMode = 'VERTICAL';
+desktop.primaryAxisSizingMode = 'AUTO';
+desktop.itemSpacing = 0;
+wireframePage.appendChild(desktop);
+
+// Mobile (375px) — placed 40px to the right
+const mobile = figma.createFrame();
+mobile.name = 'TOP — Mobile';
+mobile.resize(375, 812);
+mobile.layoutMode = 'VERTICAL';
+mobile.primaryAxisSizingMode = 'AUTO';
+mobile.itemSpacing = 0;
+mobile.x = 1480;
+wireframePage.appendChild(mobile);
+```
+
+After each page, run `get_screenshot` to confirm layout before continuing.
+
+---
+
 ## Phase 0: Pre-Flight Requirements
 
 Before touching Figma, confirm these documents exist:

@@ -1,5 +1,5 @@
 ---
-name: user-doc-fe-kb
+name: user-fe-knowledge
 description: Manage a knowledge base for frontend technologies (CSS, JavaScript, HTML, performance, accessibility). During web development tasks, consult the knowledge base proactively and apply best practices to improve accuracy and speed. Also summarizes and stores technical info from URLs and articles, and answers questions. Covers modern CSS (Grid, Flexbox, @scope, View Transitions), JavaScript patterns, Core Web Vitals, WCAG, and browser compatibility.
 disable-model-invocation: false
 ---
@@ -350,7 +350,7 @@ Integrate originals accumulated in `raw/_inbox/` into knowledge/.
 1. **Get inbox list**
 
    ```bash
-   ls -la ~/.claude/skills/user-doc-fe-kb/raw/_inbox/*.md 2>/dev/null
+   ls -la ~/.claude/skills/user-fe-knowledge/raw/_inbox/*.md 2>/dev/null
    ```
 
    If 0 files: Report "inbox is empty" and finish.

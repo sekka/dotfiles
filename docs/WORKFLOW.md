@@ -52,7 +52,7 @@ commit / finishing-a-development-branch（コミット・PR作成）
   │     → finishing-a-development-branch → commit-push-pr
   │
   └─ フロントエンドを実装する
-        → (user-figma-implement) → user-fe-design → user-fe-develop → user-fe-vrt
+        → (user-figma-implement) → user-doc-design-spec → user-fe-develop → user-fe-vrt
 ```
 
 ---
@@ -180,7 +180,7 @@ brainstorming で得た要件を、チェック可能な実装計画に変換す
 
 ```
 /user-figma-implement             # Figmaデザイン確認
-/user-fe-design                   # UIコンポーネント設計
+/user-doc-design-spec                   # UIコンポーネント設計
 /user-fe-develop                  # 実装
 /user-fe-vrt                      # ビジュアル回帰テスト
 /user-fe-html                     # HTML品質改善（必要に応じて）

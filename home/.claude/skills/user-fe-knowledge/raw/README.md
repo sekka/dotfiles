@@ -41,8 +41,8 @@ title: 記事タイトル
 
 ```bash
 # 未処理件数
-ls ~/.claude/skills/user-doc-fe-kb/raw/_inbox/*.md 2>/dev/null | wc -l
+ls ~/.claude/skills/user-fe-knowledge/raw/_inbox/*.md 2>/dev/null | wc -l
 
 # アーカイブ件数
-ls ~/.claude/skills/user-doc-fe-kb/raw/_archived/*.md 2>/dev/null | wc -l
+ls ~/.claude/skills/user-fe-knowledge/raw/_archived/*.md 2>/dev/null | wc -l
 ```

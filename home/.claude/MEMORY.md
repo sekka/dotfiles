@@ -5,4 +5,4 @@
 ## Knowledge (git-managed references)
 
 General references and bookmarks → `knowledge/INDEX.md`
-Frontend tech (CSS/JS/HTML) → `skills/user-doc-fe-kb/knowledge/`
+Frontend tech (CSS/JS/HTML) → `skills/user-fe-knowledge/knowledge/`

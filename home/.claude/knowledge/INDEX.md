@@ -16,4 +16,4 @@ Bookmarks and information sources for research, architecture decisions, and lear
 
 ## Related
 
-- Frontend tech knowledge → `~/.claude/skills/user-doc-fe-kb/knowledge/`
+- Frontend tech knowledge → `~/.claude/skills/user-fe-knowledge/knowledge/`

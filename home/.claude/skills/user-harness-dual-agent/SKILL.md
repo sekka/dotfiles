@@ -1,5 +1,5 @@
 ---
-name: user-dev-dual-agent
+name: user-harness-dual-agent
 description: Orchestrate codex + claude-code dual-agent workflow. Triggered by "tornado", "use tornado", or requests for a dual-agent workflow.
 ---
 

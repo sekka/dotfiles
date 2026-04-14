@@ -2,7 +2,7 @@
 
 ## 概要
 
-`qmd` を使って `~/.claude/skills/user-doc-fe-kb/knowledge/` の Markdown ファイルを
+`qmd` を使って `~/.claude/skills/user-fe-knowledge/knowledge/` の Markdown ファイルを
 統一インデックスの `frontend` コレクションとして登録し、セマンティック検索を可能にする。
 
 ファイルを直読みするより **トークンを最大 96% 削減** できる。
