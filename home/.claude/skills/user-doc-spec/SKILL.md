@@ -1,6 +1,6 @@
 ---
 name: user-doc-spec
-description: Convert a client brief into a requirements spec with explicit provenance for every item. Also works as an audit tool to check an existing RTM against the original brief and improve accuracy. Covers extraction, classification, gap research, coverage check, and RTM formatting.
+description: Convert a client brief into a requirements spec with explicit provenance for every item, or audit an existing RTM against the brief. Use proactively before the design phase begins when a client brief is ready but requirements need formalization — and whenever spec drift is suspected. Works as both a spec creator (Mode A) and an audit tool (Mode B). Covers extraction, classification, gap research, coverage check, and RTM formatting.
 ---
 
 # Client Brief → Spec (Requirements Traceability) Skill

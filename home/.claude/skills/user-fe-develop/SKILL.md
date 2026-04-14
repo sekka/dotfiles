@@ -1,6 +1,6 @@
 ---
 name: user-fe-develop
-description: Help with frontend UI/UX implementation and optimization. Covers React/Vue/Next.js, performance, and accessibility. Use when building user interfaces or web applications.
+description: Help with frontend UI/UX implementation and optimization. Covers React/Vue/Next.js, performance, and accessibility. Use proactively when implementing components, building layouts, or optimizing performance — also triggered by questions about React, Vue, Next.js, Tailwind, animation, or accessibility in a web project.
 disable-model-invocation: false
 ---
 

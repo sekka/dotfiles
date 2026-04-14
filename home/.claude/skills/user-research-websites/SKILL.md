@@ -1,6 +1,6 @@
 ---
 name: user-research-websites
-description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Can also summarize a page's purpose and target audience.
+description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Use proactively before competitive analysis, planning a redesign, or when a client asks to reference another site's structure — can also summarize a page's purpose and target audience.
 disable-model-invocation: false
 ---
 
