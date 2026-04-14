@@ -1,51 +1,56 @@
 ---
 name: user-harness-dual-agent
-description: Orchestrate codex + claude-code dual-agent workflow. Triggered by "tornado", "use tornado", or requests for a dual-agent workflow.
+description: >
+  Orchestrate a codex + claude-code dual-agent workflow where codex implements and claude reviews.
+  Use this skill whenever the user says "tornado", "use tornado", "dual-agent", "two-agent workflow",
+  "use two Claudes", "orchestrator and executor", or wants to delegate a heavy implementation task to
+  a second agent. Also use when the user wants to run codex for implementation while keeping claude
+  for oversight and review. Trigger proactively when the task is large enough to benefit from parallel
+  agent execution.
 ---
 
 # Tornado Skill
 
 Orchestrate codex + claude-code: codex implements, claude reviews.
-Trigger when user says "tornado", "use tornado", or wants a dual-agent workflow.
 
 ## Invocation
 
 ```bash
-mise run tornado              # fzf で plan ファイルを選択
-mise run tornado ./plan.md    # 直接指定
+mise run tornado              # select plan file with fzf
+mise run tornado ./plan.md    # specify directly
 ```
 
-`--dev=codex --review=claude` は mise タスク側で固定済み。引数は plan ファイルのパスのみ。
+`--dev=codex --review=claude` is fixed on the mise task side. The only argument is the plan file path.
 
-## Step 1: plan.md の確認・作成
+## Step 1: Check or create plan.md
 
-plan.md がなければ作成する。最小構成:
+If plan.md does not exist, create it. Minimum structure:
 
 ```markdown
-# Task: {タスク名}
+# Task: {task name}
 
 ## Goal
-{1文で目標}
+{goal in one sentence}
 
 ## Steps
 1. {step 1}
 2. {step 2}
 
 ## Success criteria
-- {完了条件}
+- {completion condition}
 ```
 
-## Step 2: tornado を起動
+## Step 2: Launch tornado
 
 ```bash
 mise run tornado ./plan.md
 ```
 
-TUI は Claude Code の内蔵ターミナルでは動かない可能性がある。
-その場合は `! mise run tornado ./plan.md` で別ターミナルとして実行する。
+The TUI may not work inside the Claude Code built-in terminal.
+In that case, run it as a separate terminal with `! mise run tornado ./plan.md`.
 
-## Step 3: 完了後
+## Step 3: After completion
 
-TUI 終了後、変更ファイルを `/review-and-improve` でチェックすることを提案する。
+After the TUI exits, suggest checking the changed files with `/review-and-improve`.
 
 ## Status: DONE
