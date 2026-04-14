@@ -10,8 +10,8 @@ Generate a tailored client briefing questionnaire before the first client meetin
 
 ## Iron Law
 
-1. Never output without knowing at minimum: project type and industry
-2. Output is a file saved to `~/prj/{slug}/discovery.md` — not a chat response
+1. Never begin Process step 3 without knowing: project type, industry, and client name. If any are missing, ask in one AskUserQuestion before proceeding.
+2. Primary output is a file saved to `~/prj/{slug}/discovery.md`. After saving, respond in chat with the file path and next-step instruction only.
 3. Never invent answers — output answer fields (→) for the client to fill in
 
 ## Trigger
@@ -24,13 +24,12 @@ Arguments (positional or ask if missing):
 
 ## Process
 
-1. If project type or industry is missing, ask with AskUserQuestion (ask both in one question)
-2. Ask for project name / client name (used for slug and file header)
-3. Select base question set (always included) + project-type-specific additions
-4. Infer slug from client name: lowercase, hyphens, no spaces (e.g. "ABC商事" → "abc-shoji")
-5. Create `~/prj/{slug}/` directory if it does not exist
-6. Save to `~/prj/{slug}/discovery.md`
-7. Print the file path and say: "Fill this in with the client, then pass to `/user-doc-spec`."
+1. If project type, industry, or client name is missing, ask all three together in one AskUserQuestion: "案件の種別（corporate/lp/ec/service/video/branding）、業種、クライアント名を教えてください。"
+2. Select base question set (always included) + project-type-specific additions
+3. Infer slug from client name: lowercase, hyphens, no spaces. For Japanese names, use phonetic romanization (e.g. "田中設計" → "tanaka-sekkei", "ABC商事" → "abc-shoji"). If unsure, ask the user: "スラッグ（URLに使う英字識別子）を教えてください。例: tanaka-sekkei"
+4. Create `~/prj/{slug}/` directory if it does not exist
+5. Save to `~/prj/{slug}/discovery.md`
+6. Print the file path and say: "Fill this in with the client, then pass to `/user-doc-spec`."
 
 ## Question Sets
 
@@ -180,4 +179,8 @@ Arguments (positional or ask if missing):
 
 ## Status
 
-Add `## Status: DONE` at the end of every response.
+Add one of the following at the end of every response:
+- `## Status: DONE` — completed normally
+- `## Status: DONE_WITH_CONCERNS` — completed but with notes (add bullet list)
+- `## Status: NEEDS_CONTEXT` — missing information to proceed (add what is needed)
+- `## Status: BLOCKED` — cannot continue (add reason)
