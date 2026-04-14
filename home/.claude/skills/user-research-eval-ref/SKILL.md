@@ -212,3 +212,11 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 - Section 5 comparison table includes at least one weakness axis for the target project
 - Output ends with the save-prompt trailing line; no auto-save
 </success_criteria>
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — evaluation complete and recommendation delivered (Quick: structured card / Deep: adoption recommendation + plan / OSS Wiki: all 10 sections with citations)
+- `## Status: DONE_WITH_CONCERNS` — evaluation complete but content retrieval was partial (e.g., some sections blocked, community reaction data unavailable)
+- `## Status: BLOCKED` — cannot retrieve content after exhausting all fallback methods (WebFetch, agent-browser, playwright, Chrome MCP)
+- `## Status: NEEDS_CONTEXT` — no URL provided, or intent is ambiguous and mode cannot be determined

@@ -207,4 +207,10 @@ Cross-field case classification:
 - Including private or inaccessible sites
 </anti_patterns>
 
-## Status: DONE
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all target cases collected, URLs verified, Markdown report saved with trend analysis
+- `## Status: DONE_WITH_CONCERNS` — report saved but some URLs could not be verified or case count fell short of target
+- `## Status: BLOCKED` — unable to access required research sources or browser tool is unavailable
+- `## Status: NEEDS_CONTEXT` — target field, period, or case count not yet confirmed by the user

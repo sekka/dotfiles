@@ -191,3 +191,11 @@ qmd collection list
 ~/dotfiles/setup/21_qmd.sh
 qmd collection remove frontend && ~/dotfiles/setup/21_qmd.sh
 ```
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — knowledge retrieved and applied (or article saved/compiled) successfully
+- `## Status: DONE_WITH_CONCERNS` — answer provided but no matching entry in the knowledge base; response based on general knowledge only (suggest adding it)
+- `## Status: BLOCKED` — source URL is inaccessible or the knowledge base index cannot be written
+- `## Status: NEEDS_CONTEXT` — no URL, keyword, or question provided; cannot determine which mode (collect / reference / Q&A) to run

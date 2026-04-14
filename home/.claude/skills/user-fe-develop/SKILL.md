@@ -161,3 +161,11 @@ import userEvent from '@testing-library/user-event';
 ## Related Files
 
 - [corrections.md](./corrections.md) - Known pitfalls and past mistakes
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — component or feature implemented, types defined, no accessibility regressions introduced
+- `## Status: DONE_WITH_CONCERNS` — implementation complete but with known limitations (e.g., performance not optimized, test coverage partial) — list each
+- `## Status: BLOCKED` — cannot implement without breaking an existing component or resolving a missing dependency
+- `## Status: NEEDS_CONTEXT` — target framework, design spec, or component requirements not specified; cannot start implementation

@@ -184,3 +184,11 @@ When implementing designs with modern CSS techniques, use the `user-fe-knowledge
 For the full skill selection guide, workflow patterns, and FAQ, see [`references/skill-selection-guide.md`](references/skill-selection-guide.md).
 
 Key sister skills: `user-figma-build` (Figma implementation after specs), `user-fe-develop` (code implementation), `user-research-design-dna` (brand DNA extraction before specs).
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all requested deliverables produced (wireframes, design system, component specs, tokens, handoff notes)
+- `## Status: DONE_WITH_CONCERNS` — deliverables produced but with gaps (e.g., contrast ratios not verified, responsive breakpoints incomplete) — list each
+- `## Status: BLOCKED` — cannot proceed without a locked style direction or confirmed target platform
+- `## Status: NEEDS_CONTEXT` — missing information about target platform, brand tone, or required components to generate accurate specs

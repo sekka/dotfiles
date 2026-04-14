@@ -351,3 +351,11 @@ gsap.to('.hero-bg', {
 - Prefer quantitative expressions (ms, px, %).
 - Keep UX evaluations objective.
 
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — animation analysis complete: description, tech stack inference, UX evaluation, and code example all provided
+- `## Status: DONE_WITH_CONCERNS` — analysis complete but some inferences could not be verified (e.g., source code access blocked, DOM inspection unavailable)
+- `## Status: BLOCKED` — cannot proceed (e.g., URL is inaccessible, video or code input is unreadable)
+- `## Status: NEEDS_CONTEXT` — no URL, video, code snippet, or animation description provided to analyze
+

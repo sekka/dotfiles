@@ -33,3 +33,11 @@ Analyze the changes by logical unit and commit related changes together.
 Follow `rules/git-conventions.md` for splitting, message format, and prefixes.
 
 Run `git add <specific-files>` → `git commit` for each commit.
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all commits created following project conventions
+- `## Status: DONE_WITH_CONCERNS` — committed, but some files were excluded (e.g., sensitive data, debug code) — list what was skipped
+- `## Status: BLOCKED` — sensitive information detected in staged files; commit aborted until resolved
+- `## Status: NEEDS_CONTEXT` — no staged or changed files to commit

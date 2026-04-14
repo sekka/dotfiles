@@ -102,13 +102,21 @@ Photo areas produce small differences each time due to anti-aliasing. Fuzz 2% ab
 
 ```bash
 # Normal run (fully automatic from baseline)
-bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
+bash ~/.claude/skills/user-fe-vrt/vrt.sh scripts/vrt-urls.txt
 
 # Force re-capture baseline
-VRT_FORCE_BASELINE=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
+VRT_FORCE_BASELINE=1 bash ~/.claude/skills/user-fe-vrt/vrt.sh scripts/vrt-urls.txt
 
 # Capture baseline only (no git stash, no diff)
 # Saves the current display state as the baseline.
 # Use this when you want to capture the baseline before making changes.
-VRT_BASELINE_ONLY=1 bash ~/.claude/skills/visual-regression-test/vrt.sh scripts/vrt-urls.txt
+VRT_BASELINE_ONLY=1 bash ~/.claude/skills/user-fe-vrt/vrt.sh scripts/vrt-urls.txt
 ```
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — VRT complete, all pages PASS across all viewports, report saved to `/tmp/vrt-report/index.html`
+- `## Status: DONE_WITH_CONCERNS` — VRT complete but one or more pages returned WARN; diff images shown to user for confirmation
+- `## Status: BLOCKED` — baseline screenshot missing, ImageMagick not installed, or `scripts/vrt-urls.txt` not found
+- `## Status: NEEDS_CONTEXT` — target URLs or before-change baseline not yet established

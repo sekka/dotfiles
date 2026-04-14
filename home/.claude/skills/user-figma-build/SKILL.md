@@ -356,3 +356,11 @@ Key tools covered: Glass effect, Remove background, Vectorize, Erase object, Exp
 - [ ] `await figma.setCurrentPageAsync(page)` for page switching
 - [ ] Every created/mutated node ID included in `return`
 - [ ] Working incrementally (one section per call, validate after each)
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all requested Figma frames, components, or design system elements built and visually validated via screenshot
+- `## Status: DONE_WITH_CONCERNS` — build complete but manual steps remain (e.g., user must convert `[SLOT]` frames to actual Slots via `⌘⇧S`) — list each
+- `## Status: BLOCKED` — Plugin API call failed, required font is unavailable, or RTM coverage is below 100% and style direction is not locked
+- `## Status: NEEDS_CONTEXT` — missing RTM, style direction, or wireframes required before building; cannot start Phase 1

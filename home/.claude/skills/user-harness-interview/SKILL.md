@@ -57,3 +57,11 @@ When the user signals completion ("done", "looks good", "that's enough"):
 
 - Updated plan file at `$1` with interview decisions incorporated.
 - Confirmed decisions are added as a new section or inline annotations, clearly marked.
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — interview complete, all significant gaps resolved, and the updated spec has been written back to the plan file
+- `## Status: DONE_WITH_CONCERNS` — interview complete but some gaps remain unresolved (e.g., user deferred a decision, edge case left open)
+- `## Status: BLOCKED` — cannot proceed (e.g., the plan file does not exist or is unreadable)
+- `## Status: NEEDS_CONTEXT` — no plan file path provided, or the plan content is too sparse to identify meaningful questions

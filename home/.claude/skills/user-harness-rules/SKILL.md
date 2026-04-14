@@ -105,3 +105,11 @@ When repeated violation patterns are detected in Phases 1-3, propose escalation 
 - Proposing new rules (this skill only checks existing consistency)
 - Validating Nix / Brewfile content (only checks that tools exist)
 - Creating new memory entries (only cleanup)
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all phases complete, report delivered, approved fixes applied
+- `## Status: DONE_WITH_CONCERNS` — report delivered, fixes proposed but awaiting user approval (list each proposed fix)
+- `## Status: BLOCKED` — cannot read rule files or skill directory (list the unreadable paths)
+- `## Status: NEEDS_CONTEXT` — scope not specified; clarify which harness components to check (rules / skills / memory / all)

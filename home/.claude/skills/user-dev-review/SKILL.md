@@ -125,3 +125,11 @@ Skip this phase if no problems were found in Phase 4.
 |------|------|
 | 5 or fewer changed files | Complete within this skill |
 | 6 or more changed files, or architecture-level | Suggest delegating to a reviewer agent |
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — review complete, all passes finished, no Critical-level problems remain
+- `## Status: DONE_WITH_CONCERNS` — review complete, Warning-level issues remain that were not auto-fixed (list each)
+- `## Status: BLOCKED` — Critical-level problem found that could not be fixed (e.g., security vulnerability requiring architectural change or missing context)
+- `## Status: NEEDS_CONTEXT` — no changed files detected and no target files were specified; cannot determine review scope

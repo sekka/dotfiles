@@ -155,3 +155,11 @@ custom_rules: []             # add custom rules
 - APG patterns: `patterns/*.md`
 - CLI script: `~/.claude/skills/user-fe-html/scripts/check-html.ts`
 - a11y knowledge: `home/.claude/skills/user-fe-knowledge/knowledge/cross-cutting/accessibility/`
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — HTML check complete, accessibility report generated with all errors and warnings listed in priority order
+- `## Status: DONE_WITH_CONCERNS` — report generated but qualitative analysis found structural issues beyond automated rule violations (list them)
+- `## Status: BLOCKED` — `check-html.ts` script not found or `bun` is not installed
+- `## Status: NEEDS_CONTEXT` — target file, URL, or git diff not yet specified

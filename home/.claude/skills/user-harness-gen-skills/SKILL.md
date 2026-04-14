@@ -420,3 +420,11 @@ tail -10000 ~/.local/state/zsh/history | \
 - `~/.claude/history.jsonl` — Prompt history
 - `~/.local/state/zsh/history` — CLI operation history
 </reference_guides>
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — All selected skills were generated, quality-checked, and saved to `~/dotfiles/home/.claude/skills/`
+- `## Status: DONE_WITH_CONCERNS` — Skills generated but some quality checks raised warnings (e.g., possible duplicate, low frequency candidate included)
+- `## Status: BLOCKED` — Cannot proceed (e.g., no session data found, fewer than 2 candidates passed evaluation)
+- `## Status: NEEDS_CONTEXT` — Scope confirmation still needed (project target, period, or CLI history inclusion not answered)

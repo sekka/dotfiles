@@ -94,3 +94,11 @@ Record the result of each step (pass/fail, error count).
 ### Unresolved Issues (manual action needed)
 - [file:line] error description
 ```
+
+## Status
+
+Add one of the following at the end of every response:
+- `## Status: DONE` — all checks pass (formatter, linter, type checker)
+- `## Status: DONE_WITH_CONCERNS` — all auto-fixable issues resolved, but manual fixes remain (list each unresolved issue)
+- `## Status: BLOCKED` — same error persisted after 3 retries and cannot be auto-fixed; manual intervention required
+- `## Status: NEEDS_CONTEXT` — no quality check commands found in the project; cannot determine how to run checks
