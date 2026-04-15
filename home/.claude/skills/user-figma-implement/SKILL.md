@@ -68,6 +68,35 @@ For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` f
    - `grid` settings define the layout system
    - Prose sections (`Tone & Manner`, `Designer Intent`, etc.) inform implementation decisions
 
+### Step 0b: AI-Readability Pre-Check
+
+Before fetching any design context, quickly assess whether the Figma file is structured for accurate
+AI extraction. Low AI-readability = higher gap between Figma intent and generated code.
+
+Run `mcp__figma__get_metadata` on the target frame and check:
+
+| Signal | Good | Concern |
+|--------|------|---------|
+| Layer names | Semantic (`Button/Primary/Default`) | Generic (`Frame 32`, `Group 7`) |
+| Auto Layout | All containers use Auto Layout | Mix of absolute-positioned nodes |
+| Annotations | Present with category labels | Absent or unlabeled |
+| Design tokens | Colors/spacing reference Variables | Hardcoded hex / px values |
+
+**If 2 or more concerns:** Flag to the user before proceeding.
+
+```
+⚠️ AI-readability concern detected:
+- [list specific issues found]
+Proceeding will reduce implementation accuracy. Recommend fixing Figma structure first
+(see user-figma-build skill, Phase 0a for annotation and naming conventions).
+Continue anyway? (y/n)
+```
+
+If the user confirms to continue, proceed to Step 1 and note the expected accuracy gap in the
+Status line at the end.
+
+---
+
 ### Step 1: Fast Path — `implement-design` (try first)
 
 When the goal is **full-frame implementation** (not partial extraction or token audit), try `implement-design` first:

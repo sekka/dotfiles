@@ -19,6 +19,32 @@ Auto Layout + Variables + semantic naming → 32/35 quality score vs. 10/35 for 
 Full standards, spacing token system, letter-spacing rule, semantic naming guide, anti-patterns:
 `references/design-quality-standards.md`
 
+### AI-Readable Figma Principle: Reduce Guessing
+
+The core goal is to **eliminate guesses the AI must make**. Ambiguous names, missing annotations, or
+unstructured layouts cause the AI to infer intent — leading to inconsistent output.
+
+The four pillars of AI-readable Figma (in priority order):
+
+| Pillar | What to do | Why it matters |
+|--------|-----------|----------------|
+| **Annotation design** | Add annotations with category labels (interaction, layout, content, state) | Most impactful — AI uses annotations as ground truth |
+| Naming conventions | Use `{project}/{category}/{name}/{variant}` consistently | Reduces layer-name ambiguity |
+| Auto Layout | All frames use Auto Layout (no absolute positioning) | Enables accurate spacing/layout extraction |
+| Design tokens | All colors/spacing via Variables, no hardcoded values | Ensures token-to-code mapping is exact |
+
+**Annotation categories** (label each annotation with one of these):
+- `interaction` — hover states, click targets, transitions, animations
+- `layout` — responsive behavior, breakpoint rules, overflow handling
+- `content` — dynamic text, CMS fields, character limits
+- `state` — loading, empty, error, disabled states
+
+**Validation rule:** If a component has interactive behavior, responsive rules, or dynamic content,
+it **must** have at least one annotation in the corresponding category before proceeding to Phase 2.
+
+**Start small:** When testing AI-readability for the first time on a project, validate with a single
+simple component (e.g., a button) before applying to the full design system.
+
 ---
 
 ## Phase 0: Pre-Flight Requirements
