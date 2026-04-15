@@ -1,10 +1,10 @@
 ---
 title: パフォーマンス最適化
 category: cross-cutting/performance
-tags: [performance, lazy-load, core-web-vitals, optimization]
+tags: [performance, lazy-load, core-web-vitals, optimization, content-visibility, contain, rendering]
 browser_support: 全モダンブラウザ対応
 created: 2025-01-16
-updated: 2025-01-16
+updated: 2026-04-15
 ---
 
 # パフォーマンス最適化
@@ -747,5 +747,72 @@ img {
 - [ ] `srcset`使用時も`width`/`height`を指定したか
 - [ ] `<picture>`のすべての`<source>`に`width`/`height`を指定したか
 - [ ] Lighthouse でCLSスコアを確認したか
+
+---
+
+## content-visibility — ビューポート外レンダリングのスキップ
+
+> Source: https://techblog.lycorp.co.jp/ja/20260409b
+> Written: 2020-09-08
+> Added: 2026-04-15
+
+ビューポート外の要素のレンダリング処理（レイアウト・ペイント）をブラウザがスキップし、スクロールして初めて描画する。長いページほど初期レンダリングコストを大幅に削減できる。
+
+### Code Example
+
+```css
+.section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px; /* スクロールバーのずれ防止用の推定高さ */
+}
+```
+
+### Use Cases
+- セクションが縦に並ぶ長いランディングページ
+- 記事詳細ページのコメント一覧など、スクロールしないと見えないブロック
+- カード一覧など、折り返しで隠れる大量要素
+
+### Notes
+- `contain-intrinsic-size` を指定しないとスクロールバーの長さが変わって UX が崩れる
+- LCP 対象要素には適用しない（遅延描画でスコア悪化）
+- ページ内検索（Ctrl+F）はスキップされた要素も対象になる（Chrome 90+）
+- Chrome 85+ / Firefox 125+ / Safari 18+ でサポート
+
+---
+
+## contain — レイアウト影響範囲の封じ込め
+
+> Source: https://techblog.lycorp.co.jp/ja/20260409b
+> Written: 2020-09-08
+> Added: 2026-04-15
+
+子要素の変化を祖先要素に波及させないことで、スタイル再計算・レイアウト・ペイントのコストを局所化する。`content-visibility: auto` は内部的に `contain` を自動適用するため、関係を理解しておくと最適化しやすい。
+
+### Code Example
+
+```css
+/* よく使う組み合わせ */
+.card {
+  contain: content; /* layout + paint + style */
+}
+
+/* 各値の内訳 */
+.strict    { contain: strict;  } /* size + layout + paint + style — 最強だがサイズ固定が必要 */
+.content   { contain: content; } /* layout + paint + style — 実用的なバランス */
+.size-only { contain: size;    } /* 子の存在がサイズに影響しない */
+.layout    { contain: layout;  } /* 子の変化が外部レイアウトに波及しない */
+.paint     { contain: paint;   } /* はみ出し要素が外部に描画されない */
+.style     { contain: style;   } /* カウンタなどのスタイルを封じ込める */
+```
+
+### Use Cases
+- カードUI・リストアイテムなど、独立したコンポーネント単位
+- 頻繁に内容が更新されるウィジェット（リアルタイムデータ表示など）
+- サイドバーや広告枠など、本体コンテンツと分離したい領域
+
+### Notes
+- `contain: size` は子要素がゼロサイズとして扱われるため高さを明示する必要がある
+- Chrome 52+ / Firefox 69+ / Safari 15.4+ でサポート
+- 関連: `content-visibility: auto` を使う場合は `contain` は自動適用される
 
 ---
