@@ -54,7 +54,8 @@ If `DESIGN.md` exists:
 - Spot-check typography — do font families and sizes match the type scale?
 - Check spacing — are 8px grid multiples used?
 
-If no `DESIGN.md`: skip this check and note "DESIGN.md not found — brand check skipped."
+If no `DESIGN.md`: note "DESIGN.md not found — brand check skipped" and add a WARNING to Action Required:
+"Generate DESIGN.md from Figma tokens (run `/user-figma-build` Phase 8b or ask Claude to extract tokens and write `DESIGN.md`)."
 
 Severity: Color or type deviation = WARNING.
 
@@ -74,6 +75,19 @@ For every page in the IA (read from RTM or ask):
 - Does a desktop frame (≥1280px width) exist?
 
 Missing either = WARNING.
+
+## Check 6: AI-Readability
+
+Verify the Figma file is structured for reliable AI code generation. Inspect via Figma MCP data.
+
+| Pillar | Check | Pass condition |
+|--------|-------|---------------|
+| **Componentization** | Are reusable UI parts defined as Figma Components (not plain frames)? | ≥ 80% of repeated elements are components |
+| **Naming** | Are layers named semantically (not auto-generated names like "Frame 42", "Group 7")? | No auto-generated names on interactive or layout frames |
+| **Auto Layout** | Do frames use Auto Layout (not absolute/manual positioning)? | All section and container frames use `layoutMode: VERTICAL/HORIZONTAL` |
+| **Annotations** | Do interactive/responsive/dynamic components have annotations? | Each component with behavior has ≥ 1 annotation (interaction / layout / content / state) |
+
+Severity: Any pillar failing = WARNING. All 4 failing = BLOCKER (AI will produce unreliable output).
 
 ## Output Format
 
