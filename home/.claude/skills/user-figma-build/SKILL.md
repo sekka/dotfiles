@@ -365,6 +365,65 @@ mcp__figma__create_design_system_rules(options?)
 
 ---
 
+## Phase 8b: DESIGN.md Token Export
+
+Export design tokens from the Figma file to `DESIGN.md` so brand checks in `/user-figma-gate` (Check 3) can run without Figma access.
+
+**When to run:**
+- After Phase 2 (color tokens + text styles are stable)
+- When `/user-figma-gate` reports "DESIGN.md not found — brand check skipped"
+
+**Skip if:** `DESIGN.md` already exists and is up to date with current tokens.
+
+### What to extract
+
+```js
+// 1. Color variables
+const collections = await figma.variables.getLocalVariableCollectionsAsync();
+const allVars = await figma.variables.getLocalVariablesAsync();
+const colorVars = allVars.filter(v => v.resolvedType === 'COLOR');
+return colorVars.map(v => ({ name: v.name, value: v.valuesByMode }));
+
+// 2. Text styles
+const textStyles = await figma.getLocalTextStylesAsync();
+return textStyles.map(s => ({
+  name: s.name,
+  fontSize: s.fontSize,
+  fontFamily: s.fontName.family,
+  fontWeight: s.fontName.style,
+  lineHeight: s.lineHeight,
+  letterSpacing: s.letterSpacing,
+}));
+```
+
+### DESIGN.md format
+
+Write to `DESIGN.md` in the project root:
+
+```markdown
+# Design System Tokens
+
+## Colors
+
+| Token | Hex |
+|-------|-----|
+| primary/500 | #3B82F6 |
+| neutral/900 | #111827 |
+
+## Typography
+
+| Style | Family | Size | Weight | Line Height |
+|-------|--------|------|--------|-------------|
+| heading/xl | Inter | 48px | Bold | 1.2 |
+| body/md | Inter | 16px | Regular | 1.5 |
+
+## Spacing
+
+Base unit: 8px grid. Scale: 4, 8, 16, 24, 32, 48, 64, 96px.
+```
+
+---
+
 ## AI Image Editing & Prototyping Workflow
 
 When the task involves photo editing, illustration vectorizing, or preparing multiple design directions for review, see:

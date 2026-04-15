@@ -139,6 +139,19 @@ Severity: Any pillar failing = WARNING. All 4 failing = BLOCKER (AI will produce
 
 ---
 
+## Check 6: AI-Readability
+
+| Pillar | Status | Notes |
+|---|---|---|
+| Componentization | ✅ / ⚠️ / ❌ | {details} |
+| Naming | ✅ / ⚠️ / ❌ | {details} |
+| Auto Layout | ✅ / ⚠️ / ❌ | {details} |
+| Annotations | ✅ / ⚠️ / ❌ | {details} |
+
+{BLOCKER if all 4 fail, WARNING for individual failures, or "No issues found"}
+
+---
+
 ## Action Required Before Coding
 
 {numbered list of all BLOCKER and WARNING items}
