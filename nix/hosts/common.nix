@@ -197,6 +197,9 @@
       "com.apple.CrashReporter" = {
         DialogType = "none";  # クラッシュレポートダイアログを非表示
       };
+      "com.apple.WindowManager" = {
+        EnableStandardClickToShowDesktop = false;  # 壁紙クリックでデスクトップを表示しない
+      };
       NSGlobalDomain = {
         # nix-darwin の NSGlobalDomain モジュールに未定義のキー
         PMPrintingExpandedStateForPrint = true;   # 印刷ダイアログを常に展開表示
