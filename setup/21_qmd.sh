@@ -35,7 +35,7 @@ if [[ ! -d $KNOWLEDGE_DIR ]]; then
   exit 1
 fi
 
-if qmd collection list 2>/dev/null | grep -q "^${COLLECTION_NAME} "; then
+if qmd collection list 2>/dev/null | grep -qE "^${COLLECTION_NAME}( |$)"; then
   log_skip "コレクション '$COLLECTION_NAME' は既に登録されています"
 else
   log_info "コレクション '$COLLECTION_NAME' を追加しています..."
