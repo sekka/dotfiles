@@ -2,23 +2,23 @@ cask_args appdir: "/Applications"
 
 # === tmux ===
 tap "k1LoW/tap"
-brew "k1LoW/tap/tcmux"   # https://github.com/k1LoW/tcmux                   # tmuxウィンドウのAIエージェントステータス表示
-brew "claude-squad"      # https://github.com/smtg-ai/claude-squad           # 複数AIエージェントをtmuxワークスペースで並行管理
+brew "k1LoW/tap/tcmux"              # https://github.com/k1LoW/tcmux                            # tmuxウィンドウのAIエージェントステータス表示
+brew "claude-squad"                 # https://github.com/smtg-ai/claude-squad                   # 複数AIエージェントをtmuxワークスペースで並行管理
 
 # === ターミナル ===
-brew "rtk"                # https://github.com/rtk-ai/rtk                    # LLMトークン消費を60-90%削減するCLIプロキシ
-brew "sem-cli"            # https://github.com/Ataraxy-Labs/sem              # セマンティックdiff・blame・impact分析CLI（MCP: cargo install sem-mcp）
+brew "rtk"                          # https://github.com/rtk-ai/rtk                             # LLMトークン消費を60-90%削減するCLIプロキシ
+brew "sem-cli"                      # https://github.com/Ataraxy-Labs/sem                       # セマンティックdiff・blame・impact分析CLI（MCP: cargo install sem-mcp）
 
 # === AI (CLI) ===
 tap "Arthur-Ficial/tap"
-brew "Arthur-Ficial/tap/apfel"  # https://github.com/Arthur-Ficial/apfel    # Apple Intelligence CLI（要 macOS 26 Tahoe以降）
+brew "Arthur-Ficial/tap/apfel"      # https://github.com/Arthur-Ficial/apfel                    # Apple Intelligence CLI（要 macOS 26 Tahoe以降）
 
 # === ウェブ開発 ===
-# brew "productdevbook/tap/pk"  #https://github.com/productdevbook/port-killer/issues/48  # ポート解放ツール
+# brew "productdevbook/tap/pk"      # https://github.com/productdevbook/port-killer/issues/48   # ポート解放ツール
 
 # === システムツール ===
-brew "mac-cleanup-go"     # https://formulae.brew.sh/formula/mac-cleanup-go   # TUI macOSクリーナー
-brew "mole"               # https://formulae.brew.sh/formula/mole             # macOSディープクリーン最適化ツール
+brew "mac-cleanup-go"               # https://formulae.brew.sh/formula/mac-cleanup-go           # TUI macOSクリーナー
+brew "mole"                         # https://formulae.brew.sh/formula/mole                     # macOSディープクリーン最適化ツール
 
 # === ターミナル（cask） ===
 #tap "manaflow-ai/cmux"
