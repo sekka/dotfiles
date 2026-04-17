@@ -56,6 +56,7 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 #cask "claude"                      # https://formulae.brew.sh/cask/claude                      # Claudeデスクトップ
 #cask "codex-app"                   # https://formulae.brew.sh/cask/codex-app                   # OpenAI Codex
 #cask "conductor"                   # https://formulae.brew.sh/cask/conductor                   # AIオーケストレーション
+#cask "google-gemini"               # https://formulae.brew.sh/cask/google-gemini               # Google Gemini デスクトップ
 #cask "osaurus"                     # https://formulae.brew.sh/cask/osaurus                     # AIアシスタント
 #cask "readout"                     # https://www.readout.org/                                  # 開発環境ダッシュボード（brew cask未対応）
 #cask "superset"                    # https://formulae.brew.sh/cask/superset                    # AIエージェントターミナル
