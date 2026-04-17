@@ -27,6 +27,7 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:docs.coderabbit.ai)",
+      "WebFetch(domain:formulae.brew.sh)",
       "WebFetch(domain:gist.github.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:ics.media)",
