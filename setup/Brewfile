@@ -124,7 +124,15 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 tap "hmarr/tap"
 #cask "vitals"                      # https://hmarr.com/vitals/                                 # システムリソースモニタ
 #cask "lzt1008/tap/powerflow"       # https://github.com/lzt1008/powerflow                      # メニューバー電力表示
-#cask "qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package" # QuickLook拡張プラグイン群
+
+# === QuickLook ===
+#cask "apparency"                   # https://formulae.brew.sh/cask/apparency                   # .app バンドルの内容・署名情報を表示
+#cask "betterzipql"                 # https://formulae.brew.sh/cask/betterzip                   # アーカイブファイルのプレビュー（betterzip に統合済み）
+#cask "qlmarkdown"                  # https://formulae.brew.sh/cask/qlmarkdown                  # Markdownファイルの整形プレビュー
+#cask "qlstephen"                   # https://formulae.brew.sh/cask/qlstephen                   # 拡張子なしテキストファイルのプレビュー
+#cask "qlvideo"                     # https://formulae.brew.sh/cask/qlvideo                     # 多フォーマット動画プレビュー＋メタデータ表示
+#cask "suspicious-package"          # https://formulae.brew.sh/cask/suspicious-package          # .pkgインストーラの内容検査・表示
+#cask "syntax-highlight"            # https://formulae.brew.sh/cask/syntax-highlight            # 多言語ソースコードのシンタックスハイライト表示
 
 # === ネットワーク ===
 #cask "cloudflare-warp"             # https://formulae.brew.sh/cask/cloudflare-warp             # VPN/DNS
