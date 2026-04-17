@@ -39,6 +39,7 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 #cask "jetbrains-toolbox"           # https://formulae.brew.sh/cask/jetbrains-toolbox           # JetBrains IDE管理
 #cask "kiro"                        # https://formulae.brew.sh/cask/kiro                        # AIコードエディタ
 #cask "ksdiff"                      # https://formulae.brew.sh/cask/ksdiff                      # ファイル差分ツール
+#brew "k1LoW/tap/mo"                # https://github.com/k1LoW/mo                               # MarkdownファイルをブラウザでプレビューするCLI
 #cask "paw"                         # https://formulae.brew.sh/cask/paw                         # APIクライアント
 #cask "sourcegit"                   # https://formulae.brew.sh/cask/sourcegit                   # Gitクライアント
 #cask "sourcetree"                  # https://formulae.brew.sh/cask/sourcetree                  # Gitクライアント
@@ -56,6 +57,7 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 #cask "codex-app"                   # https://formulae.brew.sh/cask/codex-app                   # OpenAI Codex
 #cask "conductor"                   # https://formulae.brew.sh/cask/conductor                   # AIオーケストレーション
 #cask "osaurus"                     # https://formulae.brew.sh/cask/osaurus                     # AIアシスタント
+#cask "readout"                     # https://www.readout.org/                                  # 開発環境ダッシュボード（brew cask未対応）
 #cask "superset"                    # https://formulae.brew.sh/cask/superset                    # AIエージェントターミナル
 
 # === ブラウザ ===
