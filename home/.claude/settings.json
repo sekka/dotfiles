@@ -56,7 +56,6 @@
       "Bash(wget:*)"
     ]
   },
-  "model": "opusplan",
   "hooks": {
     "PreToolUse": [
       {
