@@ -12,6 +12,7 @@
   },
   "permissions": {
     "allow": [
+      "Bash(mkdir:*)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(difit-here)",
@@ -20,9 +21,8 @@
       "Skill(user-dev-review)",
       "Skill(user-fe-knowledge)",
       "Skill(user-harness-gen-skills)",
-      "Bash(mkdir:*)",
-      "Write",
       "WebSearch",
+      "Write",
       "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
