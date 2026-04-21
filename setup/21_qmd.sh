@@ -29,6 +29,13 @@ if ! is_installed qmd; then
   fi
 fi
 
+# bun shim が bun.lock をパッケージディレクトリで探すため symlink が必要
+_QMD_PKG="$HOME/.cache/.bun/install/global/node_modules/@tobilu/qmd"
+_BUN_GLOBAL_LOCK="$HOME/.cache/.bun/install/global/bun.lock"
+if [[ -d $_QMD_PKG && -f $_BUN_GLOBAL_LOCK ]]; then
+  ln -sf "$_BUN_GLOBAL_LOCK" "$_QMD_PKG/bun.lock"
+fi
+
 if [[ ! -d $KNOWLEDGE_DIR ]]; then
   log_error "knowledge ディレクトリが見つかりません: $KNOWLEDGE_DIR"
   echo "  setup/04_symlinks.sh を先に実行してください"
@@ -39,9 +46,16 @@ if qmd collection list 2>/dev/null | grep -qE "^${COLLECTION_NAME}( |$)"; then
   log_skip "コレクション '$COLLECTION_NAME' は既に登録されています"
 else
   log_info "コレクション '$COLLECTION_NAME' を追加しています..."
-  if ! qmd collection add "$KNOWLEDGE_DIR" --name "$COLLECTION_NAME"; then
-    log_error "コレクション追加に失敗しました"
-    exit 1
+  _add_out=$(qmd collection add "$KNOWLEDGE_DIR" --name "$COLLECTION_NAME" 2>&1)
+  _add_exit=$?
+  if [[ $_add_exit -ne 0 ]]; then
+    if [[ ${_add_out,,} == *"already exists"* ]]; then
+      log_skip "コレクション '$COLLECTION_NAME' は既に登録されています（add 検出）"
+    else
+      log_error "コレクション追加に失敗しました"
+      echo "$_add_out"
+      exit 1
+    fi
   fi
 fi
 
