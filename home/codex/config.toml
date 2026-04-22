@@ -1,5 +1,5 @@
 personality = "pragmatic"
-model = "gpt-5.3-codex"
+model = "gpt-5.4"
 
 [core]
 # デフォルトで非インタラクティブモードを使用
@@ -17,8 +17,15 @@ personality = true
 [projects."~/dotfiles"]
 trust_level = "trusted"
 
+[projects."/Users/kei/src/github.com/sekka/koyasan_hataraku"]
+trust_level = "trusted"
+
+[projects."/Users/kei/src/github.com/sekka/hieizan"]
+trust_level = "trusted"
+
 [notice.model_migrations]
 "gpt-5.2-codex" = "gpt-5.3-codex"
+"gpt-5.3-codex" = "gpt-5.4"
 
 [tui]
 status_line = [
@@ -31,3 +38,8 @@ status_line = [
 
 [plugins."github@openai-curated"]
 enabled = true
+
+[marketplaces.openai-bundled]
+last_updated = "2026-04-20T11:04:41Z"
+source_type = "local"
+source = "/Users/kei/.codex/.tmp/bundled-marketplaces/openai-bundled"
