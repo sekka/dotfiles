@@ -587,6 +587,7 @@ go = "latest"
 # --- Web / ネットワーク ---
 "npm:caniuse-cmd" = "latest"           # ブラウザ互換性チェック
 "npm:vercel" = "latest"                # Vercel CLI
+"npm:wrangler" = "latest"              # Cloudflare Workers CLI                https://developers.cloudflare.com/workers/wrangler/
 
 # --- メディア ---
 "npm:imageoptim-cli" = "latest"        # 画像最適化

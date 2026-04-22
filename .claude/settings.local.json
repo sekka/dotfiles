@@ -14,6 +14,7 @@
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
       "Bash(wait)",
+      "Bash(wrangler *)",
       "Skill(codex:rescue)",
       "Skill(schedule)",
       "Skill(user-dev-review)",
@@ -44,9 +45,7 @@
       "WebFetch(domain:zenn.dev)",
       "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
-      "mcp__plugin_playwright_playwright__*",
-      "Bash(xattr -l /Applications/Conductor.app)",
-      "Bash(spctl --assess --verbose /Applications/Conductor.app)"
+      "mcp__plugin_playwright_playwright__*"
     ],
     "deny": [],
     "ask": []
