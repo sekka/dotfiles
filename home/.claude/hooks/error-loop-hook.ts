@@ -23,8 +23,6 @@ interface HookInput {
   tool_response?: { is_error?: boolean };
 }
 
-const READ_ONLY_TOOLS = new Set(["Read", "Glob", "Grep"]);
-
 export const WARN_THRESHOLD = 2;
 
 async function main() {
@@ -51,7 +49,7 @@ async function main() {
         }),
       );
     }
-  } else if (!READ_ONLY_TOOLS.has(input.tool_name ?? "")) {
+  } else {
     writeNumber(streakFile, 0);
   }
 
