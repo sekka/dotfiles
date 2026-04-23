@@ -6,10 +6,6 @@
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "200000",
     "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB": "1"
   },
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
@@ -30,14 +26,10 @@
       "mcp__sem__*"
     ],
     "deny": [
-      "Bash(do:*)",
-      "Bash(for:*)",
       "Bash(git rebase:*)",
       "Bash(git reset:*)",
       "Bash(rm -rf:*)",
       "Bash(sudo:*)",
-      "Bash(until:*)",
-      "Bash(while:*)",
       "Read(**/*.key)",
       "Read(**/*.pem)",
       "Read(**/*secret*)",
