@@ -70,6 +70,8 @@ Extract:
 - Risks (each row: ID, Risk, Probability, Impact, Mitigation)
 - Open Questions
 
+If any requirement rows in discovery.md lack ID numbers, auto-assign them as R-001, R-002, etc. (in the order they appear) before proceeding with classification.
+
 ### Step 5 — Classify requirements
 
 For each requirement in discovery.md and any necessary additions, assign a classification:
@@ -87,7 +89,9 @@ For every requirement ID in discovery.md (R01, R02, …), map it to a spec row:
 - If mapped → show the spec ID and ✅
 - If not mapped → show `—` and 🔴 Missing
 
-Count all 🔴 entries. If any 🔴 remain, do not declare done — either add the missing spec rows or explicitly justify exclusion before proceeding.
+Count all 🔴 entries. If any 🔴 remain, do not declare done — either add the missing spec rows or explicitly justify exclusion before proceeding. "Justify exclusion" means: add a **Coverage Exceptions** section at the bottom of spec.md that explains why each excluded item is out of scope. Only after that section is written may the item be considered resolved and removed from 🔴.
+
+**Note:** The coverage matrix maps only discovery.md requirement items (R-001, R-002, …) → spec rows. SUPPLEMENTED rows (industry-standard additions) and PENDING rows appear in the RTM table but are **not** part of the discovery.md coverage check and do not affect the 🔴 gap count.
 
 ### Step 7 — Write spec.md
 
@@ -168,14 +172,18 @@ Date: {YYYY-MM-DD} | Status: Draft
 
 ### Step 9 — Update pmo.yaml
 
-Open `~/prj/{slug}/pmo.yaml` and set:
+Check if `~/prj/{slug}/pmo.yaml` exists:
 
-```yaml
-spec_file: spec.md
-design_doc_file: design-doc.md
-```
+- **If it does not exist**, create a minimal one:
 
-Leave all other fields unchanged.
+  ```yaml
+  project: {Project Name}
+  slug: {slug}
+  spec_file: spec.md
+  design_doc_file: design-doc.md
+  ```
+
+- **If it exists**, open it and set `spec_file: spec.md` and `design_doc_file: design-doc.md`. If either field is missing, add it. Leave all other existing fields unchanged.
 
 ### Step 10 — Show summary
 
@@ -208,6 +216,8 @@ If PENDING items exist, add:
 ## Completion Condition
 
 `spec.md` and `design-doc.md` are written, coverage matrix shows 0 🔴 gaps, and pmo.yaml is updated with `spec_file` and `design_doc_file`.
+
+**0 🔴 gaps** means all discovery.md requirement items are mapped to a spec row (or covered by a Coverage Exceptions entry). PENDING spec items do **not** block completion — their presence triggers `DONE_WITH_CONCERNS` status, not `BLOCKED`.
 
 ## Status
 
