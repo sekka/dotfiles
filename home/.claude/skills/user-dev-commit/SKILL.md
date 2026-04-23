@@ -30,9 +30,39 @@ Analyze the changes by logical unit and commit related changes together.
 
 ## Step 2: Commit
 
-Follow `rules/git-conventions.md` for splitting, message format, and prefixes.
+### Commit Message Format
 
-Run `git add <specific-files>` → `git commit` for each commit.
+- **Prefix** (English): choose from `feat` `fix` `refactor` `perf` `style` `docs` `test` `build` `chore` `config` `ui` `a11y` `security` `hotfix` `revert`
+- **Body** (Japanese): 1st line ≤ 72 chars, present tense, state what and why
+- Add details after a blank line if needed
+
+**How to pick prefix:**
+- New capability → `feat`
+- Config/settings change → `config`
+- Bug fix → `fix`
+- Code restructure (no behavior change) → `refactor`
+- Docs only → `docs`
+- Maintenance / cleanup → `chore`
+
+**Good examples:**
+```
+feat: zsh に git エイリアスを追加
+config: sheldon プラグイン設定を追加
+fix: エイリアスの typo を修正
+```
+
+### Commit Granularity
+
+One commit = one logical change.
+
+**Combine when:** same purpose, meaningless alone, or dependency between changes.
+**Split when:** independent purposes, different scopes, or rollback granularity matters.
+
+When splitting: commit in dependency order — foundation → implementation → docs.
+
+### Execution
+
+Run `git add <specific-files>` → `git commit` for each logical unit.
 
 ## Status
 
