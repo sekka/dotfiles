@@ -1,6 +1,15 @@
 #!/usr/bin/env bun
 export {};
 
+// PostToolUse:Read hook: 読み込んだファイルパスをセッション状態に記録する
+//
+// Read ツールが実行されるたびに、そのファイルパスを
+// /tmp/claude-hooks-{session_id}/read-files.json に追記する。
+// read-before-edit-hook.ts がこのリストを参照し、
+// 未読ファイルへの編集操作をブロックする。
+//
+// 狙い: 「読まずに編集」という edit-thrashing の根本原因を排除する。
+
 import { join } from "node:path";
 import { readJson, sessionDir, writeJson } from "./lib/session-state.ts";
 

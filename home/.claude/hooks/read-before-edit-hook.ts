@@ -1,6 +1,15 @@
 #!/usr/bin/env bun
 export {};
 
+// PreToolUse:Edit|Write hook: 未読ファイルへの編集を物理的にブロックする
+//
+// track-read-hook.ts が記録した read-files.json を参照し、
+// このセッションで一度も Read していないファイルへの Edit/Write を
+// exit 2 で拒否する（PreToolUse で exit 2 = ツール実行のキャンセル）。
+//
+// 狙い: CLAUDE.md の「Read before modify」ルールを意思に頼らず強制する。
+// edit-thrashing（同ファイルの反復編集）の根本的な防止策として機能する。
+
 import { join } from "node:path";
 import { readJson, sessionDir } from "./lib/session-state.ts";
 

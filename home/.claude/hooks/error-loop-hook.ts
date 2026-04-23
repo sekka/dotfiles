@@ -1,6 +1,18 @@
 #!/usr/bin/env bun
 export {};
 
+// PostToolUse:Read|Edit|Write hook: 連続ツール失敗を検知してアプローチ変更を促す
+//
+// Bash 以外のツール（Read/Edit/Write）の連続失敗回数を
+// /tmp/claude-hooks-{session_id}/fail-streak.txt に記録する。
+// WARN_THRESHOLD（デフォルト: 2）回連続で失敗すると additionalContext に警告を注入し、
+// 同じ手法のリトライを禁止して別アプローチへの切り替えを強制する。
+// 成功時はカウンターをリセットする。
+//
+// 狙い: Bash の circuit-breaker.ts（threshold=3）を補完し、
+// ファイル操作系ツールの error-loop を早期に断ち切る。
+// Bash は circuit-breaker.ts が担当するためこのフックでは除外している。
+
 import { join } from "node:path";
 import { readNumber, sessionDir, writeNumber } from "./lib/session-state.ts";
 
@@ -13,7 +25,7 @@ interface HookInput {
 
 const READ_ONLY_TOOLS = new Set(["Read", "Glob", "Grep"]);
 
-const WARN_THRESHOLD = 2;
+export const WARN_THRESHOLD = 2;
 
 async function main() {
   const stdinText = await Bun.stdin.text();
