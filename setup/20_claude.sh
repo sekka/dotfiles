@@ -222,23 +222,27 @@ done < <(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' 
 
 # --- サードパーティスキル管理 ---
 
-# "リポジトリ スキル名" の形式で宣言
-THIRD_PARTY_SKILLS=(
+# "リポジトリ スキル名" の形式で宣言 (gh skill 用)
+# パスが標準 (skills/*/SKILL.md) のものはスキル名のみ、非標準はフルパスを指定
+GH_SKILLS=(
   "yoshiko-pg/difit difit-review"
+  "mattpocock/skills grill-me"
+  "mizchi/chezmoi-dotfiles empirical-prompt-tuning dot_claude/skills/empirical-prompt-tuning/SKILL.md"
 )
 
 is_skill_installed() {
   [[ -d "$HOME/.claude/skills/$1" ]]
 }
 
-ensure_skill() {
+ensure_gh_skill() {
   local repo="$1"
   local skill="$2"
+  local path="${3:-$2}" # パス省略時はスキル名をそのまま渡す (標準パスのリポジトリ)
 
   if is_skill_installed "$skill"; then
     if [[ $UPDATE_MODE == "true" ]]; then
-      log_info "スキル '$skill' を更新しています..."
-      if ! npx -y skills add "$repo" --skill "$skill" -a claude-code -g -y 2>/dev/null; then
+      log_info "スキル '$skill' を更新しています (gh skill)..."
+      if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f 2>/dev/null; then
         log_warn "スキルの更新に失敗しました: $skill（続行します）"
       else
         log_info "スキルを更新しました: $skill"
@@ -247,8 +251,8 @@ ensure_skill() {
       log_skip "スキル '$skill' はインストール済み"
     fi
   else
-    log_info "スキル '$skill' をインストールしています..."
-    if ! npx -y skills add "$repo" --skill "$skill" -a claude-code -g -y 2>/dev/null; then
+    log_info "スキル '$skill' をインストールしています (gh skill)..."
+    if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f 2>/dev/null; then
       log_warn "スキルのインストールに失敗しました: $skill（続行します）"
     else
       log_info "スキルをインストールしました: $skill"
@@ -259,10 +263,10 @@ ensure_skill() {
 skill_count=0
 
 log_info "サードパーティスキルをセットアップしています..."
-for entry in "${THIRD_PARTY_SKILLS[@]}"; do
-  read -r repo skill <<<"$entry"
+for entry in "${GH_SKILLS[@]}"; do
+  read -r repo skill path <<<"$entry"
   if [[ -n $repo ]] && [[ -n $skill ]]; then
-    ensure_skill "$repo" "$skill"
+    ensure_gh_skill "$repo" "$skill" "$path"
     skill_count=$((skill_count + 1)) || true
   fi
 done

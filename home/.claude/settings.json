@@ -191,15 +191,6 @@
             "async": true
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun $HOME/.claude/hooks/sync-external-skills.ts",
-            "async": true
-          }
-        ]
       }
     ],
     "UserPromptSubmit": [
