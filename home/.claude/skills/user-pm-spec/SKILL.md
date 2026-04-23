@@ -70,7 +70,7 @@ Extract:
 - Risks (each row: ID, Risk, Probability, Impact, Mitigation)
 - Open Questions
 
-If any requirement rows in discovery.md lack ID numbers, auto-assign them as R-001, R-002, etc. (in the order they appear) before proceeding with classification.
+If any requirement rows in discovery.md lack ID numbers, auto-assign them as R01, R02, etc. (in the order they appear) before proceeding with classification.
 
 ### Step 5 — Classify requirements
 
@@ -91,7 +91,7 @@ For every requirement ID in discovery.md (R01, R02, …), map it to a spec row:
 
 Count all 🔴 entries. If any 🔴 remain, do not declare done — either add the missing spec rows or explicitly justify exclusion before proceeding. "Justify exclusion" means: add a **Coverage Exceptions** section at the bottom of spec.md that explains why each excluded item is out of scope. Only after that section is written may the item be considered resolved and removed from 🔴.
 
-**Note:** The coverage matrix maps only discovery.md requirement items (R-001, R-002, …) → spec rows. SUPPLEMENTED rows (industry-standard additions) and PENDING rows appear in the RTM table but are **not** part of the discovery.md coverage check and do not affect the 🔴 gap count.
+**Note:** The coverage matrix maps only discovery.md requirement items (R01, R02, …) → spec rows. SUPPLEMENTED rows (industry-standard additions) and PENDING rows appear in the RTM table but are **not** part of the discovery.md coverage check and do not affect the 🔴 gap count.
 
 ### Step 7 — Write spec.md
 

@@ -203,7 +203,7 @@ project:
   name: "{project name}"
   slug: "{slug}"
   deadline: "{YYYY-MM-DD}"
-  phase: "requirements"
+  phase: "spec"
 
 tasks:
   - id: T-001

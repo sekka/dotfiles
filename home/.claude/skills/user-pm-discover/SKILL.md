@@ -129,14 +129,14 @@ Date: {YYYY-MM-DD} | Client: {client} | PM: {git user name}
 ## Risks
 | ID | Risk | Probability | Impact | Mitigation |
 | -- | ---- | ----------- | ------ | ---------- |
-| K01 | ... | High | High | ... |
+| K-001 | ... | High | High | ... |
 
 ## Open Questions
 - [ ] {question} [deferred until {YYYY-MM-DD}]
 ```
 
 Rules for filling in the template:
-- Assign sequential IDs: R01, R02 … for Requirements; K01, K02 … for Risks
+- Assign sequential IDs: R01, R02 … for Requirements; K-001, K-002 … for Risks (3-digit zero-padded)
 - `Source` is always "Client" unless the PM specifies otherwise
 - `Priority` values: Must / Should / Could
 - `Probability` values: High / Medium / Low
