@@ -1,7 +1,13 @@
 #!/bin/bash
-# Circuit breaker PostToolUse hook
-# Tracks consecutive Bash failures and warns Claude after 3 in a row.
-# After warning, resets counter to encourage a fresh approach.
+# PostToolUse:Bash hook: 連続失敗を検知してアプローチ変更を促す
+#
+# セッションごとに Bash ツールの連続失敗回数を /tmp に記録する。
+# 3回連続で失敗すると additionalContext に警告を注入し、
+# 同じコマンドを繰り返すのではなく別の方法を試すよう Claude に伝える。
+# 成功時、または警告を出した直後にカウンターをリセットする。
+#
+# 狙い: オプション誤りやツール未インストールなど、同じ原因で
+# 失敗し続けるリトライループを断ち切り、トークンの無駄遣いを防ぐ。
 
 input=$(cat)
 exit_code=$(echo "$input" | jq -r '.tool_response.exit_code // 0')

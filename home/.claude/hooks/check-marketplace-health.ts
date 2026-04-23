@@ -322,15 +322,17 @@ function main() {
       console.error(`❌ Errors: ${result.errors.join(", ")}`);
     }
 
-    // additionalContext でセッションに結果を注入
-    const context = {
-      marketplaceHealth: result,
-    };
-    console.log(
-      JSON.stringify({
-        additionalContext: JSON.stringify(context),
-      }),
-    );
+    // Only inject additionalContext when there are actual issues
+    if (result.repaired.length > 0 || result.removed.length > 0 || result.errors.length > 0) {
+      const context = {
+        marketplaceHealth: result,
+      };
+      console.log(
+        JSON.stringify({
+          additionalContext: JSON.stringify(context),
+        }),
+      );
+    }
 
     process.exit(0);
   } catch (error) {
@@ -340,21 +342,6 @@ function main() {
         `[DEBUG] Error details: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
-
-    // additionalContext にエラー情報を含める（簡略化）
-    const context = {
-      marketplaceHealth: {
-        checked: [],
-        repaired: [],
-        removed: [],
-        errors: ["Unexpected error occurred"],
-      },
-    };
-    console.log(
-      JSON.stringify({
-        additionalContext: JSON.stringify(context),
-      }),
-    );
 
     process.exit(0); // 非ブロッキング
   }

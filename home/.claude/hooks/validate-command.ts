@@ -1,4 +1,14 @@
 #!/usr/bin/env bun
+// PreToolUse:Bash hook: 破壊的なシェルコマンドをブロックする安全フェンス
+//
+// すべての Bash ツール呼び出しを傍受し、コマンドを以下に分類する:
+//   prohibited  sed, awk, git add -A, force-push, reset --hard  → deny（即時拒否）
+//   critical    rm -rf /, 物理ディスクへの dd                    → deny（即時拒否）
+//   dangerous   rm/sudo/dd/shred へのパイプ・チェーン            → ask（確認要求）
+//   safe        上記以外                                        → allow
+//
+// 狙い: 誤操作によるデータ損失を防ぐ。.env ファイルの誤ステージングや、
+// 失敗のリトライが破壊的コマンドにエスカレートするケースを事前に止める。
 
 interface HookInput {
   tool_name: string;

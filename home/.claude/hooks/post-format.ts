@@ -1,8 +1,12 @@
 #!/usr/bin/env bun
 export {};
 
-// PostToolUse hook: auto-format files after Edit|Write
-// stdin: { tool_name, tool_input: { file_path } }
+// PostToolUse:Edit|Write hook: ファイル編集後に自動フォーマットをかける
+//
+// 編集されたファイルに lint-format.ts --mode=fix を実行し、
+// 手動でフォーマットコマンドを打たなくてもコードを常に整った状態に保つ。
+// フォーマット対象外の拡張子、settings.json 系（sort-permissions.ts が担当）、
+// node_modules 配下はスキップする。フォーマット失敗は非致命的。
 
 const FORMATTABLE_EXTENSIONS = new Set([
   ".ts",
@@ -44,6 +48,10 @@ async function main() {
       filePath.endsWith(".claude/settings.json") ||
       filePath.endsWith(".claude/settings.local.json")
     ) {
+      process.exit(0);
+    }
+
+    if (filePath.includes("/node_modules/")) {
       process.exit(0);
     }
 

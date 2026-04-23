@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/validate-command.ts"
+            "command": "bun $HOME/.claude/hooks/validate-command.ts"
           },
           {
             "type": "command",
@@ -97,7 +97,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/post-format.ts",
+            "command": "bun $HOME/.claude/hooks/post-format.ts",
             "async": true
           }
         ]
@@ -110,15 +110,6 @@
             "command": "bash $HOME/.claude/hooks/circuit-breaker.sh"
           }
         ]
-      },
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
-          }
-        ]
       }
     ],
     "Stop": [
@@ -126,7 +117,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+            "command": "bun $HOME/.claude/hooks/claude-notify.ts",
             "async": true
           }
         ]
@@ -135,15 +126,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/dotfiles/scripts/hooks/commit-reminder.sh"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
+            "command": "bash $HOME/.claude/hooks/commit-reminder.sh"
           }
         ]
       }
@@ -153,7 +136,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+            "command": "bun $HOME/.claude/hooks/claude-notify.ts",
             "async": true
           }
         ]
@@ -165,7 +148,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun $HOME/dotfiles/scripts/hooks/claude-notify.ts",
+            "command": "bun $HOME/.claude/hooks/claude-notify.ts",
             "async": true
           }
         ]
@@ -200,56 +183,12 @@
         ]
       }
     ],
-    "PreCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/save-progress.sh"
-          }
-        ]
-      }
-    ],
-    "PostCompact": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.claude/hooks/save-progress.sh"
-          }
-        ]
-      }
-    ],
     "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
-          }
-        ]
-      }
-    ],
-    "PostToolUseFailure": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$SUPERSET_HOME_DIR\" ] && [ -x \"$SUPERSET_HOME_DIR/hooks/notify.sh\" ] && \"$SUPERSET_HOME_DIR/hooks/notify.sh\" || true"
+            "command": "bun $HOME/.claude/hooks/git-context.ts"
           }
         ]
       }

@@ -1,7 +1,14 @@
 #!/usr/bin/env bun
 /**
- * Claude Code Hooks 用 macOS 通知スクリプト
- * Stop、PermissionRequest、SubagentStop、Notification hook から呼び出されます。
+ * Stop / StopFailure / Notification hook: Claude Code のイベントを macOS 通知で知らせる
+ *
+ * terminal-notifier を使い、以下のタイミングでネイティブ通知を表示する:
+ *   - Stop: 作業完了時
+ *   - StopFailure: API エラー（rate limit、認証失敗など）による停止時
+ *   - Notification: 権限リクエスト・アイドル・認証成功・入力要求など
+ *
+ * 狙い: ターミナルを見ていなくても Claude の状態に気づけるようにする。
+ * バックグラウンドや別画面で作業中でも通知が届く。
  */
 
 const CLAUDE_ICON_PATHS = [

@@ -1,6 +1,15 @@
 #!/bin/bash
-# 機密ファイル保護hook
-# permissions.denyでカバーされないパターンの追加保護（Read/Edit/Write）
+# PreToolUse:Read|Edit|Write hook: 機密ファイルへのアクセスをブロックする
+#
+# permissions.deny の静的なグロブでは表現できないパターンを補う第二の防衛線。
+# 以下をブロックする:
+#   - .p12 / .pfx（秘密鍵を含む証明書ファイル）
+#   - .git/ 内部への直接書き込み
+#   - ファイルパスに ../ を含むパストラバーサル
+#   - シンボリックリンクの解決先が保護対象になっている書き込み
+#
+# permissions.deny だけでは不十分な理由: 静的グロブはシンボリックリンクや
+# 動的なパスパターンを検出できないため、このフックで補完している。
 
 input=$(cat)
 file_path=$(echo "$input" | jq -r '.tool_input.file_path // .file_path // empty')
@@ -12,8 +21,8 @@ fi
 
 is_protected() {
   case "$1" in
-    *.p12 | *.pfx) return 0 ;;
-    *) return 1 ;;
+  *.p12 | *.pfx) return 0 ;;
+  *) return 1 ;;
   esac
 }
 
