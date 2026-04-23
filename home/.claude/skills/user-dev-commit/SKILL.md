@@ -15,8 +15,7 @@ Analyze the changes by logical unit and commit related changes together.
 
 ## Iron Law
 
-1. Do not stage files that contain sensitive information
-2. Do not commit changes that have not been reviewed
+1. **[critical]** Do not stage files that contain sensitive information (API keys, passwords, tokens, secrets)
 
 ## Step 1: Review Changes
 
@@ -25,8 +24,14 @@ Analyze the changes by logical unit and commit related changes together.
 3. Check recent commit style with `git log --oneline -10`
 4. **Exclusion check**:
    - Exclude debug logs, temporary code, and commented-out code
-   - Exclude sensitive information (API keys, passwords, etc.)
+   - Exclude sensitive information (API keys, passwords, tokens, secrets)
    - Exclude files covered by `.gitignore`
+   - **Untracked files**: include them if they are clearly part of the same logical change; skip if purpose is unclear
+
+5. **Sensitive data action**: If a file contains sensitive data (e.g., `sk-proj-...`, `ghp_...`, hardcoded passwords):
+   - Do NOT stage that file
+   - Stage and commit the remaining safe files (partial commit is correct)
+   - Report the excluded file(s) in the Status response using `## Status: DONE_WITH_CONCERNS`
 
 ## Step 2: Commit
 
