@@ -44,6 +44,11 @@ Supported deliverable types:
 
 1. If any required argument is missing, ask with AskUserQuestion (ask all missing in one question)
 2. Infer slug from project name: lowercase, hyphens, ASCII only (e.g. "○○ Corporate Site" → "oo-corporate-site")
+2a. If `~/prj/{slug}/discovery.md` exists, read it and apply discovery multipliers to hour estimates:
+    - Requirements count (rows in the Requirements table) > 20 → multiply all est_hours by 1.3 (round to nearest 0.5h)
+    - Any risk with both Probability: High AND Impact: High present → add 10% buffer to project total hours (round up to nearest 0.5h)
+    - More than 3 rows with Priority: PENDING or source showing "未確認" → flag in output: "⚠️ {n} 件の要件が未確定です。WBS確定前にクライアント確認を推奨します。"
+    The deliverable-type templates are not overridden — only the hour totals are adjusted. If discovery.md is absent or malformed, skip this step silently.
 3. Generate WBS from template for each deliverable type (see Task Templates below)
 4. Adjust deadlines: distribute tasks backward from the final deadline
 5. Present the WBS as a Markdown table in chat
@@ -198,7 +203,7 @@ project:
   name: "{project name}"
   slug: "{slug}"
   deadline: "{YYYY-MM-DD}"
-  phase: "requirements"
+  phase: "spec"
 
 tasks:
   - id: T-001
