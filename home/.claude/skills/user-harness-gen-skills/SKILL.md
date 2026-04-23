@@ -285,7 +285,10 @@ Output location: `~/dotfiles/home/.claude/skills/{skill-name}/SKILL.md`
 
 Steps: mkdir → Write → chmod 644
 
-Include next steps in the completion message (run tests, manual adjustments, git add).
+Include next steps in the completion message:
+1. Run `empirical-prompt-tuning` to verify self-sufficiency (unclear_points = 0 is the target)
+2. Manual adjustments based on eval report
+3. git add
 </file_output>
 </phase_6>
 </workflow>
