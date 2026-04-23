@@ -43,6 +43,15 @@ Analyze the changes by logical unit and commit related changes together.
 - Code restructure (no behavior change) → `refactor`
 - Docs only → `docs`
 - Maintenance / cleanup → `chore`
+- Performance improvement → `perf`
+- Code formatting / lint → `style`
+- Adding or updating tests → `test`
+- Build system / CI changes → `build`
+- UI-only change → `ui`
+- Accessibility → `a11y`
+- Security fix → `security`
+- Urgent production fix → `hotfix`
+- Undoing a previous commit → `revert`
 
 **Good examples:**
 ```
@@ -58,7 +67,7 @@ One commit = one logical change.
 **Combine when:** same purpose, meaningless alone, or dependency between changes.
 **Split when:** independent purposes, different scopes, or rollback granularity matters.
 
-When splitting: commit in dependency order — foundation → implementation → docs.
+When splitting: commit in dependency order — foundation → implementation → tests → docs.
 
 ### Execution
 
