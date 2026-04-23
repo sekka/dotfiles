@@ -41,8 +41,9 @@ Analyze the changes by logical unit and commit related changes together.
 - Add details after a blank line if needed
 
 **How to pick prefix:**
-- New capability → `feat`
-- Config/settings change → `config`
+- New capability (new command, function, script, or tool) → `feat`
+- Config/settings change (editing existing dotfiles or config file) → `config`
+- New config file that *extends existing setup* (e.g., adding a sheldon plugin loader) → `config`
 - Bug fix → `fix`
 - Code restructure (no behavior change) → `refactor`
 - Docs only → `docs`
