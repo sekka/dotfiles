@@ -10,6 +10,7 @@ export {};
 // 狙い: CLAUDE.md の「Read before modify」ルールを意思に頼らず強制する。
 // edit-thrashing（同ファイルの反復編集）の根本的な防止策として機能する。
 
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { readJson, sessionDir } from "./lib/session-state.ts";
 
@@ -36,7 +37,7 @@ async function main() {
   const stateFile = join(dir, "read-files.json");
   const readFiles = readJson<string[]>(stateFile, []);
 
-  if (!readFiles.includes(filePath)) {
+  if (!readFiles.includes(filePath) && existsSync(filePath)) {
     process.stdout.write(
       `⛔ Read-before-edit: "${filePath}" をまだ Read していません。先に Read ツールで内容を確認してください。`,
     );
