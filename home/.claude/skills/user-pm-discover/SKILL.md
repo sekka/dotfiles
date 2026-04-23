@@ -39,13 +39,15 @@ Ask the PM to provide a slug for the project directory:
 > Example: `oo-corporate-renewal`"
 
 Validate the slug:
-- Pattern: `^[a-z0-9][a-z0-9-]{0,28}[a-z0-9]$` or a single segment `^[a-z0-9]{1,30}$`
+- Rule: 2–30 characters, lowercase alphanumeric and hyphens only, must start and end with an alphanumeric character
 - Reject and re-ask if it contains uppercase letters, spaces, underscores, or special characters
-- Reject if longer than 30 characters
+- Reject if shorter than 2 or longer than 30 characters
 
 ### Step 3 — Create project directory
 
-Run: `mkdir -p ~/prj/{slug}/`
+Before creating, check if `~/prj/{slug}/` already exists:
+- If it exists, ask: "~/prj/{slug}/ already exists. Continue with this directory? (y/n)" — if n, go back to Step 2 and ask for a different slug.
+- If it does not exist, run: `mkdir -p ~/prj/{slug}/`
 
 Confirm creation before proceeding.
 
@@ -54,6 +56,7 @@ Confirm creation before proceeding.
 Ask each question one at a time. Wait for the PM's answer before moving to the next question. After each answer:
 - Classify the content into one or more of: **Goals**, **Non-Goals**, **Requirements**, **Constraints**, **Risks**
 - If the answer is ambiguous or incomplete, ask one targeted follow-up question immediately before moving on
+- If the PM cannot answer even after the follow-up, mark the item as `[Unknown - confirm later]` and continue to the next question. Flag all `[Unknown]` items in the Step 5 summary.
 
 **Questions (in order):**
 
@@ -139,7 +142,7 @@ Rules for filling in the template:
 - `Probability` values: High / Medium / Low
 - `Impact` values: High / Medium / Low
 - Every Open Question must have a `[deferred until YYYY-MM-DD]` tag based on the PM's answer to Q7
-- PM name: obtain from `git config user.name`
+- PM name: obtain from `git config user.name`. If the command returns empty, use `PM` as the placeholder name.
 
 ### Step 7 — Generate initial pmo.yaml
 
