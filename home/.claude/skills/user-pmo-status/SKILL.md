@@ -35,7 +35,7 @@ No arguments required.
    - Parse all Action Items from the file (lines in tables under `### Action Items` headings)
    - For each item with a Due date (not "TBD"):
      - Due date < today → classify as 🔴 Overdue; compute days overdue
-     - Due date within 3 calendar days (today+0 to today+3) → classify as 🟡 Due Soon
+     - Due date is today or within 2 more calendar days (today, today+1, today+2) → classify as 🟡 Due Soon
    - If any Overdue or Due Soon items exist, append an "Action Items" subsection BELOW that project's dashboard row:
 
      **Overdue Action Items 🔴**
@@ -44,9 +44,9 @@ No arguments required.
      | {action text} | {owner} | {YYYY-MM-DD} | {n} |
 
      **Due Soon 🟡**
-     | Action | Owner | Due |
-     | ------ | ----- | --- |
-     | {action text} | {owner} | {YYYY-MM-DD} |
+     | Action | Owner | Due | Days until due |
+     | ------ | ----- | --- | -------------- |
+     | {action text} | {owner} | {YYYY-MM-DD} | {n} |
 
    - If no overdue or due-soon items exist, omit these tables entirely (no empty tables)
    - Items with Due = "TBD" are never included in either table
@@ -84,6 +84,27 @@ If a pmo.yaml is malformed or unreadable:
 
 ```
 ⚠️ {slug} — pmo.yaml unreadable
+```
+
+## Example Output (project with action items)
+
+```
+Project Status — 2026-04-23
+
+Project              Phase          Progress  Deadline   Alert
+─────────────────────────────────────────────────────────────
+abc-corp-site        development    40%       06/30      comfortable
+
+**Overdue Action Items 🔴**
+| Action | Owner | Due | Days overdue |
+| ------ | ----- | --- | ------------ |
+| デザインレビュー完了 | Designer | 2026-04-20 | 3 |
+
+**Due Soon 🟡**
+| Action | Owner | Due | Days until due |
+| ------ | ----- | --- | -------------- |
+| ワイヤーフレーム確認 | PM | 2026-04-25 | 2 |
+```
 ```
 
 ## Status
