@@ -70,6 +70,10 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/protect-sensitive.sh"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/read-before-edit-hook.ts"
           }
         ]
       },
@@ -91,6 +95,28 @@
             "type": "command",
             "command": "bun $HOME/.claude/hooks/post-format.ts",
             "async": true
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/edit-counter-hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/track-read-hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/error-loop-hook.ts"
           }
         ]
       },
