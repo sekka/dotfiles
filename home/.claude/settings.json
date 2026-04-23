@@ -8,6 +8,7 @@
   },
   "permissions": {
     "allow": [
+      "Bash(codex:*)",
       "Bash(mkdir:*)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
@@ -17,7 +18,6 @@
       "Skill(user-dev-review)",
       "Skill(user-fe-knowledge)",
       "Skill(user-harness-gen-skills)",
-      "Bash(codex:*)",
       "WebSearch",
       "Write",
       "mcp__chrome-devtools__*",
