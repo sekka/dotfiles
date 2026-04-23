@@ -44,8 +44,8 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
       "git add -A/--all/. is prohibited. Specify files individually to prevent accidental staging of sensitive files. Example: git add specific-file.ts",
   },
   {
-    pattern: /\bgit\s+push\s+[^&|;]*--force(?:-with-lease)?\b/,
-    reason: "git push --force is prohibited. Risk of overwriting remote changes.",
+    pattern: /\bgit\s+push\s+[^&|;]*--force\b(?!-with-lease)/,
+    reason: "git push --force is prohibited. Use --force-with-lease if rebase is necessary.",
   },
   {
     pattern: /\bgit\s+reset\s+--hard\b/,
@@ -60,19 +60,12 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
 
 // Dangerous command chain patterns
 const DANGEROUS_CHAINS = [
-  // Pipe to dangerous commands
   /\|\s*(rm|sudo|dd|shred|mkfs)\s+/,
-  // xargs with dangerous commands
   /xargs\s+(?:-[^\s]*\s+)*(rm|sudo|dd|shred)(?:\s+|$)/,
-  // Dangerous operations in subshells
   /\$\([^)]*(?:rm -rf|sudo|dd|shred)[^)]*\)/,
-  // Dangerous operations in backticks
   /`[^`]*(?:rm -rf|sudo|dd|shred)[^`]*`/,
-  // Semicolon chaining with dangerous commands
   /;\s*(?:rm -rf|sudo|dd|shred)\s+/,
-  // && chaining with dangerous commands
   /&&\s*(?:rm -rf|sudo|dd|shred)\s+/,
-  // || chaining with dangerous commands (destructive on error)
   /\|\|\s*(?:rm -rf|sudo|dd|shred)\s+/,
 ];
 
