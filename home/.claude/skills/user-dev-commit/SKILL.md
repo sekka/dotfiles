@@ -22,13 +22,12 @@ Analyze the changes by logical unit and commit related changes together.
 1. Check changed files with `git status`
 2. Check all change details with `git diff HEAD`
 3. Check recent commit style with `git log --oneline -10`
-4. **Exclusion check**:
+4. **Files to exclude**:
    - Exclude debug logs, temporary code, and commented-out code
    - Exclude sensitive information (API keys, passwords, tokens, secrets)
    - Exclude files covered by `.gitignore`
-   - **Untracked files**: include them if they are clearly part of the same logical change; skip if purpose is unclear
-
-5. **Sensitive data action**: If a file contains sensitive data (e.g., `sk-proj-...`, `ghp_...`, hardcoded passwords):
+5. **Untracked files**: Include them if they are clearly part of the same logical change; skip if purpose is unclear.
+6. **Sensitive data action**: If a file contains sensitive data (e.g., `sk-proj-...`, `ghp_...`, hardcoded passwords):
    - Do NOT stage that file
    - Stage and commit the remaining safe files (partial commit is correct)
    - Report the excluded file(s) in the Status response using `## Status: DONE_WITH_CONCERNS`
