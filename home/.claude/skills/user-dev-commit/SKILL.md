@@ -36,8 +36,8 @@ Analyze the changes by logical unit and commit related changes together.
 
 ### Commit Message Format
 
-- **Prefix** (English): choose from `feat` `fix` `refactor` `perf` `style` `docs` `test` `build` `chore` `config` `ui` `a11y` `security` `hotfix` `revert`
-- **Body** (Japanese): 1st line ≤ 72 chars, present tense, state what and why
+- **[critical] Prefix** (English): choose from `feat` `fix` `refactor` `perf` `style` `docs` `test` `build` `chore` `config` `ui` `a11y` `security` `hotfix` `revert`
+- **[critical] Body** (Japanese): 1st line ≤ 72 chars, present tense, state what and why
 - Add details after a blank line if needed
 
 **How to pick prefix:**
@@ -84,3 +84,9 @@ Add one of the following at the end of every response:
 - `## Status: DONE_WITH_CONCERNS` — committed, but some files were excluded (e.g., sensitive data, debug code) — list what was skipped
 - `## Status: BLOCKED` — sensitive information detected in staged files; commit aborted until resolved
 - `## Status: NEEDS_CONTEXT` — no staged or changed files to commit
+
+  **Response template for NEEDS_CONTEXT:**
+  ```
+  コミットする変更がありません（working tree is clean）。
+  変更を加えた後、再度お知らせください。
+  ```
