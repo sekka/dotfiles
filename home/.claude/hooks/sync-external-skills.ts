@@ -1,22 +1,23 @@
 #!/usr/bin/env bun
 
 /**
- * External Skills Sync Hook (SessionStart)
+ * SessionStart hook: GitHub から外部スキルを同期する
  *
- * Syncs external skills from upstream GitHub repositories.
- * Uses a 24-hour cache to avoid unnecessary network requests.
+ * 外部リポジトリで管理されているスキルファイルを取得し、ローカルの
+ * スキルディレクトリに書き込む。24時間キャッシュで不要なネットワーク
+ * リクエストを抑制する。
  *
- * Logic:
- * 1. Read the hardcoded EXTERNAL_SKILLS manifest
- * 2. For each skill, check if synced within the last 24 hours (cache)
- * 3. If not, use git ls-remote to get the latest commit hash
- * 4. If hash differs (or no cache), fetch raw files from GitHub API
- * 5. Write files to the skills directory, update cache
+ * 処理フロー:
+ * 1. ハードコードされた EXTERNAL_SKILLS マニフェストを読み込む
+ * 2. 各スキルの最終同期が 24 時間以内であればスキップ（キャッシュ）
+ * 3. git ls-remote で最新コミットハッシュを取得
+ * 4. ハッシュが変化していれば GitHub API からファイルを取得
+ * 5. スキルディレクトリに書き込み、キャッシュを更新
  *
- * Constraints:
- * - SessionStart hook is non-blocking (always exits with code 0)
- * - git ls-remote has a 10-second timeout
- * - Network errors are handled gracefully (offline = skip)
+ * 制約:
+ * - SessionStart hook は非ブロッキング（常に exit 0）
+ * - git ls-remote は 10 秒タイムアウト
+ * - ネットワークエラーはスキップ（オフライン時も動作継続）
  */
 
 import { mkdirSync, existsSync } from "node:fs";

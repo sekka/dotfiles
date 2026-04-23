@@ -27,7 +27,7 @@ const DEEP_CHECK_INTERVAL_MS = 14 * 24 * 60 * 60 * 1000; // 14日
  * MEMORY.md からMarkdownリンクを抽出して返す
  * 形式: [title](file.md)
  */
-function extractLinks(content: string): string[] {
+export function extractLinks(content: string): string[] {
   const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
   const links: string[] = [];
   let match: RegExpExecArray | null;

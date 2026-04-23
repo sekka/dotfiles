@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 export {};
 
+import { extname } from "node:path";
+
 // PostToolUse:Edit|Write hook: ファイル編集後に自動フォーマットをかける
 //
 // 編集されたファイルに lint-format.ts --mode=fix を実行し、
@@ -8,7 +10,7 @@ export {};
 // フォーマット対象外の拡張子、settings.json 系（sort-permissions.ts が担当）、
 // node_modules 配下はスキップする。フォーマット失敗は非致命的。
 
-const FORMATTABLE_EXTENSIONS = new Set([
+export const FORMATTABLE_EXTENSIONS = new Set([
   ".ts",
   ".tsx",
   ".js",
@@ -25,9 +27,16 @@ const FORMATTABLE_EXTENSIONS = new Set([
   ".toml",
 ]);
 
-function getExtension(filePath: string): string {
-  const dot = filePath.lastIndexOf(".");
-  return dot === -1 ? "" : filePath.slice(dot).toLowerCase();
+export function getExtension(filePath: string): string {
+  return extname(filePath).toLowerCase();
+}
+
+export function shouldSkip(filePath: string): boolean {
+  if (!FORMATTABLE_EXTENSIONS.has(getExtension(filePath))) return true;
+  if (filePath.endsWith(".claude/settings.json")) return true;
+  if (filePath.endsWith(".claude/settings.local.json")) return true;
+  if (filePath.includes("/node_modules/")) return true;
+  return false;
 }
 
 async function main() {
@@ -39,21 +48,7 @@ async function main() {
     const filePath: string | undefined = input.tool_input?.file_path;
 
     if (!filePath) process.exit(0);
-
-    const ext = getExtension(filePath);
-    if (!FORMATTABLE_EXTENSIONS.has(ext)) process.exit(0);
-
-    // Exclude settings.json (handled by sort-permissions.ts)
-    if (
-      filePath.endsWith(".claude/settings.json") ||
-      filePath.endsWith(".claude/settings.local.json")
-    ) {
-      process.exit(0);
-    }
-
-    if (filePath.includes("/node_modules/")) {
-      process.exit(0);
-    }
+    if (shouldSkip(filePath)) process.exit(0);
 
     const proc = Bun.spawnSync({
       cmd: [
@@ -77,4 +72,6 @@ async function main() {
   }
 }
 
-await main();
+if (import.meta.main) {
+  await main();
+}

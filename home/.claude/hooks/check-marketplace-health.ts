@@ -347,7 +347,6 @@ function main() {
   }
 }
 
-// スクリプトとして実行された場合のみメイン処理
-if (require.main === module) {
+if (import.meta.main) {
   main();
 }
