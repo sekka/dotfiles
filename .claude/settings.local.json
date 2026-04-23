@@ -16,6 +16,7 @@
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
       "Bash(wait)",
+      "Bash(wrangler *)",
       "Skill(codex:rescue)",
       "Skill(schedule)",
       "Skill(user-dev-review)",

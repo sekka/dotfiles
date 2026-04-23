@@ -347,11 +347,36 @@ run = "cs -y"
 # --------------------------------------
 # Docker/Container
 # --------------------------------------
-# Colima起動
+# Colima起動（残プロセス・stale ロックを自動クリーンアップ）
 [tasks.docker-colima-start]
 alias = "col"
 description = "Colimaを起動（Docker Desktop代替）"
-run = "colima start"
+run = """
+#!/usr/bin/env bash
+set -eu
+
+# すでに起動中なら何もしない
+if colima status >/dev/null 2>&1; then
+  echo "colima is already running"
+  exit 0
+fi
+
+echo "cleaning up stale colima state..."
+
+# 残プロセスを掃除（マッチしなくてもOK）
+pkill -f 'colima daemon' 2>/dev/null || true
+pkill -f 'limactl-wrapped usernet' 2>/dev/null || true
+sleep 2
+
+# stale な in_use_by ロック（前回異常終了時の残骸）を削除
+LOCK="$HOME/.config/colima/_lima/_disks/colima/in_use_by"
+if [ -L "$LOCK" ]; then
+  echo "removing stale disk lock: $LOCK"
+  /bin/rm -f "$LOCK"
+fi
+
+colima start
+"""
 
 # Colima停止
 [tasks.docker-colima-stop]
@@ -562,6 +587,7 @@ go = "latest"
 # --- Web / ネットワーク ---
 "npm:caniuse-cmd" = "latest"           # ブラウザ互換性チェック
 "npm:vercel" = "latest"                # Vercel CLI
+"npm:wrangler" = "latest"              # Cloudflare Workers CLI                https://developers.cloudflare.com/workers/wrangler/
 
 # --- メディア ---
 "npm:imageoptim-cli" = "latest"        # 画像最適化

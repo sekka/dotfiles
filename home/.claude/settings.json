@@ -17,6 +17,7 @@
       "Skill(user-dev-review)",
       "Skill(user-fe-knowledge)",
       "Skill(user-harness-gen-skills)",
+      "Bash(codex:*)",
       "WebSearch",
       "Write",
       "mcp__chrome-devtools__*",
@@ -48,7 +49,7 @@
       "Bash(wget:*)"
     ]
   },
-  "model": "opusplan",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -234,7 +235,8 @@
     "claude-code-setup@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "visual-explainer@visual-explainer-marketplace": true
+    "visual-explainer@visual-explainer-marketplace": true,
+    "cloudflare@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
