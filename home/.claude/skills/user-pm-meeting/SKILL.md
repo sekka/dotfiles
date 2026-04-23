@@ -12,7 +12,7 @@ Parse raw meeting notes and produce a `decisions.md` entry, a `meetings/YYYY-MM-
 ## Iron Law
 
 1. Never invent decisions or action items — only extract what is explicitly stated in the notes
-2. Append to `decisions.md` (never overwrite) — newest entry first
+2. `decisions.md` に新エントリを先頭追加する（上書き禁止、最新が先頭）
 3. Always sync action items with `status: pending` to `pmo.yaml` tasks
 4. If slug is ambiguous, ask before writing any files
 
@@ -68,10 +68,10 @@ Analyze the raw notes and extract the following four categories. Extract only wh
 
 ### Step 5 — Determine ID sequence numbers
 
-Before writing, read existing files to find the highest existing IDs:
-- Read `~/prj/{slug}/decisions.md` if it exists → find highest D{n}, A{n}, U{n}, K{n}
+Read existing files once now and do not re-read them mid-process:
+- Read `~/prj/{slug}/decisions.md` if it exists → scan all entries and find the single highest number across D{n}, A{n}, U{n}, K{n}
 - Read `~/prj/{slug}/pmo.yaml` if it exists → find highest T-{nnn} task id and K-{nnn} risk id
-- New IDs continue from the highest found (e.g., if D3 exists, next decision is D4)
+- New IDs for this meeting all start from (highest found + 1) and increment sequentially from there (e.g., if D3, A3, U2, K2 exist, the next available number is 4 — use D4, A4, U4, K4 as needed)
 - If no existing file, start at D1, A1, U1, K1, T-001, K-001
 
 ### Step 6 — Append to decisions.md
@@ -121,7 +121,7 @@ Prepend the new entry immediately after the header (before any existing entries)
 
 Create directory if needed: `mkdir -p ~/prj/{slug}/meetings/`
 
-Save to `~/prj/{slug}/meetings/{YYYY-MM-DD}.md`:
+Save to `~/prj/{slug}/meetings/{YYYY-MM-DD}.md`. If that file already exists, use `{YYYY-MM-DD}-2.md`, then `-3.md`, etc. — increment the counter until the filename is free. Never overwrite an existing meeting file.
 
 ```markdown
 # Meeting: {Meeting Title}
@@ -166,9 +166,9 @@ For each action item extracted, append a new task entry under `tasks:` in `~/prj
   source: "meeting {YYYY-MM-DD}"
 ```
 
-If `tasks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
+If no action items were found, skip this step entirely (do not create an empty `tasks:` key or modify pmo.yaml).
 
-If no action items were found, skip this step (do not modify tasks).
+If action items exist and `tasks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
 
 ### Step 9 — Sync new risks to pmo.yaml
 
@@ -182,9 +182,9 @@ For each new risk extracted, append under `risks:` in `~/prj/{slug}/pmo.yaml`:
   source: "meeting {YYYY-MM-DD}"
 ```
 
-If `risks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
+If no new risks were found, skip this step entirely (do not create an empty `risks:` key or modify pmo.yaml).
 
-If no risks were found, skip this step.
+If risks exist and `risks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
 
 ### Step 10 — Update pmo.yaml project section
 
