@@ -107,7 +107,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/circuit-breaker.sh"
+            "command": "bun $HOME/.claude/hooks/circuit-breaker.ts"
           }
         ]
       }
