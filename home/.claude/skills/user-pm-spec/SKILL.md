@@ -77,7 +77,7 @@ If any requirement rows in discovery.md lack ID numbers, auto-assign them as R01
 For each requirement in discovery.md and any necessary additions, assign a classification:
 
 - `BINDING` — explicitly stated by the client in discovery.md (cite the discovery.md row ID as source)
-- `SUPPLEMENTED` — not stated by client but necessary by industry standard or best practice; must cite a specific reason (e.g. "WCAG 2.1 AA準拠が業界標準")
+- `SUPPLEMENTED` — not stated by client but necessary by industry standard or best practice; must cite a specific reason (e.g. "WCAG 2.1 AA準拠が業界標準"). Typical count: 2-3 items. Only add items that are clearly unavoidable given the project type — do not pad.
 - `PENDING` — unclear or unconfirmed; needs client clarification; acceptance criteria is `—`
 
 Assign sequential IDs: S-001, S-002, S-003 …
@@ -141,7 +141,7 @@ Date: {YYYY-MM-DD} | Status: Draft
 {From discovery.md Non-Goals — preserve bullet format}
 
 ## Background
-{Project context: client, industry, problem — 2-3 sentences drawn from discovery.md}
+{Project context: client, industry, problem — 2-3 sentences drawn from discovery.md. If discovery.md has no explicit background section, synthesize from: client name (from the heading), industry inferred from the project name/goals, and the core problem stated in Goals.}
 
 ## User Stories
 - As a {persona}, I want to {action} so that {outcome}.
@@ -156,7 +156,7 @@ Date: {YYYY-MM-DD} | Status: Draft
 ## Risk / Pre-mortem
 | ID | Risk | Probability | Impact | Mitigation |
 | -- | ---- | ----------- | ------ | ---------- |
-{From discovery.md Risks table — copy all rows}
+{From discovery.md Risks table — copy all rows. If discovery.md has no risk rows, add a single placeholder row: `| — | No risks identified in discovery | — | — | Conduct risk workshop with client |`}
 
 ## Functional Requirements
 {Summary of BINDING requirements from spec.md — grouped by feature area, 2-4 groups}

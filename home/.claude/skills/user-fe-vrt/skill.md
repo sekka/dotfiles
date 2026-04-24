@@ -10,7 +10,7 @@ Capture screenshots before and after changes to markup, CSS, or layout. Detect p
 
 ## Iron Law
 
-1. Do not compare without a before-change screenshot
+1. Do not compare without a before-change screenshot. If the user triggers VRT after already committing their changes, the git-stash approach will not work — the "before" state is gone. In this case: report BLOCKED and instruct the user to check out the pre-change commit, capture baseline with `VRT_BASELINE_ONLY=1 bash vrt.sh scripts/vrt-urls.txt`, then return to their changed commit before running the full VRT.
 
 ## Progress Reporting Rules (Required)
 

@@ -23,7 +23,15 @@ mise run tornado ./plan.md    # specify directly
 
 `--dev=codex --review=claude` is fixed on the mise task side. The only argument is the plan file path.
 
-## Step 1: Check or create plan.md
+## Step 1: Verify mise task exists
+
+```bash
+mise tasks | grep tornado
+```
+
+If `tornado` is not listed, the mise task is not configured. Run `codex:setup` or check `mise.toml` in the project root. Do not proceed further until the task is confirmed.
+
+## Step 2: Check or create plan.md
 
 If plan.md does not exist, create it. Minimum structure:
 
@@ -41,7 +49,7 @@ If plan.md does not exist, create it. Minimum structure:
 - {completion condition}
 ```
 
-## Step 2: Launch tornado
+## Step 3: Launch tornado
 
 ```bash
 mise run tornado ./plan.md
@@ -50,7 +58,7 @@ mise run tornado ./plan.md
 The TUI may not work inside the Claude Code built-in terminal.
 In that case, run it as a separate terminal with `! mise run tornado ./plan.md`.
 
-## Step 3: After completion
+## Step 4: After completion
 
 After the TUI exits, suggest checking the changed files with `/user-dev-review`.
 

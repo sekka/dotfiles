@@ -1,6 +1,11 @@
 ---
 name: user-figma-implement
-description: Implement Figma designs as high-fidelity code. Triggered by requests to implement a Figma file, frame, or component, or phrases like "match the Figma design" or "implement this Figma". Uses the Figma MCP tool when available.
+description: >
+  Implement Figma designs as high-fidelity code using Figma MCP tools.
+  Triggered by requests to implement a Figma file, frame, or component, or phrases like
+  "match the Figma design" or "implement this Figma".
+  Key constraints: Starter/View/Collab seats have a 6-per-month API call limit (use get_metadata first to save budget).
+  Large Figma API responses must be delegated to a sub-agent to protect the main session context.
 disable-model-invocation: false
 effort: high
 ---
@@ -44,6 +49,7 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 - **Dev/Full seats (Professional or higher)**: Per-minute limit (follows Tier 1 REST API)
 
 For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` first, then `get_design_context`.
+If only 1 call remains, skip the 2-step strategy and use `implement_design` directly — it completes analysis + codegen in one call, which is more valuable than a metadata-only read you can't act on.
 
 ## Execution Flow
 
@@ -53,10 +59,9 @@ For the 6-per-month limit, save tokens using a 2-step strategy: `get_metadata` f
 
 1. Check if `./DESIGN.md` exists in the project root
 2. **If it does not exist**, offer to generate it:
-   - Run `mcp__figma__get_variable_defs` to get design tokens
-     (**Starter/View/Collab seats**: counts against the 6/month limit — skip `create_design_system_rules` and use `get_metadata` instead when budget is tight)
+   - Run `mcp__figma__get_variable_defs` to get design tokens (run this even for Starter seats)
    - Run `mcp__figma__get_screenshot` on the main frame(s)
-   - Run `mcp__figma__create_design_system_rules` if available (Dev/Full seats only; skip for Starter seats)
+   - Run `mcp__figma__create_design_system_rules` if available (**Starter/View/Collab seats**: skip this step and run `get_metadata` instead — both count against the 6/month limit, but `get_metadata` is lightweight and doubles as the Step 0b readability check)
    - Pass screenshots to AI with the analysis prompt from
      `user-cloning-website/references/ai-analysis-prompt.md`
    - Generate `./DESIGN.md` following `references/design-md-format.md`
@@ -74,6 +79,7 @@ Before fetching any design context, quickly assess whether the Figma file is str
 AI extraction. Low AI-readability = higher gap between Figma intent and generated code.
 
 Run `mcp__figma__get_metadata` on the target frame and check:
+(If `get_metadata` was already called during Step 0 as the Starter seat alternative to `create_design_system_rules`, reuse those results here — do not call again.)
 
 | Signal | Good | Concern |
 |--------|------|---------|

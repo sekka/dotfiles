@@ -73,7 +73,7 @@ Phase 0-3 complete. How would you like to deliver?
 ## Phase 0: Branch Check
 
 ```bash
-git branch --show-current
+original_branch=$(git branch --show-current)  # save before any checkout -b
 ```
 
 If the current branch is `master`, `main`, or `develop`:
@@ -126,6 +126,8 @@ Grep `git diff` output for:
 Debug/secrets findings are WARNING (do not stop).
 
 ### 1-5. Gate decision
+
+Always run 1-2 through 1-4 in full before deciding — collect all results, then gate.
 
 | Result | Action |
 |--------|--------|
@@ -202,18 +204,19 @@ git pull origin master
 
 ### Local mode
 
-Save the current branch name for return, then merge into master.
+`original_branch` is the branch recorded **at Phase 0 start** (before any `git checkout -b`), not re-captured here.
 
 ```bash
-original_branch=$(git branch --show-current)  # save for return
+# original_branch was set in Phase 0 before the checkout -b
 git checkout master
 git merge --no-ff {branch-name}
 git branch -d {branch-name}
 ```
 
-If not on master before Phase 0, return to the original branch after merge:
+After the merge and delete, return to `original_branch` **only if** `original_branch` is different from `{branch-name}` (i.e., Phase 0 auto-created a new branch from `original_branch`). If `original_branch == branch-name` (the user was already on the shipped branch), it has been deleted — stay on master.
 
 ```bash
+# Only run if original_branch != branch-name:
 git checkout {original_branch}
 ```
 

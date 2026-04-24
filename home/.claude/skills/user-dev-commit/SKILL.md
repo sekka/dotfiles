@@ -78,6 +78,8 @@ When splitting: commit in dependency order — foundation → implementation →
 
 Run `git add <specific-files>` → `git commit` for each logical unit.
 
+For **revert commits**: use `git revert --no-commit <hash>` then `git commit -m "revert: <Japanese body>"` to maintain the conventional format. Do not use plain `git revert <hash>` (opens an editor with a non-conventional message).
+
 ## Status
 
 Add one of the following at the end of every response:

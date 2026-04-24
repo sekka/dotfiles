@@ -14,7 +14,7 @@ Automatically research and document the latest Japanese creative work from major
 ```
 /user-research-creative
 ```
-Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-web-creative-cases-YYYYMM-YYYYMM.md`
+Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-[field]-cases-YYYYMM-YYYYMM.md`
 
 **Items to confirm before starting:**
 1. Target field (Web, advertising, MV/video, product, UI/UX, typography, packaging, spatial, LP, etc.)
@@ -34,7 +34,7 @@ Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-w
 **Completeness:**
 - Collect the target number of cases (default: 20)
 - Each case includes: URL/reference, award information, production company/creator/director, techniques/methods/materials, evaluation points
-- Includes multiple works from featured production companies (listed in featured-companies.md)
+- Includes multiple works from featured production companies (listed in the `companies/` directory)
 - When adjacent fields are enabled, includes cases from the suggested related genres
 - The Markdown file includes: target period, field-by-field category breakdown, industry-by-industry breakdown, featured production company work count, table of contents, cross-field trend analysis (10 or more trends), adjacent field discoveries section, reference links
 
@@ -101,30 +101,40 @@ Run multiple WebSearch queries simultaneously based on the target field.
 | Motion graphics | VIMEO Staff Picks | Motionographer, STASH |
 | Exhibitions | Japan Media Arts Festival, Ars Electronica | 21_21 DESIGN SIGHT |
 
-Also search: trend articles (`Japan [field name] design 2025 trends`) and the latest work from the 16 featured companies in featured-companies.md.
+Also search: trend articles (`Japan [field name] design 2025 trends`) and the latest work from featured companies (see Step 4 for the company list).
 
 > For complete source lists and search strategies per field, see [references/research-sources.md](references/research-sources.md)
 
 **3. Data Collection**
+
+Before starting data collection, read `~/.claude/skills/user-research-creative/references/case-formats.md` to confirm the required case entry format and field-specific data fields. Read `references/research-sources.md` if you need a complete source list for the target field. If the target field does not have a dedicated template in case-formats.md (e.g., UI/UX, Motion graphics), use the Web Design entry template as the base and add any field-specific fields (e.g., Platform: iOS/Android/Web for UI/UX) as needed.
+
 - Prioritize award-winning works; ensure diversity across categories, companies, and techniques
 - Verify each URL/reference with WebFetch: 404/403 → search correct URL → try Archive.org → use media article or award page → replace case if still unavailable
 - Never guess domains; confirm all URLs by search before recording
 - Collect field-specific data required per case (MV: length + shooting method; product/packaging: materials; spatial: area sqm + location)
 
-> See [references/case-formats.md](references/case-formats.md) for detailed case entry format and field-specific data requirements.
-
 **4. Featured Companies**
-Search and collect the latest work from the 16 companies listed in featured-companies.md. Browse each company's official Works/portfolio page and their URAGAWA entries. Search across fields (Web, MV/video, graphics, etc.). State the work count per company clearly in the report.
+
+First, read all 6 category files in `~/.claude/skills/user-research-creative/companies/` to get the full featured company list:
+- `creative-studios.md`
+- `design-consulting.md`
+- `individual-creators.md`
+- `major-agencies.md`
+- `technical-interactive.md`
+- `web-digital.md`
+
+Then browse each company's official Works/portfolio page and their URAGAWA entries. Search across fields (Web, MV/video, graphics, etc.). State the work count per company clearly in the report.
 
 **5. Report Generation**
-Generate a Markdown file including: header with period and field/industry breakdowns, table of contents with award annotations, structured case entries, cross-field trend analysis table (10+ trends), adjacent field discoveries section, and reference links. Save with the naming format `YYYYMMDD-[field]-cases-YYYYMM-YYYYMM.md`.
+Generate a Markdown file including: header with period and field/industry breakdowns, table of contents with award annotations, structured case entries, cross-field trend analysis table (10+ trends), and reference links. Include an "Adjacent Field Discoveries" section only if adjacent fields were enabled (Q2=Yes) — omit the section entirely when Q2=No. Save with the naming format `YYYYMMDD-[field]-cases-YYYYMM-YYYYMM.md`.
 
 > See [references/case-formats.md](references/case-formats.md) for the report file structure template and all case entry formats.
 </workflow>
 
 <advanced_features>
 **Priority search for featured production companies:**
-Search and collect the latest work from the 16 companies listed in featured-companies.md:
+Search and collect the latest work from the companies listed in the `companies/` directory (`~/.claude/skills/user-research-creative/companies/`):
 - Browse the Works/portfolio pages on each company's official site
 - Search by company on gallery sites like URAGAWA
 - Search across fields (Web, MV/video, graphics, etc.)
@@ -190,7 +200,7 @@ Cross-field case classification:
 **Things to avoid:**
 - Including old cases outside the target period (recency matters)
 - Unbalanced categories or fields (all corporate websites, etc.)
-- Not researching featured production company work (use featured-companies.md)
+- Not researching featured production company work (read all files in the `companies/` directory)
 - Ignoring adjacent field suggestions (missing cross-field works by the same company)
 - Unverified URLs/references (broken links damage credibility)
 - Inaccurate production company names/creator names/director names or techniques/methods

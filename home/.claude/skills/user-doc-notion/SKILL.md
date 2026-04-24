@@ -1,6 +1,11 @@
 ---
 name: user-doc-notion
-description: Use when you want to automatically generate Notion documentation with screenshots. Takes screenshots of all features in a target app/website and creates a user-friendly operation guide in Notion. Use proactively when teams need to document operations for onboarding, handoff, or client delivery — triggered by 'Notionページに操作説明を作って', 'notionify', or 'screenshot して Notion にまとめて'.
+description: >
+  Use when you want to generate Notion documentation with screenshots of a target app/website.
+  Requires NOTION_TOKEN env var to be set before running — stops immediately if unset.
+  Takes screenshots of all features via browser automation and creates a structured operation guide in Notion.
+  Use proactively when teams need to document operations for onboarding, handoff, or client delivery.
+  Triggered by 'Notionページに操作説明を作って', 'notionify', or 'screenshot して Notion にまとめて'.
 effort: high
 ---
 

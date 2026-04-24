@@ -55,6 +55,7 @@ Confirm creation before proceeding.
 
 Ask each question one at a time. Wait for the PM's answer before moving to the next question. After each answer:
 - Classify the content into one or more of: **Goals**, **Non-Goals**, **Requirements**, **Constraints**, **Risks**
+- Q1 (Background) answers contain contextual "why" information — convert them to purpose-driven Goals entries ("Strengthen X", "Resolve Y"). There is no Background section in the template; do not create one.
 - If the answer is ambiguous or incomplete, ask one targeted follow-up question immediately before moving on
 - If the PM cannot answer even after the follow-up, mark the item as `[Unknown - confirm later]` and continue to the next question. Flag all `[Unknown]` items in the Step 5 summary.
 
@@ -74,6 +75,9 @@ Ask each question one at a time. Wait for the PM's answer before moving to the n
 
 5. **Constraints**  
    "予算・納期・技術・体制など、プロジェクト上の制約条件を教えてください。"
+
+5b. **Approver (Stakeholder)**
+    "成果物の最終承認者は誰ですか？クライアント側の意思決定者を教えてください。"
 
 6. **Risks & Concerns**  
    "現時点で懸念されているリスクや不確実要素はありますか？"
@@ -107,7 +111,7 @@ Save to `~/prj/{slug}/discovery.md`:
 ```markdown
 # Discovery: {Project Name}
 
-Date: {YYYY-MM-DD} | Client: {client} | PM: {git user name}
+Date: {YYYY-MM-DD} | Client: {client} | PM: {git user name} | Approver: {approver name}
 
 ## Goals
 - [ ] {goal}
@@ -139,8 +143,9 @@ Rules for filling in the template:
 - Assign sequential IDs: R01, R02 … for Requirements; K-001, K-002 … for Risks (3-digit zero-padded)
 - `Source` is always "Client" unless the PM specifies otherwise
 - `Priority` values: Must / Should / Could
-- `Probability` values: High / Medium / Low
-- `Impact` values: High / Medium / Low
+- `Probability` values: High / Medium / Low — default to Medium if the PM did not specify
+- `Impact` values: High / Medium / Low — default to Medium if the PM did not specify
+- `Mitigation`: set to "TBD" if the PM did not discuss a mitigation for the risk
 - Every Open Question must have a `[deferred until YYYY-MM-DD]` tag based on the PM's answer to Q7
 - PM name: obtain from `git config user.name`. If the command returns empty, use `PM` as the placeholder name.
 

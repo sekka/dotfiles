@@ -1,6 +1,10 @@
 ---
 name: user-dev-impl-review
-description: Implementation review gate before launch. Orchestrates visual regression (user-fe-vrt), HTML quality (user-fe-html), and code review (user-dev-review), then adds launch-specific checks (forms, redirects, OG tags, DNS, SSL, analytics). Triggered by "実装レビュー", "公開前チェック", "implementation review", or "launch check".
+description: >
+  Implementation review gate before launch. Delegates visual regression (user-fe-vrt), HTML quality (user-fe-html),
+  and code review (user-dev-review) to those skills, then runs Phase 4 launch checks directly via Bash
+  (SSL, OG tags, robots.txt, sitemap, 404) plus manual items (forms, GA, favicon, page titles).
+  Triggered by "実装レビュー", "公開前チェック", "implementation review", or "launch check".
 argument-hint: [target-url] [figma-url]
 allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion, mcp__figma__get_file
 effort: high
@@ -32,7 +36,7 @@ Run all 4 phases in order. Collect findings. Output consolidated report.
 
 ### Phase 1: Visual Check (user-fe-vrt)
 
-Delegate to `user-fe-vrt` skill with the target URL as input.
+Delegate to `user-fe-vrt` skill with both `target-url` and `figma-url` as input (figma-url is the reference design for visual comparison).
 Collect: pages with FAIL or WARN diff results.
 
 ### Phase 2: HTML Quality (user-fe-html)
