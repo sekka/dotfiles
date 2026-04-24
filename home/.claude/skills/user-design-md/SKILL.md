@@ -22,7 +22,7 @@ CLI: `design.md lint`, `design.md diff`, `design.md export`, `design.md spec`
 ## Iron Law
 
 1. Always run `design.md lint` after creating or editing DESIGN.md before reporting done
-2. Never hardcode hex values in prose — all colors must be defined as YAML tokens first
+2. Never hardcode hex values in **style definitions** in prose — all colors used in component/style values must be defined as YAML tokens first and referenced as `{colors.name}`. Exception: color label lines in the Colors section (e.g., `**Primary (#2563EB):**`) are documentation and may include hex for human readability.
 
 ## Mode Detection
 
@@ -41,7 +41,7 @@ CLI: `design.md lint`, `design.md diff`, `design.md export`, `design.md spec`
 Ask the user for (or discover from the project):
 
 - Primary brand color (hex)
-- Secondary / neutral colors
+- Secondary / neutral / text colors — use descriptive token names that match the user's intent (e.g., `neutral`, `text`, `surface`, `accent`). The template shows `secondary` and `neutral` as examples; adapt the names to the actual colors provided.
 - Main typeface(s) — body text, headings
 - Base spacing unit (typically 4px or 8px)
 - Any existing CSS custom properties or Tailwind config to extract from
@@ -158,7 +158,7 @@ Ask: what token(s) are changing and why? (New brand color, new component, spacin
 cp ./DESIGN.md ./DESIGN.md.bak
 ```
 
-Apply the requested edits to `./DESIGN.md`.
+Apply the requested edits to `./DESIGN.md`. If a color token's hex value changes, also update the corresponding Colors section label in the prose (e.g., `**Primary (#old):**` → `**Primary (#new):**`) to keep documentation consistent.
 
 ### Step 3: Diff and check for regressions
 
@@ -172,7 +172,7 @@ before keeping the change.
 ### Step 4: Lint and clean up
 
 ```bash
-~/.local/share/mise/shims/design.md lint ./DESIGN.md && rm ./DESIGN.md.bak
+~/.local/share/mise/shims/design.md lint ./DESIGN.md && rm -f ./DESIGN.md.bak
 ```
 
 Only delete the backup after a clean lint.
