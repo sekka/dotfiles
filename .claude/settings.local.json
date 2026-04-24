@@ -3,6 +3,7 @@
     "allow": [
       "Bash(agent-browser *)",
       "Bash(brew *)",
+      "Bash(bun scripts/development/lint-format.ts)",
       "Bash(bun test:*)",
       "Bash(cat)",
       "Bash(claude *)",
@@ -36,6 +37,7 @@
       "WebFetch(domain:docs.claude.com)",
       "WebFetch(domain:docs.coderabbit.ai)",
       "WebFetch(domain:formulae.brew.sh)",
+      "WebFetch(domain:gihyo.jp)",
       "WebFetch(domain:gist.github.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:ics.media)",
@@ -56,9 +58,7 @@
       "WebFetch(domain:zenn.dev)",
       "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
-      "mcp__plugin_playwright_playwright__*",
-      "WebFetch(domain:gihyo.jp)",
-      "Bash(bun scripts/development/lint-format.ts)"
+      "mcp__plugin_playwright_playwright__*"
     ],
     "deny": [],
     "ask": []
