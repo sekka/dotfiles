@@ -287,6 +287,31 @@ async function runShellcheck(files: string[], verbose: boolean): Promise<LintRes
   };
 }
 
+/**
+ * design.md CLI で DESIGN.md をチェック
+ * DESIGN.md が存在しない場合はスキップ（null を返す）
+ * 全ファイルモードのみ実行（--file / --staged では実行しない）
+ */
+async function runDesignMdLint(verbose: boolean): Promise<LintResult | null> {
+  if (!existsSync("DESIGN.md")) return null;
+
+  const home = process.env["HOME"] ?? "/root";
+  const args = [`${home}/.local/share/mise/shims/design.md`, "lint", "DESIGN.md"];
+
+  if (verbose) {
+    console.log(`🔧 Running: ${args.join(" ")}`);
+  }
+
+  const result = await runCommand(args);
+
+  return {
+    tool: "design.md",
+    success: result.success,
+    output: result.stdout,
+    error: result.stderr || undefined,
+  };
+}
+
 // ============================================
 // ファイル収集
 // ============================================
