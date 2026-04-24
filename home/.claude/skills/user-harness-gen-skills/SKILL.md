@@ -1,6 +1,6 @@
 ---
 name: user-harness-gen-skills
-description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Confirms scope interactively (project, period, CLI history) before collecting. Evaluates candidates by frequency threshold and deduplicates against existing skills. Saves generated skills to ~/dotfiles/home/.claude/skills/. Triggered by "generate skills from history" or "extract patterns".
+description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW). Classifies candidates by output type (skill / CLAUDE.md rule / ast-grep rule) before generation. Confirms scope interactively (project, period, CLI history) before collecting. Evaluates candidates by frequency threshold and deduplicates against existing skills and rules. Saves generated skills to ~/dotfiles/home/.claude/skills/. Triggered by "generate skills from history" or "extract patterns".
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
 effort: high
@@ -50,7 +50,7 @@ Present options to the user with AskUserQuestion:
 
 **Question 1: Target project**
 - Options:
-  - "All projects (all 4)"
+  - "All projects ({N} found)" — count by running: `ls ~/.claude/projects/ | wc -l`
   - "dotfiles only"
   - "Specify a particular project"
 
@@ -80,7 +80,7 @@ Data source: `~/.claude/projects/*/sessions-index.json`
 
 Period filtering: Use the `modified` field (ISO string) in sessions-index.json entries. If `modified` is null or all values fall outside the selected period, the file is considered stale — fall back to JSONL file timestamps: use the `timestamp` field of the first entry in each `~/.claude/projects/*/*.jsonl` file as a proxy for session start date.
 
-Sidechain filtering: Exclude entries where `isSidechain == true`. For JSONL files not found in sessions-index.json (unknown sessions), treat them as non-sidechain and include them.
+Sidechain filtering: Exclude entries where `isSidechain == true`. The `isSidechain` field is only available in sessions-index.json entries — raw JSONL files have no such field. For JSONL files not found in sessions-index.json (unknown sessions), treat them as non-sidechain and include them.
 
 Handling firstPrompt: Use only to help estimate the theme. Do not copy it directly into generated content.
 </step_2_1>
@@ -209,10 +209,25 @@ Steps:
    - Semantic similarity: Check synonyms (treat same as partial match)
 </duplicate_detection>
 
+<output_type_determination>
+**Output Type Determination**
+
+After duplicate detection, classify each surviving candidate by the following decision tree. Apply before Phase 5 to avoid generating the wrong artifact type.
+
+Decision tree:
+1. **Syntactically detectable** — Pattern is mechanical and expressible as an AST rule (e.g., "always use `X` instead of `Y`") → classify as **ast-grep candidate**, not a skill. Propose in Phase 5 under "Rule candidates."
+2. **Short always-apply directive** — 1–3 line rule with no workflow steps or judgment calls → classify as **CLAUDE.md candidate**, not a skill. Before classifying, grep `~/dotfiles/home/.claude/CLAUDE.md` and `~/dotfiles/home/.claude/rules/*.md` for matching directives to check for existing coverage.
+3. **Multi-step procedure requiring judgment** → classify as **Skill candidate** (proceed to Phase 5 as normal).
+
+A candidate that passes the frequency threshold but maps to types 1 or 2 is NOT a skill — list it under "Rule candidates" in Phase 5.
+</output_type_determination>
+
 <fallback>
 **Fallback**
 
-If fewer than 2 candidates are found: Stop generation, report analysis results only (WHAT/HOW/FLOW rankings).
+"Fewer than 2 candidates" means fewer than 2 **skill candidates** (types 1 and 2 from output_type_determination are a separate track and do not count toward this threshold).
+
+If fewer than 2 skill candidates are found: Stop skill generation, report analysis results only (WHAT/HOW/FLOW rankings). Rule candidates (ast-grep / CLAUDE.md types) are still surfaced in Phase 5 under "Rule candidates" even when the fallback applies.
 
 If the period filter yields 0 sessions (no data to analyze): Do not fall back to all-time data as a proxy. Report "No sessions found for the selected period and project. Expand the time range or choose a different project." and stop. Phase 5 is skipped.
 </fallback>
@@ -247,6 +262,13 @@ Also show excluded candidates:
 Excluded candidates:
 - git-commit-automation: Duplicate with existing skill "learn"
 - file-editing: Insufficient frequency (2 times)
+```
+
+Also show rule candidates (non-skill outputs from output_type_determination):
+```
+Rule candidates:
+- {pattern-name}: ast-grep rule — detects {pattern}
+- {pattern-name}: CLAUDE.md addition — "Always do X"
 ```
 
 Selection method:
@@ -293,7 +315,8 @@ Steps: mkdir → Write → chmod 644
 Include next steps in the completion message:
 1. Run `empirical-prompt-tuning` to verify self-sufficiency (unclear_points = 0 is the target)
 2. Manual adjustments based on eval report
-3. git add
+3. For any rule candidates: add to `~/dotfiles/home/.claude/CLAUDE.md` or create ast-grep rule in the relevant project
+4. git add
 </file_output>
 </phase_6>
 </workflow>
