@@ -26,6 +26,8 @@ list_scripts() {
 }
 
 # 引数処理
+UPDATE_FLAG=""
+
 if [[ ${1:-} == "--help" ]] || [[ ${1:-} == "-h" ]]; then
   usage
   exit 0
@@ -35,6 +37,17 @@ if [[ ${1:-} == "--list" ]]; then
   list_scripts
   exit 0
 fi
+
+# --update フラグを抽出してサブスクリプトに伝播する
+remaining_args=()
+for arg in "$@"; do
+  if [[ $arg == "--update" ]]; then
+    UPDATE_FLAG="--update"
+  else
+    remaining_args+=("$arg")
+  fi
+done
+set -- "${remaining_args[@]}"
 
 # 実行対象スクリプトを決定
 if [[ $# -gt 0 ]]; then
@@ -60,7 +73,7 @@ fi
 # 実行
 for script in "${target_scripts[@]}"; do
   echo ""
-  if ! /bin/bash "$script"; then
+  if ! /bin/bash "$script" $UPDATE_FLAG; then
     echo ""
     echo "[ERROR] ステップが失敗しました: $(basename "$script")" >&2
     exit 1

@@ -228,6 +228,7 @@ GH_SKILLS=(
   "yoshiko-pg/difit difit-review"
   "mattpocock/skills grill-me"
   "mizchi/chezmoi-dotfiles empirical-prompt-tuning dot_claude/skills/empirical-prompt-tuning/SKILL.md"
+  "mizchi/chezmoi-dotfiles gh-fix-ci dot_claude/skills/gh-fix-ci/SKILL.md"
 )
 
 is_skill_installed() {
@@ -242,7 +243,7 @@ ensure_gh_skill() {
   if is_skill_installed "$skill"; then
     if [[ $UPDATE_MODE == "true" ]]; then
       log_info "スキル '$skill' を更新しています (gh skill)..."
-      if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f 2>/dev/null; then
+      if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f; then
         log_warn "スキルの更新に失敗しました: $skill（続行します）"
       else
         log_info "スキルを更新しました: $skill"
@@ -252,7 +253,7 @@ ensure_gh_skill() {
     fi
   else
     log_info "スキル '$skill' をインストールしています (gh skill)..."
-    if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f 2>/dev/null; then
+    if ! gh skill install "$repo" "$path" --agent claude-code --scope user -f; then
       log_warn "スキルのインストールに失敗しました: $skill（続行します）"
     else
       log_info "スキルをインストールしました: $skill"
@@ -262,14 +263,32 @@ ensure_gh_skill() {
 
 skill_count=0
 
-log_info "サードパーティスキルをセットアップしています..."
+if ! is_installed gh; then
+  log_warn "gh がインストールされていません。サードパーティスキルのセットアップをスキップします"
+else
+  log_info "サードパーティスキルをセットアップしています..."
+  for entry in "${GH_SKILLS[@]}"; do
+    read -r repo skill path <<<"$entry"
+    if [[ -n $repo ]] && [[ -n $skill ]]; then
+      ensure_gh_skill "$repo" "$skill" "$path"
+      skill_count=$((skill_count + 1)) || true
+    fi
+  done
+fi
+
+# --- 孤立スキル検出 ---
+
+managed_skills=()
 for entry in "${GH_SKILLS[@]}"; do
-  read -r repo skill path <<<"$entry"
-  if [[ -n $repo ]] && [[ -n $skill ]]; then
-    ensure_gh_skill "$repo" "$skill" "$path"
-    skill_count=$((skill_count + 1)) || true
-  fi
+  read -r _ skill _ <<<"$entry"
+  managed_skills+=("$skill")
 done
+while IFS= read -r skill_dir; do
+  skill_name=$(basename "$skill_dir")
+  if [[ " ${managed_skills[*]} " != *" $skill_name "* ]]; then
+    log_warn "孤立スキルを検出: $skill_name（GH_SKILLS に未登録。手動で確認してください）"
+  fi
+done < <(find "$HOME/.claude/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
 # --- サマリー ---
 

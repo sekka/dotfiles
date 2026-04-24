@@ -272,5 +272,6 @@
   "effortLevel": "medium",
   "advisorModel": "opus",
   "plansDirectory": "./plans",
-  "showThinkingSummaries": true
+  "showThinkingSummaries": true,
+  "skipAutoPermissionPrompt": true
 }

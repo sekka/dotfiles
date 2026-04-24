@@ -78,7 +78,7 @@ Evaluate the following criteria and classify each as 🔴 Action required / 🟡
 | Deadline proximity | ≤ 7 days | 8–14 days |
 | Overdue tasks | Any pmo.yaml task with deadline < today and status ≠ done | — |
 | Open Questions | decisions.md has open items (questions OR action items) past their deferred-until / due date | items with no deferred-until date; or if decisions.md does not exist, treat as 🟡 and suggest creating it via /user-pm-meeting |
-| Risk mitigation | Any risk mitigation = "TBD" | Any risk with no mitigation note |
+| Risk mitigation | Any risk mitigation = "TBD" | Any risk with no mitigation note. If pmo.yaml has no risks section or an empty risks list, treat as ✅ — do not flag. |
 | Team & Health | No report in last 14 days | Last report 8–14 days ago |
 | Phase staleness | phase unchanged + no done tasks in 14 days | phase unchanged 8–14 days; if no phase-change date is recorded in pmo.yaml, treat as 🟡 |
 | Approver set | **approver field missing or empty** | — |
@@ -116,7 +116,7 @@ If no 🔴 items exist, output: `🎯 今日の最優先: なし — 全項目�
 1. Deadline proximity ≤ 7 days
 2. Overdue tasks (past deadline)
 3. Risk mitigation = TBD with severity = high
-4. Other criteria in table order (Open Questions → Team & Health → Phase staleness → Approver → Stakeholder comms)
+4. Other criteria in table order (Open Questions → Team & Health → Phase staleness → Approver → Stakeholder comms). When Team & Health and Stakeholder comms are merged, the merged entry takes Team & Health's slot (position 5), before Approver.
 
 Ask the user: "Which item would you like to address first?"
 Accept "later" or "skip" to move on without pressure.
