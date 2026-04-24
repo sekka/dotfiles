@@ -63,7 +63,7 @@ Ask with AskUserQuestion if more than one project exists.
 
 ### Step 3 — Read project documents
 
-Read all available files for the selected project:
+Read all available files for the selected project in parallel:
 - `~/prj/{slug}/pmo.yaml` (required)
 - `~/prj/{slug}/discovery.md` (if exists)
 - `~/prj/{slug}/decisions.md` (if exists)
@@ -77,7 +77,7 @@ Evaluate the following criteria and classify each as 🔴 Action required / 🟡
 | --------- | ------------ | ------------ |
 | Deadline proximity | ≤ 7 days | 8–14 days |
 | Overdue tasks | Any pmo.yaml task with deadline < today and status ≠ done | — |
-| Open Questions | decisions.md has open items (questions OR action items) past their deferred-until / due date | items with no deferred-until date |
+| Open Questions | decisions.md has open items (questions OR action items) past their deferred-until / due date | items with no deferred-until date; or if decisions.md does not exist, treat as 🟡 and suggest creating it via /user-pm-meeting |
 | Risk mitigation | Any risk mitigation = "TBD" | Any risk with no mitigation note |
 | Team & Health | No report in last 14 days | Last report 8–14 days ago |
 | Phase staleness | phase unchanged + no done tasks in 14 days | phase unchanged 8–14 days; if no phase-change date is recorded in pmo.yaml, treat as 🟡 |
