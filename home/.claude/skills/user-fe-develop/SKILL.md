@@ -36,6 +36,33 @@ A skill for comprehensive support of frontend development, React/Vue/Next.js imp
 | Astro          | Content-focused sites           | Zero JS by default           |
 | Svelte         | Minimum bundle size           | Compile-time optimization         |
 
+#### DESIGN.md Check
+
+Before writing any component styles, check for a DESIGN.md in the project root:
+
+```bash
+ls ./DESIGN.md 2>/dev/null && ~/.local/share/mise/shims/design.md lint ./DESIGN.md || echo "No DESIGN.md found"
+```
+
+**If DESIGN.md exists:**
+
+- Read the YAML front matter to get token names for colors, spacing, and typography
+- Do not hardcode new style values (hex, px, font names) that aren't in DESIGN.md; add them to
+  DESIGN.md first, then reference the token
+- In component code, prefer CSS custom properties derived from tokens over inline values:
+  ```css
+  /* preferred */
+  background-color: var(--color-primary);
+
+  /* avoid */
+  background-color: #1A1C1E;
+  ```
+- If a Tailwind config exists, check whether DESIGN.md tokens are already exported to it via
+  `~/.local/share/mise/shims/design.md export --format tailwind DESIGN.md`
+
+**If DESIGN.md does not exist:** proceed normally. Offer to create one with `user-design-md`
+if the project has 3+ pages or reusable component patterns.
+
 ### Step 2: TypeScript Type Design
 
 #### Advanced Type System
