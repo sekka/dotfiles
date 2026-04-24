@@ -494,6 +494,12 @@ async function processFiles(files: string[], options: Options): Promise<boolean>
     results.push(await runDprint(dprintFiles, options.mode, options.verbose));
   }
 
+  // DESIGN.md lint — project-level check (全ファイルモードのみ)
+  if (!options.file && !options.staged) {
+    const designMdResult = await runDesignMdLint(options.verbose);
+    if (designMdResult) results.push(designMdResult);
+  }
+
   // 結果を出力
   let allSuccess = true;
   for (const result of results) {
