@@ -14,6 +14,7 @@ Aggregate project data from pmo.yaml and decisions.md and produce a structured s
 1. Read pmo.yaml and decisions.md before generating — never fabricate progress data
 2. CSV is always saved — Notion output is best-effort (skip gracefully if notion_page_id not set or empty)
 3. Do not overwrite an existing report file — always use date-stamped filenames
+4. Always output the Team & Health section — write "None" or "No change" explicitly rather than omitting it
 
 ## Trigger
 
@@ -111,6 +112,14 @@ Phase: {phase} | Progress: {progress_pct}% | Days remaining: {days_remaining}
 | K-001 | ... | high | ... |
 
 (Write "リスクなし" if risks list is empty)
+
+## Team & Health
+
+| Aspect | Status |
+| ------ | ------ |
+| Member changes | {note any additions, removals, or role changes — write "No change" if none} |
+| Team health | {signs of fatigue, conflict, or low morale — write "Good" if none} |
+| Near-miss signals | {early warning signs not yet escalated to risks — write "None" if none} |
 ```
 
 ## CSV Format

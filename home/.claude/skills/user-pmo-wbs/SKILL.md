@@ -14,6 +14,7 @@ Generate a project WBS with estimated hours for each task, based on the delivera
 1. Never invent tasks not relevant to the stated deliverable type — use the matching template
 2. Save to `~/prj/{slug}/pmo.yaml` — primary output is the YAML file, not the chat table
 3. Interactive only after initial generation — present the full WBS first, then accept adjustments
+4. Follow the 100% rule — the WBS must cover every task in project scope; no out-of-scope tasks, no omissions
 
 ## Trigger
 
