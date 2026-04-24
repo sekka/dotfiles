@@ -4,6 +4,7 @@
       "Bash(agent-browser *)",
       "Bash(brew *)",
       "Bash(bun test:*)",
+      "Bash(cat)",
       "Bash(claude *)",
       "Bash(darwin-rebuild *)",
       "Bash(dprint *)",
@@ -15,6 +16,7 @@
       "Bash(qmd *)",
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
+      "Bash(tmux list-panes *)",
       "Bash(wait)",
       "Bash(wrangler *)",
       "Skill(codex:rescue)",
@@ -55,7 +57,8 @@
       "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
       "mcp__plugin_playwright_playwright__*",
-      "Bash(cat)"
+      "WebFetch(domain:gihyo.jp)",
+      "Bash(bun scripts/development/lint-format.ts)"
     ],
     "deny": [],
     "ask": []
