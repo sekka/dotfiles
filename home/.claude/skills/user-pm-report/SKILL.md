@@ -86,7 +86,7 @@ Phase: {phase} | Progress: {progress_pct}% | Days remaining: {days_remaining}
 
 ## Completed This Period
 
-{List of done tasks / completed action items from decisions.md in reporting period — or "なし" if none}
+{List all pmo.yaml tasks with status=done (no date filter — all completed tasks are shown cumulatively), plus decisions.md action items where Due date ≤ period_end. Write "なし" if none}
 
 ## Issues & Blockers
 
@@ -102,7 +102,7 @@ Phase: {phase} | Progress: {progress_pct}% | Days remaining: {days_remaining}
 | ------ | ----- | --- |
 | {open action item} | {owner} | {date or TBD} |
 
-(Write "なし" if no actions)
+(Source: decisions.md open action items only — do not list pmo.yaml in_progress tasks here. Write "なし" if no open action items)
 
 ## Risk Status
 

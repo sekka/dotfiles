@@ -1,6 +1,11 @@
 ---
 name: user-pmo-status
-description: Show a multi-project status dashboard. Reads ~/prj/*/pmo.yaml automatically. Flags projects with deadline within 2 weeks. Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard". Also use proactively at the start of weekly planning sessions or when the user mentions any project's status without asking for the dashboard.
+description: >
+  Show a multi-project status dashboard. Reads ~/prj/*/pmo.yaml automatically.
+  Also checks each project's decisions.md for overdue and due-soon action items.
+  Flags projects with deadline within 2 weeks.
+  Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard".
+  Also use proactively at the start of weekly planning sessions or when the user mentions any project's status without asking for the dashboard.
 effort: low
 ---
 
@@ -24,7 +29,12 @@ No arguments required.
 ## Process
 
 1. Glob `~/prj/*/pmo.yaml` — read all files found
-2. If no files found, output: "No projects found. Create a pmo.yaml in ~/prj/{name}/ to start tracking."
+2. If no files found, output the header line followed by the no-projects message:
+   ```
+   Project Status — {today's date}
+
+   No projects found. Create a pmo.yaml in ~/prj/{name}/ to start tracking.
+   ```
 3. For each project: extract name, phase, deadline, and task list
 4. Calculate progress: `done tasks / total tasks × 100` (round to nearest 10%)
 5. Calculate days remaining from today to deadline
@@ -36,7 +46,7 @@ No arguments required.
    - For each item with a Due date (not "TBD"):
      - Due date < today → classify as 🔴 Overdue; compute days overdue
      - Due date is today or within 2 more calendar days (today, today+1, today+2) → classify as 🟡 Due Soon
-   - If any Overdue or Due Soon items exist, append an "Action Items" subsection BELOW that project's dashboard row:
+   - If any Overdue or Due Soon items exist, append an "Action Items" subsection AFTER the full dashboard table (not inline within the table). Use `### {project-slug} — Action Items` as the heading so it's clear which project each section belongs to:
 
      **Overdue Action Items 🔴**
      | Action | Owner | Due | Days overdue |
@@ -57,7 +67,8 @@ No arguments required.
 If total tasks = 0: show progress as "—"
 done_count = tasks where status = "done"
 total_count = total tasks
-progress = round(done_count / total_count * 100, -1)  # nearest 10%
+raw = done_count / total_count * 100
+progress = floor(raw / 10) * 10  # always round DOWN to nearest 10 (e.g. 33% → 30%, 67% → 60%)
 ```
 
 ## Alert Logic

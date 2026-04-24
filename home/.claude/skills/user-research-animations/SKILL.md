@@ -7,7 +7,10 @@ description: >
   this animation built", "what CSS/JS drives this", "how to implement this motion", or "study the
   animations on this site". Also use when researching animation techniques, CSS animation patterns,
   scroll-driven animations, GSAP, Three.js, or WebGL effects. Provides implementation approach,
-  tech stack identification, and UX evaluation.
+  tech stack identification, and UX evaluation. Output is a structured 4-section report:
+  (1) Animation Description — trigger, property changes, easing, timing; (2) Tech Stack Inference
+  — GSAP, CSS, Three.js, etc.; (3) UX/UI Evaluation — guidance, feedback, performance,
+  accessibility; (4) Code Example. Accepts URL, video, code snippet, or verbal description.
 effort: medium
 ---
 
@@ -27,7 +30,7 @@ Describe website animations not as vague impressions, but in technical and quant
 
 ## Iron Law
 
-1. Do not guess at technology without checking the actual DOM.
+1. Do not guess at technology without checking the actual DOM. Exception: if browser/DOM access is unavailable (e.g., video or verbal input), you may proceed using inference-only mode — satisfy this law's intent by clearly labeling all findings as inferences rather than blocking the analysis entirely.
 
 ## Input
 
@@ -126,6 +129,22 @@ List the libraries and technologies that appear to be in use.
 
 **Important:** When you cannot check the code directly, always state that this is an inference.
 
+**Table format when inference-only (no DOM/code access):** Use Technology | Likelihood | Inference Basis columns instead of the standard 3-column table. Likelihood values: `Possible`, `Less likely`, `Not applicable`. Example:
+
+**Table format when stack is confirmed (code snippet or DOM access):** Use Technology | Confirmed | Evidence columns. Use `Yes` when the technology is directly visible in the source (script tag, import, explicit API call). Use `Likely` when the technology is strongly implied by DOM patterns (e.g., `data-speed` attributes on GSAP + ScrollTrigger, class naming conventions) but not directly confirmed by a script reference. Example:
+
+| Technology | Confirmed | Evidence |
+|---|---|---|
+| **CSS Transitions** | Yes | `element.style.transition = '...'` set directly in JS |
+| **IntersectionObserver API** | Yes | `new IntersectionObserver(...)` in source |
+| **GSAP ScrollTrigger** | Likely | `data-speed` attributes consistent with ScrollTrigger scrub pattern; GSAP confirmed but ScrollTrigger not directly imported |
+
+| Technology | Likelihood | Inference Basis |
+|---|---|---|
+| **GSAP** | Possible | Scroll-linked parallax behavior matches GSAP ScrollTrigger pattern |
+| **CSS Transitions** | Possible | Simple hover state changes achievable without JS library |
+| **Three.js** | Not applicable | No 3D effects described |
+
 ---
 
 ### 3. UX / UI Evaluation
@@ -159,7 +178,11 @@ Consider the impact the animations have on the user experience.
 
 ### 4. Code Example
 
-Provide a code sample for reference based on the inferred tech stack.
+Provide **one** code sample based on the most likely tech stack. If the input is a code snippet, use the confirmed stack. If the input is verbal or a video (inference-only), pick the single most likely stack and provide one full example; briefly list alternative stacks in a one-line note after the code block if 2+ are equally plausible.
+
+**Tiebreaker for inference-only (when multiple stacks are equally plausible):** Prefer (1) CSS if no JS library is mentioned in the description; (2) GSAP over Framer Motion unless a React/component context is evident; (3) GSAP over Lenis/Locomotive Scroll unless smooth-scroll behavior is the primary topic.
+
+**Companion code:** If the confirmed or selected stack requires companion code to be functional (e.g., CSS class-toggle pattern requires a JS IntersectionObserver trigger), include the companion code in the same code block as a functional pair — do not omit it. For scroll-linked, parallax, or 3D animations, always include a `prefers-reduced-motion` guard as part of the companion code — motion-heavy animations have a direct accessibility impact.
 
 **Example (GSAP scroll-linked):**
 
@@ -208,7 +231,7 @@ gsap.to('.hero-image', {
 ### Step 1: Receive and check input
 
 - **URL**: Use `mcp__plugin_playwright_playwright__browser_snapshot` to fetch and analyze the page.
-- **Video**: Observe changes frame by frame.
+- **Video**: Observe changes frame by frame. If the video cannot be opened or played, treat the user's verbal description as the primary input and proceed in inference-only mode.
 - **Code**: Analyze the source code directly.
 
 ### Step 2: Break down the motion
@@ -355,8 +378,8 @@ gsap.to('.hero-bg', {
 ## Status
 
 Add one of the following at the end of every response:
-- `## Status: DONE` — animation analysis complete: description, tech stack inference, UX evaluation, and code example all provided
-- `## Status: DONE_WITH_CONCERNS` — analysis complete but some inferences could not be verified (e.g., source code access blocked, DOM inspection unavailable)
+- `## Status: DONE` — animation analysis complete with DOM/code verification: description, tech stack (confirmed), UX evaluation, and code example all provided
+- `## Status: DONE_WITH_CONCERNS` — analysis complete but findings are inferences only (DOM/code access was unavailable); or some inferences could not be verified. List what could not be confirmed.
 - `## Status: BLOCKED` — cannot proceed (e.g., URL is inaccessible, video or code input is unreadable)
 - `## Status: NEEDS_CONTEXT` — no URL, video, code snippet, or animation description provided to analyze
 

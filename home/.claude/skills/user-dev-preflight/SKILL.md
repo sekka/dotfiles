@@ -93,7 +93,7 @@ git diff --cached
 - Keywords such as `API_KEY`, `SECRET`, `TOKEN`, `PASSWORD` (in assignment form)
 - Private key files (`-----BEGIN`, `.pem`, `.key`)
 
-Report detections as WARNING (do not block).
+Report detections as WARNING (do not block). If any detections are found, set Status to `DONE_WITH_CONCERNS` in Phase 7.
 
 ## Phase 6: Commit Message Draft
 

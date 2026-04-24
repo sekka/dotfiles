@@ -1,6 +1,10 @@
 ---
 name: user-fe-html
-description: Check HTML semantics, accessibility, and ARIA attributes thoroughly and suggest improvements. Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
+description: >
+  Run a 4-phase HTML semantics and accessibility audit using check-html.ts (requires bun).
+  Delegates the automated scan to an implementer subagent; main agent handles qualitative analysis and report.
+  Inputs: file path, URL, git diff, or code block.
+  Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
 effort: medium
 ---
 
@@ -67,9 +71,13 @@ Have the implementer subagent run:
 bun "$CHECK_HTML" <file> --format=json --severity=info
 ```
 
+`--severity=info` means show all findings at info level and above (info → warning → error). This is the most inclusive mode.
+
 For multiple files, use a glob pattern or run individually.
 
-Receive the JSON results.
+The subagent returns the raw JSON output as its result. The main agent reads this JSON from the subagent's response text and proceeds to Phase 3.
+
+**Exit code note**: `check-html.ts` exits with code 1 when violations are found and code 0 when clean. Exit code 1 is normal — it is not a script failure. The implementer subagent should return the JSON output regardless of exit code.
 
 ### Phase 3: Qualitative Analysis (Claude reasoning)
 
@@ -79,13 +87,16 @@ Analyze the following items that are hard to detect automatically:
 - **Alt text quality**: Is it specific enough given the content?
 - **Logical reading order**: Does DOM order match visual order?
 - **Component-level a11y patterns**: Does it follow WAI-ARIA APG?
-- **Knowledge base check**: Apply knowledge from `knowledge/cross-cutting/accessibility/`
+- **Knowledge base check**: Apply knowledge from `~/.claude/skills/user-fe-knowledge/knowledge/cross-cutting/accessibility/` (read relevant .md files there if needed)
 
-When a pattern violation is found, refer to the corresponding template in the `patterns/` directory and show the correct implementation example.
+When a pattern violation is found, refer to the corresponding template in `~/.claude/skills/user-fe-html/patterns/` and show the correct implementation example. If the patterns/ directory does not exist or no matching pattern is found, cite the relevant WAI-ARIA APG URL instead.
 
 ### Phase 4: Generate Report
 
 Output in Markdown format:
+
+The Summary table shows **automated check results only** (from check-html.ts JSON output).
+Qualitative findings from Phase 3 are documented in the separate "Qualitative Analysis Findings" section — do not mix them into the Summary table counts.
 
 ```markdown
 # HTML Semantics & Accessibility Report

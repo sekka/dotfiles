@@ -1,6 +1,6 @@
 ---
 name: user-figma-gate
-description: Use when Figma design is complete and coding is about to start, and both an RTM file and a Figma URL are available. Requires Figma MCP. Runs a PASS/FAIL gate: RTM requirement coverage, brand token consistency, accessibility basics, and responsive frame coverage. Outputs BLOCKER/WARNING findings. Not for informal design critique — requires hard requirements in RTM format.
+description: Use when Figma design is complete and coding is about to start, and both an RTM file and a Figma URL are available. Requires Figma MCP. Runs a PASS/FAIL gate: RTM requirement coverage, brand token consistency, accessibility basics, responsive frame coverage, and AI-readability (Check 6 — potential BLOCKER if all AI-readability pillars fail). Outputs BLOCKER/WARNING findings. Not for informal design critique — requires hard requirements in RTM format.
 argument-hint: [rtm-file-path] [figma-url]
 allowed-tools: Read, Glob, Grep, AskUserQuestion, mcp__figma__get_file, mcp__figma__get_file_nodes
 effort: medium
@@ -24,7 +24,7 @@ Review the completed Figma design against the RTM before coding begins.
    - `mcp__figma__get_file` to get all pages and frames
    - `mcp__figma__get_file_nodes` for component details if needed
 4. Check DESIGN.md if it exists in the project root (design tokens reference)
-5. Run all 5 checks (see below)
+5. Run all 6 checks (see below) — Check 1: RTM Coverage, Check 2: PENDING, Check 3: Brand, Check 4: Accessibility, Check 5: Responsive, Check 6: AI-Readability
 6. Output gate report
 
 ## Check 1: RTM Coverage

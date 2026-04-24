@@ -1,6 +1,10 @@
 ---
 name: user-research-websites
-description: Analyze an existing website and create a sitemap and wireframes. Give it a URL and it parses the page structure and outputs it in a specified format. Use proactively before competitive analysis, planning a redesign, or when a client asks to reference another site's structure — can also summarize a page's purpose and target audience.
+description: "Analyze an existing website and create a sitemap and wireframes. Confirms 6 scope\
+  \ parameters before starting: crawl depth, sitemap format (Mermaid/Markdown/JSON), wireframe format\
+  \ (ASCII/HTML), content analysis level, design analysis level, and output directory. Use proactively\
+  \ before competitive analysis, planning a redesign, or when a client asks to reference another site's\
+  \ structure — can also summarize a page's purpose and target audience."
 disable-model-invocation: false
 effort: high
 ---
@@ -18,7 +22,9 @@ Crawl a website from a given URL and create a sitemap, wireframes, and content a
 
 ## Confirm Input Information
 
-At the start of the skill, confirm the following:
+At the start of the skill, confirm the following.
+
+**How to confirm:** Ask all unresolved parameters in a single AskUserQuestion before starting the crawl. If the user already specified a parameter in their initial message (e.g., "depth 2", "Mermaid sitemap"), treat it as confirmed — do not re-ask it. Only ask about parameters that were not specified.
 
 ### 1. Target URL
 
@@ -29,10 +35,14 @@ At the start of the skill, confirm the following:
 
 Ask the user:
 
-- **1 level**: Only pages linked directly from the top page.
-- **2 levels**: Top page + one level below it.
+- **1 level (shallow)**: Visit the top page and the pages directly linked from it (top + 1 tier of children).
+- **2 levels**: Top page + direct children + their children (top + 2 tiers).
 - **3 levels or more**: Specify as needed.
 - **Specific pages only**: Manually specify a list of URLs.
+
+Generate one wireframe file per page visited. The crawl depth determines which pages are visited — all visited pages get wireframes.
+
+**Page title note**: For pages that could not be visited (e.g., beyond the crawl depth or blocked by robots.txt), use the link text from the parent page as the label in the sitemap. Do not leave titles blank.
 
 ### 3. Sitemap Output Format (multiple selections allowed)
 
@@ -194,7 +204,7 @@ Generate a simple HTML wireframe:
 
 ### Step 5: Extract Design Elements (optional)
 
-When design analysis is selected, use `browser_evaluate` or `browser_run_code` to get the page's computed styles:
+When design analysis is selected, run the extraction on the **top page only** (the root URL). The top page typically uses the full design system. Extracting from all visited pages would produce redundant results and is unnecessary for design token capture. Use `browser_evaluate` or `browser_run_code` to get computed styles:
 
 #### Items to extract
 
@@ -334,17 +344,30 @@ Evaluate content from these perspectives:
 
 ### Step 7: Output
 
-Output files in the specified format:
+Output files in the specified format.
+
+**Directory**: Replace `output/` in the tree below with the directory confirmed with the user (default: `wireframe-output/` in the project root).
+
+**Sitemap multi-format rule**: When multiple text formats are selected, combine them in a single `sitemap.md` using `## Mermaid Diagram` and `## Markdown List` section headers. When only one text format is selected, write it directly without a section header. JSON always goes to a separate `sitemap.json`.
+
+**Wireframe directory rules**:
+- `wireframes/` is created only when Markdown+ASCII format is selected. If only HTML is selected, omit `wireframes/` entirely.
+- `wireframes-html/` is created only when HTML format is selected.
+
+**Content analysis placement rules**:
+- `None` → no content analysis files
+- `Basic` → append the Basic analysis block to each `wireframes/*.md` file (only if ASCII format selected) or add inline to `wireframes-html/*.html` files
+- `Detailed` → create separate `wireframes-analyzed/*.md` files regardless of wireframe format
 
 ```
-output/
+output/                   ← replace with user-confirmed directory
 ├── sitemap.md              # Sitemap (Mermaid)
 ├── sitemap.json            # Sitemap (JSON)
 ├── wireframes/
-│   ├── index.md            # Top page
-│   ├── about.md            # About Us
+│   ├── index.md            # wireframe (+ Basic analysis appended if Basic selected)
+│   ├── about.md
 │   └── ...
-├── wireframes-analyzed/    # With analysis (when detailed analysis is selected)
+├── wireframes-analyzed/    # Detailed content analysis only (separate files when Detailed selected)
 │   ├── index.md
 │   └── ...
 ├── wireframes-html/        # HTML format

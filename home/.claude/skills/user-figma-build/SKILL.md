@@ -1,6 +1,6 @@
 ---
 name: user-figma-build
-description: Build Figma design systems and page layouts via the Plugin API (use_figma). Use when creating Local Variables, Text Styles, components, Auto Layout frames, or full page designs directly inside Figma programmatically. The reverse of user-figma-implement (Figma→Code). Triggered by phrases like "Figmaで作って", "Figmaに反映して", "コンポーネントを作って", "デザインシステムを構築して".
+description: Build Figma design systems and page layouts via the Plugin API (use_figma). Use when creating Local Variables, Text Styles, components, Auto Layout frames, or full page designs directly inside Figma programmatically. Requires RTM (plans/00-master-requirements.md) and locked style direction to exist before starting. The reverse of user-figma-implement (Figma→Code). Triggered by phrases like "Figmaで作って", "Figmaに反映して", "コンポーネントを作って", "デザインシステムを構築して".
 effort: high
 ---
 
@@ -259,6 +259,7 @@ Component creation, slot detection, and slot content in instances: `references/c
 **When to call user for slot conversion:**
 - After all `SectionWrapper` variants are created on the DS page
 - Say: "コンポーネント `SectionWrapper` の `[SLOT] body` フレームを `⌘⇧S` でスロットに変換してください"
+- After notifying, output `## Status: DONE_WITH_CONCERNS` immediately — do **not** wait for the user to complete slot conversion. The build is done; slot conversion is a manual post-step.
 
 ### Component Naming Convention
 
@@ -448,5 +449,5 @@ Key tools covered: Glass effect, Remove background, Vectorize, Erase object, Exp
 Add one of the following at the end of every response:
 - `## Status: DONE` — all requested Figma frames, components, or design system elements built and visually validated via screenshot
 - `## Status: DONE_WITH_CONCERNS` — build complete but manual steps remain (e.g., user must convert `[SLOT]` frames to actual Slots via `⌘⇧S`) — list each
-- `## Status: BLOCKED` — Plugin API call failed, required font is unavailable, or RTM coverage is below 100% and style direction is not locked
-- `## Status: NEEDS_CONTEXT` — missing RTM, style direction, or wireframes required before building; cannot start Phase 1
+- `## Status: BLOCKED` — Plugin API call failed, or required font is unavailable
+- `## Status: NEEDS_CONTEXT` — missing RTM, style direction not yet LOCKED (DRAFT or pending approval counts as not LOCKED), missing wireframes, or RTM coverage below 100%; cannot start Phase 1

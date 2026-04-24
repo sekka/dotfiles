@@ -191,7 +191,7 @@ async function runOxfmt(files: string[], mode: Mode, verbose: boolean): Promise<
     return { tool: "oxfmt", success: true, output: "No files to process" };
   }
 
-  const args = mode === "fix" ? ["oxfmt", "--write", ...files] : ["oxfmt", ...files];
+  const args = mode === "fix" ? ["oxfmt", "--write", ...files] : ["oxfmt", "--check", ...files];
 
   if (verbose) {
     console.log(`🔧 Running: ${args.join(" ")}`);
@@ -295,6 +295,10 @@ async function runShellcheck(files: string[], verbose: boolean): Promise<LintRes
  * Git でステージされたファイルを取得
  */
 async function getStagedFiles(): Promise<string[]> {
+  // リポジトリルートを取得（hook から異なる cwd で呼ばれた場合も正しいパスに解決するため）
+  const rootResult = await runCommand(["git", "rev-parse", "--show-toplevel"]);
+  const repoRoot = rootResult.success ? rootResult.stdout.trim() : process.cwd();
+
   const result = await runCommand(["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"]);
 
   if (!result.success) {
@@ -304,7 +308,9 @@ async function getStagedFiles(): Promise<string[]> {
   return result.stdout
     .split("\n")
     .map((f) => f.trim())
-    .filter((f) => f.length > 0 && existsSync(f));
+    .filter((f) => f.length > 0)
+    .map((f) => resolve(repoRoot, f))
+    .filter((f) => existsSync(f));
 }
 
 /**

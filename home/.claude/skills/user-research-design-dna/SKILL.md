@@ -123,10 +123,10 @@ Save component screenshots under `/tmp/clone-DOMAIN/components/` when there are 
 
 ## Step 4b: Grid Extraction
 
-Run the JS from `references/grid-extraction.md` via `agent-browser eval`:
+Run the JS from `~/.claude/skills/user-research-design-dna/references/grid-extraction.md` via `agent-browser eval`:
 
 ```bash
-agent-browser eval '<JS from references/grid-extraction.md>'
+agent-browser eval '<JS from ~/.claude/skills/user-research-design-dna/references/grid-extraction.md>'
 ```
 
 Save result as `grid.json` in the output directory. This feeds Step 5b and `tokens.yaml`.
@@ -159,7 +159,7 @@ Save result as `{output_dir}/motion-raw.json`. This feeds Step 5e.
 
 ## Step 5b: AI Integrated Analysis
 
-Follow `references/ai-analysis-prompt.md` exactly. Pass:
+Follow `~/.claude/skills/user-research-design-dna/references/ai-analysis-prompt.md` exactly. Pass:
 - Full-page screenshot (image)
 - 2–3 component screenshots (nav, hero, main section)
 - Token JSON from Step 3
@@ -176,12 +176,12 @@ Save outputs:
 For each component screenshot taken in Step 4 (nav, hero, card, footer, etc.):
 1. Pass the component screenshot + component name to AI
 2. Ask AI to score on relevant axes (3–4 most applicable) and provide a `borrow_note`
-3. Save as `components/{name}.yaml` using the format in `references/evaluation-model.md`
+3. Save as `components/{name}.yaml` using the format in `~/.claude/skills/user-research-design-dna/references/evaluation-model.md`
 
 Prompt template:
 ```
 コンポーネント「{name}」のスクリーンショットを評価してください。
-references/evaluation-model.md の component.yaml 形式で出力してください。
+~/.claude/skills/user-research-design-dna/references/evaluation-model.md の component.yaml 形式で出力してください。
 関連する3〜4軸でスコアを付け、borrow_value と borrow_note を含めてください。
 ```
 

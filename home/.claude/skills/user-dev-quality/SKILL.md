@@ -95,6 +95,18 @@ Record the result of each step (pass/fail, error count).
 - [file:line] error description
 ```
 
+When the project uses a **unified quality command** that runs formatter, linter, and type checker together (e.g., `bun scripts/development/lint-format.ts`), report as a single entry instead of splitting:
+
+```markdown
+## Quality Check Results
+
+- **Runs:** N times (initial + M retries)
+- **All checks (unified):** PASS / FAIL (details)
+
+### Auto-fixed Items
+### Unresolved Issues (manual action needed)
+```
+
 ## Status
 
 Add one of the following at the end of every response:

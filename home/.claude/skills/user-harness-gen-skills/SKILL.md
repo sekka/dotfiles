@@ -1,6 +1,6 @@
 ---
 name: user-harness-gen-skills
-description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Triggered by "generate skills from history" or "extract patterns".
+description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW) and auto-generate skills. Confirms scope interactively (project, period, CLI history) before collecting. Evaluates candidates by frequency threshold and deduplicates against existing skills. Saves generated skills to ~/dotfiles/home/.claude/skills/. Triggered by "generate skills from history" or "extract patterns".
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
 effort: high
@@ -78,9 +78,9 @@ After deciding the scope, proceed to Phase 2.
 
 Data source: `~/.claude/projects/*/sessions-index.json`
 
-Filtering:
-- Exclude entries where `isSidechain == true`
-- Exclude sessions outside the specified period
+Period filtering: Use the `modified` field (ISO string) in sessions-index.json entries. If `modified` is null or all values fall outside the selected period, the file is considered stale — fall back to JSONL file timestamps: use the `timestamp` field of the first entry in each `~/.claude/projects/*/*.jsonl` file as a proxy for session start date.
+
+Sidechain filtering: Exclude entries where `isSidechain == true`. For JSONL files not found in sessions-index.json (unknown sessions), treat them as non-sidechain and include them.
 
 Handling firstPrompt: Use only to help estimate the theme. Do not copy it directly into generated content.
 </step_2_1>
@@ -107,7 +107,7 @@ Purpose:
 <step_2_3>
 **Step 2-3: Deep dive into session JSONL (selective)**
 
-Target: Top 3 groups on the WHAT axis, 5 sessions each, up to 10 total.
+Target: Top 3 groups on the WHAT axis — up to 10 sessions total. Allocate slots proportionally: `floor(group_size / total_size * 10)`, then assign any remaining slots to the largest groups first. Minimum 1 session per group.
 
 Extract tool usage frequency:
 ```bash
@@ -169,7 +169,7 @@ Steps:
 1. Sort by time (chronological order)
 2. Analyze sequences of WHAT group labels
 3. Repetition detection: Same theme 3 or more times within 7 days → repetitive pattern
-4. Chain detection: Same order 2 or more times within 3 days → chain pattern
+4. Chain detection: The same sequence of WHAT group labels (e.g., "Design → Implement → Review" appearing twice in the same order within 3 days) → chain pattern. Minimum chain length = 2 groups. Partial overlap (A→B→C and A→B but not →C) counts as a chain on A→B.
 5. Pattern classification:
    - Repetitive: Regular task (high skill candidate)
    - Chain: Workflow (medium skill candidate)
@@ -189,27 +189,32 @@ Steps:
 | Consistency | Tool variance <30% | 30-50% | >50% |
 | Automation rate | >70% | 40-70% | <40% |
 
-Decision: 2 or more A ratings → adopt, 2 or more C ratings → reject.
-Consistency = 1 - (standard deviation / mean)
+Automation rate: proportion of the task's steps Claude executes without additional user input once the session starts. Estimate from session data as follows — A (>70%): sessions dominated by tool chains (Read → Grep → Edit → Bash) with few or no mid-session user messages; B (40–70%): sessions with significant research or judgment steps (WebFetch, repeated AskUserQuestion, external lookups); C (<40%): sessions where the user had to intervene frequently to approve or redirect. When session metadata is too sparse to determine, default to B.
+
+Decision: 2 or more A ratings → adopt, 2 or more C ratings → reject. Any other combination (all B, or mixed B/C with fewer than 2 C) → borderline (include in Phase 5 for user decision).
+Consistency = 1 - (std / mean) computed over **per-tool presence rates** across sessions in the group. A tool's presence rate = (sessions in group where the tool was used) / (total sessions in group). Compute std and mean of those rates across all tools that appeared at least once.
+
+JSONL availability: Only sessions whose JSONL file exists and was read contribute to the per-tool presence rate calculation. Sessions with no corresponding JSONL file are excluded from the consistency calculation entirely (they count neither as 0 nor 1 for any tool). If no sessions in the group have readable JSONL files, rate Consistency as B (not evaluable — cannot determine variance).
 </evaluation_criteria>
 
 <duplicate_detection>
 **Duplicate Detection**
 
 Steps:
-1. Get existing skills: `Glob: ~/dotfiles/home/.claude/skills/*/SKILL.md`
+1. Get existing skills: `Glob: ~/dotfiles/home/.claude/skills/*/SKILL.md` — this glob is the canonical deduplication scope. Skills registered as Claude Code plugins or from external sources (visible in the available-skills list but not on disk at this path) are out of scope and should not influence duplicate detection.
 2. Read the first 10 lines (extract name/description)
 3. Keyword matching:
-   - Exact match: name matches → confirmed duplicate
-   - Partial match: 3 or more words in common in description → possible duplicate
-   - Semantic similarity: Check synonyms
-4. When a duplicate is found, exclude the candidate and show the reason
+   - Exact match: name matches → confirmed duplicate → exclude; show reason in Phase 5
+   - Partial match: 3 or more words in common in description → possible duplicate → keep as borderline; flag "possible duplicate of X" in Phase 5 for user decision
+   - Semantic similarity: Check synonyms (treat same as partial match)
 </duplicate_detection>
 
 <fallback>
 **Fallback**
 
 If fewer than 2 candidates are found: Stop generation, report analysis results only (WHAT/HOW/FLOW rankings).
+
+If the period filter yields 0 sessions (no data to analyze): Do not fall back to all-time data as a proxy. Report "No sessions found for the selected period and project. Expand the time range or choose a different project." and stop. Phase 5 is skipped.
 </fallback>
 </phase_4>
 
@@ -246,7 +251,7 @@ Excluded candidates:
 
 Selection method:
 - Multiple selections allowed
-- "Generate all" option
+- "Generate all" option — generates ALL candidates shown (both adopt and borderline)
 - "Cancel" option
 </phase_5>
 

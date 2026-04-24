@@ -25,7 +25,7 @@ Arguments (positional or ask if missing):
 
 ## Process
 
-1. If project type, industry, or client name is missing, ask all three together in one AskUserQuestion: "案件の種別（corporate/lp/ec/service/video/branding）、業種、クライアント名を教えてください。"
+1. If project type, industry, or client name is missing: ask only the missing ones in a single AskUserQuestion. Do not re-ask parameters already provided by the user. If only client name is missing, ask just "クライアント名を教えてください。" — do not proceed with a placeholder.
 2. Select base question set (always included) + project-type-specific additions
 3. Infer slug from client name: lowercase, hyphens, no spaces. For Japanese names, use phonetic romanization (e.g. "田中設計" → "tanaka-sekkei", "ABC商事" → "abc-shoji"). If unsure, ask the user: "スラッグ（URLに使う英字識別子）を教えてください。例: tanaka-sekkei"
 4. Create `~/prj/{slug}/` directory if it does not exist

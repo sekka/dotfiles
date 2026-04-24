@@ -35,6 +35,7 @@ link_item() {
     fi
   elif [[ -e $target ]]; then
     log_warn "$label は実体が存在します。手動確認してください"
+    skipped=$((skipped + 1))
   else
     log_info "$label を作成しています..."
     ln -s "$source" "$target"
@@ -115,7 +116,7 @@ for file in "${CLAUDE_FILES[@]}"; do
   link_item "$DOTFILES_CLAUDE_DIR/$file" "$HOME_CLAUDE_DIR/$file" "$file"
 done
 
-CLAUDE_FOLDERS=(
+CLAUDE_FOLDERS=( # format: "folder_name:Display Label"
   "commands:Commands"
   "agents:Agents"
   "skills:Skills"
