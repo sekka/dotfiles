@@ -101,6 +101,21 @@ Continue anyway? (y/n)
 If the user confirms to continue, proceed to Step 1 and note the expected accuracy gap in the
 Status line at the end.
 
+### Step 0c: Lint Gate
+
+After reading DESIGN.md, run:
+
+```bash
+~/.local/share/mise/shims/design.md lint ./DESIGN.md
+```
+
+- **Errors (`"severity": "error"`):** Fix before proceeding. Broken token references in components
+  will cause AI to hallucinate values.
+- **Warnings (`contrast-ratio`):** Report to user but do not block. Note the failing component
+  names so the user can decide.
+- **If DESIGN.md does not exist and Figma is unavailable:** Offer `user-design-md` init mode
+  (skippable — the user can proceed without a DESIGN.md).
+
 ---
 
 ### Step 1: Fast Path — `implement-design` (try first)
