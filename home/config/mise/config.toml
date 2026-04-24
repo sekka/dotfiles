@@ -548,6 +548,7 @@ go = "latest"
 "npm:@github/copilot" = "latest"       # GitHub Copilot CLI
 "npm:@google/gemini-cli" = "latest"    # Google Gemini CLI
 "npm:@openai/codex" = "latest"         # OpenAI Codex コーディングエージェント
+"npm:@google/design.md" = "latest"    # DESIGN.md CLI: lint/diff/export/spec  https://github.com/google-labs-code/design.md
 # "npm:@byterover/byterover-cli" = "latest" # AI暗号化ツール                       https://github.com/campfirein/byterover-cli
 # "npm:@letta-ai/letta-code" = "latest" # AIメモリ付きコーディング                 https://github.com/letta-ai/letta-code
 
