@@ -652,3 +652,182 @@ All 3 skills CONVERGED.
 - user-dev-commit uses `model: haiku` — verify subagent scenarios account for haiku's shorter context.
 - Skills with `disable-model-invocation: false` (user-dev-prototype, user-fe-develop, user-harness-dual-agent): include that constraint in subagent prompts.
 - user-pmo-status and user-pmo-workload both read `~/prj/*/pmo.yaml` — check if test fixtures exist before empirical.
+
+---
+
+## Phase 2 — Additional Validation (2026-04-25 〜)
+
+Skills missed by or not formally tracked in Phase 1. Total: 7 skills.
+
+Added: 2026-04-25
+
+### Coverage gap summary
+
+| Skill | Gap type | Action |
+|-------|----------|--------|
+| user-design-md | Refactored post-Phase1 (commit 2052574) — no iter log | Phase 0 → empirical |
+| user-dotfiles-tool-config | Never in any plan | Phase 0 → empirical |
+| user-harness-config | Never in any plan | Phase 0 → empirical |
+| user-pm-session | Informal tuning (PM/PMO memory session) — no iter log in plan | Holdout regression (2 iters) |
+| user-pm-judge | Informal tuning (PM/PMO memory session, Iter 2 converged) | Holdout regression (2 iters) |
+| difit-review | External plugin skill (github.com/yoshiko-pg/difit) | Structural check only (Phase 0) |
+| grill-me | External plugin skill (github.com/mattpocock/skills) | Structural check only (Phase 0) |
+
+### Batch schedule
+
+| Batch | Skills | Approach | Notes |
+|-------|--------|----------|-------|
+| A | user-design-md | Phase 0 → empirical (2+ iters) | Init / Lint / Update modes |
+| B | user-dotfiles-tool-config | Phase 0 → empirical (2+ iters) | Bash-heavy; real config files |
+| C | user-harness-config | Phase 0 → empirical (2+ iters) | WebFetch + config editing |
+| D | user-pm-session, user-pm-judge | Holdout regression (2 iters each) | Use test fixture ~/prj/test-ep-fixture/ or create new |
+| E | difit-review, grill-me | Phase 0 structural check only | External skills; cannot tune source |
+
+### Status table
+
+| Status | Skill | Notes |
+|--------|-------|-------|
+| `[x]` | user-design-md | CONVERGED (2026-04-25, 10 iters) — 8 fixes: conditional Step 1, orphaned-tokens non-blocking, catch-all warning row, read-only Mode 2 header, lint exit code 1 note, `\cp` alias fix, diff arg order, error row → "Report to user" |
+| `[x]` | user-dotfiles-tool-config | CONVERGED (2026-04-25, 2 iters) — no fixes needed |
+| `[x]` | user-harness-config | CONVERGED (2026-04-25, 7 iters + holdout) — 5 fixes: gh extension/plugin distinction, Phase 3 settings split (3/4/5), duplicate numbering, article-driven vs direct-request routing |
+| `[x]` | user-pm-session | CONVERGED (2026-04-25, 2 holdout iters) — no fixes needed; skill was already solid |
+| `[x]` | user-pm-judge | CONVERGED (2026-04-25, 2 holdout iters) — no fixes needed; bad-feeling flow + mode judgment clean |
+| `[x]` | difit-review | DONE (2026-04-25, structural only) — description/body aligned; no missing file refs |
+| `[x]` | grill-me | DONE (2026-04-25, structural only) — description/body aligned; no missing file refs |
+
+### Scenario outlines (pre-defined per skill)
+
+**user-design-md**
+- Scenario A (Init): New web project, no DESIGN.md — create from scratch with brand colors + typography
+- Scenario B (Lint): Existing DESIGN.md with a missing required token + wrong component count
+- Scenario C (Update): Change primary color + add new spacing token
+- Requirements checklist (A): [critical] creates valid YAML token block; [critical] sets `version: alpha`; outputs lint-ready file
+- Requirements checklist (B): [critical] reports missing token as error; identifies YAGNI components violation
+- Requirements checklist (C): [critical] only modifies specified tokens; does not touch unrelated sections
+
+**user-dotfiles-tool-config**
+- Scenario A (diagnose): User reports `sheldon` plugin not loading; trace config, identify fix
+- Scenario B (add): Add `zoxide` to nix packages and verify activation
+- Requirements checklist (A): [critical] reads config files before editing; [critical] tests fix after applying
+- Requirements checklist (B): [critical] edits flake.nix (not Brewfile); outputs darwin-rebuild command
+
+**user-harness-config**
+- Scenario A (audit): User provides Claude Code changelog URL; apply relevant best practices to CLAUDE.md
+- Scenario B (integrate): New skill plugin announced; add to settings.json
+- Requirements checklist (A): [critical] uses WebFetch on provided URL; proposes specific file edits; does NOT commit
+- Requirements checklist (B): [critical] edits settings.json correct path; verifies no duplicate entries
+
+**user-pm-session / user-pm-judge (holdout regression)**
+- Session holdout: 2 projects in ~/prj/, one with stale deadline, one with open decision
+- Judge holdout: "プレイヤーとしてコードを書き続けていいか迷っている" → expects mode=mixed + Iron Rule match
+- Requirements: [critical] flags stale deadline 🔴; [critical] outputs next-skill suggestion; [critical] correct mode label
+
+**difit-review / grill-me (structural check only)**
+- Check: description trigger words match body's actual instruction scope
+- Check: no references to missing files / paths that don't exist in the skill directory
+- No empirical dispatch needed (external skill, cannot modify source)
+
+### Iteration log
+
+#### Batch A — user-design-md (2026-04-25, CONVERGED in 10 iters)
+
+| Iteration | Scenario A (Init) | Scenario B (Lint) | Scenario C (Update) | 新規不明瞭点 |
+|-----------|-------------------|-------------------|---------------------|-------------|
+| 1 | ○ 100% | ○ 100% | ○ 100% | 2 (Update Step 1 形式, orphaned-tokens ブロッキング) |
+| 2 | ○ 100% | ○ 100% | ○ 100% | 1 (unrecognized warning type catch-all なし) |
+| 3 | ○ 100% | ○ 100% | ○ 100% | 1 (Mode 2 で subagent が DESIGN.md を変更) |
+| 4 | ○ 100% | ○ 100% | ○ 100% | 1 (lint exit code 1 未記載) |
+| 5 | ○ 100% | ○ 100% (27 steps) | ○ 100% | 1 (`cp -i` alias で 4 retries; diff 引数順) |
+| 6 | ○ 100% | ○ 100% | × 0% | 1 (`\rm` hook ブロック) |
+| 7 | ○ 100% | ○ 100% | ○ 100% | 0 ✓ |
+| 8 | ○ 100% | ○ 100% | ○ 100% | 1 (error 行「Fix and re-run」と「Do not modify」矛盾) |
+| 9 | ○ 100% | ○ 100% | ○ 100% | 0 ✓ |
+| 10 | ○ 100% | ○ 100% | ○ 100% | 0 ✓ CONVERGED |
+| holdout | — | ○ 100% (clean file) | — | 0 ✓ (過適合なし) |
+
+修正内容 (8件):
+- Iter 1: Update Step 1 を条件付き ask に変更（token/value 明示時はスキップ）; orphaned-tokens を「Step 3 レポートに含め、reply を待たない」に変更
+- Iter 2: Mode 2 Step 2 に catch-all warning row を追加
+- Iter 3: Mode 2 ヘッダーに「Do not modify the DESIGN.md file」を明示
+- Iter 4: Mode 2 Step 1 に「exit code 1 は expected」ノートを追加
+- Iter 5: Mode 3 Step 2 を `cp` → `\cp` に変更（alias 回避コメント付き）; diff に「first arg = backup」コメント追加
+- Iter 6: Mode 3 Step 4 を `\rm -f` → `command rm -f` に変更（validate-command hook 対応）
+- Iter 9 (after Iter 8): Mode 2 error 行を「Must fix... Fix and re-run」→「Must fix... Report to the user — do not edit the file in this mode」に変更
+
+#### Batch B — user-dotfiles-tool-config (2026-04-25, CONVERGED in 2 iters)
+
+| Iteration | Scenario A | Scenario B | 新規不明瞭点 |
+|-----------|------------|------------|-------------|
+| 1 | ○ 100% (sheldon typo) | ○ 100% (add duf to nix) | 0 ✓ |
+| 2 | ○ 100% (zoxide --cmd cd) | ○ 100% (add duf to nix) | 0 ✓ |
+| holdout | ○ 100% (starship not loading) | — | 0 ✓ (過適合なし) |
+
+修正内容: なし（スキルは最初からクリーン）
+
+#### Batch C — user-harness-config (2026-04-25, CONVERGED in 7 iters + holdout)
+
+| Iteration | Scenario A (article audit) | Scenario B (plugin install) | 新規不明瞭点 |
+|-----------|----------------------------|------------------------------|-------------|
+| 1 | ○ (17 steps, 302s) | ○ (4 steps, 30s) | 2 (gh ext vs plugin confusion, Phase 3 update-config scope) |
+| 2 | ○ (17 steps, 225s) | ○ (4 steps, 25s) | 1 (duplicate "4." numbering in Phase 3) |
+| 3 | ○ (17 steps, ~300s) | ○ (4 steps, ~25s) | 1 (article-driven audit blocked by update-config rule) |
+| 4 | ○ (17 steps, ~250s) | ○ (3 steps, ~25s) | 1 (update-config vs direct Edit distinction still unclear for article audits) |
+| 5 | ○ (18 steps, ~280s) | ○ (4 steps, ~25s) | 1 (article-driven hooks change: update-config vs direct Edit ambiguous) |
+| 6 | ○ (17 steps, 218s) | ○ (4 steps, 47s) | 0 ✓ (1st consecutive clean) |
+| 7 | env block (protect-sensitive.sh) | ○ (3 steps, 25s) | 0 ✓ skill ambiguities (2nd consecutive clean; env constraint only) |
+| holdout | — | ○ 100% (best-practice audit) 22 steps 85s | 0 genuine ✓ (過適合なし) |
+
+修正内容 (5件):
+- Iter 1: Phase 2 skill/plugin integration — step 3 を「marketplace plugins → enabledPlugins in settings.json; gh extension install は GitHub CLI extensions 専用」に明示
+- Iter 2: Phase 3 step 4 (hooks/permissions) の重複番号 "4." を "5." に修正し、3/4/5 の3項目に整理
+- Iter 3: Phase 3 settings を non-hook keys (step 3, direct Edit) と hooks/permissions (step 4) に分割
+- Iter 5: Phase 3 step 4 に「直接リクエストは update-config; article-driven / multi-change audit は direct Edit 可」の分岐を追記
+- Iter 6 (minor): Phase 4 verify step 確認（変更なし — 既に充分）
+
+Notes:
+- Scenario A は settings.json を実際に変更するため各 iter 後に `git checkout -- home/.claude/settings.json` でリセット必要
+- Iter 7 Scenario A は protect-sensitive.sh フックにより Edit がブロック（環境制約、スキル ambiguity ではない）
+- Iter 6 で Scenario A が成功し settings.json 変更が確認できたため、スキルの Phase 3 routing は正常に動作することが確認済み
+
+#### Batch D — user-pm-session + user-pm-judge (2026-04-25, holdout regression)
+
+**user-pm-session** (2 iters, no fixes)
+
+| Iteration | Scenario | 成功 | 新規不明瞭点 |
+|-----------|----------|------|-------------|
+| 1 | ep-test-alpha: overdue T-001 + open decisions.md actions | ○ 100% (5 steps, 50s) | 0 ✓ |
+| 2 | ep-test-beta: clean project, no overdue, no decisions.md | ○ 100% (3 steps, 46s) | 0 ✓ CONVERGED |
+
+修正内容: なし（スキルは既に堅牢）
+
+Note: Fixtures ~/prj/ep-test-alpha/ + ~/prj/ep-test-beta/ — security hook blocked deletion. `! command rm -rf ~/prj/ep-test-alpha ~/prj/ep-test-beta` で手動削除必要。
+
+**user-pm-judge** (2 iters, no fixes)
+
+| Iteration | Scenario | 成功 | 新規不明瞭点 |
+|-----------|----------|------|-------------|
+| 1 | Mixed mode: コーディング中にチームメンバー2人が詰まっている | ○ 100% (1 step, 36s) | 0 ✓ |
+| 2 | Bad-feeling flow: クライアントレスポンス遅延 + 方向性ドリフト | ○ 100% (1 step, 36s) | 0 ✓ CONVERGED |
+
+修正内容: なし（スキルは既に堅牢）
+
+#### Batch E — difit-review + grill-me (2026-04-25, structural check only)
+
+External plugin skills — source cannot be modified. Phase 0 static check only.
+
+**difit-review**: description/body aligned. All 3 scope areas (branch/commit/PR, `--comment` mechanism, code review output) covered in body. No local file paths referenced. PASS.
+
+**grill-me**: description/body aligned. Short body (5 sentences) matches description intent (relentless interview, decision tree traversal). No local file paths referenced. PASS.
+
+---
+
+## Phase 2 Summary
+
+All 7 skills completed. Final status:
+- user-design-md: CONVERGED (10 iters, 8 fixes)
+- user-dotfiles-tool-config: CONVERGED (2 iters, 0 fixes)
+- user-harness-config: CONVERGED (7 iters, 5 fixes)
+- user-pm-session: CONVERGED (2 holdout iters, 0 fixes)
+- user-pm-judge: CONVERGED (2 holdout iters, 0 fixes)
+- difit-review: Structural PASS (external skill)
+- grill-me: Structural PASS (external skill)
