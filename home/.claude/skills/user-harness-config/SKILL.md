@@ -59,7 +59,7 @@ For audits:
 For skill/plugin integration:
 1. Read the skill's SKILL.md (from URL or local path)
 2. Check for name conflicts with existing skills (Glob ~/dotfiles/home/.claude/skills/*/SKILL.md)
-3. Install via `gh extension install` or plugin marketplace command
+3. To enable: add the plugin key to `enabledPlugins` in settings.json (Phase 3, step 3). For GitHub CLI extensions (not Claude Code plugins), use `gh extension install <repo>` instead.
 </phase_2>
 
 <phase_3>
@@ -68,8 +68,9 @@ For skill/plugin integration:
 Order of operations:
 1. **CLAUDE.md / rules**: Edit existing file or create new rule file in `rules/`
 2. **Skills**: Write new SKILL.md to `~/dotfiles/home/.claude/skills/{name}/SKILL.md`
-3. **Settings**: Edit `.claude/settings.json` (use `update-config` plugin skill for hooks/permissions — it is a Claude Code plugin, not a local skill file)
-4. **Cleanup**: Remove stale settings, deprecated commands, duplicate rules
+3. **Settings — non-hook keys** (`enabledPlugins`, `env`, `model`, `language`, `extraKnownMarketplaces`): Edit `.claude/settings.json` directly.
+4. **Settings — hooks and permissions** (`hooks.*`, `permissions.allow/deny/ask`): For a direct user request ("add a hook for X"), use the `update-config` plugin skill. For article-driven or multi-change audits applying several changes at once, Edit `.claude/settings.json` directly is acceptable.
+5. **Cleanup**: Remove stale settings, deprecated commands, duplicate rules
 
 Constraints:
 - Abstract all project-specific paths in skills
