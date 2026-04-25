@@ -120,11 +120,15 @@ UIを実装するときは必ず @DESIGN.md を参照してスタイルを適用
 
 ## Mode 2: Lint/Verify (Check existing)
 
+**Do not modify the DESIGN.md file.** Your role in this mode is to inspect and report the existing state only.
+
 ### Step 1: Run lint
 
 ```bash
 ~/.local/share/mise/shims/design.md lint ./DESIGN.md
 ```
+
+Note: the command exits with code 1 when errors or warnings are found — this is expected behavior. Read the JSON output regardless of exit code.
 
 ### Step 2: Interpret output
 
@@ -132,10 +136,11 @@ Parse the JSON `findings` array:
 
 | Severity | Action |
 |----------|--------|
-| `error` | Must fix before any UI implementation. Fix and re-run. |
+| `error` | Must fix before any UI implementation. Report to the user — do not edit the file in this mode. |
 | `warning: contrast-ratio` | Report the component name, current ratio, and WCAG AA minimum (4.5:1). Suggest a darker/lighter alternative. |
-| `warning: orphaned-tokens` | Report which tokens are defined but unused. Ask user if they want to remove or add component references. |
+| `warning: orphaned-tokens` | In the report, note which tokens are defined but unused, and ask the user whether to remove them or add component references. Include as part of the Step 3 report output — do not block on a reply. |
 | `info` | Report as-is. No action required. |
+| any other `warning` type | Report it in the Warning section with the tool's message text verbatim. No further action required unless the user asks. |
 
 ### Step 3: Report in human language
 
@@ -150,19 +155,21 @@ Summarise findings in plain language, grouped by severity. Example:
 
 ### Step 1: Clarify the change
 
-Ask: what token(s) are changing and why? (New brand color, new component, spacing adjustment, etc.)
+If the change is not already clear from the user's request, ask: what token(s) are changing and why? (New brand color, new component, spacing adjustment, etc.) Skip this step if the token name and new value are already specified.
 
 ### Step 2: Back up and edit
 
 ```bash
-cp ./DESIGN.md ./DESIGN.md.bak
+\cp ./DESIGN.md ./DESIGN.md.bak
 ```
+(Use `\cp` to bypass any `cp -i` alias that would prompt for confirmation.)
 
 Apply the requested edits to `./DESIGN.md`. If a color token's hex value changes, also update the corresponding Colors section label in the prose (e.g., `**Primary (#old):**` → `**Primary (#new):**`) to keep documentation consistent.
 
 ### Step 3: Diff and check for regressions
 
 ```bash
+# first arg = backup (baseline), second arg = updated file
 ~/.local/share/mise/shims/design.md diff ./DESIGN.md.bak ./DESIGN.md
 ```
 
@@ -172,7 +179,7 @@ before keeping the change.
 ### Step 4: Lint and clean up
 
 ```bash
-~/.local/share/mise/shims/design.md lint ./DESIGN.md && rm -f ./DESIGN.md.bak
+~/.local/share/mise/shims/design.md lint ./DESIGN.md && command rm -f ./DESIGN.md.bak
 ```
 
 Only delete the backup after a clean lint.
