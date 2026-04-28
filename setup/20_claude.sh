@@ -227,8 +227,8 @@ done < <(jq -r '.enabledPlugins | to_entries[] | select(.value == true) | .key' 
 GH_SKILLS=(
   "yoshiko-pg/difit difit-review"
   "mattpocock/skills grill-me"
-  "mizchi/chezmoi-dotfiles empirical-prompt-tuning dot_claude/skills/empirical-prompt-tuning/SKILL.md"
-  "mizchi/chezmoi-dotfiles gh-fix-ci dot_claude/skills/gh-fix-ci/SKILL.md"
+  "mizchi/skills empirical-prompt-tuning"
+  "mizchi/skills gh-fix-ci"
 )
 
 is_skill_installed() {
