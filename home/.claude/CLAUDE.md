@@ -10,6 +10,8 @@
 - **Be honest about uncertainty**: If unsure about a fact, API, or behavior, say "unverified" or "needs confirmation" rather than guessing. Silent hallucination is worse than admitting uncertainty.
 - **See the whole picture**: Consider whether your change affects other pages or components, not just the part you were asked to fix. **Never make a quick fix that breaks something else.** If unsure, understand the overall design first, then fix it correctly in one pass.
 - **Save context**: The main agent's context is a valuable resource. Delegate research, implementation, and review to external AI or subagents. The main agent focuses on directing and integrating.
+- **Think before coding**: Before implementing, state assumptions explicitly. If multiple interpretations exist, surface them and ask rather than silently choosing one.
+- **Surgical edits**: When editing existing code, do not improve adjacent code, comments, or formatting. Touch only what is asked. Flag unrelated issues separately, never inline.
 
 ---
 
@@ -126,3 +128,6 @@ Custom skills (`~/.claude/skills/`) and plugin skills are matched automatically 
 - Skill list and usage: `docs/claude-code-cheatsheet.md`
 
 @RTK.md
+# graphify
+- **graphify** (`~/.claude/skills/graphify/SKILL.md`) - any input to knowledge graph. Trigger: `/graphify`
+When the user types `/graphify`, invoke the Skill tool with `skill: "graphify"` before doing anything else.
