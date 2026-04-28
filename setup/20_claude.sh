@@ -276,6 +276,62 @@ else
   done
 fi
 
+# --- Python スキル管理 ---
+
+# "パッケージ名 スキル名" の形式で宣言 (uv tool + graphify install 用)
+PYTHON_SKILLS=(
+  "graphifyy graphify"
+)
+
+ensure_python_skill() {
+  local package="$1"
+  local skill_name="$2"
+  local install_cmd="${skill_name}"
+
+  # パッケージインストール
+  if uv tool list 2>/dev/null | grep -q "$package"; then
+    if [[ $UPDATE_MODE == "true" ]]; then
+      log_info "Python スキル '${skill_name}' を更新しています..."
+      uv tool upgrade "$package"
+    else
+      log_skip "Python パッケージ '${package}' はインストール済み"
+    fi
+  else
+    log_info "Python パッケージ '${package}' をインストールしています..."
+    if ! uv tool install "$package"; then
+      log_warn "パッケージのインストールに失敗しました: $package（続行します）"
+      return
+    fi
+  fi
+
+  # スキルインストール（SKILL.md のコピー + CLAUDE.md 登録）
+  if is_skill_installed "$skill_name" && [[ $UPDATE_MODE != "true" ]]; then
+    log_skip "スキル '${skill_name}' はインストール済み"
+  else
+    log_info "スキル '${skill_name}' をセットアップしています..."
+    if command -v "$install_cmd" &>/dev/null; then
+      "$install_cmd" install
+    else
+      log_warn "コマンド '${install_cmd}' が PATH に見つかりません（新しいシェルを開いて再実行してください）"
+    fi
+  fi
+}
+
+python_skill_count=0
+
+if ! is_installed uv; then
+  log_warn "uv がインストールされていません。Python スキルのセットアップをスキップします"
+else
+  log_info "Python スキルをセットアップしています..."
+  for entry in "${PYTHON_SKILLS[@]}"; do
+    read -r package skill_name <<<"$entry"
+    if [[ -n $package ]] && [[ -n $skill_name ]]; then
+      ensure_python_skill "$package" "$skill_name"
+      python_skill_count=$((python_skill_count + 1)) || true
+    fi
+  done
+fi
+
 # --- 孤立スキル検出 ---
 
 managed_skills=()
@@ -283,14 +339,18 @@ for entry in "${GH_SKILLS[@]}"; do
   read -r _ skill _ <<<"$entry"
   managed_skills+=("$skill")
 done
+for entry in "${PYTHON_SKILLS[@]}"; do
+  read -r _ skill <<<"$entry"
+  managed_skills+=("$skill")
+done
 while IFS= read -r skill_dir; do
   skill_name=$(basename "$skill_dir")
   if [[ " ${managed_skills[*]} " != *" $skill_name "* ]]; then
-    log_warn "孤立スキルを検出: $skill_name（GH_SKILLS に未登録。手動で確認してください）"
+    log_warn "孤立スキルを検出: $skill_name（GH_SKILLS / PYTHON_SKILLS に未登録。手動で確認してください）"
   fi
 done < <(find "$HOME/.claude/skills" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
 # --- サマリー ---
 
 log_section "20: 完了"
-log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件"
+log_info "マーケットプレース: $marketplace_count 件 / プラグイン: $plugin_count 件 / スキル: $skill_count 件 / Python スキル: $python_skill_count 件"
