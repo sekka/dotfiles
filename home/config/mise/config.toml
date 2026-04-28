@@ -576,6 +576,9 @@ go = "latest"
 "npm:markdownlint-cli" = "latest"      # Markdown リンター
 "npm:oxfmt" = "latest"                 # Oxc Formatter
 "npm:oxlint" = "latest"                # Oxc Linter
+"npm:type-coverage" = "latest"         # TypeScript any型カバレッジ計測
+"npm:textlint" = "latest"              # Markdownテキストリンター
+"npm:textlint-rule-preset-ja-technical-writing" = "latest"  # 日本語技術文書ルール
 
 # --- パフォーマンス ---
 "npm:lighthouse" = "latest"            # パフォーマンス測定
