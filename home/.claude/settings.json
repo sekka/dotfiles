@@ -227,7 +227,8 @@
     "chrome-devtools-mcp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "visual-explainer@visual-explainer-marketplace": true,
-    "cloudflare@claude-plugins-official": true
+    "cloudflare@claude-plugins-official": false,
+    "plugin-dev@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
