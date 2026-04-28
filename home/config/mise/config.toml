@@ -422,6 +422,20 @@ alias = "cafed"
 description = "ディスプレイスリープのみ防止（Ctrl+Cで終了）"
 run = "caffeinate -d"
 
+# Chrome修復（ヘッドレスChromeが残留してウィンドウが開かない問題の対処）
+[tasks.system-chrome-fix]
+alias = "chromefix"
+description = "残留したヘッドレスChromeを終了（agent-browser/MCPの後にDockから開けなくなった時）"
+run = """
+count=$(pgrep -f "headless=new" | wc -l | tr -d ' ')
+if [ "$count" -eq 0 ]; then
+  echo "ヘッドレスChromeは起動していません"
+else
+  pkill -f "headless=new"
+  echo "ヘッドレスChromeを ${count} プロセス終了しました。Chromeを再起動してください。"
+fi
+"""
+
 # PATH表示
 [tasks.system-envpath]
 description = "envpath"
