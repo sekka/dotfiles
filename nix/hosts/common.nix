@@ -306,6 +306,17 @@
   # nixpkgs の設定
   nixpkgs.hostPlatform = "aarch64-darwin";
 
+  # cli-helpers のテストが上流で壊れているため doCheck=false（mycli の依存）
+  nixpkgs.overlays = [
+    (final: prev: {
+      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+        (python-final: python-prev: {
+          cli-helpers = python-prev.cli-helpers.overridePythonAttrs (_: { doCheck = false; });
+        })
+      ];
+    })
+  ];
+
   # macOS のバージョン指定（nix-darwin が要求）
   system.stateVersion = 6;
 }
