@@ -1,14 +1,9 @@
 name: Claude Code Review
 
+# 自動レビューは無効化 (使用制限の節約のため)。
+# 必要なときは Actions タブから手動実行するか、PR で `@claude review` メンションを使う (claude.yml が処理)。
 on:
-  pull_request:
-    types: [opened, synchronize]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+  workflow_dispatch:
 
 jobs:
   claude-review:
