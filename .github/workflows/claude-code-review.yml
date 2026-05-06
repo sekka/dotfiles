@@ -4,6 +4,11 @@ name: Claude Code Review
 # 必要なときは Actions タブから手動実行するか、PR で `@claude review` メンションを使う (claude.yml が処理)。
 on:
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to review"
+        required: true
+        type: number
 
 jobs:
   claude-review:
@@ -32,7 +37,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number }}
+            PR NUMBER: ${{ inputs.pr_number }}
 
             Please review this pull request and provide feedback on:
             - Code quality and best practices

@@ -9,14 +9,12 @@
       "Bash(claude *)",
       "Bash(darwin-rebuild *)",
       "Bash(dprint *)",
-      "Bash(gh extension *)",
       "Bash(gh repo:*)",
       "Bash(gh skill *)",
       "Bash(mise *)",
       "Bash(nix search:*)",
       "Bash(npx claude-doctor *)",
       "Bash(npx difit *)",
-      "Bash(open *)",
       "Bash(qmd *)",
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
@@ -65,7 +63,10 @@
       "mcp__plugin_playwright_playwright__*"
     ],
     "deny": [],
-    "ask": []
+    "ask": [
+      "Bash(gh extension *)",
+      "Bash(open *)"
+    ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [

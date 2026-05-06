@@ -44,7 +44,7 @@ Identify high-churn files that need extra attention during review.
 
 ```bash
 # Count commits per changed file (last 50 commits)
-git log --oneline --name-only -n 50 | grep -v "^[0-9a-f]\{7\}" | sort | uniq -c | sort -rn | head -10
+git log --pretty=format: --name-only -n 50 | grep -v '^$' | sort | uniq -c | sort -rn | head -10
 ```
 
 Cross-reference against the Phase 1 file list. Files appearing **5 or more times** are hotspots — note them in the Phase 3 report as higher-risk areas.
