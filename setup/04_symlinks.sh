@@ -177,7 +177,7 @@ fi
 
 if [[ -d "$HOME/dotfiles/.git" ]]; then
   repo_root=$(git -C "$HOME/dotfiles" rev-parse --show-toplevel)
-  expected_filter="awk -f ${repo_root}/scripts/development/codex-strip.awk"
+  expected_filter="awk -f \"${repo_root}/scripts/development/codex-strip.awk\""
   current_filter=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.clean 2>/dev/null || true)
   if [[ $current_filter != "$expected_filter" ]]; then
     git -C "$HOME/dotfiles" config filter.codex-strip.clean "$expected_filter"

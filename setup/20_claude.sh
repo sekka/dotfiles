@@ -310,9 +310,13 @@ ensure_python_skill() {
   else
     log_info "スキル '${skill_name}' をセットアップしています..."
     if command -v "$install_cmd" &>/dev/null; then
-      "$install_cmd" install
+      if ! "$install_cmd" install; then
+        log_warn "スキルのセットアップに失敗しました: $skill_name"
+        return 1
+      fi
     else
       log_warn "コマンド '${install_cmd}' が PATH に見つかりません（新しいシェルを開いて再実行してください）"
+      return 1
     fi
   fi
 }
