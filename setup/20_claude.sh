@@ -289,7 +289,7 @@ ensure_python_skill() {
   local install_cmd="${skill_name}"
 
   # パッケージインストール
-  if uv tool list 2>/dev/null | grep -q "$package"; then
+  if uv tool list 2>/dev/null | awk 'NF {print $1}' | grep -Fxq -- "$package"; then
     if [[ $UPDATE_MODE == "true" ]]; then
       log_info "Python スキル '${skill_name}' を更新しています..."
       if ! uv tool upgrade "$package"; then
