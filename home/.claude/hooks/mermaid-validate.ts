@@ -63,7 +63,8 @@ async function main() {
         if (result.exitCode !== 0) {
           const stderr = new TextDecoder().decode(result.stderr).trim();
           const msg = stderr || "syntax error";
-          console.error(`[mermaid-validate] block ${i + 1} in ${filePath}: ${msg}`);
+          const truncated = msg.length > 500 ? `${msg.slice(0, 500)}…[truncated]` : msg;
+          console.error(`[mermaid-validate] block ${i + 1} in ${filePath}: ${truncated}`);
         }
       }
     } finally {

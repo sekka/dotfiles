@@ -294,7 +294,7 @@ ensure_python_skill() {
       log_info "Python スキル '${skill_name}' を更新しています..."
       if ! uv tool upgrade "$package"; then
         log_warn "パッケージの更新に失敗しました: $package（続行します）"
-        return 1
+        return 0
       fi
     else
       log_skip "Python パッケージ '${package}' はインストール済み"
@@ -303,7 +303,7 @@ ensure_python_skill() {
     log_info "Python パッケージ '${package}' をインストールしています..."
     if ! uv tool install "$package"; then
       log_warn "パッケージのインストールに失敗しました: $package（続行します）"
-      return 1
+      return 0
     fi
   fi
 
@@ -314,8 +314,8 @@ ensure_python_skill() {
     log_info "スキル '${skill_name}' をセットアップしています..."
     # uv tool run は PATH 非依存で実行できるため、初回セットアップでも安定して動作する
     if ! uv tool run --from "$package" "$install_cmd" install; then
-      log_warn "スキルのセットアップに失敗しました: $skill_name"
-      return 1
+      log_warn "スキルのセットアップに失敗しました: $skill_name（続行します）"
+      return 0
     fi
   fi
 }

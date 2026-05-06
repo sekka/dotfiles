@@ -427,11 +427,11 @@ run = "caffeinate -d"
 alias = "chromefix"
 description = "残留したヘッドレスChromeを終了（agent-browser/MCPの後にDockから開けなくなった時）"
 run = """
-count=$(pgrep -f "headless=new" | wc -l | tr -d ' ')
+count=$(pgrep -f "[h]eadless=new" | wc -l | tr -d ' ')
 if [ "$count" -eq 0 ]; then
   echo "ヘッドレスChromeは起動していません"
 else
-  pkill -f "headless=new"
+  pkill -f "[h]eadless=new"
   echo "ヘッドレスChromeを ${count} プロセス終了しました。Chromeを再起動してください。"
 fi
 """
