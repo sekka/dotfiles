@@ -312,13 +312,9 @@ ensure_python_skill() {
     log_skip "スキル '${skill_name}' はインストール済み"
   else
     log_info "スキル '${skill_name}' をセットアップしています..."
-    if command -v "$install_cmd" &>/dev/null; then
-      if ! "$install_cmd" install; then
-        log_warn "スキルのセットアップに失敗しました: $skill_name"
-        return 1
-      fi
-    else
-      log_warn "コマンド '${install_cmd}' が PATH に見つかりません（新しいシェルを開いて再実行してください）"
+    # uv tool run は PATH 非依存で実行できるため、初回セットアップでも安定して動作する
+    if ! uv tool run --from "$package" "$install_cmd" install; then
+      log_warn "スキルのセットアップに失敗しました: $skill_name"
       return 1
     fi
   fi
@@ -333,9 +329,8 @@ else
   for entry in "${PYTHON_SKILLS[@]}"; do
     read -r package skill_name <<<"$entry"
     if [[ -n $package ]] && [[ -n $skill_name ]]; then
-      if ensure_python_skill "$package" "$skill_name"; then
-        python_skill_count=$((python_skill_count + 1)) || true
-      fi
+      ensure_python_skill "$package" "$skill_name"
+      python_skill_count=$((python_skill_count + 1)) || true
     fi
   done
 fi
