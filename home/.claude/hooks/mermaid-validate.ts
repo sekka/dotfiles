@@ -17,7 +17,7 @@ export function isMdFile(filePath: string): boolean {
 
 export function extractMermaidBlocks(content: string): string[] {
   const blocks: string[] = [];
-  const regex = /```mermaid\r?\n([\s\S]*?)```/g;
+  const regex = /```mermaid(?:[^\S\r\n].*)?\r?\n([\s\S]*?)```/gi;
   let match: RegExpExecArray | null;
   while ((match = regex.exec(content)) !== null) {
     const trimmed = (match[1] ?? "").trim();
@@ -72,7 +72,8 @@ async function main() {
     }
 
     process.exit(0); // Always exit 0 — validation is advisory
-  } catch {
+  } catch (err) {
+    console.error(`[mermaid-validate] hook error: ${(err as Error).message}`);
     process.exit(0);
   }
 }

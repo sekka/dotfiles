@@ -79,4 +79,18 @@ describe("extractMermaidBlocks", () => {
     const content = "```mermaid\n\n```\n";
     expect(extractMermaidBlocks(content)).toHaveLength(0);
   });
+
+  test("```mermaid の後ろに属性や空白があっても抽出する", () => {
+    const content = '```mermaid title="X"\ngraph TD\n  A --> B\n```\n';
+    const blocks = extractMermaidBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]).toBe("graph TD\n  A --> B");
+  });
+
+  test("```Mermaid（大文字混在）も抽出する", () => {
+    const content = "```Mermaid\ngraph TD\n  A --> B\n```\n";
+    const blocks = extractMermaidBlocks(content);
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]).toBe("graph TD\n  A --> B");
+  });
 });
