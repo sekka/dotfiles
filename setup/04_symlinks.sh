@@ -175,7 +175,7 @@ fi
 # codex がプロジェクト信頼設定や marketplace 情報を絶対パス込みで書き戻す。
 # 公開リポジトリへ漏れないよう、staging 時に該当セクションを除去する。
 
-if [[ -d "$HOME/dotfiles/.git" ]]; then
+if [[ -e "$HOME/dotfiles/.git" ]]; then
   repo_root=$(git -C "$HOME/dotfiles" rev-parse --show-toplevel)
   expected_filter="awk -f \"${repo_root}/scripts/development/codex-strip.awk\""
   current_filter=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.clean 2>/dev/null || true)
