@@ -297,7 +297,7 @@
   "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
-  "skipAutoPermissionPrompt": true,
   "remoteControlAtStartup": false,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }
