@@ -170,6 +170,22 @@ else
   fi
 fi
 
+# --- Git clean filters ---
+# codex の config.toml は ~/.codex/config.toml と symlink されており、
+# codex がプロジェクト信頼設定や marketplace 情報を絶対パス込みで書き戻す。
+# 公開リポジトリへ漏れないよう、staging 時に該当セクションを除去する。
+
+if [[ -d "$HOME/dotfiles/.git" ]]; then
+  expected_filter="awk -f scripts/development/codex-strip.awk"
+  current_filter=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.clean 2>/dev/null || true)
+  if [[ $current_filter != "$expected_filter" ]]; then
+    git -C "$HOME/dotfiles" config filter.codex-strip.clean "$expected_filter"
+    log_info "Git clean filter 'codex-strip' を設定しました"
+  else
+    log_skip "Git clean filter 'codex-strip' (既に設定済み)"
+  fi
+fi
+
 # --- サマリー ---
 
 log_section "04: 完了"
