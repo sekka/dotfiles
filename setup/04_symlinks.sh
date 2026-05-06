@@ -185,6 +185,13 @@ if [[ -d "$HOME/dotfiles/.git" ]]; then
   else
     log_skip "Git clean filter 'codex-strip' (既に設定済み)"
   fi
+
+  # filter 未設定時に git add を失敗させて漏えいを防ぐ
+  current_required=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.required 2>/dev/null || true)
+  if [[ $current_required != "true" ]]; then
+    git -C "$HOME/dotfiles" config filter.codex-strip.required true
+    log_info "Git clean filter 'codex-strip' を required=true に設定しました"
+  fi
 fi
 
 # --- サマリー ---
