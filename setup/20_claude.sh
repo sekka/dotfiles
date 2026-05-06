@@ -292,7 +292,10 @@ ensure_python_skill() {
   if uv tool list 2>/dev/null | grep -q "$package"; then
     if [[ $UPDATE_MODE == "true" ]]; then
       log_info "Python スキル '${skill_name}' を更新しています..."
-      uv tool upgrade "$package"
+      if ! uv tool upgrade "$package"; then
+        log_warn "パッケージの更新に失敗しました: $package（続行します）"
+        return 1
+      fi
     else
       log_skip "Python パッケージ '${package}' はインストール済み"
     fi
