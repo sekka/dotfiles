@@ -13,7 +13,7 @@
 | Tool                    | Already installed? | Manager | Package name                                                     |
 | ----------------------- | ------------------ | ------- | ---------------------------------------------------------------- |
 | semgrep                 | No                 | Nix     | `semgrep`                                                        |
-| mermaid-cli (mmdc)      | No                 | Nix     | `nodePackages.mermaid-cli`                                       |
+| mermaid-cli (mmdc)      | No                 | Nix     | `mermaid-cli`                                                    |
 | type-coverage           | No                 | mise    | `npm:type-coverage`                                              |
 | textlint                | No                 | mise    | `npm:textlint` + `npm:textlint-rule-preset-ja-technical-writing` |
 | ncu (npm-check-updates) | **Yes**            | mise    | `npm:npm-check-updates`                                          |
@@ -33,7 +33,7 @@
 
 | Action | File                                                    | Responsibility                                    |
 | ------ | ------------------------------------------------------- | ------------------------------------------------- |
-| Modify | `nix/hosts/common.nix`                                  | Add semgrep, nodePackages.mermaid-cli             |
+| Modify | `nix/hosts/common.nix`                                  | Add semgrep, mermaid-cli                          |
 | Modify | `home/config/mise/config.toml`                          | Add type-coverage, textlint, textlint-rule-preset |
 | Modify | `home/.claude/skills/user-dev-preflight/SKILL.md`       | Add textlint, ncu, type-coverage, semgrep phases  |
 | Modify | `home/.claude/skills/user-dev-review/SKILL.md`          | Add hotspot analysis + semgrep to security        |
@@ -52,7 +52,7 @@
 - [ ] **Step 1: Find the lint/analysis tools section**
 
 ```bash
-grep -n "shellcheck\|yamllint\|pre-commit" /Users/kei/dotfiles/nix/hosts/common.nix
+grep -n "shellcheck\|yamllint\|pre-commit" ~/dotfiles/nix/hosts/common.nix
 ```
 
 Expected: lines near the shellcheck entry (around line 60).
@@ -69,13 +69,13 @@ Add two lines immediately after it:
 
 ```nix
 semgrep         # https://github.com/semgrep/semgrep         # 静的解析・セキュリティスキャン
-nodePackages.mermaid-cli  # https://github.com/mermaid-js/mermaid-cli  # Mermaid構文検証・SVG生成
+mermaid-cli  # https://github.com/mermaid-js/mermaid-cli  # Mermaid構文検証・SVG生成
 ```
 
 - [ ] **Step 3: Apply Nix configuration**
 
 ```bash
-cd /Users/kei/dotfiles/nix && darwin-rebuild switch --flake .
+cd ~/dotfiles/nix && darwin-rebuild switch --flake .
 ```
 
 This will take a few minutes. Expected: ends with `darwin-rebuild switch: done`.
@@ -109,7 +109,7 @@ Note: `npm:npm-check-updates` and `npm:knip` are already present in mise — no 
 - [ ] **Step 1: Find the Lint/Format section in mise config**
 
 ```bash
-grep -n "# --- Lint / Format ---" /Users/kei/dotfiles/home/config/mise/config.toml
+grep -n "# --- Lint / Format ---" ~/dotfiles/home/config/mise/config.toml
 ```
 
 Expected: around line 574.
@@ -284,7 +284,7 @@ Find the result table in Phase 7 and replace it with:
 - [ ] **Step 6: Verify phase structure**
 
 ```bash
-grep "^## Phase" /Users/kei/dotfiles/home/.claude/skills/user-dev-preflight/SKILL.md
+grep "^## Phase" ~/dotfiles/home/.claude/skills/user-dev-preflight/SKILL.md
 ```
 
 Expected output (in order):
@@ -370,7 +370,7 @@ Replace with:
 - [ ] **Step 3: Verify phase structure**
 
 ```bash
-grep "^## Phase" /Users/kei/dotfiles/home/.claude/skills/user-dev-review/SKILL.md
+grep "^## Phase" ~/dotfiles/home/.claude/skills/user-dev-review/SKILL.md
 ```
 
 Expected output (in order):
@@ -473,7 +473,7 @@ if (import.meta.main) {
 - [ ] **Step 2: Type-check the hook**
 
 ```bash
-bun check /Users/kei/dotfiles/home/.claude/hooks/mermaid-validate.ts
+bun check ~/dotfiles/home/.claude/hooks/mermaid-validate.ts
 ```
 
 Expected: no errors.
@@ -573,7 +573,7 @@ describe("extractMermaidBlocks", () => {
 - [ ] **Step 2: Run the tests**
 
 ```bash
-cd /Users/kei/dotfiles && bun test home/.claude/hooks/__tests__/mermaid-validate.test.ts
+cd ~/dotfiles && bun test home/.claude/hooks/__tests__/mermaid-validate.test.ts
 ```
 
 Expected: all tests pass (green).
@@ -596,7 +596,7 @@ git commit -m "test: mermaid-validate.ts のユニットテストを追加"
 - [ ] **Step 1: Read current PostToolUse Edit|Write hooks**
 
 ```bash
-grep -A 20 '"PostToolUse"' /Users/kei/dotfiles/home/.claude/settings.json
+grep -A 20 '"PostToolUse"' ~/dotfiles/home/.claude/settings.json
 ```
 
 Note the current hooks array under `"matcher": "Edit|Write"`.
@@ -640,7 +640,7 @@ The resulting array should look like:
 - [ ] **Step 3: Validate JSON**
 
 ```bash
-bun -e "JSON.parse(require('fs').readFileSync('/Users/kei/dotfiles/home/.claude/settings.json','utf8')); console.log('valid')"
+bun -e "JSON.parse(require('fs').readFileSync('~/dotfiles/home/.claude/settings.json','utf8')); console.log('valid')"
 ```
 
 Expected: `valid`

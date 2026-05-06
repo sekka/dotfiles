@@ -300,7 +300,7 @@ ensure_python_skill() {
     log_info "Python パッケージ '${package}' をインストールしています..."
     if ! uv tool install "$package"; then
       log_warn "パッケージのインストールに失敗しました: $package（続行します）"
-      return
+      return 1
     fi
   fi
 
@@ -326,8 +326,9 @@ else
   for entry in "${PYTHON_SKILLS[@]}"; do
     read -r package skill_name <<<"$entry"
     if [[ -n $package ]] && [[ -n $skill_name ]]; then
-      ensure_python_skill "$package" "$skill_name"
-      python_skill_count=$((python_skill_count + 1)) || true
+      if ensure_python_skill "$package" "$skill_name"; then
+        python_skill_count=$((python_skill_count + 1)) || true
+      fi
     fi
   done
 fi

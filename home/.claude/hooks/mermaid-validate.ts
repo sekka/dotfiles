@@ -46,7 +46,6 @@ async function main() {
     const which = Bun.spawnSync({ cmd: ["which", "mmdc"], stdout: "ignore", stderr: "ignore" });
     if (which.exitCode !== 0) process.exit(0);
 
-    let hasError = false;
     const tmpDir = mkdtempSync(join(tmpdir(), "mermaid-validate-"));
 
     try {
@@ -62,7 +61,6 @@ async function main() {
         });
 
         if (result.exitCode !== 0) {
-          hasError = true;
           const stderr = new TextDecoder().decode(result.stderr).trim();
           const msg = stderr || "syntax error";
           console.error(`[mermaid-validate] block ${i + 1} in ${filePath}: ${msg}`);
@@ -72,7 +70,7 @@ async function main() {
       rmSync(tmpDir, { recursive: true, force: true });
     }
 
-    process.exit(hasError ? 0 : 0); // Always exit 0 — validation is advisory
+    process.exit(0); // Always exit 0 — validation is advisory
   } catch {
     process.exit(0);
   }

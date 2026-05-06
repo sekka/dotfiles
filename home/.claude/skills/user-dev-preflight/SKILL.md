@@ -129,8 +129,9 @@ Report detections as WARNING (do not block). If any detections are found, set St
 Run only when `semgrep` is installed. Use `--config=auto` (requires internet + may need `semgrep login` on first use).
 
 - Build the changed files list: `git diff --cached --name-only`
-- Command: `semgrep --config=auto --quiet --error <changed files>`
-- If semgrep exits non-zero for any reason (not installed, auth required, network unavailable), record as SKIP
+- Command: `semgrep --config=auto --quiet <changed files>`
+- If findings are present in output, record as WARNING(n items)
+- Only setup/auth/network failures (exit codes 2, 7, 8, etc.) are recorded as SKIP
 
 ## Phase 6: Commit Message Draft
 
