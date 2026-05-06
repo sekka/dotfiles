@@ -49,7 +49,6 @@
       "Bash(wget:*)"
     ]
   },
-  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -279,5 +278,7 @@
   "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "remoteControlAtStartup": false,
+  "agentPushNotifEnabled": true
 }

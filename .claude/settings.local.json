@@ -16,6 +16,7 @@
       "Bash(nix search:*)",
       "Bash(npx claude-doctor *)",
       "Bash(npx difit *)",
+      "Bash(open *)",
       "Bash(qmd *)",
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
@@ -25,6 +26,7 @@
       "Skill(codex:rescue)",
       "Skill(schedule)",
       "Skill(user-dev-review)",
+      "Skill(user-dotfiles-tool-config)",
       "Skill(user-harness-ship)",
       "WebFetch(domain:agent-browser.io)",
       "WebFetch(domain:aimanavo.com)",
@@ -60,8 +62,7 @@
       "WebFetch(domain:zenn.dev)",
       "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
-      "mcp__plugin_playwright_playwright__*",
-      "Bash(open *)"
+      "mcp__plugin_playwright_playwright__*"
     ],
     "deny": [],
     "ask": []
