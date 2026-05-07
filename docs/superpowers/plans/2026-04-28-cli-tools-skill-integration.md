@@ -356,16 +356,16 @@ Find:
 
 - Injection (SQL, command, XSS)
 
-````
+`````
 Replace with:
-```markdown
+````markdown
 #### Security
 - If `semgrep` is installed: run `semgrep --config=auto --quiet <files>` as a first-pass scanner; skip if semgrep exits non-zero
 - Injection (SQL, command, XSS)
 - Hardcoded credentials or API keys
 - Unsafe input handling
 - Missing authentication or authorization
-````
+`````
 
 - [ ] **Step 3: Verify phase structure**
 
@@ -640,7 +640,7 @@ The resulting array should look like:
 - [ ] **Step 3: Validate JSON**
 
 ```bash
-bun -e "JSON.parse(require('fs').readFileSync('~/dotfiles/home/.claude/settings.json','utf8')); console.log('valid')"
+node -e "const p=require('path').join(process.env.HOME,'dotfiles/home/.claude/settings.json'); JSON.parse(require('fs').readFileSync(p,'utf8')); console.log('valid')"
 ```
 
 Expected: `valid`

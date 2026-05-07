@@ -63,9 +63,15 @@ Get the target code with Read/Grep/Glob and evaluate it from the following persp
 
 ```bash
 # Build changed file list, then run semgrep
-files=$(git diff --name-only; git diff --cached --name-only)
-if command -v semgrep &>/dev/null && [ -n "$files" ]; then
-  semgrep --config=auto --quiet --error $files
+if command -v semgrep &>/dev/null; then
+  mapfile -d '' -t changed < <(git diff -z --name-only; git diff -z --cached --name-only)
+  existing=()
+  for f in "${changed[@]}"; do
+    [ -f "$f" ] && existing+=("$f")
+  done
+  if [ ${#existing[@]} -gt 0 ]; then
+    semgrep --config=auto --quiet --error "${existing[@]}"
+  fi
 fi
 ```
 

@@ -438,7 +438,7 @@ else
   read -r ans
   case "$ans" in
     y|Y|yes|YES)
-      pkill -f "[h]eadless=new"
+      echo "$pids" | xargs kill 2>/dev/null || true
       echo "終了しました。Chromeを再起動してください。"
       ;;
     *)
