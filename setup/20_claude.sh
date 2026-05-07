@@ -294,7 +294,7 @@ ensure_python_skill() {
       log_info "Python スキル '${skill_name}' を更新しています..."
       if ! uv tool upgrade "$package"; then
         log_warn "パッケージの更新に失敗しました: $package（続行します）"
-        return 0
+        return 1
       fi
     else
       log_skip "Python パッケージ '${package}' はインストール済み"
@@ -303,7 +303,7 @@ ensure_python_skill() {
     log_info "Python パッケージ '${package}' をインストールしています..."
     if ! uv tool install "$package"; then
       log_warn "パッケージのインストールに失敗しました: $package（続行します）"
-      return 0
+      return 1
     fi
   fi
 
@@ -315,7 +315,7 @@ ensure_python_skill() {
     # uv tool run は PATH 非依存で実行できるため、初回セットアップでも安定して動作する
     if ! uv tool run --from "$package" "$install_cmd" install; then
       log_warn "スキルのセットアップに失敗しました: $skill_name（続行します）"
-      return 0
+      return 1
     fi
   fi
 }
@@ -329,8 +329,9 @@ else
   for entry in "${PYTHON_SKILLS[@]}"; do
     read -r package skill_name <<<"$entry"
     if [[ -n $package ]] && [[ -n $skill_name ]]; then
-      ensure_python_skill "$package" "$skill_name"
-      python_skill_count=$((python_skill_count + 1)) || true
+      if ensure_python_skill "$package" "$skill_name"; then
+        python_skill_count=$((python_skill_count + 1)) || true
+      fi
     fi
   done
 fi
