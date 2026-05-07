@@ -422,6 +422,32 @@ alias = "cafed"
 description = "ディスプレイスリープのみ防止（Ctrl+Cで終了）"
 run = "caffeinate -d"
 
+# Chrome修復（ヘッドレスChromeが残留してウィンドウが開かない問題の対処）
+[tasks.system-chrome-fix]
+alias = "chromefix"
+description = "残留したヘッドレスChromeを終了（agent-browser/MCPの後にDockから開けなくなった時）"
+run = """
+pids=$(pgrep -f "[h]eadless=new" || true)
+if [ -z "$pids" ]; then
+  echo "ヘッドレスChromeは起動していません"
+else
+  count=$(echo "$pids" | wc -l | tr -d ' ')
+  echo "対象プロセス (${count}件):"
+  ps -ww -o pid,command -p $pids 2>/dev/null || true
+  printf "全て終了しますか？ [y/N]: "
+  read -r ans
+  case "$ans" in
+    y|Y|yes|YES)
+      echo "$pids" | xargs kill 2>/dev/null || true
+      echo "終了しました。Chromeを再起動してください。"
+      ;;
+    *)
+      echo "キャンセルしました"
+      ;;
+  esac
+fi
+"""
+
 # PATH表示
 [tasks.system-envpath]
 description = "envpath"
@@ -576,6 +602,9 @@ go = "latest"
 "npm:markdownlint-cli" = "latest"      # Markdown リンター
 "npm:oxfmt" = "latest"                 # Oxc Formatter
 "npm:oxlint" = "latest"                # Oxc Linter
+"npm:type-coverage" = "latest"         # TypeScript any型カバレッジ計測
+"npm:textlint" = "latest"              # Markdownテキストリンター
+"npm:textlint-rule-preset-ja-technical-writing" = "latest"  # 日本語技術文書ルール
 
 # --- パフォーマンス ---
 "npm:lighthouse" = "latest"            # パフォーマンス測定

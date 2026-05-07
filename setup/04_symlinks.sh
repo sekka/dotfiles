@@ -170,6 +170,37 @@ else
   fi
 fi
 
+# --- Git clean filters ---
+# codex の config.toml は ~/.codex/config.toml と symlink されており、
+# codex がプロジェクト信頼設定や marketplace 情報を絶対パス込みで書き戻す。
+# 公開リポジトリへ漏れないよう、staging 時に該当セクションを除去する。
+
+if [[ -e "$HOME/dotfiles/.git" ]] && command -v git &>/dev/null && repo_root=$(git -C "$HOME/dotfiles" rev-parse --show-toplevel 2>/dev/null); then
+  expected_filter="awk -f \"${repo_root}/scripts/development/codex-strip.awk\""
+  current_filter=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.clean 2>/dev/null || true)
+  if [[ $current_filter != "$expected_filter" ]]; then
+    if git -C "$HOME/dotfiles" config filter.codex-strip.clean "$expected_filter"; then
+      log_info "Git clean filter 'codex-strip' を設定しました"
+    else
+      log_warn "Git clean filter 'codex-strip' の設定に失敗しました（続行します）"
+    fi
+  else
+    log_skip "Git clean filter 'codex-strip' (既に設定済み)"
+  fi
+
+  # filter 未設定時に git add を失敗させて漏えいを防ぐ
+  current_required=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.required 2>/dev/null || true)
+  if [[ $current_required != "true" ]]; then
+    if git -C "$HOME/dotfiles" config filter.codex-strip.required true; then
+      log_info "Git clean filter 'codex-strip' を required=true に設定しました"
+    else
+      log_warn "Git clean filter 'codex-strip' の required=true 設定に失敗しました（続行します）"
+    fi
+  fi
+else
+  log_warn "Git リポジトリが検出できないため codex-strip filter のセットアップをスキップします"
+fi
+
 # --- サマリー ---
 
 log_section "04: 完了"

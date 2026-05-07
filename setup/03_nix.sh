@@ -50,8 +50,8 @@ EOF
   log_info "作成しました: hosts/$HOSTNAME.nix"
 fi
 
-# --- nixpkgs 更新（2週間遅延） ---
-log_info "nixpkgs を更新しています（2週間遅延）..."
+# --- nixpkgs 更新（1週間遅延） ---
+log_info "nixpkgs を更新しています（1週間遅延）..."
 bash "$NIX_DIR/update-nixpkgs.sh"
 
 # 初回ビルド（darwin-rebuild がまだない場合）

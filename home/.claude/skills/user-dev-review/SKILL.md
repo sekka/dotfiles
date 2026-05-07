@@ -38,6 +38,19 @@ git diff --cached --name-only  # staged changes
 ```
 If there are no changed files, ask the user.
 
+## Phase 1.5: Hotspot Analysis
+
+Identify high-churn files that need extra attention during review.
+
+```bash
+# Count commits per changed file (last 50 commits)
+git log --pretty=format: --name-only -n 50 | grep -v '^$' | sort | uniq -c | sort -rn | head -10
+```
+
+Cross-reference against the Phase 1 file list. Files appearing **5 or more times** are hotspots — note them in the Phase 3 report as higher-risk areas.
+
+Skip this phase when reviewing a single file or when all changed files are new (no git history).
+
 ## Phase 2: Review
 
 Get the target code with Read/Grep/Glob and evaluate it from the following perspectives.
@@ -45,6 +58,25 @@ Get the target code with Read/Grep/Glob and evaluate it from the following persp
 ### Check points (in priority order)
 
 #### Security
+
+**Semgrep scan (run first if available):**
+
+```bash
+# Build changed file list, then run semgrep
+if command -v semgrep &>/dev/null; then
+  mapfile -d '' -t changed < <(git diff -z --name-only; git diff -z --cached --name-only)
+  existing=()
+  for f in "${changed[@]}"; do
+    [ -f "$f" ] && existing+=("$f")
+  done
+  if [ ${#existing[@]} -gt 0 ]; then
+    semgrep --config=auto --quiet --error "${existing[@]}"
+  fi
+fi
+```
+
+If semgrep exits non-zero: record findings as part of the security section. If not installed or network unavailable: skip and fall back to manual checks below.
+
 - Injection (SQL, command, XSS)
 - Hardcoded credentials or API keys
 - Unsafe input handling

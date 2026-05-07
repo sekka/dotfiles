@@ -39,6 +39,16 @@ fi
 # これらは mise などのバージョン管理ツールで管理
 export HOMEBREW_FORBIDDEN_FORMULAE="node python python3 pip npm pnpm yarn"
 
+# agent-browser daemon のアイドルタイムアウト (5分)
+# 既知バグ vercel-labs/agent-browser#1263 (v0.26.0 macOS orphan) の予防策。
+# daemon 異常終了時のオーファン対策は ~/.claude/hooks/cleanup-agent-browser.sh で別途実施。
+export AGENT_BROWSER_IDLE_TIMEOUT_MS=300000
+
+# chrome-devtools-mcp のテレメトリを無効化
+# インスタンス毎に併走する watchdog Node プロセスを削減（実測: 13プロセス節約）。
+# 機能には影響なし（Google による usage statistics 収集を opt-out）。
+export CHROME_DEVTOOLS_MCP_NO_USAGE_STATISTICS=1
+
 # 言語固有のパス設定は config/zsh/00_environment.zsh で管理
 
 # 注意: 重い処理（direnv、cargo）は .zprofile に移動済み

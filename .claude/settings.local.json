@@ -14,6 +14,7 @@
       "Bash(mise *)",
       "Bash(nix search:*)",
       "Bash(npx claude-doctor *)",
+      "Bash(npx difit *)",
       "Bash(qmd *)",
       "Bash(rtk *)",
       "Bash(shellcheck:*)",
@@ -23,6 +24,7 @@
       "Skill(codex:rescue)",
       "Skill(schedule)",
       "Skill(user-dev-review)",
+      "Skill(user-dotfiles-tool-config)",
       "Skill(user-harness-ship)",
       "WebFetch(domain:agent-browser.io)",
       "WebFetch(domain:aimanavo.com)",
@@ -61,7 +63,10 @@
       "mcp__plugin_playwright_playwright__*"
     ],
     "deny": [],
-    "ask": []
+    "ask": [
+      "Bash(gh extension *)",
+      "Bash(open *)"
+    ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [

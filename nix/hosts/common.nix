@@ -58,6 +58,8 @@
     neovim          # https://github.com/neovim/neovim            # モダンVim
     pre-commit      # https://pre-commit.com                      # Gitフック管理ツール
     shellcheck      # https://github.com/koalaman/shellcheck      # シェルスクリプトリンター
+    semgrep         # https://github.com/semgrep/semgrep         # 静的解析・セキュリティスキャン
+    mermaid-cli     # https://github.com/mermaid-js/mermaid-cli  # Mermaid構文検証・SVG生成
     shfmt           # https://github.com/mvdan/sh                 # シェルスクリプトフォーマッタ
     vim             # https://github.com/vim/vim                  # テキストエディタ
     xh              # https://github.com/ducaale/xh               # HTTPクライアント（Rust製）
@@ -303,6 +305,17 @@
 
   # nixpkgs の設定
   nixpkgs.hostPlatform = "aarch64-darwin";
+
+  # cli-helpers のテストが上流で壊れているため doCheck=false（mycli の依存）
+  nixpkgs.overlays = [
+    (final: prev: {
+      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+        (python-final: python-prev: {
+          cli-helpers = python-prev.cli-helpers.overridePythonAttrs (_: { doCheck = false; });
+        })
+      ];
+    })
+  ];
 
   # macOS のバージョン指定（nix-darwin が要求）
   system.stateVersion = 6;
