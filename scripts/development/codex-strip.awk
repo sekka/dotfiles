@@ -8,7 +8,7 @@
 BEGIN { skip = 0 }
 
 /^\[/ {
-  if ($0 ~ /^\[projects\./ || $0 ~ /^\[marketplaces\./ || $0 ~ /^\[apps\.connector_/) {
+  if ($0 ~ /^\[projects\./ || $0 ~ /^\[marketplaces\./ || $0 ~ /^\[apps\.connector_[[:xdigit:]]{32}[].]/) {
     skip = 1
     next
   }
