@@ -167,7 +167,7 @@ async function runOxlint(files: string[], verbose: boolean): Promise<LintResult>
     return { tool: "oxlint", success: true, output: "No files to process" };
   }
 
-  const args = ["oxlint", ...files];
+  const args = ["oxlint", "--no-error-on-unmatched-pattern", ...files];
 
   if (verbose) {
     console.log(`🔧 Running: ${args.join(" ")}`);
