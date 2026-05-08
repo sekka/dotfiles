@@ -11,10 +11,6 @@
         "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
       }
     },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["-y", "chrome-devtools-mcp@latest"]
-    },
     "deepwiki": {
       "type": "http",
       "url": "https://mcp.deepwiki.com/mcp"

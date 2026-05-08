@@ -70,7 +70,6 @@
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "chrome-devtools",
     "context7",
     "deepwiki",
     "filesystem",
