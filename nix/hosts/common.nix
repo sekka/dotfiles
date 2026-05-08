@@ -279,6 +279,7 @@
       "him0/gh-sync"
       "dlvhdr/gh-dash"
       "mislav/gh-branch"
+      "meiji163/gh-notify"
     ];
     installCmd = builtins.concatStringsSep "\n" (map (ext:
       ''sudo -u ${user} ${gh} extension install "${ext}" || true''

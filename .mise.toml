@@ -13,6 +13,26 @@ run = "bun scripts/system/snapshot-before.ts"
 description = "設定変更後のスナップショットを取得して差分を生成（pdef用）"
 run = "bun scripts/system/snapshot-after.ts"
 
+[tasks."gh:notify"]
+description = "GitHub 通知 TUI: 未読のみ表示 (Enter で less, Ctrl-B でブラウザ)"
+run = "gh notify"
+
+[tasks."gh:notify:all"]
+description = "GitHub 通知 TUI: 既読含め全件 + プレビューウィンドウ"
+run = "gh notify -aw"
+
+[tasks."gh:notify:mentions"]
+description = "GitHub 通知 TUI: @メンション・参加中のみ + プレビュー"
+run = "gh notify -pw"
+
+[tasks."gh:notify:clear"]
+description = "GitHub 通知をすべて既読化 (確認なし)"
+run = "gh notify -r"
+
+[tasks."gh:dash"]
+description = "GitHub ダッシュボード TUI: PR/Issue を横断表示 (gh-dash)"
+run = "gh dash"
+
 [tasks.tornado]
 description = "Multi-agent dev: codex implements, claude reviews (arg: plan file path, or fzf if omitted)"
 run = """
