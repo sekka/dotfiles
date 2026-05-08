@@ -18,7 +18,7 @@ echo ""
 
 # lint チェックの実行
 echo -e "${YELLOW}INFO [Git Hook] lint チェック実行中...${NC}"
-if bun ~/dotfiles/scripts/development/lint-format.ts --mode=check --verbose; then
+if bun ~/dotfiles/scripts/development/lint-format.ts --mode=check --staged --verbose; then
   echo -e "${GREEN}SUCCESS [Git Hook] lint チェックが成功しました！commitを続行できます。${NC}"
   exit 0
 else
