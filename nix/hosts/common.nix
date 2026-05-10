@@ -19,7 +19,6 @@
     fpp             # https://github.com/facebook/PathPicker      # パスピッカー
     navi            # https://github.com/denisidoro/navi          # インタラクティブチートシート
     tailspin        # https://github.com/bensadeh/tailspin        # ログハイライト付きtail
-    terminal-notifier # https://github.com/julienXX/terminal-notifier # macOS通知ツール
     tree            # https://github.com/Old-Man-Programmer/tree  # ディレクトリツリー表示
     # ターミナル（テキスト処理）
     coreutils       # https://www.gnu.org/software/coreutils      # GNU基本ツール（gtimeout等）

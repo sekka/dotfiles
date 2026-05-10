@@ -77,7 +77,7 @@ NIX_MANAGED_BREWS=(
   libavif libwebp lima lnav mactop mas media-info mise mycli navi neovim
   nkf ollama ouch pnpm poppler pre-commit procs pstree
   ripgrep sevenzip sheldon shellcheck shfmt silicon snitch starship
-  superfile tailspin terminal-notifier the_platinum_searcher the_silver_searcher
+  superfile tailspin the_platinum_searcher the_silver_searcher
   tig tmux tpm tree uv vim walk
   wget wimlib xh yamllint yarn yazi yt-dlp zenith zoxide
 )

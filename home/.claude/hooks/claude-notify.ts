@@ -2,19 +2,17 @@
 /**
  * Stop / StopFailure / Notification hook: Claude Code のイベントを macOS 通知で知らせる
  *
- * terminal-notifier を使い、以下のタイミングでネイティブ通知を表示する:
+ * osascript の display notification を使い、以下のタイミングでネイティブ通知を表示する:
  *   - Stop: 作業完了時
  *   - StopFailure: API エラー（rate limit、認証失敗など）による停止時
  *   - Notification: 権限リクエスト・アイドル・認証成功・入力要求など
  *
  * 狙い: ターミナルを見ていなくても Claude の状態に気づけるようにする。
  * バックグラウンドや別画面で作業中でも通知が届く。
+ *
+ * 注: display notification はカスタムアイコン指定不可（OS 制限）。
+ * title 表示で通知元を判別する。
  */
-
-const CLAUDE_ICON_PATHS = [
-  `${process.env["HOME"]}/dotfiles/assets/icons/claude.svg`,
-  `${process.env["HOME"]}/dotfiles/assets/icons/claude.png`,
-];
 
 // タイムアウト設定（ミリ秒）
 const STDIN_TIMEOUT_MS = 5000;
@@ -70,19 +68,11 @@ function validateHookInput(data: unknown): asserts data is HookInput {
 
 async function showNotification(title: string, message: string): Promise<void> {
   try {
-    const args = ["-title", title, "-message", message, "-sound", "default"];
-
-    // アイコンファイルを探す
-    for (const path of CLAUDE_ICON_PATHS) {
-      if (await Bun.file(path).exists()) {
-        const iconPath = path.endsWith(".svg") ? `file://${path}` : path;
-        args.push("-appIcon", iconPath);
-        break;
-      }
-    }
+    const escape = (s: string) => s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    const script = `display notification "${escape(message)}" with title "${escape(title)}" sound name "default"`;
 
     const proc = Bun.spawn({
-      cmd: ["terminal-notifier", ...args],
+      cmd: ["osascript", "-e", script],
       stdout: "pipe",
       stderr: "pipe",
     });
