@@ -18,6 +18,16 @@ When the same violation repeats, escalate it one level up.
 - **Immediate L3+**: Security-related violations start at L3 or above from the first occurrence
 - **No downgrade**: Once escalated, the level is never lowered (to prevent recurrence)
 
+## Detection Mechanism
+
+The 3-strike trigger is **mechanically detected** via `FAILURES.md`. See `failures-md.md` for the buffer format.
+
+- Append failure entries to `~/.claude/FAILURES.md` as they occur
+- When the same `pattern` field appears 3+ times, propose escalation to the next level
+- `user-harness-rules` skill Phase 4 reads this buffer to surface promotion candidates
+
+Without FAILURES.md, 3-strike detection relies on memory and is unreliable. Always append to the buffer first; promote second.
+
 ## Escalation Criteria
 
 1. Can the violation pattern be clearly defined? (L3+ requires pattern matching)

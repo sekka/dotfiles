@@ -27,7 +27,7 @@ Phase 1: Check rule files (CLAUDE.md, rules)
 Phase 2: Check skill descriptions (skills/*/SKILL.md)
 Phase 3: Clean up memory (memory/)
     ↓
-Phase 4: Escalation proposal (evaluate repeated violations for level upgrade)
+Phase 4: Escalation proposal (read FAILURES.md, evaluate repeated patterns for level upgrade)
     ↓
 Structured report output → User approval → Apply fixes
 ```
@@ -92,13 +92,28 @@ Phases with zero problems are reported in one line: "✅ All items OK".
 
 ## Phase 4: Escalation Proposal
 
-When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`.claude/rules/escalation-ladder.md`).
+When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`home/.claude/rules/escalation-ladder.md`).
 
 ### Check Points
 
 1. **Feedback records in memory** — Has the same violation been recorded multiple times?
 2. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
 3. **Escalation proposal** — If 3+ repetitions are found, include a level upgrade recommendation in the report
+4. **FAILURES.md buffer** — Read `~/.claude/FAILURES.md` and apply the following filter:
+   - Include only entries with `status: OPEN` (skip `PROMOTED` and `TIL`)
+   - Group by exact `pattern` string (entries are pre-normalized; no fuzzy matching)
+   - Surface any group where count ≥ 3 as a promotion candidate
+   - Apply the "would removing this line cause the agent to err again?" Yes/No filter via AskUserQuestion before proposing the diff
+
+### Promotion Workflow
+
+When a FAILURES.md group reaches the 3-strike threshold:
+
+1. Show the user the grouped entries with dates and contexts
+2. Confirm promotion via AskUserQuestion ("Promote to <target>? [Yes / No / TIL]")
+3. If Yes: append the new rule/skill/hook content to the promote_target file (show diff first, follow the existing "Applying Fixes" rule — never apply without approval)
+4. After successful promotion, edit each source entry in `~/.claude/FAILURES.md`: change `status: OPEN` → `status: PROMOTED`, fill `promote_target` with the actual file path
+5. If No / TIL: change `status: OPEN` → `status: TIL` to exclude from future grouping
 
 ## Out of Scope
 
