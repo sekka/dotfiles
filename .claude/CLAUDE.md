@@ -93,7 +93,12 @@ setup スクリプトや Nix の動作確認は手動テストで足りる。テ
 - `scripts/**/*.ts` の純粋関数に対する `bun:test` によるスポット単体テスト
 - `home/.claude/hooks/**/*.ts` のロジック関数 (パス判定・パース等) に対する `bun:test`
 
-新規に純粋関数・判定ロジックを追加したら、同じディレクトリに `*.test.ts` を作る。例: `scripts/development/compare-dirs.test.ts`。ローカルで `bun test <path>` を都度叩く運用で、CI で回し続けるためのものではない。
+テスト配置は配下ごとに既存慣行を踏襲する:
+
+- `scripts/**` → ソースと同階層に `*.test.ts` を置く (例: `scripts/development/compare-dirs.test.ts`)
+- `home/.claude/hooks/**` → `home/.claude/hooks/__tests__/*.test.ts` にまとめる (例: `home/.claude/hooks/__tests__/md-preview.test.ts`)
+
+ローカルで `bun test <path>` を都度叩く運用で、CI で回し続けるためのものではない。
 
 省略してよい「強い理由」の例:
 - 関数が外部コマンド呼び出しや I/O のラッパで、テスト対象になるロジックがほぼ無い
