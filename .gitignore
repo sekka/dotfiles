@@ -27,6 +27,10 @@ reports/
 # バックアップファイル
 *.bak
 
+# md-preview hook が生成する HTML プレビュー
+plans/*.html
+docs/*.html
+
 # Zsh コンパイル済みバイトコード
 *.zwc
 
