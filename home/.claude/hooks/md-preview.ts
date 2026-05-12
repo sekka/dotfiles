@@ -17,21 +17,22 @@ const ALLOWED_PREFIXES = [
   resolve(homedir(), "prj") + "/",
 ];
 
+// basename を toLowerCase() で正規化してから比較するため、Set 側も小文字で持つ
 const EXCLUDED_BASENAMES = new Set([
-  "README.md",
-  "CLAUDE.md",
-  "AGENTS.md",
-  "GEMINI.md",
-  "CHANGELOG.md",
-  "MEMORY.md",
-  "LICENSE.md",
+  "readme.md",
+  "claude.md",
+  "agents.md",
+  "gemini.md",
+  "changelog.md",
+  "memory.md",
+  "license.md",
 ]);
 
 const FANCY_SIZE_LIMIT_BYTES = 50 * 1024;
 
 export function isTargetPath(absPath: string): boolean {
   if (extname(absPath).toLowerCase() !== ".md") return false;
-  if (EXCLUDED_BASENAMES.has(basename(absPath))) return false;
+  if (EXCLUDED_BASENAMES.has(basename(absPath).toLowerCase())) return false;
   if (absPath.includes("/node_modules/")) return false;
   return ALLOWED_PREFIXES.some((p) => absPath.startsWith(p));
 }
@@ -84,29 +85,43 @@ const FANCY_PROMPT = `あなたは Markdown をインフォグラフィック風
 
 `;
 
-function spawnFancy(htmlPath: string, mdSource: string): void {
+function spawnFancy(htmlPath: string, mdSource: string, srcPath: string): void {
   const ts = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   const promptTmp = join(tmpdir(), `md-preview-${ts}.prompt`);
   const htmlTmp = `${htmlPath}.${ts}.tmp`;
   writeFileSync(promptTmp, FANCY_PROMPT + mdSource);
 
+  // パス類はすべて env 経由で渡し、shell 内では "$VAR" 形式で参照する。
+  // (tmpdir/homedir 由来の文字列に bash 特殊文字が混じっても安全に扱うため。)
+  // SRC_MTIME_AT_START を保存しておき、Haiku 完了時点で source mtime が
+  // 変わっていたら mv をスキップする (連続編集時に古い fancy で上書きされる race を抑止)。
   const childScript = `
-trap 'rm -f ${JSON.stringify(promptTmp)} ${JSON.stringify(htmlTmp)}' EXIT
-cat ${JSON.stringify(promptTmp)} | claude -p --model haiku --output-format text --allowed-tools "" > ${JSON.stringify(htmlTmp)} 2>/dev/null || exit 0
+trap 'rm -f "$PROMPT_TMP" "$HTML_TMP"' EXIT
+SRC_MTIME_AT_START=$(stat -f %m "$SRC_PATH" 2>/dev/null || echo 0)
+cat "$PROMPT_TMP" | claude -p --model haiku --output-format text --allowed-tools "" > "$HTML_TMP" 2>/dev/null || exit 0
 # Haiku がコードフェンスで返すケースがあるため除去
-sed -i '' -e '1{/^[[:space:]]*\`\`\`/d;}' -e '\${/^[[:space:]]*\`\`\`[[:space:]]*$/d;}' ${JSON.stringify(htmlTmp)} 2>/dev/null || true
-if [ -s ${JSON.stringify(htmlTmp)} ] \\
-   && head -c 128 ${JSON.stringify(htmlTmp)} | grep -qi '<!doctype' \\
-   && tail -c 64 ${JSON.stringify(htmlTmp)} | grep -qi '</html>'; then
-  mv ${JSON.stringify(htmlTmp)} ${JSON.stringify(htmlPath)}
+sed -i '' -e '1{/^[[:space:]]*\`\`\`/d;}' -e '\${/^[[:space:]]*\`\`\`[[:space:]]*$/d;}' "$HTML_TMP" 2>/dev/null || true
+CURRENT_MTIME=$(stat -f %m "$SRC_PATH" 2>/dev/null || echo 0)
+if [ -s "$HTML_TMP" ] \\
+   && head -c 128 "$HTML_TMP" | grep -qi '<!doctype' \\
+   && tail -c 64 "$HTML_TMP" | grep -qi '</html>' \\
+   && [ "$SRC_MTIME_AT_START" = "$CURRENT_MTIME" ]; then
+  mv "$HTML_TMP" "$HTML_PATH"
 fi
-open ${JSON.stringify(htmlPath)}
+open "$HTML_PATH"
 `;
 
   // macOS には setsid がないため double-fork でセッションを切り離す
   const detachedScript = `( ${childScript} ) >/dev/null 2>&1 &`;
   const proc = Bun.spawn({
     cmd: ["bash", "-c", detachedScript],
+    env: {
+      ...process.env,
+      PROMPT_TMP: promptTmp,
+      HTML_TMP: htmlTmp,
+      HTML_PATH: htmlPath,
+      SRC_PATH: srcPath,
+    },
     stdin: "ignore",
     stdout: "ignore",
     stderr: "ignore",
@@ -143,7 +158,7 @@ async function main() {
       process.exit(0);
     }
 
-    spawnFancy(htmlPath, mdSource);
+    spawnFancy(htmlPath, mdSource, absPath);
   } catch {
     process.exit(0);
   }

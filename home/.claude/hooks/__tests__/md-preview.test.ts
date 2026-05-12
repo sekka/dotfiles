@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
-import { isTargetPath } from "./md-preview.ts";
+import { isTargetPath } from "../md-preview.ts";
 
 const HOME = homedir();
 
@@ -39,6 +39,21 @@ describe("isTargetPath", () => {
 
     test("除外ファイル名 (AGENTS.md / GEMINI.md / CHANGELOG.md / MEMORY.md / LICENSE.md)", () => {
       for (const name of ["AGENTS.md", "GEMINI.md", "CHANGELOG.md", "MEMORY.md", "LICENSE.md"]) {
+        expect(isTargetPath(resolve(HOME, "dotfiles/docs", name))).toBe(false);
+      }
+    });
+
+    test("除外ファイル名は大文字小文字を区別しない", () => {
+      // 小文字でも除外されること (case-insensitive)
+      for (const name of [
+        "readme.md",
+        "claude.md",
+        "agents.md",
+        "gemini.md",
+        "changelog.md",
+        "memory.md",
+        "license.md",
+      ]) {
         expect(isTargetPath(resolve(HOME, "dotfiles/docs", name))).toBe(false);
       }
     });
