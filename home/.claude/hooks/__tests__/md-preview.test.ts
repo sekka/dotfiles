@@ -64,7 +64,7 @@ describe("isTargetPath", () => {
 
     test("許可ディレクトリ外", () => {
       expect(isTargetPath(resolve(HOME, "Documents/foo.md"))).toBe(false);
-      expect(isTargetPath("/tmp/foo.md")).toBe(false);
+      expect(isTargetPath(resolve(tmpdir(), "foo.md"))).toBe(false);
     });
 
     test("プレフィックス前方一致のなりすまし防止 (dotfiles/plans2)", () => {
