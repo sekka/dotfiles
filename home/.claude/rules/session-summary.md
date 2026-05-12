@@ -8,7 +8,8 @@ When the user explicitly signals the end of a session (「おわり」 (done), �
    - **Repeated pattern**: The same operation was performed 3 or more times → skill candidate
    - **Approach switch**: The initial approach failed and a different method was used → rule candidate
    - **New discovery**: A new tool, command, or technique was used → memory or rule candidate
-4. Save to `.claude/sessions/YYYY-MM-DD-HHmm.md` (use the current time)
+4. For each detected pattern, if it represents a **failure** (not a new tool discovery), also append an entry to `~/.claude/FAILURES.md` per `failures-md.md` schema with `status: OPEN`. New discoveries that worked correctly do NOT go to FAILURES.md — only patterns where the agent erred or had to switch approach.
+5. Save to `.claude/sessions/YYYY-MM-DD-HHmm.md` (use the current time)
 
 ```
 # Session Summary - YYYY-MM-DD HH:mm
