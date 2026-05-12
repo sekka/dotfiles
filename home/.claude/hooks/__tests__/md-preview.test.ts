@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { homedir, tmpdir } from "node:os";
-import { resolve } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 import { htmlPathFor, isTargetPath } from "../md-preview.ts";
 
 const HOME = homedir();
@@ -87,7 +87,9 @@ describe("htmlPathFor", () => {
   test("dotfiles 外 (~/prj) は tmpdir に逃がす (他リポジトリ汚染防止)", () => {
     const src = resolve(HOME, "prj/some-repo/notes.md");
     const out = htmlPathFor(src);
-    expect(out.startsWith(tmpdir() + "/")).toBe(true);
+    const rel = relative(tmpdir(), out);
+    // tmpdir 直下に出力されていること (rel が空でなく、上位ディレクトリ参照・絶対パスでない)
+    expect(rel !== "" && !rel.startsWith("..") && !isAbsolute(rel)).toBe(true);
     expect(out.endsWith(".html")).toBe(true);
   });
 
