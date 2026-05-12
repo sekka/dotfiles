@@ -92,7 +92,7 @@ Phases with zero problems are reported in one line: "✅ All items OK".
 
 ## Phase 4: Escalation Proposal
 
-When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`.claude/rules/escalation-ladder.md`).
+When repeated violation patterns are detected in Phases 1-3, propose escalation based on the escalation ladder (`home/.claude/rules/escalation-ladder.md`).
 
 ### Check Points
 

@@ -35,7 +35,7 @@ Normalize the `pattern` field to "verb + object" form:
 - pattern: <one-line description of what went wrong, normalized to "verb + object">
 - category: <rule-violation | skill-gap | knowledge-miss | dangerous-operation | style-tooling>
 - fix_applied: <what was done immediately to recover>
-- promote_target: <OPEN | rules/foo.md | skills/bar | memory/baz.md | hooks/qux>
+- promote_target: <rules/foo.md | skills/bar | memory/baz.md | hooks/qux | "?" when undecided>
 - status: <OPEN | PROMOTED | TIL>
 - related: <optional: links to prior similar entries by date>
 
@@ -67,7 +67,7 @@ Single occurrence with high impact (security, data loss, auth) → immediate pro
 
 - **escalation-ladder.md** — defines WHEN to escalate (3-strike, level definitions)
 - **FAILURES.md** — provides WHAT to escalate (concrete entries with counts)
-- **memory/feedback_*.md** — stores one-off learnings that bypass FAILURES.md entirely; `knowledge-miss` entries here are candidates to promote to memory/rule only after 3 repetitions via the normal buffer flow
+- **memory/feedback_*.md** — stores one-off learnings that bypass FAILURES.md entirely; `knowledge-miss` entries here are candidates to promote to memory only after 3 repetitions via the normal buffer flow
 - **session-summary.md** — Contribution candidates section flags entries for FAILURES.md
 
 ## Why personal-local, not dotfiles-managed?
