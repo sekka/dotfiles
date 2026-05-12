@@ -101,13 +101,39 @@ The main agent's context window is limited and expensive. Focus on **directing w
 
 ### Delegate everything else to subagents
 
-| Operation | Delegate to |
-|------|--------|
-| File search (Glob, Grep, multiple Reads) | researcher |
-| Code implementation (Write, Edit, multiple Bash) | implementer |
-| Review and quality checks | reviewer |
-| Test execution and build | implementer |
-| Web research and documentation search | researcher |
+| Operation | Delegate to | Model |
+|------|--------|------|
+| File search (Glob, Grep, multiple Reads) | researcher | haiku |
+| Code implementation (Write, Edit, multiple Bash) | implementer | sonnet |
+| Mechanical review (lint, format, typecheck, test parsing) | reviewer | haiku |
+| Judgment review (security, architecture, pre-commit go/no-go) | reviewer-judgment | **opus** |
+| Test execution and build | implementer | sonnet |
+| Web research and documentation search | researcher | haiku |
+
+### Delegation triggers (quantitative)
+
+Launch a subagent BEFORE starting work if ANY apply:
+
+- Need to Read 3+ files to understand the task
+- Need 2+ Grep/Glob calls to locate something
+- Implementation touches 2+ files OR exceeds ~30 lines total (4-29 lines in a single known file: judge by complexity — mechanical edits stay with Opus, logic changes go to implementer)
+- Any build/test run expected to take >30s
+- Any audit/security check (always delegate to reviewer-judgment)
+
+If unsure, delegate. Subagent overhead < main context bloat cost.
+
+### Review gate after Sonnet implementation
+
+When implementer (Sonnet) finishes, the main agent (Opus) decides review depth based on what was changed:
+
+| Change type | Review path |
+|---|---|
+| Rename, typo, ≤3-line edit | Skip review (verify diff only) |
+| 1-2 files, mechanical | `reviewer` (haiku) — lint/test results |
+| 3+ files OR 30+ lines OR design judgment | `reviewer-judgment` (opus) — independent second opinion |
+| Security / auth / credential / secret-handling | `reviewer-judgment` (opus) — **always**, regardless of size |
+
+`reviewer-judgment` runs on Opus in a fresh context, so the main agent's context is preserved while still getting Opus-quality judgment. The Sonnet-implementer + Opus-reviewer combination catches blindspots that a single-model pipeline misses.
 
 ### Automatically executed hooks
 
