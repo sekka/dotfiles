@@ -122,7 +122,10 @@ async function runDprint(files: string[], mode: Mode, verbose: boolean): Promise
   }
 
   // dprint fmt で修正、dprint check でチェック
-  const args = mode === "fix" ? ["dprint", "fmt", ...files] : ["dprint", "check", ...files];
+  // --allow-no-files: 渡したファイルが dprint.json の excludes に全て該当する場合の
+  // "No files found" エラー (exit 1) を抑制する
+  const subcmd = mode === "fix" ? "fmt" : "check";
+  const args = ["dprint", subcmd, "--allow-no-files", ...files];
 
   if (verbose) {
     console.log(`🔧 Running: ${args.join(" ")}`);
