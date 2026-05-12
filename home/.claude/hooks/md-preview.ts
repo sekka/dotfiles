@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 export {};
 
+import { createHash } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { basename, extname, join, resolve } from "node:path";
@@ -8,8 +9,10 @@ import { basename, extname, join, resolve } from "node:path";
 // PostToolUse:Edit|Write|MultiEdit hook: 編集された Markdown を HTML 化してブラウザで自動表示する。
 //
 // 対象: dotfiles/plans/**/*.md, dotfiles/docs/**/*.md, ~/prj/**/*.md のみ。
+// 出力先: dotfiles 配下は同階層 (.gitignore 済み)、それ以外は tmpdir に逃がす。
 // 50KB 超は素 HTML のみで終了。それ以下なら double-fork した bash 経由で
 // claude -p に fancy HTML を生成させ、完了後に同パスへ atomic move + open。
+// Haiku が失敗しても素 HTML は必ず open される (`|| true` で継続)。
 
 const ALLOWED_PREFIXES = [
   resolve(homedir(), "dotfiles", "plans") + "/",
@@ -29,6 +32,18 @@ const EXCLUDED_BASENAMES = new Set([
 ]);
 
 const FANCY_SIZE_LIMIT_BYTES = 50 * 1024;
+
+const DOTFILES_PREFIX = resolve(homedir(), "dotfiles") + "/";
+
+// dotfiles 配下は同階層に出力 (.gitignore 済み)。他リポジトリでは tmpdir に逃がして
+// 生成 HTML が誤コミット対象にならないようにする。
+export function htmlPathFor(absPath: string): string {
+  if (absPath.startsWith(DOTFILES_PREFIX)) {
+    return absPath.replace(/\.md$/i, ".html");
+  }
+  const hash = createHash("sha1").update(absPath).digest("hex").slice(0, 12);
+  return join(tmpdir(), `md-preview-${hash}.html`);
+}
 
 export function isTargetPath(absPath: string): boolean {
   if (extname(absPath).toLowerCase() !== ".md") return false;
@@ -98,7 +113,7 @@ function spawnFancy(htmlPath: string, mdSource: string, srcPath: string): void {
   const childScript = `
 trap 'rm -f "$PROMPT_TMP" "$HTML_TMP"' EXIT
 SRC_MTIME_AT_START=$(stat -f %m "$SRC_PATH" 2>/dev/null || echo 0)
-cat "$PROMPT_TMP" | claude -p --model haiku --output-format text --allowed-tools "" > "$HTML_TMP" 2>/dev/null || exit 0
+cat "$PROMPT_TMP" | claude -p --model haiku --output-format text --allowed-tools "" > "$HTML_TMP" 2>/dev/null || true
 # Haiku がコードフェンスで返すケースがあるため除去
 sed -i '' -e '1{/^[[:space:]]*\`\`\`/d;}' -e '\${/^[[:space:]]*\`\`\`[[:space:]]*$/d;}' "$HTML_TMP" 2>/dev/null || true
 CURRENT_MTIME=$(stat -f %m "$SRC_PATH" 2>/dev/null || echo 0)
@@ -142,7 +157,7 @@ async function main() {
     if (!isTargetPath(absPath)) process.exit(0);
 
     const mdSource = await Bun.file(absPath).text();
-    const htmlPath = absPath.replace(/\.md$/i, ".html");
+    const htmlPath = htmlPathFor(absPath);
 
     writeFileSync(htmlPath, plainHtml(mdSource, absPath));
 

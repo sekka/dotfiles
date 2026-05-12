@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { homedir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { resolve } from "node:path";
-import { isTargetPath } from "../md-preview.ts";
+import { htmlPathFor, isTargetPath } from "../md-preview.ts";
 
 const HOME = homedir();
 
@@ -70,5 +70,35 @@ describe("isTargetPath", () => {
     test("プレフィックス前方一致のなりすまし防止 (dotfiles/plans2)", () => {
       expect(isTargetPath(resolve(HOME, "dotfiles/plans2/foo.md"))).toBe(false);
     });
+  });
+});
+
+describe("htmlPathFor", () => {
+  test("dotfiles 配下は同階層に .html を吐く", () => {
+    const src = resolve(HOME, "dotfiles/plans/foo.md");
+    expect(htmlPathFor(src)).toBe(resolve(HOME, "dotfiles/plans/foo.html"));
+  });
+
+  test("dotfiles 配下のサブディレクトリでも同階層", () => {
+    const src = resolve(HOME, "dotfiles/docs/sub/bar.md");
+    expect(htmlPathFor(src)).toBe(resolve(HOME, "dotfiles/docs/sub/bar.html"));
+  });
+
+  test("dotfiles 外 (~/prj) は tmpdir に逃がす (他リポジトリ汚染防止)", () => {
+    const src = resolve(HOME, "prj/some-repo/notes.md");
+    const out = htmlPathFor(src);
+    expect(out.startsWith(tmpdir() + "/")).toBe(true);
+    expect(out.endsWith(".html")).toBe(true);
+  });
+
+  test("同一 source path は同じ tmpdir パスに決定的にマップ", () => {
+    const src = resolve(HOME, "prj/x/note.md");
+    expect(htmlPathFor(src)).toBe(htmlPathFor(src));
+  });
+
+  test("異なる source path は異なる tmpdir パスにマップ", () => {
+    const a = htmlPathFor(resolve(HOME, "prj/a/note.md"));
+    const b = htmlPathFor(resolve(HOME, "prj/b/note.md"));
+    expect(a).not.toBe(b);
   });
 });
