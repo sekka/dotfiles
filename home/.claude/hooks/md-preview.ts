@@ -1,18 +1,15 @@
 #!/usr/bin/env bun
 export {};
 
-import { existsSync, statSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { basename, extname, join, resolve } from "node:path";
 
 // PostToolUse:Edit|Write|MultiEdit hook: 編集された Markdown を HTML 化してブラウザで自動表示する。
 //
 // 対象: dotfiles/plans/**/*.md, dotfiles/docs/**/*.md, ~/prj/**/*.md のみ。
-// 流れ:
-//   (1) フォールバック用の素 HTML (CDN marked.js 利用) を必ず先に書く
-//   (2) MD が 50KB を超えるなら素 HTML を即 open して終了
-//   (3) 50KB 以下なら setsid -f で claude -p をバックグラウンド実行。
-//       生成された fancy HTML で上書きしたあと、子プロセス側で open
+// 50KB 超は素 HTML のみで終了。それ以下なら double-fork した bash 経由で
+// claude -p に fancy HTML を生成させ、完了後に同パスへ atomic move + open。
 
 const ALLOWED_PREFIXES = [
   resolve(homedir(), "dotfiles", "plans") + "/",
@@ -128,14 +125,13 @@ async function main() {
 
     const absPath = resolve(filePath);
     if (!isTargetPath(absPath)) process.exit(0);
-    if (!existsSync(absPath)) process.exit(0);
 
     const mdSource = await Bun.file(absPath).text();
     const htmlPath = absPath.replace(/\.md$/i, ".html");
 
     writeFileSync(htmlPath, plainHtml(mdSource, absPath));
 
-    const sizeBytes = statSync(absPath).size;
+    const sizeBytes = Buffer.byteLength(mdSource, "utf8");
     if (sizeBytes > FANCY_SIZE_LIMIT_BYTES) {
       const proc = Bun.spawn({
         cmd: ["open", htmlPath],

@@ -78,4 +78,25 @@ Personal environment. Single user. No need to handle TOCTOU, privilege escalatio
 
 ## Test Policy
 
-Manual testing only. Do not introduce automated testing (CI/CD, bats-core, etc.).
+このリポジトリでの「テスト」は2種類に分けて扱う。
+
+### 導入しないもの
+
+- CI/CD パイプライン (GitHub Actions 等で自動実行されるテスト基盤)
+- シェルスクリプト用テストフレームワーク (bats-core 等)
+- dotfiles 配布物・setup スクリプト・macOS 設定の自動テスト全般
+
+setup スクリプトや Nix の動作確認は手動テストで足りる。テスト基盤を入れて維持するコストは個人用 dotfiles に見合わない。
+
+### 必須とするもの (強い理由がない限り省略不可)
+
+- `scripts/**/*.ts` の純粋関数に対する `bun:test` によるスポット単体テスト
+- `home/.claude/hooks/**/*.ts` のロジック関数 (パス判定・パース等) に対する `bun:test`
+
+新規に純粋関数・判定ロジックを追加したら、同じディレクトリに `*.test.ts` を作る。例: `scripts/development/compare-dirs.test.ts`。ローカルで `bun test <path>` を都度叩く運用で、CI で回し続けるためのものではない。
+
+省略してよい「強い理由」の例:
+- 関数が外部コマンド呼び出しや I/O のラッパで、テスト対象になるロジックがほぼ無い
+- すでに上位の関数経由で実質的にカバーされている
+
+判断基準: 「テストの存在自体がメンテ対象になるか」。CI で常時回り続けるならNG。手元で必要な時だけ叩くなら OK。
