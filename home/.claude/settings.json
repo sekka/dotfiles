@@ -20,7 +20,6 @@
       "Skill(user-harness-gen-skills)",
       "WebSearch",
       "Write",
-      "mcp__chrome-devtools__*",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
       "mcp__plugin_context7_context7__*",
@@ -222,6 +221,17 @@
           {
             "type": "command",
             "command": "bun $HOME/.claude/hooks/git-context.ts"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/save-progress.sh",
+            "async": true
           }
         ]
       }

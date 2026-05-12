@@ -37,6 +37,7 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 | `/commit-commands:clean_gone`                 | gone ブランチ一括削除           | リモートで削除済みだがローカルに残っているブランチをクリーンアップ                           |
 | `/superpowers:finishing-a-development-branch` | ブランチ完了ガイド              | 実装とテストが終わった後、マージ・PR・クリーンアップの選択肢を提示                           |
 | `/superpowers:using-git-worktrees`            | git worktree構築                | 現在の作業を汚さずに別機能を開発したいとき。隔離された作業環境を安全に構築                   |
+| `/gh-fix-ci`                                  | GitHub Actions CIの修正         | PRのCIチェックが失敗したとき。`gh`でログを確認し修正案を立案。承認後に実装                   |
 
 ---
 
@@ -65,33 +66,36 @@ Claude Codeの機能を素早く参照するためのクイックリファレン
 
 HTMLページとしてシステム・コード変更・計画を視覚的に説明。ターミナル出力がASCII表になりそうな場合（4行以上または3列以上）は自動的にHTMLで描画。
 
-| コマンド                                 | 説明                               | いつ使う？                                                   |
-| ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------ |
-| `/visual-explainer:generate-web-diagram` | HTMLダイアグラム生成               | アーキテクチャ図・フローチャート・シーケンス図を作りたいとき |
-| `/visual-explainer:generate-visual-plan` | ビジュアル実装プラン生成           | 機能追加の実装計画をHTML形式で視覚化するとき                 |
-| `/visual-explainer:generate-slides`      | スライドデッキ生成                 | プレゼン資料をHTML形式で作成するとき                         |
-| `/visual-explainer:diff-review`          | diff差分の視覚的レビュー           | コード変更を図解付きでレビューしたいとき                     |
-| `/visual-explainer:plan-review`          | 計画 vs コードベースの比較         | 実装計画とコードの整合性・リスクを視覚評価するとき           |
-| `/visual-explainer:project-recap`        | プロジェクトの状況スナップショット | コンテキストスイッチ後に現在地を素早く把握するとき           |
-| `/visual-explainer:fact-check`           | ドキュメントとコードの整合性確認   | 設計書・READMEが実際のコードと一致しているか検証するとき     |
-| `/visual-explainer:share`                | HTMLページをVercelに公開           | 生成したHTMLページをURLで共有したいとき                      |
+| コマンド                                 | 説明                               | いつ使う？                                                                                       |
+| ---------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `/visual-explainer:generate-web-diagram` | HTMLダイアグラム生成               | アーキテクチャ図・フローチャート・シーケンス図を作りたいとき                                     |
+| `/visual-explainer:generate-visual-plan` | ビジュアル実装プラン生成           | 機能追加の実装計画をHTML形式で視覚化するとき                                                     |
+| `/visual-explainer:generate-slides`      | スライドデッキ生成                 | プレゼン資料をHTML形式で作成するとき                                                             |
+| `/visual-explainer:diff-review`          | diff差分の視覚的レビュー           | コード変更を図解付きでレビューしたいとき                                                         |
+| `/visual-explainer:plan-review`          | 計画 vs コードベースの比較         | 実装計画とコードの整合性・リスクを視覚評価するとき                                               |
+| `/visual-explainer:project-recap`        | プロジェクトの状況スナップショット | コンテキストスイッチ後に現在地を素早く把握するとき                                               |
+| `/visual-explainer:fact-check`           | ドキュメントとコードの整合性確認   | 設計書・READMEが実際のコードと一致しているか検証するとき                                         |
+| `/visual-explainer:share`                | HTMLページをVercelに公開           | 生成したHTMLページをURLで共有したいとき                                                          |
+| `/graphify`                              | ナレッジグラフ生成                 | コード・ドキュメント・論文・画像を入力 → クラスタリングされたナレッジグラフ（HTML + JSON）を生成 |
 
 ---
 
 ## スキル・設定管理
 
-| スキル                                             | 説明                             | いつ使う？                                                                                   |
-| -------------------------------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------- |
-| `/superpowers:writing-skills`                      | スキルの作成・編集               | 新しいスキルを作りたい、既存スキルを修正したいとき                                           |
-| `/user-harness-gen-skills`                         | セッション履歴からスキル自動生成 | 過去の作業パターンを3軸分析（WHAT/HOW/FLOW）で抽出し、再利用可能なスキルにする               |
-| `/user-harness-config`                             | Claude Code設定の調査・適用      | ベストプラクティス調査・新スキル統合・記事URLから設定を取り込みたいとき。設定監査にも対応    |
-| `/user-harness-dual-agent`                         | Tornado：二エージェント実装      | 重い実装タスクをcodexに委任し、claudeがレビューするデュアルエージェントワークフロー          |
-| `/claude-md-management:revise-claude-md`           | CLAUDE.mdを更新                  | セッションで学んだことをCLAUDE.mdに反映                                                      |
-| `/claude-md-management:claude-md-improver`         | CLAUDE.mdを監査・改善            | 全CLAUDE.mdファイルをスキャンし、品質を評価して改善提案                                      |
-| `/user-harness-rules`                              | ルール・設定の鮮度チェック       | CLAUDE.md、rules、skills、memoryの整合性をチェックし、コードベースとの乖離を検出・更新提案   |
-| `/claude-code-setup:claude-automation-recommender` | Claude Code自動化の推薦          | コードベースを解析してhooks・サブエージェント・スケジュールなど最適なClaude Code自動化を提案 |
-| `/codex:setup`                                     | Codex CLIのセットアップ確認      | ローカルのCodex CLIが使用可能かチェック。有効化・無効化の切り替えも                          |
-| `/skill-creator:skill-creator` (plugin)            | スキルの作成・eval・最適化       | 新スキル作成からevalループ・説明文チューニングまで一貫サポート。既存スキル改善にも           |
+| スキル                                             | 説明                             | いつ使う？                                                                                                  |
+| -------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `/superpowers:writing-skills`                      | スキルの作成・編集               | 新しいスキルを作りたい、既存スキルを修正したいとき                                                          |
+| `/user-harness-gen-skills`                         | セッション履歴からスキル自動生成 | 過去の作業パターンを3軸分析（WHAT/HOW/FLOW）で抽出し、再利用可能なスキルにする                              |
+| `/user-harness-config`                             | Claude Code設定の調査・適用      | ベストプラクティス調査・新スキル統合・記事URLから設定を取り込みたいとき。設定監査にも対応                   |
+| `/user-harness-dual-agent`                         | Tornado：二エージェント実装      | 重い実装タスクをcodexに委任し、claudeがレビューするデュアルエージェントワークフロー                         |
+| `/claude-md-management:revise-claude-md`           | CLAUDE.mdを更新                  | セッションで学んだことをCLAUDE.mdに反映                                                                     |
+| `/claude-md-management:claude-md-improver`         | CLAUDE.mdを監査・改善            | 全CLAUDE.mdファイルをスキャンし、品質を評価して改善提案                                                     |
+| `/user-harness-rules`                              | ルール・設定の鮮度チェック       | CLAUDE.md、rules、skills、memoryの整合性をチェックし、コードベースとの乖離を検出・更新提案                  |
+| `/claude-code-setup:claude-automation-recommender` | Claude Code自動化の推薦          | コードベースを解析してhooks・サブエージェント・スケジュールなど最適なClaude Code自動化を提案                |
+| `/codex:setup`                                     | Codex CLIのセットアップ確認      | ローカルのCodex CLIが使用可能かチェック。有効化・無効化の切り替えも                                         |
+| `/skill-creator:skill-creator` (plugin)            | スキルの作成・eval・最適化       | 新スキル作成からevalループ・説明文チューニングまで一貫サポート。既存スキル改善にも                          |
+| `/user-dotfiles-tool-config`                       | dotfilesツール設定の診断・修正   | tmux/zsh/nix/Homebrew等のツールが誤動作するとき、新機能設定時、セットアップスクリプト更新時                 |
+| `/empirical-prompt-tuning`                         | プロンプトの反復チューニング     | スキル・CLAUDE.md・コード生成プロンプトを作成・改訂した後。バイアスのないエグゼキュータで実行して双方向評価 |
 
 ---
 
@@ -415,5 +419,5 @@ Claude が内部で起動する専門エージェント（`home/.claude/agents/`
 
 ---
 
-**最終更新**: 2026-04-28
+**最終更新**: 2026-05-12
 **管理**: このファイルは定期的にメンテナンスされます。新機能追加時は随時更新。

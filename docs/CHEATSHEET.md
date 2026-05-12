@@ -151,7 +151,7 @@
 | `gbm`      | `git branch --merged`                              | マージ済みブランチ   |
 | `gbn`      | `git branch --no-merge`                            | 未マージブランチ     |
 | `gstt`     | `git status -uno`                                  | 未追跡ファイルを除外 |
-| `gdiff`    | `git diff --word-diff`                             | 単語単位の差分       |
+| `gdiff`    | `git diff --color-words`                           | 単語単位の差分       |
 | `smu`      | `git submodule foreach 'git checkout master; ...'` | サブモジュール更新   |
 
 #### fzf 連携スクリプト
