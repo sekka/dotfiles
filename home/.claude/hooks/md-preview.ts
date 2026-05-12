@@ -8,17 +8,16 @@ import { basename, extname, join, resolve } from "node:path";
 
 // PostToolUse:Edit|Write|MultiEdit hook: 編集された Markdown を HTML 化してブラウザで自動表示する。
 //
-// 対象: dotfiles/plans/**/*.md, dotfiles/docs/**/*.md, ~/prj/**/*.md のみ。
+// 対象: $HOME 配下の /plans/, /docs/, /tasks/ セグメントを含む .md、および ~/prj/ 配下の .md。
 // 出力先: dotfiles 配下は同階層 (.gitignore 済み)、それ以外は tmpdir に逃がす。
 // 50KB 超は素 HTML のみで終了。それ以下なら double-fork した bash 経由で
 // claude -p に fancy HTML を生成させ、完了後に同パスへ atomic move + open。
 // Haiku が失敗しても素 HTML は必ず open される (`|| true` で継続)。
 
-const ALLOWED_PREFIXES = [
-  resolve(homedir(), "dotfiles", "plans") + "/",
-  resolve(homedir(), "dotfiles", "docs") + "/",
-  resolve(homedir(), "prj") + "/",
-];
+const HOME_PREFIX = homedir() + "/";
+
+// ~/prj/ 配下は catch-all として対象にする
+const PRJ_PREFIX = resolve(homedir(), "prj") + "/";
 
 // basename を toLowerCase() で正規化してから比較するため、Set 側も小文字で持つ
 const EXCLUDED_BASENAMES = new Set([
@@ -30,6 +29,16 @@ const EXCLUDED_BASENAMES = new Set([
   "memory.md",
   "license.md",
 ]);
+
+// これらのセグメントを含むパスは除外
+const EXCLUDED_SEGMENTS = [
+  "/node_modules/",
+  "/.git/",
+  "/Library/",
+  "/.Trash/",
+  "/vendor/",
+  "/.cache/",
+];
 
 const FANCY_SIZE_LIMIT_BYTES = 50 * 1024;
 
@@ -48,8 +57,14 @@ export function htmlPathFor(absPath: string): string {
 export function isTargetPath(absPath: string): boolean {
   if (extname(absPath).toLowerCase() !== ".md") return false;
   if (EXCLUDED_BASENAMES.has(basename(absPath).toLowerCase())) return false;
-  if (absPath.includes("/node_modules/")) return false;
-  return ALLOWED_PREFIXES.some((p) => absPath.startsWith(p));
+  if (!absPath.startsWith(HOME_PREFIX)) return false;
+  if (EXCLUDED_SEGMENTS.some((seg) => absPath.includes(seg))) return false;
+  return (
+    absPath.startsWith(PRJ_PREFIX) ||
+    absPath.includes("/plans/") ||
+    absPath.includes("/docs/") ||
+    absPath.includes("/tasks/")
+  );
 }
 
 function escapeHtml(s: string): string {
