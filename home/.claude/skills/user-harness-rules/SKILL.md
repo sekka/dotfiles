@@ -99,7 +99,11 @@ When repeated violation patterns are detected in Phases 1-3, propose escalation 
 1. **Feedback records in memory** — Has the same violation been recorded multiple times?
 2. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
 3. **Escalation proposal** — If 3+ repetitions are found, include a level upgrade recommendation in the report
-4. **FAILURES.md buffer** — Read `~/.claude/FAILURES.md`. Group entries by normalized `pattern` field. For any group with count ≥ 3 AND all entries have `status: OPEN`, surface as a promotion candidate. Apply the "would removing this line cause the agent to err again?" Yes/No filter via AskUserQuestion before proposing the diff.
+4. **FAILURES.md buffer** — Read `~/.claude/FAILURES.md` and apply the following filter:
+   - Include only entries with `status: OPEN` (skip `PROMOTED` and `TIL`)
+   - Group by exact `pattern` string (entries are pre-normalized; no fuzzy matching)
+   - Surface any group where count ≥ 3 as a promotion candidate
+   - Apply the "would removing this line cause the agent to err again?" Yes/No filter via AskUserQuestion before proposing the diff
 
 ### Promotion Workflow
 
