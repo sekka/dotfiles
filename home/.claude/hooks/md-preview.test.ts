@@ -55,5 +55,53 @@ describe("isTargetPath", () => {
     test("プレフィックス前方一致のなりすまし防止 (dotfiles/plans2)", () => {
       expect(isTargetPath(resolve(HOME, "dotfiles/plans2/foo.md"))).toBe(false);
     });
+
+    test("Library 配下は除外", () => {
+      expect(isTargetPath(resolve(HOME, "Library/Application Support/foo/docs/bar.md"))).toBe(
+        false,
+      );
+    });
+
+    test(".git 配下は除外", () => {
+      expect(isTargetPath(resolve(HOME, "work/app/.git/docs/foo.md"))).toBe(false);
+    });
+
+    test("vendor 配下は除外", () => {
+      expect(isTargetPath(resolve(HOME, "work/app/vendor/lib/docs/x.md"))).toBe(false);
+    });
+
+    test(".Trash 配下は除外", () => {
+      expect(isTargetPath(resolve(HOME, ".Trash/old/plans/foo.md"))).toBe(false);
+    });
+
+    test("$HOME 外 (/tmp) は除外", () => {
+      expect(isTargetPath("/tmp/somerepo/plans/foo.md")).toBe(false);
+    });
+  });
+
+  describe("新規対象パス", () => {
+    test("prj 配下の plans/ (既存ロジックでも true、明示確認)", () => {
+      expect(isTargetPath(resolve(HOME, "prj/some-repo/plans/foo.md"))).toBe(true);
+    });
+
+    test("任意リポジトリの plans/ セグメント", () => {
+      expect(isTargetPath(resolve(HOME, "work/random-repo/plans/foo.md"))).toBe(true);
+    });
+
+    test("任意リポジトリの docs/ セグメント", () => {
+      expect(isTargetPath(resolve(HOME, "work/random-repo/docs/api/spec.md"))).toBe(true);
+    });
+
+    test("$HOME 配下の深いネスト plans/", () => {
+      expect(isTargetPath(resolve(HOME, "Documents/projects/myapp/plans/v1.md"))).toBe(true);
+    });
+
+    test("任意リポジトリの tasks/ セグメント", () => {
+      expect(isTargetPath(resolve(HOME, "work/random-repo/tasks/sprint-3.md"))).toBe(true);
+    });
+
+    test("tasks/ なりすまし防止 (tasks2)", () => {
+      expect(isTargetPath(resolve(HOME, "work/app/tasks2/foo.md"))).toBe(false);
+    });
   });
 });
