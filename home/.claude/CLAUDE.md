@@ -116,7 +116,8 @@ Launch a subagent BEFORE starting work if ANY apply:
 
 - Need to Read 3+ files to understand the task
 - Need 2+ Grep/Glob calls to locate something
-- Implementation touches 2+ files OR exceeds ~30 lines total (4-29 lines in a single known file: judge by complexity — mechanical edits stay with Opus, logic changes go to implementer)
+- Implementation touches 2+ files OR exceeds ~30 lines total
+  - **4-29 lines in a single known file**: delegate if it touches control flow, algorithm, or business logic. Keep with Opus only if purely mechanical: variable rename, import reorganization, comment/doc update, or trivial type annotation change. When unsure, delegate.
 - Any build/test run expected to take >30s
 - Any audit/security check (always delegate to reviewer-judgment)
 

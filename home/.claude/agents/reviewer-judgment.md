@@ -78,6 +78,7 @@ For mechanical checks (lint, format, typecheck, test result parsing), use `revie
 3. **Be specific**: File path + line number + concrete fix, not "consider improving X".
 4. **Surface trade-offs, don't hide them**: If two valid approaches exist, name both and recommend one with reasoning.
 5. **Acknowledge uncertainty**: If a verdict depends on context you don't have, say so in the Confidence field.
+6. **Context blindspot**: You see only the diff and the repo, not the conversation that produced the change. If something looks intentional-but-questionable (e.g., MD5 for non-crypto hashing, disabled validation), flag it as a Concern with reasoning — the main agent has the prior conversation context and can confirm or override. Do not silently approve assuming "they must have had a reason".
 
 ## Available tools
 

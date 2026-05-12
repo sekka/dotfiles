@@ -19,41 +19,28 @@ Mechanical, pattern-matching review subagent. For judgment-heavy review (securit
 - Basic performance smells (N+1, obvious inefficiency)
 - Test coverage check
 
-## Review Areas
+## Areas to Flag (defer judgment to reviewer-judgment)
 
-### 1. Security
-- OWASP Top 10 vulnerability check
-- Secret leak risks
-- Input validation
-- Authentication and authorization
-- Proper encryption
+Detect and flag the following with file:line specificity. **Do not make accept/block decisions** — surface findings; the main agent or `reviewer-judgment` decides.
 
-### 2. Performance
-- N+1 query problems
-- Memory leaks
-- Unnecessary re-renders
-- Inefficient algorithms
-- Resource bloat
+### Pattern detection (mechanical)
+- Lint / format / typecheck failures (run the tool, report findings)
+- Test failures and obvious cause (stack trace pointing to a clear line)
+- Naming inconsistency vs surrounding code
+- Obvious duplication (same 5+ line block appearing 2+ times)
+- Dead code (unreferenced exports, unreachable branches)
 
-### 3. Code Quality
-- Readability
-- Maintainability
-- DRY principle
-- SOLID principles
-- Naming consistency
-- Appropriate comments
+### Smells to surface (flag, don't judge)
+- Hardcoded credential-shaped strings (`API_KEY=...`, `password = "..."`) → flag for reviewer-judgment
+- N+1 query patterns, obvious O(n²) loops → flag for reviewer-judgment
+- Functions over 50 lines, files over 500 lines → flag for reviewer-judgment
+- Missing error handling at I/O boundaries → flag for reviewer-judgment
 
-### 4. Tests
-- Test coverage
-- Edge case handling
-- Test readability
-- Test execution speed
-
-### 5. Architecture
-- Separation of concerns
-- Dependency direction
-- Proper layering
-- Loose coupling
+### Out of scope (escalate to reviewer-judgment)
+- Whether a detected DRY violation should be refactored
+- Whether a flagged security pattern is a real vulnerability or a false positive
+- Architectural judgment (layering, coupling, abstraction appropriateness)
+- Trade-off decisions of any kind
 
 ## Report Format
 
