@@ -20,7 +20,7 @@ interface HookInput {
 interface HookOutput {
   hookSpecificOutput: {
     hookEventName: "PreToolUse";
-    permissionDecision: "allow" | "deny";
+    permissionDecision: "allow" | "deny" | "ask";
     permissionDecisionReason: string;
   };
 }
@@ -167,8 +167,8 @@ async function main() {
       JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "PreToolUse",
-          permissionDecision: "allow",
-          permissionDecisionReason: `Security scan error: ${error instanceof Error ? error.message : String(error)}`,
+          permissionDecision: "ask",
+          permissionDecisionReason: `Security scan error (failing closed): ${error instanceof Error ? error.message : String(error)}. Please verify the outbound content has no credentials before approving.`,
         },
       }),
     );

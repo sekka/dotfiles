@@ -178,6 +178,21 @@ describe("scanForCredentials via Context7 tool (integration)", () => {
   });
 });
 
+describe("fail-closed on error", () => {
+  test("invalid JSON stdin produces permissionDecision: ask", async () => {
+    const proc = Bun.spawn(["bun", "/Users/kei/dotfiles/home/.claude/hooks/security-scan.ts"], {
+      stdin: new TextEncoder().encode("this is not json"),
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    await proc.exited;
+    const stderrText = await new Response(proc.stderr).text();
+    const parsed = JSON.parse(stderrText);
+    expect(parsed.hookSpecificOutput.permissionDecision).toBe("ask");
+    expect(parsed.hookSpecificOutput.permissionDecisionReason).toContain("failing closed");
+  });
+});
+
 describe("maskCredential", () => {
   test("shows first 4 chars followed by ****", () => {
     expect(maskCredential("AKIAIOSFODNN7EXAMPLE")).toBe("AKIA****");
