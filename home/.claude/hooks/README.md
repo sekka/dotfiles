@@ -46,7 +46,7 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 #### validate-command.ts
 
 - **イベント**: PreToolUse:Bash
-- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`--force-push`/`reset --hard`/`git commit --no-verify` を `deny`、`rm`/`sudo`/`dd` へのパイプ操作を `ask` として扱う。また `pkill -f` / `killall` でユーザー可視アプリ (Chrome/node/python/Slack 等) をターゲットにする wide-kill パターンを `deny` する。
+- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`--force-push`/`reset --hard`/`git commit --no-verify` を `deny`、`rm`/`sudo`/`dd` へのパイプ操作を `ask` として扱う。
 - **入力**: `tool_input.command` (Bash コマンド文字列)
 - **出力**: `permissionDecision: deny | ask | allow` を JSON で stderr に出力
 - **由来**: FAILURES.md 由来のエスカレーション。`sed` 使用・`git add -A` 使用などの繰り返し違反を L4 (tool denial) で封じている。
@@ -61,8 +61,8 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 
 #### protect-sensitive.sh
 
-- **イベント**: PreToolUse:Read / PreToolUse:Edit|Write (NotebookEdit は対象外)
-- **役割**: `settings.json` の `permissions.deny` グロブでは捕捉できない機密パターンを補完する第二防衛線。`.p12`/`.pfx`、`.git/` 内部への直接書き込み、パストラバーサル (`../`)、シンボリックリンク解決先が保護対象になっている書き込みをブロックする。
+- **イベント**: PreToolUse:Edit|Write|NotebookEdit / PreToolUse:Read
+- **役割**: `settings.json` の `permissions.deny` グロブでは捕捉できない機密パターンを補完する第二防衛線。`.p12`/`.pfx` はすべての対象イベントでブロックする。`.git/` 内部への直接書き込み、パストラバーサル (`../`)、シンボリックリンク解決先が保護対象になっている書き込みは `Write`/`Edit` のみが対象（`NotebookEdit` はフックは呼ばれるが内部チェックをスキップする）。
 - **入力**: `tool_input.file_path` / `tool_name`
 - **出力**: exit 2 でツール実行をキャンセル（Block）、または exit 0 でスルー
 - **由来**: セキュリティ目的。静的グロブの限界を動的チェックで補う。
