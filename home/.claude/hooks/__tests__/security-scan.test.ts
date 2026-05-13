@@ -117,6 +117,27 @@ describe("scanForCredentials", () => {
   });
 });
 
+describe("extractScanTarget: WebFetch branch", () => {
+  test("url only: returns the URL string", () => {
+    const target = extractScanTarget("WebFetch", { url: "https://example.com/api" });
+    expect(target).toContain("https://example.com/api");
+  });
+
+  test("prompt only: returns the prompt string", () => {
+    const target = extractScanTarget("WebFetch", { prompt: "Summarize this page" });
+    expect(target).toContain("Summarize this page");
+  });
+
+  test("both url and prompt: returns combined string containing both", () => {
+    const target = extractScanTarget("WebFetch", {
+      url: "https://example.com/api",
+      prompt: "Summarize this page",
+    });
+    expect(target).toContain("https://example.com/api");
+    expect(target).toContain("Summarize this page");
+  });
+});
+
 describe("extractScanTarget", () => {
   describe("Context7 MCP tools", () => {
     test("extracts query field from mcp__plugin_context7_context7__query-docs", () => {
