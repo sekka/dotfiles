@@ -166,8 +166,33 @@ const ASK_PATTERNS: { pattern: RegExp; reason: string }[] = [
   },
 ];
 
-// Build credential env-var export pattern dynamically
-const CRED_ENV_VAR_PATTERN = new RegExp(`\\bexport\\s+(${CREDENTIAL_ENV_VARS.join("|")})\\s*=`);
+// Build a set for O(1) credential env-var name lookup
+const CREDENTIAL_ENV_VAR_SET = new Set(CREDENTIAL_ENV_VARS);
+
+// Returns true if any shell segment has `export` as its effective command AND at least one
+// of the trailing NAME=value tokens is a known credential variable.
+// Handles: "export FOO=1 GITHUB_TOKEN=x", "export AWS_SECRET_ACCESS_KEY=abc".
+// Rejects: "echo export OPENAI_API_KEY=x" (export is an arg of echo, not the command).
+function isCredentialExportCommand(command: string): boolean {
+  const segments = command.split(/;|&&|\|\||(?<!\|)\|(?!\|)/);
+  for (const segment of segments) {
+    const tokens = segment.trim().split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) continue;
+
+    // Skip any leading NAME=value env-var assignments before the command
+    const cmdIdx = skipLeadingEnvAssignments(tokens, 0);
+    if (tokens[cmdIdx] !== "export") continue;
+
+    // Scan all tokens after "export" for credential NAME= assignments
+    for (let i = cmdIdx + 1; i < tokens.length; i++) {
+      const match = (tokens[i] as string).match(/^([A-Za-z_][A-Za-z0-9_]*)=/);
+      if (match && CREDENTIAL_ENV_VAR_SET.has(match[1] as string)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 const PASSWD_DENY_REASON =
   "passwd changes a user password — irreversible without recovery. Requires explicit user approval (auth-changes-need-approval.md).";
@@ -193,7 +218,7 @@ export function checkAuthCommand(command: string): AuthCheckResult {
   }
 
   // Credential env var export
-  if (CRED_ENV_VAR_PATTERN.test(command)) {
+  if (isCredentialExportCommand(command)) {
     return {
       decision: "ask",
       reason:

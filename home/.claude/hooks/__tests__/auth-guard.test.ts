@@ -306,6 +306,34 @@ describe("checkAuthCommand", () => {
     });
   });
 
+  describe("Fix #2 (CodeRabbit round 4): multi-variable export credential bypass", () => {
+    describe("ask: credential var among multiple exports", () => {
+      const askCommands = [
+        "export PATH=/tmp OPENAI_API_KEY=dummy",
+        "export FOO=1 BAR=2 GITHUB_TOKEN=xxx BAZ=3",
+        "export AWS_SECRET_ACCESS_KEY=abc",
+      ];
+
+      for (const command of askCommands) {
+        test(`ask: ${command}`, () => {
+          const result = checkAuthCommand(command);
+          expect(result.decision).toBe("ask");
+        });
+      }
+    });
+
+    describe("allow: export without credential vars", () => {
+      const allowCommands = ["export FOO=1 BAR=2 BAZ=3", "echo export OPENAI_API_KEY=x"];
+
+      for (const command of allowCommands) {
+        test(`allow: ${command}`, () => {
+          const result = checkAuthCommand(command);
+          expect(result.decision).toBe("allow");
+        });
+      }
+    });
+  });
+
   describe("reason string is non-empty for non-allow decisions", () => {
     test("deny: passwd has a reason", () => {
       const result = checkAuthCommand("passwd");
