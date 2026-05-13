@@ -62,7 +62,7 @@ async function main() {
 
   if (exitCode !== 0) {
     if (incrementAndCheck(stateFile)) {
-      console.error(JSON.stringify({ additionalContext: WARNING_MESSAGE }));
+      console.log(JSON.stringify({ additionalContext: WARNING_MESSAGE }));
       resetState(stateFile);
     }
   } else {
