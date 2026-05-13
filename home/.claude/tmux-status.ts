@@ -25,6 +25,109 @@ interface UsageLimits {
   seven_day_sonnet: LimitEntry | null;
 }
 
+type Staleness = "fresh" | "stale" | "expired";
+
+interface CacheRecord {
+  data: UsageLimits | null;
+  timestamp: number;
+  nextRetryAt: number | null;
+}
+
+// ============================================================================
+// Pure Decision Helpers (exported for tests)
+// ============================================================================
+
+export function shouldFetchNow(args: {
+  staleness: Staleness;
+  now: number;
+  nextRetryAt: number | null;
+}): "skip" | "background" | "sync" {
+  if (args.nextRetryAt !== null && args.nextRetryAt > args.now) return "skip";
+  if (args.staleness === "fresh") return "skip";
+  if (args.staleness === "stale") return "background";
+  return "sync";
+}
+
+export function parseRetryAfter(header: string | null, now: number, defaultMs: number): number {
+  if (!header) return now + defaultMs;
+  const trimmed = header.trim();
+  if (trimmed === "") return now + defaultMs;
+  let candidate: number;
+  if (/^[-+]?\d+$/.test(trimmed)) {
+    const sec = parseInt(trimmed, 10);
+    if (sec < 0) return now + defaultMs;
+    candidate = now + sec * 1000;
+  } else {
+    const dateMs = Date.parse(trimmed);
+    if (!isNaN(dateMs)) {
+      candidate = Math.max(dateMs, now);
+    } else {
+      return now + defaultMs;
+    }
+  }
+  // Enforce minimum 1s backoff to prevent tight retry loops
+  return Math.max(candidate, now + 1000);
+}
+
+export function parseCache(json: string): CacheRecord | null {
+  try {
+    const parsed = JSON.parse(json);
+    if (
+      parsed === null ||
+      typeof parsed !== "object" ||
+      !("data" in parsed) ||
+      !("timestamp" in parsed) ||
+      typeof parsed.timestamp !== "number" ||
+      !Number.isFinite(parsed.timestamp)
+    ) {
+      return null;
+    }
+    const nextRetryAt =
+      typeof parsed.nextRetryAt === "number" && Number.isFinite(parsed.nextRetryAt)
+        ? parsed.nextRetryAt
+        : null;
+    return {
+      data: parsed.data as UsageLimits | null,
+      timestamp: parsed.timestamp,
+      nextRetryAt,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function computeStaleness(timestamp: number, now: number): Staleness {
+  const age = now - timestamp;
+  if (age < CACHE_FRESH_MS) return "fresh";
+  if (age < CACHE_STALE_MS) return "stale";
+  return "expired";
+}
+
+export function shouldShowStaleMark(args: {
+  staleness: Staleness;
+  nextRetryAt: number | null;
+  now: number;
+}): boolean {
+  if (args.staleness === "stale") return true;
+  if (args.staleness === "expired" && args.nextRetryAt !== null && args.nextRetryAt > args.now) {
+    return true;
+  }
+  return false;
+}
+
+export function compute429Record(
+  existing: CacheRecord | null,
+  retryAfterHeader: string | null,
+  now: number,
+  defaultMs: number,
+): CacheRecord {
+  const nextRetryAt = parseRetryAfter(retryAfterHeader, now, defaultMs);
+  if (existing === null) {
+    return { data: null, timestamp: 0, nextRetryAt };
+  }
+  return { data: existing.data, timestamp: existing.timestamp, nextRetryAt };
+}
+
 // ============================================================================
 // Tmux Colors
 // ============================================================================
@@ -117,21 +220,36 @@ async function getToken(): Promise<string | null> {
 // Cache & API
 // ============================================================================
 
-type Staleness = "fresh" | "stale" | "expired";
-
 async function readCache(): Promise<{
   data: UsageLimits | null;
   staleness: Staleness;
   ageMs: number;
+  nextRetryAt: number | null;
 }> {
   try {
-    const cache: { data: UsageLimits; timestamp: number } = await Bun.file(CACHE_FILE).json();
-    const age = Date.now() - cache.timestamp;
-    if (age < CACHE_FRESH_MS) return { data: cache.data, staleness: "fresh", ageMs: age };
-    if (age < CACHE_STALE_MS) return { data: cache.data, staleness: "stale", ageMs: age };
-    return { data: null, staleness: "expired", ageMs: age };
+    const json = await Bun.file(CACHE_FILE).text();
+    const record = parseCache(json);
+    if (!record) return { data: null, staleness: "expired", ageMs: Infinity, nextRetryAt: null };
+    const now = Date.now();
+    const age = now - record.timestamp;
+    const staleness = computeStaleness(record.timestamp, now);
+    if (staleness === "expired") {
+      // Preserve data during backoff so main can display stale data with ? mark
+      const keepData = record.nextRetryAt !== null && record.nextRetryAt > now ? record.data : null;
+      return { data: keepData, staleness: "expired", ageMs: age, nextRetryAt: record.nextRetryAt };
+    }
+    return { data: record.data, staleness, ageMs: age, nextRetryAt: record.nextRetryAt };
   } catch {
-    return { data: null, staleness: "expired", ageMs: Infinity };
+    return { data: null, staleness: "expired", ageMs: Infinity, nextRetryAt: null };
+  }
+}
+
+async function readRawRecord(): Promise<CacheRecord | null> {
+  try {
+    const json = await Bun.file(CACHE_FILE).text();
+    return parseCache(json);
+  } catch {
+    return null;
   }
 }
 
@@ -148,11 +266,22 @@ async function fetchAndCacheLimits(): Promise<void> {
       },
       signal: AbortSignal.timeout(API_TIMEOUT),
     });
+
+    if (res.status === 429) {
+      const retryAfter = res.headers.get("Retry-After");
+      const existing = await readRawRecord();
+      const record = compute429Record(existing, retryAfter, Date.now(), 60_000);
+      await mkdir(`${HOME}/.claude/data`, { recursive: true, mode: 0o700 });
+      await Bun.write(CACHE_FILE, JSON.stringify(record));
+      await chmod(CACHE_FILE, 0o600);
+      return;
+    }
+
     if (!res.ok) return;
     const data = await res.json();
 
     await mkdir(`${HOME}/.claude/data`, { recursive: true, mode: 0o700 });
-    await Bun.write(CACHE_FILE, JSON.stringify({ data, timestamp: Date.now() }));
+    await Bun.write(CACHE_FILE, JSON.stringify({ data, timestamp: Date.now(), nextRetryAt: null }));
     await chmod(CACHE_FILE, 0o600);
   } catch {
     // Silently fail — cache stays as-is
@@ -171,34 +300,52 @@ function formatLimit(label: string, limit: LimitEntry, staleMark: string): strin
   return s;
 }
 
-try {
-  let cache = await readCache();
+async function main(): Promise<void> {
+  try {
+    const now = Date.now();
+    let cache = await readCache();
 
-  if (cache.staleness === "expired") {
-    await fetchAndCacheLimits();
-    cache = await readCache();
-  } else if (cache.staleness === "stale") {
-    fetchAndCacheLimits().catch(() => {});
-  }
+    const decision = shouldFetchNow({
+      staleness: cache.staleness,
+      now,
+      nextRetryAt: cache.nextRetryAt,
+    });
 
-  if (!cache.data) {
+    if (decision === "sync") {
+      await fetchAndCacheLimits();
+      cache = await readCache();
+    } else if (decision === "background") {
+      fetchAndCacheLimits().catch(() => {});
+    }
+
+    if (!cache.data) {
+      console.log("");
+      process.exit(0);
+    }
+
+    const showStale = shouldShowStaleMark({
+      staleness: cache.staleness,
+      nextRetryAt: cache.nextRetryAt,
+      now,
+    });
+    const mark = showStale ? "?" : "";
+    const parts: string[] = [];
+
+    if (cache.data.five_hour) parts.push(formatLimit("LMT", cache.data.five_hour, mark));
+    if (cache.data.seven_day) parts.push(formatLimit("WK", cache.data.seven_day, mark));
+    if (cache.data.seven_day_sonnet)
+      parts.push(formatLimit("WKS", cache.data.seven_day_sonnet, mark));
+
+    if (showStale) {
+      parts.push(`${t.gray}(${Math.floor(cache.ageMs / 60000)}m ago)${t.reset}`);
+    }
+
+    console.log(parts.join(" "));
+  } catch {
     console.log("");
-    process.exit(0);
   }
+}
 
-  const mark = cache.staleness === "stale" ? "?" : "";
-  const parts: string[] = [];
-
-  if (cache.data.five_hour) parts.push(formatLimit("LMT", cache.data.five_hour, mark));
-  if (cache.data.seven_day) parts.push(formatLimit("WK", cache.data.seven_day, mark));
-  if (cache.data.seven_day_sonnet)
-    parts.push(formatLimit("WKS", cache.data.seven_day_sonnet, mark));
-
-  if (cache.staleness === "stale") {
-    parts.push(`${t.gray}(${Math.floor(cache.ageMs / 60000)}m ago)${t.reset}`);
-  }
-
-  console.log(parts.join(" "));
-} catch {
-  console.log("");
+if (import.meta.main) {
+  await main();
 }
