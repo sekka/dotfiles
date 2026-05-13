@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { scanForCredentials, maskCredential } from "../security-scan";
+import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { scanForCredentials, maskCredential, extractScanTarget } from "../security-scan";
 
 describe("scanForCredentials", () => {
   describe("allow: benign content", () => {
@@ -109,6 +109,72 @@ describe("scanForCredentials", () => {
       const result = scanForCredentials("-----BEGIN PRIVATE KEY-----");
       expect(result.found).toBe(true);
     });
+  });
+});
+
+describe("extractScanTarget", () => {
+  describe("Context7 MCP tools", () => {
+    test("extracts query field from mcp__plugin_context7_context7__query-docs", () => {
+      const target = extractScanTarget("mcp__plugin_context7_context7__query-docs", {
+        query: "How to use React hooks",
+        libraryName: "react",
+      });
+      expect(target).toContain("How to use React hooks");
+    });
+
+    test("extracts code field containing credential from context7 tool", () => {
+      const credCode = "sk-ant-api03-" + "a".repeat(20);
+      const target = extractScanTarget("mcp__plugin_context7_context7__resolve-library-id", {
+        code: credCode,
+        libraryName: "react",
+      });
+      expect(target).toContain(credCode);
+    });
+  });
+
+  describe("SECURITY_SCAN_INTERNAL_HOSTS env var (renamed from AUTH_GUARD_INTERNAL_HOSTS)", () => {
+    const origSecurity = process.env["SECURITY_SCAN_INTERNAL_HOSTS"];
+    const origAuth = process.env["AUTH_GUARD_INTERNAL_HOSTS"];
+
+    beforeEach(() => {
+      delete process.env["AUTH_GUARD_INTERNAL_HOSTS"];
+      process.env["SECURITY_SCAN_INTERNAL_HOSTS"] = "internal.corp.com";
+    });
+
+    afterEach(() => {
+      if (origSecurity === undefined) {
+        delete process.env["SECURITY_SCAN_INTERNAL_HOSTS"];
+      } else {
+        process.env["SECURITY_SCAN_INTERNAL_HOSTS"] = origSecurity;
+      }
+      if (origAuth === undefined) {
+        delete process.env["AUTH_GUARD_INTERNAL_HOSTS"];
+      } else {
+        process.env["AUTH_GUARD_INTERNAL_HOSTS"] = origAuth;
+      }
+    });
+
+    test("deny: internal host detected via SECURITY_SCAN_INTERNAL_HOSTS", () => {
+      const result = scanForCredentials("https://internal.corp.com/api/secret");
+      expect(result.found).toBe(true);
+      expect(result.reason).toContain("internal.corp.com");
+    });
+
+    test("allow: old env var AUTH_GUARD_INTERNAL_HOSTS is not used", () => {
+      delete process.env["SECURITY_SCAN_INTERNAL_HOSTS"];
+      process.env["AUTH_GUARD_INTERNAL_HOSTS"] = "internal.corp.com";
+      const result = scanForCredentials("https://internal.corp.com/api/secret");
+      expect(result.found).toBe(false);
+    });
+  });
+});
+
+describe("scanForCredentials via Context7 tool (integration)", () => {
+  test("deny: credential in context7 query-docs code field", () => {
+    const credText = "sk-ant-api03-" + "a".repeat(20);
+    const result = scanForCredentials(credText);
+    expect(result.found).toBe(true);
+    expect(result.reason).toContain("Anthropic API key");
   });
 });
 

@@ -7,7 +7,7 @@
 // or context7 queries. Matches known credential patterns and denies the tool call
 // with a masked match in the reason string.
 //
-// Internal host filtering: set AUTH_GUARD_INTERNAL_HOSTS env var to a comma-separated
+// Internal host filtering: set SECURITY_SCAN_INTERNAL_HOSTS env var to a comma-separated
 // list of hostnames to also block (e.g. "internal.corp.com,api.private.io").
 // If unset, internal host checking is skipped.
 
@@ -93,7 +93,7 @@ export function scanForCredentials(text: string): ScanResult {
   }
 
   // Internal host check (optional, via env var)
-  const internalHostsEnv = process.env["AUTH_GUARD_INTERNAL_HOSTS"];
+  const internalHostsEnv = process.env["SECURITY_SCAN_INTERNAL_HOSTS"];
   if (internalHostsEnv) {
     const hosts = internalHostsEnv
       .split(",")
@@ -113,7 +113,7 @@ export function scanForCredentials(text: string): ScanResult {
 }
 
 // Extract the text content to scan from the tool input
-function extractScanTarget(toolName: string, toolInput: Record<string, unknown>): string {
+export function extractScanTarget(toolName: string, toolInput: Record<string, unknown>): string {
   switch (toolName) {
     case "WebFetch": {
       const parts: string[] = [];
