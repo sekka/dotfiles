@@ -145,6 +145,31 @@ describe("checkAuthCommand", () => {
     });
   });
 
+  describe("deny: sudo flag bypass for passwd", () => {
+    const denyCommands = [
+      ["sudo -u root passwd", "sudo -u root passwd"],
+      ["sudo --user=root passwd", "sudo --user=root passwd"],
+      ["sudo --user root passwd", "sudo --user root passwd"],
+    ];
+
+    for (const [command, description] of denyCommands) {
+      test(`deny: ${description}`, () => {
+        const result = checkAuthCommand(command);
+        expect(result.decision).toBe("deny");
+      });
+    }
+
+    test("allow: cat /etc/passwd (no false match on path)", () => {
+      const result = checkAuthCommand("cat /etc/passwd");
+      expect(result.decision).toBe("allow");
+    });
+
+    test("allow: grep root /etc/passwd", () => {
+      const result = checkAuthCommand("grep root /etc/passwd");
+      expect(result.decision).toBe("allow");
+    });
+  });
+
   describe("reason string is non-empty for non-allow decisions", () => {
     test("deny: passwd has a reason", () => {
       const result = checkAuthCommand("passwd");

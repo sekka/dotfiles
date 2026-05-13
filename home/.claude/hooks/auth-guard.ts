@@ -34,9 +34,12 @@ export interface AuthCheckResult {
 // Patterns that result in an immediate deny (irreversible credential changes)
 const DENY_PATTERNS: { pattern: RegExp; reason: string }[] = [
   {
-    // passwd command — matches "passwd", "passwd <user>", "sudo passwd <user>"
+    // passwd command — matches "passwd", "passwd <user>", "sudo passwd <user>",
+    // "sudo -u root passwd", "sudo --user root passwd", "sudo --user=root passwd", etc.
     // Does NOT match /etc/passwd (path), grep passwd, cat passwd, etc.
-    pattern: /(?:^|[;&|`]\s*|sudo\s+)passwd(?:\s+\S+)?(?:\s*[;&|`]|\s*$)/,
+    // Strategy: detect "passwd" as a command token not preceded by a path separator (/).
+    // This means passwd must NOT be immediately preceded by / (no path prefix).
+    pattern: /(?:^|[\s;&|`])passwd(?:\s+\S+)?(?:\s*[;&|`]|\s*$)/,
     reason:
       "passwd changes a user password — irreversible without recovery. Requires explicit user approval (auth-changes-need-approval.md).",
   },
