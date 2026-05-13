@@ -35,7 +35,7 @@ digraph fetch_flow {
 
 ## Extraction Logic (JS)
 
-Use the same code for agent-browser `eval` and Playwright MCP `browser_run_code`.
+Use the same code for agent-browser `eval` and Playwright MCP `browser_evaluate`.
 
 ```javascript
 (() => {
@@ -94,9 +94,9 @@ playwright-cli close
 Use only if Step 2 also fails.
 
 ```
-1. mcp__playwright__browser_navigate → TARGET_URL
-2. mcp__playwright__browser_run_code → run extraction logic (JS)
-3. mcp__playwright__browser_close → close session (required)
+1. mcp__plugin_playwright_playwright__browser_navigate → TARGET_URL
+2. mcp__plugin_playwright_playwright__browser_evaluate → run extraction logic (JS)
+3. mcp__plugin_playwright_playwright__browser_close → close session (required)
 ```
 
 ## Step 4: Format and Output

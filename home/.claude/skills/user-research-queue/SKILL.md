@@ -60,11 +60,60 @@ Path: `~/dotfiles/tasks/research-queue.md`
 
 ---
 
+## Title Fetching (shared by `add` and `add-deep`)
+
+Goal: produce a short, accurate title for the entry. Do NOT do a full evaluation here — that is what `quick` / `deep` are for. Delegate to other skills when the URL is on a host that needs special handling.
+
+```
+1. Host is x.com or twitter.com AND path matches /<user>/status/<id>
+   → Delegate to user-research-x-posts via the Skill tool, **once**.
+     - On success: use the first ~80 chars of the extracted post text as the title
+       (prefix with author handle when available: "@handle: <post excerpt>").
+     - On any failure (auth wall, "article not found", tool error, timeout):
+       fall back IMMEDIATELY to "URL fallback rendering" below.
+       Do NOT manually re-attempt agent-browser / playwright-cli / MCP from here —
+       user-research-x-posts already runs that fallback chain internally.
+2. Host is github.com AND path matches /<owner>/<repo> (repo root)
+   → Use `gh repo view <owner>/<repo> --json name,description` and form
+     "<owner>/<repo> — <description>" as the title. Truncate <description>
+     to ~80 chars; append "…" if truncated. No WebFetch needed.
+3. Otherwise
+   → WebFetch the URL and extract <title>. On 403/429/empty:
+       a. Try agent-browser CLI with `-i -c` to get the page title only
+       b. If still failing, fall back to "URL fallback rendering" below
+```
+
+**URL fallback rendering:** When no title can be extracted and the URL itself is the
+only available label, do NOT render as `[<url>](<url>)` (visually redundant). Use the
+plain URL form for the entry:
+
+```
+- [ ] YYYY-MM-DD — <url> — focus: <focus-note>
+```
+
+This is the **only** case where the entry omits the `[title](url)` markdown link.
+Emit `## Status: DONE_WITH_CONCERNS` noting "title fetch failed; URL used as label".
+
+**Title length cap (~80 chars):** Applies to the **extracted value from each source**
+(x.com post text, github `<description>`, generic `<title>`), NOT to the composed entry
+title. Truncate at the last word boundary ≤ 80 chars; if no word boundary exists within
+that range, hard-cut at 80. Append "…" if truncated.
+
+Example for github: if `<description>` is 200 chars, truncate it to ~80 chars + "…",
+then compose `<owner>/<repo> — <truncated-description>…`. The composed title may
+exceed 80 chars (because `<owner>/<repo>` is added on top); that is expected.
+
+**Constraints:**
+- Keep title fetching lightweight: do NOT trigger full Quick/Deep evaluation in user-research-eval-ref from `add` / `add-deep`. Only call user-research-x-posts (for x.com) or `gh` (for github.com repo roots).
+- Each delegated skill is invoked at most **once** for title fetching; do not re-escalate the child skill's internal fallback chain from this skill.
+
+---
+
 ## Subcommand: `add <url> [focus-note...]`
 
 1. Read `~/dotfiles/tasks/research-queue.md`
 2. **Duplicate check**: scan both Inbox and Deep Research 待ち sections for the same URL. If found, warn and stop.
-3. Fetch the page title via WebFetch (HEAD or GET, extract `<title>`). On failure, use the raw URL as the title.
+3. Fetch the page title using the **Title Fetching** flow above (x.com → user-research-x-posts, github.com repo → `gh`, otherwise WebFetch).
 4. Build entry: `- [ ] <today> — [<title>](<url>) — focus: <focus-note or TBD>`
 5. Append the entry under `## Inbox — Quick Eval 待ち`
 6. Report the added entry to the user
@@ -79,7 +128,7 @@ Use when the URL has already been evaluated elsewhere and should go directly to 
 
 1. Read `~/dotfiles/tasks/research-queue.md`
 2. **Duplicate check**: scan both Inbox and Deep Research 待ち sections for the same URL. If found, warn and stop.
-3. Fetch the page title via WebFetch. On failure, use the raw URL as the title.
+3. Fetch the page title using the **Title Fetching** flow above (x.com → user-research-x-posts, github.com repo → `gh`, otherwise WebFetch).
 4. Build entry: `- [ ] <today> — [<title>](<url>) — focus: <focus-note or TBD>`
 5. Append the entry under `## Deep Research 待ち`
 6. Report the added entry to the user
@@ -169,7 +218,13 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 - user-research-queue: Queue management — add, list, track, and move entries across Inbox / Deep Research 待ち / Done
 - user-research-eval-ref: Single-URL evaluation — Quick Eval, Deep Research, or OSS Wiki for one URL now
 - When `quick` is run, user-research-queue delegates the actual Quick Eval to user-research-eval-ref (Quick Eval mode)
-- When `deep` is run, user-research-queue delegates the actual Deep Research to user-research-eval-ref (Deep Research mode)
+- When `deep` is run, user-research-queue delegates the actual Deep Research to user-research-eval-ref (Deep Research mode). Primary-source verification happens inside user-research-eval-ref Mode 2.
+
+**user-research-queue vs user-research-x-posts:**
+- user-research-queue: Queue management
+- user-research-x-posts: Content extractor for x.com / twitter.com individual post URLs
+- During `add` / `add-deep`, user-research-queue calls user-research-x-posts to fetch the title for X post URLs (WebFetch is blocked on x.com).
+- During `quick` / `deep`, the delegated user-research-eval-ref also routes x.com URLs through user-research-x-posts internally; user-research-queue does not need to re-invoke it.
 
 </workflow>
 
@@ -190,7 +245,7 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 ## Status
 
 Add one of the following at the end of every response:
-- `## Status: DONE` — subcommand completed successfully
-- `## Status: DONE_WITH_CONCERNS` — completed but with caveats (e.g., title fetch failed, takeaway defaulted to TBD)
+- `## Status: DONE` — subcommand completed successfully (including `quick` / `deep` after the Skill tool delegation returns and an AskUserQuestion is issued; the turn ends at the AskUserQuestion call and `## Status: DONE` is emitted for that turn — the post-answer move is the next turn's work)
+- `## Status: DONE_WITH_CONCERNS` — completed but with caveats (e.g., title fetch failed → URL fallback rendering used, takeaway defaulted to TBD)
 - `## Status: BLOCKED` — cannot read or write the queue file
 - `## Status: NEEDS_CONTEXT` — subcommand or required argument cannot be determined from input
