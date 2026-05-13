@@ -172,12 +172,12 @@ describe("checkAuthCommand", () => {
 
     describe("credential env var exports", () => {
       const askCommands = [
-        "export AWS_SECRET_ACCESS_KEY=abc123",
-        "export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE",
-        "export GITHUB_TOKEN=ghp_1234567890",
-        "export OPENAI_API_KEY=sk-abc",
-        "export ANTHROPIC_API_KEY=sk-ant-abc",
-        "export STRIPE_SECRET_KEY=sk_live_abc",
+        "export AWS_SECRET_ACCESS_KEY=dummy-value",
+        "export AWS_ACCESS_KEY_ID=dummy-value",
+        "export GITHUB_TOKEN=dummy-value",
+        "export OPENAI_API_KEY=dummy-value",
+        "export ANTHROPIC_API_KEY=dummy-value",
+        "export STRIPE_SECRET_KEY=dummy-value",
       ];
 
       for (const command of askCommands) {

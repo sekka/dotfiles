@@ -31,6 +31,8 @@ export interface ScanResult {
 }
 
 // Credential detection patterns
+// NOTE: Anthropic and Stripe patterns must precede the generic sk- pattern so that
+// sk-ant-* and sk_live_* are not mis-labeled as "OpenAI API key".
 const CREDENTIAL_PATTERNS: { pattern: RegExp; label: string }[] = [
   {
     pattern: /AKIA[0-9A-Z]{16}/,
@@ -41,12 +43,7 @@ const CREDENTIAL_PATTERNS: { pattern: RegExp; label: string }[] = [
     label: "GitHub token",
   },
   {
-    // sk- followed by 20+ alphanumeric chars (OpenAI style)
-    // Exclude sk_test_, sk_live_ (those are Stripe, handled below)
-    pattern: /sk-[A-Za-z0-9]{20,}/,
-    label: "OpenAI API key",
-  },
-  {
+    // Anthropic API key — must come before generic sk- pattern
     pattern: /sk-ant-[A-Za-z0-9_-]{20,}/,
     label: "Anthropic API key",
   },
@@ -61,6 +58,13 @@ const CREDENTIAL_PATTERNS: { pattern: RegExp; label: string }[] = [
   {
     pattern: /rk_live_[A-Za-z0-9]{24,}/,
     label: "Stripe restricted key",
+  },
+  {
+    // OpenAI API key (sk- prefix, excluding Anthropic sk-ant- and Stripe sk_live_).
+    // Matches classic sk-xxxx and modern sk-proj-xxxx / sk-svcacct-xxxx forms.
+    // Uses negative lookahead to avoid matching already-handled prefixes above.
+    pattern: /sk-(?!ant-)(?!_)[A-Za-z0-9_-]{20,}/,
+    label: "OpenAI API key",
   },
   {
     pattern: /xox[baprs]-[0-9A-Za-z-]{10,}/,

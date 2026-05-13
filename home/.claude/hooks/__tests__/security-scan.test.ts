@@ -61,12 +61,24 @@ describe("scanForCredentials", () => {
       const result = scanForCredentials("sk-abcdefghijklmnopqrstu");
       expect(result.found).toBe(true);
     });
+
+    test("deny: sk-proj- prefix (modern OpenAI key)", () => {
+      const result = scanForCredentials("sk-proj-" + "a".repeat(20));
+      expect(result.found).toBe(true);
+      expect(result.reason).toContain("OpenAI API key");
+    });
   });
 
   describe("deny: Anthropic key", () => {
     test("deny: sk-ant- prefix", () => {
       const result = scanForCredentials("sk-ant-api03-abcdefghijklmnopqrstu");
       expect(result.found).toBe(true);
+    });
+
+    test("deny: sk-ant- labels as Anthropic API key (not OpenAI)", () => {
+      const result = scanForCredentials("sk-ant-api03-" + "a".repeat(20));
+      expect(result.found).toBe(true);
+      expect(result.reason).toContain("Anthropic API key");
     });
   });
 
@@ -196,17 +208,30 @@ describe("extractScanTarget", () => {
 });
 
 describe("scanForCredentials via Context7 tool (integration)", () => {
-  test("deny: credential in context7 query-docs code field", () => {
+  test("deny: credential in context7 query-docs code field (end-to-end via extractScanTarget)", () => {
     const credText = "sk-ant-api03-" + "a".repeat(20);
-    const result = scanForCredentials(credText);
+    const toolInput = { code: `const apiKey = "${credText}"` };
+    const extracted = extractScanTarget("mcp__plugin_context7_context7__query-docs", toolInput);
+    const result = scanForCredentials(extracted);
     expect(result.found).toBe(true);
     expect(result.reason).toContain("Anthropic API key");
   });
+
+  test("deny: OpenAI sk-proj key in context7 tool input (end-to-end via extractScanTarget)", () => {
+    const credText = "sk-proj-" + "a".repeat(20);
+    const toolInput = { query: `Using API key ${credText} for this request` };
+    const extracted = extractScanTarget("mcp__plugin_context7_context7__query-docs", toolInput);
+    const result = scanForCredentials(extracted);
+    expect(result.found).toBe(true);
+    expect(result.reason).toContain("OpenAI API key");
+  });
 });
+
+const hookPath = new URL("../security-scan.ts", import.meta.url).pathname;
 
 describe("fail-closed on error", () => {
   test("invalid JSON stdin produces permissionDecision: ask", async () => {
-    const proc = Bun.spawn(["bun", "/Users/kei/dotfiles/home/.claude/hooks/security-scan.ts"], {
+    const proc = Bun.spawn(["bun", hookPath], {
       stdin: new TextEncoder().encode("this is not json"),
       stdout: "pipe",
       stderr: "pipe",
