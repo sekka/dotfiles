@@ -1,6 +1,6 @@
 ---
 name: user-research-queue
-description: Manage the two-stage deep research backlog queue. Add URLs to Inbox or Deep Research 待ち, list pending items across both tiers, run Quick Eval on the next Inbox entry, run Deep Research on the next Deep Research 待ち entry, or mark items as done. Triggered by commands like "add to research queue", "what's in my research queue", "quick eval next", "deep research next", or "mark research done".
+description: Manage the two-stage deep research backlog queue. Add URLs to Inbox or Deep Research 待ち via `add` or `add-deep`, list pending items across both tiers, run Quick Eval on the next Inbox entry, run Deep Research on the next Deep Research 待ち entry, or mark items as done. Triggered by commands like "add to research queue", "what's in my research queue", "quick eval next", "deep research next", or "mark research done".
 disable-model-invocation: false
 effort: low
 ---
@@ -24,7 +24,7 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 | Subcommand | Trigger examples |
 |------------|-----------------|
 | `add` | "add to research queue", "queue this for later", "I'll research this later" |
-| `add-deep` | "add directly to deep research", "skip quick eval", "queue for deep research" |
+| `add-deep` | "add directly to deep research", "skip quick eval", "queue for deep research", "add-deep" |
 | `list` | "what's in my research queue", "show queue", no arguments |
 | `quick` | "quick eval next", "process inbox next", "evaluate next" |
 | `deep` | "deep research next", "process deep queue", "research next item" |
@@ -150,7 +150,7 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 
 1. Read `~/dotfiles/tasks/research-queue.md`
 2. Parse the tier prefix (`I` or `D`) and numeric index
-3. Locate the entry in the appropriate section. If index is out of range, report an error and list current queue
+3. Locate the entry in the appropriate section. If index is out of range, report an error with the invalid index, list current queue showing BOTH tiers (Inbox and Deep Research 待ち) in the same format as the `list` subcommand, and emit `## Status: BLOCKED`
 4. If `takeaway` is omitted, ask via AskUserQuestion: "One-line takeaway for this entry?"
 5. Determine `outcome`:
    - Inbox (`I`) origin → `outcome: quick`

@@ -53,6 +53,8 @@ Skip this phase when reviewing a single file or when all changed files are new (
 
 ## Phase 2: Review
 
+**Note:** If Phase 1 scope decision triggered delegation (6+ files, or auth/credential code), all Phase 2 work — including semgrep execution — runs inside the delegated reviewer-judgment agent. Do not run semgrep from the main agent in that case.
+
 Get the target code with Read/Grep/Glob and evaluate it from the following perspectives.
 
 ### Check points (in priority order)
@@ -131,6 +133,7 @@ When problems are detected:
 - Style preferences (follow existing code conventions)
 - Proposals for excessive abstraction or generalization
 - Refactoring that does not affect behavior (only if the user explicitly requests it)
+- Auto-generated lockfiles (`flake.lock`, `bun.lockb`, `package-lock.json`, etc.) — trust the generator; review only if explicitly requested
 
 ## Phase 5: Re-verify Loop
 
@@ -138,8 +141,10 @@ If fixes were made in Phase 4, re-verify that the fixes did not introduce new pr
 Skip this phase if no problems were found in Phase 4.
 
 ### Loop conditions
-- Repeat re-verification up to **2 times** (stop after 3 passes total)
-- Continue to the next loop only if Critical-level problems remain
+- **Pass 1:** Phase 2 initial security/correctness/performance/maintainability scan
+- **Passes 2–3:** Phase 5 re-verification only (up to 2 additional passes after fixes)
+- Total cap: 3 passes maximum per review
+- Continue to the next pass only if Critical-level problems remain
 - Stop the loop and report if only Warning-level or lower problems remain
 
 ### What to do in each loop
@@ -157,7 +162,8 @@ Skip this phase if no problems were found in Phase 4.
 | Situation | Action |
 |------|------|
 | 5 or fewer changed files | Complete within this skill |
-| 6 or more changed files, or architecture-level | Suggest delegating to a reviewer agent |
+| 6 or more changed files, or architecture-level | Delegate to a reviewer-judgment agent |
+| Any security / auth / credential / secret-handling code | Delegate to a reviewer-judgment agent, regardless of file count |
 
 ## Status
 

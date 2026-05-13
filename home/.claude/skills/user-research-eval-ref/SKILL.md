@@ -23,6 +23,9 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 | Deep Research | "I want to use this", "I want to adopt this", "Research this", "I'm interested", "Check if this is implementable" |
 | OSS Project Wiki | GitHub URL + "document this", "wiki化して", "まとめて", "解析してまとめて", "どんなプロジェクト", "comprehensive summary" |
 | Auto detection | URL + short question → Quick / URL + detailed background → Deep / GitHub URL + "wiki/document/まとめ" → OSS Wiki |
+
+**Precedence rule:** Explicit trigger phrases in the table above take precedence over the auto-detection heuristics. Auto-detection applies only when no trigger phrase matches the user's message.
+
 </quick_start>
 
 ## Iron Law
@@ -61,13 +64,16 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 ---
 
+## Routing Check (Applies to All Modes)
+
+Before entering Mode 1, 2, or 3, evaluate the routing table above. If the content type matches one of the routing targets (user-fe-knowledge, user-research-creative, user-research-websites), launch the target skill via the Skill tool and end evaluating-references here.
+
 ## Mode 1: Quick Evaluation
 
 **Flow:**
-1. Routing check (see table above)
-2. Summary in 3 lines or less
-3. Evaluate on a 5-point scale
-4. Output in structured card format
+1. Summary in 3 lines or less
+2. Evaluate on a 5-point scale
+3. Output in structured card format
 
 **5-point scale:**
 
@@ -145,7 +151,9 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 **Purpose:** Given a GitHub repository URL, produce a comprehensive Japanese wiki-style report that captures what the project is, how it works, how it compares to alternatives, and how the community receives it.
 
-**Trigger condition:** The URL matches `github.com/{owner}/{repo}` AND the user's message contains wiki/document/まとめ intent. If the URL is a GitHub repo but the intent is adoption-for-own-use, prefer Mode 2 (Deep Research) instead.
+**Trigger condition:** The URL matches `github.com/{owner}/{repo}` AND the user's message contains wiki/document/まとめ intent.
+
+**⚠️ OVERRIDE:** If the URL is a GitHub repo BUT the user's intent is adoption-for-own-use ("use this", "adopt this", "should I use this", "research for my environment"), **switch to Mode 2 (Deep Research)** instead. Adoption-intent supersedes the GitHub URL default.
 
 **Flow:**
 1. Gather repo metadata via `gh` CLI (stars, description, topics, recent commits, latest release)
