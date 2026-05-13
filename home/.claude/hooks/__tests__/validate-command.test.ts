@@ -311,4 +311,48 @@ describe("validateCommand", () => {
       expect(result.isValid).toBe(true);
     });
   });
+
+  describe("WIDE_KILL_PATTERNS → wide pkill/killall on user apps", () => {
+    describe("deny: pkill -f with user-visible app names", () => {
+      const denyCommands = [
+        [`pkill -f "Google Chrome"`, "quoted Google Chrome"],
+        [`pkill -f Google Chrome`, "unquoted Google Chrome"],
+        [`pkill -f "node"`, "quoted node (exact)"],
+        [`pkill -f node`, "bare node"],
+        [`pkill -f "python"`, "quoted python (exact)"],
+        [`pkill -f python`, "bare python"],
+        [`pkill -f "chrome"`, "bare chrome"],
+        [`pkill -f "firefox"`, "bare firefox"],
+        [`pkill -f "safari"`, "bare safari"],
+        [`pkill -f "Slack"`, "Slack app"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description} (${command})`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("allow: pkill -f with specific wrapper/script names", () => {
+      const allowCommands = [
+        [`pkill -f "chrome-devtools-mcp"`, "chrome-devtools-mcp wrapper"],
+        [`pkill -f chrome-devtools-mcp`, "unquoted chrome-devtools-mcp"],
+        [`pkill -f "node-server"`, "node-server wrapper"],
+        [`pkill -f "python3.11-foo"`, "python3.11-foo wrapper"],
+        [`kill 12345`, "kill by PID"],
+        [`kill -9 12345`, "kill -9 by PID"],
+        [`kill -TERM 12345`, "kill -TERM by PID"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description} (${command})`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+  });
 });

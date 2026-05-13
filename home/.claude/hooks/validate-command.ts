@@ -58,6 +58,71 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
   },
 ];
 
+// User-visible applications that should not be targeted by wide pkill/killall patterns.
+// Reference: home/.claude/rules/process-kill-targeting.md
+// Incident: 2026-04-05 wide pkill caused Chrome browser kill.
+const WIDE_KILL_APP_NAMES = [
+  "Google Chrome",
+  "chrome",
+  "firefox",
+  "safari",
+  "node",
+  "python",
+  "python3",
+  "Slack",
+  "Discord",
+  "Finder",
+  "Code",
+  "iTerm2",
+  "Terminal",
+];
+
+// Matches a pkill -f argument (quoted or unquoted) extracting the pattern string.
+// Returns undefined if the command is not a pkill -f.
+function extractPkillPattern(command: string): string | undefined {
+  // pkill -f "pattern" (quoted)
+  const quoted = command.match(/\bpkill\b[^-]*-f\s+"([^"]+)"/);
+  if (quoted?.[1]) return quoted[1];
+  // pkill -f pattern (unquoted — capture rest of line as the pattern, trimmed)
+  const unquoted = command.match(/\bpkill\b[^-]*-f\s+(.+?)(?:\s*[;&|]|$)/);
+  if (unquoted?.[1]) return unquoted[1].trim();
+  return undefined;
+}
+
+// Returns true if the pkill -f pattern is a wide pattern targeting a user-visible app.
+// Allows wrapper script names like "chrome-devtools-mcp" (starts with known app but has suffix with dash/underscore).
+function isWideKillPattern(pattern: string): boolean {
+  for (const appName of WIDE_KILL_APP_NAMES) {
+    const lower = pattern.toLowerCase();
+    const lowerApp = appName.toLowerCase();
+
+    // Multi-word app names (e.g. "Google Chrome"): deny if pattern starts with them
+    if (appName.includes(" ")) {
+      if (lower.startsWith(lowerApp)) return true;
+      continue;
+    }
+
+    // Single-word names: deny if pattern exactly equals app name,
+    // OR the pattern after the app name begins with a regex metachar or space
+    // (i.e. "chrome.*something" is still a wide pattern).
+    // Allow if the app name is followed by - or _ (wrapper script convention).
+    if (lower === lowerApp) return true;
+    if (lower.startsWith(lowerApp)) {
+      const nextChar: string | undefined = lower[lowerApp.length];
+      // Wrapper names are separated with -, _, or a digit (e.g. python3.11-foo)
+      if (
+        nextChar === "-" ||
+        nextChar === "_" ||
+        (nextChar !== undefined && nextChar >= "0" && nextChar <= "9")
+      )
+        return false;
+      // Otherwise it's a wide pattern (metachar, space, etc.)
+      return true;
+    }
+  }
+  return false;
+}
+
 // Dangerous command chain patterns
 const DANGEROUS_CHAINS = [
   /\|\s*(rm|sudo|dd|shred|mkfs)\s+/,
@@ -90,6 +155,17 @@ export function validateCommand(command: string): {
         severity: "prohibited",
       };
     }
+  }
+
+  // Wide kill patterns — block pkill -f targeting user-visible applications
+  const pkillPattern = extractPkillPattern(command);
+  if (pkillPattern !== undefined && isWideKillPattern(pkillPattern)) {
+    return {
+      isValid: false,
+      reason:
+        "Wide kill pattern can match user applications. Use 'kill <PID>' after pgrep to confirm a single match.",
+      severity: "prohibited",
+    };
   }
 
   // Critical patterns — immediate block
