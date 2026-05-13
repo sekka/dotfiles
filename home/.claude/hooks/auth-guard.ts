@@ -45,8 +45,19 @@ const SUDO_OPTIONS_WITH_ARG = new Set([
   "-c",
 ]);
 
+// Returns the index of the first token that is NOT a shell env-var assignment (NAME=value).
+// Assignments match bash identifier rules: [A-Za-z_][A-Za-z0-9_]*=...
+function skipLeadingEnvAssignments(tokens: string[], startIdx: number): number {
+  let i = startIdx;
+  while (i < tokens.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i] as string)) {
+    i++;
+  }
+  return i;
+}
+
 // Returns true if `passwd` appears as an executed command token, not as a path or argument.
-// Handles: passwd, passwd user, sudo passwd, sudo -u root passwd, sudo --user=root passwd.
+// Handles: passwd, passwd user, sudo passwd, sudo -u root passwd, sudo --user=root passwd,
+//          PATH=/tmp passwd root, FOO=1 sudo passwd root.
 // Rejects: grep passwd, echo passwd, cat /etc/passwd, /usr/bin/passwd (path-prefixed).
 function isPasswdCommand(command: string): boolean {
   // Walk shell segments separated by ;  &&  ||  |
@@ -56,7 +67,9 @@ function isPasswdCommand(command: string): boolean {
     const tokens = segment.trim().split(/\s+/).filter(Boolean);
     if (tokens.length === 0) continue;
 
-    let idx = 0;
+    // Skip any leading NAME=value env-var assignments before the command
+    let idx = skipLeadingEnvAssignments(tokens, 0);
+
     // Strip sudo and its flag/option tokens
     if (tokens[idx] === "sudo") {
       idx++;

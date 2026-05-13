@@ -277,6 +277,35 @@ describe("checkAuthCommand", () => {
     });
   });
 
+  describe("Fix #1 (CodeRabbit round 4): env var assignment prefix bypass for passwd", () => {
+    describe("deny: leading env var assignment before passwd command", () => {
+      const denyCommands = [
+        "PATH=/tmp passwd root",
+        "FOO=1 sudo passwd root",
+        "FOO=1 BAR=2 sudo -u root /usr/bin/passwd target",
+      ];
+
+      for (const command of denyCommands) {
+        test(`deny: ${command}`, () => {
+          const result = checkAuthCommand(command);
+          expect(result.decision).toBe("deny");
+        });
+      }
+    });
+
+    describe("allow: env var assignment as argument (not prefix)", () => {
+      test("allow: echo FOO=bar", () => {
+        const result = checkAuthCommand("echo FOO=bar");
+        expect(result.decision).toBe("allow");
+      });
+
+      test("allow: grep passwd /etc/passwd", () => {
+        const result = checkAuthCommand("grep passwd /etc/passwd");
+        expect(result.decision).toBe("allow");
+      });
+    });
+  });
+
   describe("reason string is non-empty for non-allow decisions", () => {
     test("deny: passwd has a reason", () => {
       const result = checkAuthCommand("passwd");
