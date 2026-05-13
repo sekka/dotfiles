@@ -1,6 +1,50 @@
 import { describe, expect, test } from "bun:test";
 import { checkAuthCommand } from "../auth-guard";
 
+const hookPath = new URL("../auth-guard.ts", import.meta.url).pathname;
+
+describe("auth-guard main(): fail-closed on anomalous input (Fix #2)", () => {
+  test("empty stdin → permissionDecision: ask", async () => {
+    const proc = Bun.spawn(["bun", hookPath], {
+      stdin: new TextEncoder().encode(""),
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    await proc.exited;
+    const stderrText = await new Response(proc.stderr).text();
+    const parsed = JSON.parse(stderrText);
+    expect(parsed.hookSpecificOutput.permissionDecision).toBe("ask");
+    expect(parsed.hookSpecificOutput.permissionDecisionReason).toContain("Please verify manually");
+  });
+
+  test("invalid JSON stdin → permissionDecision: ask", async () => {
+    const proc = Bun.spawn(["bun", hookPath], {
+      stdin: new TextEncoder().encode("this is not json"),
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    await proc.exited;
+    const stderrText = await new Response(proc.stderr).text();
+    const parsed = JSON.parse(stderrText);
+    expect(parsed.hookSpecificOutput.permissionDecision).toBe("ask");
+    expect(parsed.hookSpecificOutput.permissionDecisionReason).toContain("Please verify manually");
+  });
+
+  test("command field missing → permissionDecision: ask", async () => {
+    const input = JSON.stringify({ tool_name: "Bash", tool_input: {} });
+    const proc = Bun.spawn(["bun", hookPath], {
+      stdin: new TextEncoder().encode(input),
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    await proc.exited;
+    const stderrText = await new Response(proc.stderr).text();
+    const parsed = JSON.parse(stderrText);
+    expect(parsed.hookSpecificOutput.permissionDecision).toBe("ask");
+    expect(parsed.hookSpecificOutput.permissionDecisionReason).toContain("Please verify manually");
+  });
+});
+
 describe("checkAuthCommand", () => {
   describe("allow: safe commands", () => {
     const safeCommands = [
@@ -166,6 +210,33 @@ describe("checkAuthCommand", () => {
 
     test("allow: grep root /etc/passwd", () => {
       const result = checkAuthCommand("grep root /etc/passwd");
+      expect(result.decision).toBe("allow");
+    });
+  });
+
+  describe("Fix #1: passwd basename detection (path-prefixed forms)", () => {
+    const denyCommands = [
+      "/usr/bin/passwd root",
+      "/bin/passwd root",
+      "sudo /usr/bin/passwd root",
+      "sudo /bin/passwd root",
+      "sudo -u root /usr/bin/passwd target",
+    ];
+
+    for (const command of denyCommands) {
+      test(`deny: ${command}`, () => {
+        const result = checkAuthCommand(command);
+        expect(result.decision).toBe("deny");
+      });
+    }
+
+    test("allow: grep passwd /etc/passwd (passwd as arg)", () => {
+      const result = checkAuthCommand("grep passwd /etc/passwd");
+      expect(result.decision).toBe("allow");
+    });
+
+    test('allow: echo "/usr/bin/passwd" (quoted path as arg)', () => {
+      const result = checkAuthCommand('echo "/usr/bin/passwd"');
       expect(result.decision).toBe("allow");
     });
   });

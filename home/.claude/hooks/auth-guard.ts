@@ -82,9 +82,13 @@ function isPasswdCommand(command: string): boolean {
       }
     }
 
-    // The effective command token
-    const cmd = tokens[idx];
-    if (cmd === "passwd") return true;
+    // The effective command token — strip quotes and resolve basename
+    // so that /usr/bin/passwd or "passwd" also match.
+    const rawCmd = tokens[idx];
+    if (!rawCmd) continue;
+    const unquoted = rawCmd.replace(/^['"]|['"]$/g, "");
+    const base = unquoted.split("/").pop() ?? unquoted;
+    if (base === "passwd") return true;
   }
   return false;
 }
@@ -195,8 +199,9 @@ async function main() {
         JSON.stringify({
           hookSpecificOutput: {
             hookEventName: "PreToolUse",
-            permissionDecision: "allow",
-            permissionDecisionReason: "No input provided",
+            permissionDecision: "ask",
+            permissionDecisionReason:
+              "Auth guard could not inspect command: no input provided. Please verify manually.",
           },
         }),
       );
@@ -211,8 +216,9 @@ async function main() {
         JSON.stringify({
           hookSpecificOutput: {
             hookEventName: "PreToolUse",
-            permissionDecision: "allow",
-            permissionDecisionReason: "No command to check",
+            permissionDecision: "ask",
+            permissionDecisionReason:
+              "Auth guard could not inspect command: command field missing. Please verify manually.",
           },
         }),
       );
@@ -236,8 +242,8 @@ async function main() {
       JSON.stringify({
         hookSpecificOutput: {
           hookEventName: "PreToolUse",
-          permissionDecision: "allow",
-          permissionDecisionReason: `Auth guard error: ${error instanceof Error ? error.message : String(error)}`,
+          permissionDecision: "ask",
+          permissionDecisionReason: `Auth guard could not inspect command: ${error instanceof Error ? error.message : String(error)}. Please verify manually.`,
         },
       }),
     );
