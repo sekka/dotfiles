@@ -46,9 +46,9 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 #### validate-command.ts
 
 - **イベント**: PreToolUse:Bash
-- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`--force-push`/`reset --hard` を `deny`、`rm`/`sudo`/`dd` へのパイプ操作を `ask` として扱う。
+- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`--force-push`/`reset --hard`/`git commit --no-verify` を `deny`、`rm`/`sudo`/`dd` へのパイプ操作を `ask` として扱う。また `pkill -f` / `killall` でユーザー可視アプリ (Chrome/node/python/Slack 等) をターゲットにする wide-kill パターンを `deny` する。
 - **入力**: `tool_input.command` (Bash コマンド文字列)
-- **出力**: `permissionDecision: deny | ask | allow` を JSON で stdout に出力
+- **出力**: `permissionDecision: deny | ask | allow` を JSON で stderr に出力
 - **由来**: FAILURES.md 由来のエスカレーション。`sed` 使用・`git add -A` 使用などの繰り返し違反を L4 (tool denial) で封じている。
 
 #### rtk-rewrite.ts
@@ -61,7 +61,7 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 
 #### protect-sensitive.sh
 
-- **イベント**: PreToolUse:Read / PreToolUse:Edit|Write|NotebookEdit
+- **イベント**: PreToolUse:Read / PreToolUse:Edit|Write (NotebookEdit は対象外)
 - **役割**: `settings.json` の `permissions.deny` グロブでは捕捉できない機密パターンを補完する第二防衛線。`.p12`/`.pfx`、`.git/` 内部への直接書き込み、パストラバーサル (`../`)、シンボリックリンク解決先が保護対象になっている書き込みをブロックする。
 - **入力**: `tool_input.file_path` / `tool_name`
 - **出力**: exit 2 でツール実行をキャンセル（Block）、または exit 0 でスルー
@@ -139,7 +139,7 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 
 - **イベント**: PostToolUse:Bash
 - **役割**: Bash ツールの連続失敗回数を `/tmp` に記録し、THRESHOLD (3) 回連続で失敗したら `additionalContext` に警告を注入してアプローチ変更を促す。成功時・警告出力後にカウンターをリセットする。
-- **入力**: `session_id`、`tool_response.is_error`
+- **入力**: `session_id`、`tool_response.exit_code`
 - **出力**: `additionalContext` 警告 JSON を stdout に出力（閾値到達時のみ）
 - **由来**: 同一コマンドのリトライループを断ち切り、トークンの無駄遣いを防ぐ。
 
@@ -226,7 +226,7 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 #### language-reminder.ts
 
 - **イベント**: UserPromptSubmit
-- **役割**: `language-policy.md` から現在の言語レベル (L{N}) を読み取り、L1 以上であれば sentence-level 英語混在の reminder を `additionalContext` として注入する。ファイル取得失敗時は無音終了 (fail-closed)。
+- **役割**: `language-policy.md` から現在の言語レベル (L{N}) を読み取り、L1 以上であれば sentence-level 英語混在の reminder を `additionalContext` として注入する。ファイル取得失敗時は無音終了 (fail-open)。
 - **入力**: なし（`~/.claude/rules/language-policy.md` を読み込む）
 - **出力**: `additionalContext` に reminder を注入した JSON を stdout に出力
 - **由来**: `language-policy.md` の英語混在ルールを毎ターン冒頭で確実に適用するために実装。
