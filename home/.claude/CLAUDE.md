@@ -151,6 +151,7 @@ Custom skills (`~/.claude/skills/`) and plugin skills are matched automatically 
 ## References
 
 - Security policy: `.claude/rules/security.md`
+- Visual output policy (when to use visual-explainer skills): `.claude/rules/visual-output.md`
 - Subagent definitions: `home/.claude/agents/`
 - Skill list and usage: `docs/claude-code-cheatsheet.md`
 
