@@ -79,6 +79,15 @@
         ]
       },
       {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/delegation-guard.ts"
+          }
+        ]
+      },
+      {
         "matcher": "Read",
         "hooks": [
           {
@@ -158,6 +167,14 @@
             "command": "bash $HOME/.claude/hooks/commit-reminder.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/language-check.ts"
+          }
+        ]
       }
     ],
     "StopFailure": [
@@ -228,6 +245,10 @@
           {
             "type": "command",
             "command": "bun $HOME/.claude/hooks/git-context.ts"
+          },
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/language-reminder.ts"
           }
         ]
       }
