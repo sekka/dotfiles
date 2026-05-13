@@ -57,6 +57,40 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-13 — [『生成AI時代のクレデンシャルとパーミッション設計 — Claude Code を起点に』を書きます。個人開発者向けにコメント募集](https://blog.takuros.net/entry/2026/05/06/135413) — focus: TBD
 - [ ] 2026-05-13 — [エージェントフレンドリーなウェブサイトを構築する](https://web.dev/articles/ai-agent-site-ux?hl=ja) — focus: TBD
 - [ ] 2026-05-13 — [Claude Code × tmuxの個人的活用術](https://dev.classmethod.jp/articles/shuntaka-claude-code-tmux-personal-tips/) — focus: TBD
+- [ ] 2026-05-13 — [【Claude Code】CLAUDE.md・skills・agents を整備して開発体験が劇的に変わった話](https://zenn.dev/linkedge/articles/27c38cdd9bedc6) — focus: TBD
+- [ ] 2026-05-13 — [Agents can now create Cloudflare accounts, buy domains, and deploy](https://blog.cloudflare.com/agents-stripe-projects/) — focus: TBD
+- [ ] 2026-05-13 — [【完全版】Claude Code運用40選](https://note.com/kawaidesign/n/nce2f82c62f1f) — focus: TBD
+- [ ] 2026-05-13 — [mattpocock/skills — Skills for Real Engineers. Straight from my .claude directory.](https://github.com/mattpocock/skills) — focus: TBD
+- [ ] 2026-05-13 — [Claude Codeにレビューを任せてチームの負担を減らす](https://zenn.dev/wwwave/articles/4d21d34ad604ba) — focus: TBD
+- [ ] 2026-05-13 — [Claude の Adobe for creativity の使い方](https://note.com/npaka/n/n6841ac39cc4c) — focus: TBD
+- [ ] 2026-05-13 — [pnpm 11.0リリース ——新規公開の依存パッケージをデフォルトで1日後に解決対象に](https://gihyo.jp/article/2026/04/pnpm-v11-release) — focus: TBD
+- [ ] 2026-05-13 — [理想のアプリに近づけるため「Claude Design」を試す ゼロから始めるAIコーディング(2)](https://www.watch.impress.co.jp/docs/topic/2105497.html) — focus: TBD
+- [ ] 2026-05-13 — [Vibe Designは何を失っているか](https://domaindesign.co/column/the-loss-of-vibe-design/) — focus: TBD
+- [ ] 2026-05-13 — [@tonkotsuboy_com on X](https://x.com/tonkotsuboy_com/status/2046044523957207549) — focus: TBD
+- [ ] 2026-05-13 — [Web 標準動向 2026年4月版](https://zenn.dev/cybozu_frontend/articles/web_standards_trends_202604) — focus: TBD
+- [ ] 2026-05-13 — [AI時代に価値が出るのは「作る力」ではなく「評価して回す力」](https://note.com/suthio/n/n21809850230e) — focus: TBD
+- [ ] 2026-05-13 — [Claude Codeのルーチン機能で定期的にパフォーマンスチューニングをさせている](https://zenn.dev/yamadashy/articles/claude-code-routines-perf-tuning) — focus: TBD
+- [ ] 2026-05-13 — [非エンジニアの「作りたい」と「安全に公開したい」を両立する Sandbox MCP を作った](https://zenn.dev/aircloset/articles/65efe9614f8e73) — focus: TBD
+- [ ] 2026-05-13 — [getagentseal/codeburn — Interactive TUI dashboard for Claude Code, Codex, and Cursor cost observability](https://github.com/getagentseal/codeburn) — focus: TBD
+- [ ] 2026-05-13 — [SIerのウォーターフォール開発をスキル化して、AI駆動開発しやすい形に再構成する](https://zenn.dev/is0383kk/articles/5615d445490d7a) — focus: TBD
+- [ ] 2026-05-13 — [ターミナルで動く開発モニタをRustで作った — Ratatuiで実用TUIを作って見えた5つの設計課題とその解き方](https://zenn.dev/okamyuji/articles/ratatui-real-world-tui-design-patterns) — focus: TBD
+- [ ] 2026-05-13 — [Claude Code プラグインおすすめ 2026 — 公式マーケットプレイスから入れるべきプラグイン & MCP サーバー](https://zenn.dev/ino_h/articles/2026-04-23-claude-code-plugins-ranking) — focus: TBD
+- [ ] 2026-05-13 — [ハーネスエンジニアリングを楽にする Microsoft 製の新ツール「APM」ハンズオン](https://zenn.dev/microsoft/articles/agent-package-manager-handson) — focus: TBD
+- [ ] 2026-05-13 — [同じ Issue を Claude・Codex・Gemini に同時に解かせるとどうなるか — git worktree × tmux で衝突しない並列 AI 開発](https://qiita.com/nogataka/items/1156e2d3a40c4dab3398) — focus: TBD
+- [ ] 2026-05-13 — [AI時代のリッチテキスト形式（RTF）](https://blog.lai.so/ai-rich-text-format/) — focus: TBD
+- [ ] 2026-05-13 — [Obsidian がもう散らからない。わたしが Claude Code に任せている Skills 5 選](https://note.com/shotovim/n/n7e8a69ba655c) — focus: TBD
+- [ ] 2026-05-13 — [Secretlint v13.0.0リリース: .gitignore済みをデフォルトで無視、Tailscale/Stripe/Cloudflareの検出に対応](https://efcl.info/2026/05/05/secretlint-v13/) — focus: TBD
+- [ ] 2026-05-13 — [事前に定義した UI を AI に生成させる json-render を試してみた](https://azukiazusa.dev/blog/json-render) — focus: TBD
+- [ ] 2026-05-13 — [AGENTS.mdをベストプラクティスに沿って自動更新する自作スキルとhook設定がいい感じ](https://zenn.dev/ryonakae/articles/338f63fb030267) — focus: TBD
+- [ ] 2026-05-13 — [ObsidianTips：ローカルの画像ファイルをクラウド管理してみよう](https://note.com/shotovim/n/n24119bee32ce) — focus: TBD
+- [ ] 2026-05-13 — [Canvas 内に直接 HTML を描画できる HTML in Canvas API について](https://azukiazusa.dev/blog/html-in-canvas-api) — focus: TBD
+- [ ] 2026-05-13 — [忘れがちな robots.txt の確認を GitHub Actions の PR コメントで促す](https://zenn.dev/chot/articles/74227f0db1b11e) — focus: TBD
+- [ ] 2026-05-13 — [Obsidianのおすすめフォルダ構成](https://note.com/shotovim/n/n3f0f10aceee7) — focus: TBD
+- [ ] 2026-05-13 — [AI時代におけるタスク管理を考える](https://zenn.dev/mkj/articles/geminitask_20260325) — focus: TBD
+- [ ] 2026-05-13 — [Xの投稿をObsidianに蓄積したいんだ！](https://note.com/shotovim/n/nc446b6a455c0) — focus: TBD
+- [ ] 2026-05-13 — [Google Workspaceをコマンドラインで操作する「gws」、Googleがオープンソースで公開。Agent Skillsファイルも提供し、AIエージェントによる適切な操作実現](https://www.publickey1.jp/blog/26/google_workspacegwsgoogleagent_skillsai.html) — focus: TBD
+- [ ] 2026-05-13 — [15以上のアイコンライブラリから5万点以上のアイコンを用意したMCP対応アイコン検索システム・「Iconstack」](https://kachibito.net/useful-resource/iconstack) — focus: TBD
+- [ ] 2026-05-13 — [blog.tsubotax.com/n/n2dadfe4bd019](https://blog.tsubotax.com/n/n2dadfe4bd019) — focus: TBD (タイトル取得失敗 — note session redirect)
 
 ## Deep Research 待ち
 
