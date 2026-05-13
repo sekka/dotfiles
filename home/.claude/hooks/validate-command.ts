@@ -288,14 +288,17 @@ function isWideKillPattern(pattern: string): boolean {
     if (lower === lowerApp) return true;
     if (lower.startsWith(lowerApp)) {
       const nextChar: string | undefined = lower[lowerApp.length];
-      // Wrapper names are separated with -, _, ., or a digit (e.g. python3.11-foo)
-      if (
-        nextChar === "-" ||
-        nextChar === "_" ||
-        nextChar === "." ||
-        (nextChar !== undefined && nextChar >= "0" && nextChar <= "9")
-      )
-        continue; // don't return false — another app name may still match exactly
+      // Wrapper names start with -, _, or a digit (e.g. node-server, python3.11-foo)
+      if (nextChar === "-" || nextChar === "_") continue;
+      if (nextChar !== undefined && nextChar >= "0" && nextChar <= "9") continue;
+      // A literal dot separator (e.g. python3.11-foo) is allowed only if the
+      // part after the dot is purely alphanumeric/hyphen/underscore (version suffix).
+      // If it contains a regex metachar (e.g. chrome.*, node.+) → wide pattern → deny.
+      if (nextChar === ".") {
+        const afterDot = lower.slice(lowerApp.length + 1);
+        if (/^[A-Za-z0-9_-]+$/.test(afterDot)) continue; // safe version suffix
+        return true; // regex metachar or other suspicious char after the dot
+      }
       // Otherwise it's a wide pattern (metachar, space, etc.)
       return true;
     }

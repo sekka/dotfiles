@@ -536,5 +536,32 @@ describe("validateCommand", () => {
         expect(result.isValid).toBe(true);
       });
     });
+
+    describe("Fix #3 round5: isWideKillPattern denies regex metachar after . separator", () => {
+      const denyCommands = [
+        [`pkill -f 'chrome.*'`, "chrome.* (regex after dot)"],
+        [`pkill -f 'node.+'`, "node.+ (regex after dot)"],
+        [`pkill -f 'python.?'`, "python.? (regex after dot)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [`pkill -f 'python3.11-foo'`, "python3.11-foo (version separator, allow)"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
   });
 });
