@@ -58,6 +58,243 @@ const PROHIBITED_COMMANDS: { pattern: RegExp; reason: string }[] = [
   },
 ];
 
+// User-visible applications that should not be targeted by wide pkill/killall patterns.
+// Reference: home/.claude/rules/process-kill-targeting.md
+// Incident: 2026-04-05 wide pkill caused Chrome browser kill.
+const WIDE_KILL_APP_NAMES = [
+  "Google Chrome",
+  "chrome",
+  "firefox",
+  "safari",
+  "node",
+  "python",
+  "python3",
+  "Slack",
+  "Discord",
+  "Finder",
+  "Code",
+  "iTerm2",
+  "Terminal",
+];
+
+// pkill options that take an argument (next token is the option's value, not the pattern).
+// Reference: pkill(1) man page. Only options that consume a separate value token.
+// Note: -n/--newest, -o/--oldest, -c/--count, -v/--inverse, -x/--exact, -f/--full are
+// standalone selectors (no argument), so they are NOT in this set.
+const PKILL_OPTIONS_WITH_ARG = new Set([
+  "-u",
+  "-U",
+  "-G",
+  "-g",
+  "-P",
+  "-s",
+  "-t",
+  "--euid",
+  "--uid",
+  "--gid",
+  "--pgroup",
+  "--session",
+  "--terminal",
+  "--ns",
+  "--nslist",
+  "--signal",
+]);
+
+// Shell-aware tokenizer: splits on whitespace but keeps quoted strings (with spaces) as one token.
+// Strips surrounding quotes from each token.
+function shellTokenize(command: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < command.length) {
+    // Skip whitespace
+    while (i < command.length && /\s/.test(command[i] as string)) i++;
+    if (i >= command.length) break;
+
+    const quote = command[i] as string;
+    if (quote === '"' || quote === "'") {
+      // Quoted token — find closing quote
+      const start = i + 1;
+      i++;
+      while (i < command.length && command[i] !== quote) i++;
+      tokens.push(command.slice(start, i));
+      if (i < command.length) i++; // skip closing quote
+    } else {
+      // Unquoted token — read until unescaped whitespace.
+      // A backslash followed by any character (including space) is treated as
+      // an escaped literal, keeping the token intact (e.g. Google\ Chrome → "Google Chrome").
+      const parts: string[] = [];
+      while (i < command.length) {
+        const ch = command[i] as string;
+        if (ch === "\\") {
+          // Consume the backslash and treat the next char as a literal
+          i++;
+          if (i < command.length) {
+            parts.push(command[i] as string);
+            i++;
+          }
+        } else if (/\s/.test(ch)) {
+          break; // end of token
+        } else {
+          parts.push(ch);
+          i++;
+        }
+      }
+      tokens.push(parts.join(""));
+    }
+  }
+  return tokens;
+}
+
+// Matches a pkill -f argument (quoted or unquoted) extracting the pattern string.
+// Handles flags before -f: pkill -9 -f, pkill -KILL -f, pkill --signal KILL -f.
+// Also handles combined short options containing f: pkill -fx, pkill -xf.
+// Skips option-with-arg pairs (e.g. -u alice) so the arg is not mistaken for the pattern.
+// Returns undefined if the command is not a pkill -f (or combined form).
+function extractPkillPattern(command: string): string | undefined {
+  const tokens = shellTokenize(command);
+  const pkillIdx = tokens.findIndex((t) => /^pkill$/i.test(t));
+  if (pkillIdx === -1) return undefined;
+
+  for (let i = pkillIdx + 1; i < tokens.length; i++) {
+    const tok = tokens[i] as string;
+
+    if (!tok.startsWith("-")) {
+      // Non-flag token before any -f found — not a -f invocation
+      return undefined;
+    }
+
+    // --long=value (no separate arg token needed)
+    if (tok.startsWith("--") && tok.includes("=")) {
+      continue;
+    }
+
+    // Known option that takes a separate arg — skip it and its value
+    if (PKILL_OPTIONS_WITH_ARG.has(tok)) {
+      i++; // skip next token (the option's value)
+      continue;
+    }
+
+    if (tok === "-f") {
+      // Standard -f: join remaining non-flag tokens as the pattern.
+      // "pkill -f Google Chrome" → "Google Chrome"; "pkill -f node" → "node"
+      if (i + 1 >= tokens.length) return undefined;
+      const patternParts: string[] = [];
+      for (let j = i + 1; j < tokens.length; j++) {
+        const p = tokens[j] as string;
+        if (p.startsWith("-")) break; // stop at next flag
+        patternParts.push(p);
+      }
+      return patternParts.join(" ") || undefined;
+    }
+
+    if (!tok.startsWith("--") && tok.includes("f")) {
+      // Combined short option like -fx, -xf — next non-flag token is the pattern
+      for (let j = i + 1; j < tokens.length; j++) {
+        const candidate = tokens[j] as string;
+        if (!candidate.startsWith("-")) {
+          return candidate;
+        }
+      }
+    }
+
+    // Other single-flag without arg (e.g. -9, -KILL, -x) — skip
+  }
+
+  return undefined;
+}
+
+// killall options that take a separate argument (next token is the option's value).
+// Reference: killall(1) macOS + GNU variants.
+const KILLALL_OPTIONS_WITH_ARG = new Set([
+  "-s",
+  "--signal",
+  "-u",
+  "--user",
+  "-Z",
+  "--context",
+  "-g",
+  "--pgroup",
+  "-G",
+  "--group",
+  "-n",
+  "-z",
+]);
+
+// Matches a killall argument (quoted or unquoted), skipping flag tokens and option args.
+// Handles: killall -9 chrome, killall -KILL chrome, killall -- chrome, killall "App Name"
+// Also handles: killall -u alice chrome, killall -s KILL chrome, killall --signal=KILL chrome
+function extractKillallTarget(command: string): string | undefined {
+  const tokens = shellTokenize(command);
+  const killallIdx = tokens.findIndex((t) => /^killall$/i.test(t));
+  if (killallIdx === -1) return undefined;
+
+  for (let i = killallIdx + 1; i < tokens.length; i++) {
+    const tok = tokens[i] as string;
+
+    if (tok === "--") {
+      // End of options — next token is the process name
+      if (i + 1 < tokens.length) return tokens[i + 1] as string;
+      return undefined;
+    }
+
+    if (tok.startsWith("-")) {
+      // --long=value — no separate arg needed
+      if (tok.startsWith("--") && tok.includes("=")) {
+        continue;
+      }
+      // Known option that takes a separate arg — skip it and its value
+      if (KILLALL_OPTIONS_WITH_ARG.has(tok)) {
+        i++; // skip value token
+        continue;
+      }
+      // Other flag (e.g. -9, -KILL, -q, -i, -w) — skip just this token
+      continue;
+    }
+
+    // First non-flag token is the process name (shellTokenize already unquotes)
+    return tok;
+  }
+  return undefined;
+}
+
+// Returns true if the pkill -f pattern is a wide pattern targeting a user-visible app.
+// Allows wrapper script names like "chrome-devtools-mcp" (starts with known app but has suffix with dash/underscore).
+function isWideKillPattern(pattern: string): boolean {
+  for (const appName of WIDE_KILL_APP_NAMES) {
+    const lower = pattern.toLowerCase();
+    const lowerApp = appName.toLowerCase();
+
+    // Multi-word app names (e.g. "Google Chrome"): deny if pattern starts with them
+    if (appName.includes(" ")) {
+      if (lower.startsWith(lowerApp)) return true;
+      continue;
+    }
+
+    // Single-word names: deny if pattern exactly equals app name,
+    // OR the pattern after the app name begins with a regex metachar or space
+    // (i.e. "chrome.*something" is still a wide pattern).
+    // Allow if the app name is followed by - or _ (wrapper script convention).
+    if (lower === lowerApp) return true;
+    if (lower.startsWith(lowerApp)) {
+      const nextChar: string | undefined = lower[lowerApp.length];
+      // Wrapper names start with -, _, or a digit (e.g. node-server, python3.11-foo)
+      if (nextChar === "-" || nextChar === "_") continue;
+      if (nextChar !== undefined && nextChar >= "0" && nextChar <= "9") continue;
+      // A literal dot separator (e.g. python3.11-foo) is allowed only if the
+      // part after the dot is purely alphanumeric/hyphen/underscore (version suffix).
+      // If it contains a regex metachar (e.g. chrome.*, node.+) → wide pattern → deny.
+      if (nextChar === ".") {
+        const afterDot = lower.slice(lowerApp.length + 1);
+        if (/^[A-Za-z0-9_-]+$/.test(afterDot)) continue; // safe version suffix
+        return true; // regex metachar or other suspicious char after the dot
+      }
+      // Otherwise it's a wide pattern (metachar, space, etc.)
+      return true;
+    }
+  }
+  return false;
+}
+
 // Dangerous command chain patterns
 const DANGEROUS_CHAINS = [
   /\|\s*(rm|sudo|dd|shred|mkfs)\s+/,
@@ -90,6 +327,27 @@ export function validateCommand(command: string): {
         severity: "prohibited",
       };
     }
+  }
+
+  // Wide kill patterns — block pkill -f and killall targeting user-visible applications
+  const pkillPattern = extractPkillPattern(command);
+  if (pkillPattern !== undefined && isWideKillPattern(pkillPattern)) {
+    return {
+      isValid: false,
+      reason:
+        "Wide kill pattern can match user applications. Use 'kill <PID>' after pgrep to confirm a single match.",
+      severity: "prohibited",
+    };
+  }
+
+  const killallTarget = extractKillallTarget(command);
+  if (killallTarget !== undefined && isWideKillPattern(killallTarget)) {
+    return {
+      isValid: false,
+      reason:
+        "Wide kill pattern can match user applications. Use 'kill <PID>' after pgrep to confirm a single match.",
+      severity: "prohibited",
+    };
   }
 
   // Critical patterns — immediate block

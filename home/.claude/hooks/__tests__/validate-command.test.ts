@@ -311,4 +311,257 @@ describe("validateCommand", () => {
       expect(result.isValid).toBe(true);
     });
   });
+
+  describe("WIDE_KILL_PATTERNS → wide pkill/killall on user apps", () => {
+    describe("deny: pkill -f with user-visible app names", () => {
+      const denyCommands = [
+        [`pkill -f "Google Chrome"`, "quoted Google Chrome"],
+        [`pkill -f Google Chrome`, "unquoted Google Chrome"],
+        [`pkill -f "node"`, "quoted node (exact)"],
+        [`pkill -f node`, "bare node"],
+        [`pkill -f "python"`, "quoted python (exact)"],
+        [`pkill -f python`, "bare python"],
+        [`pkill -f "chrome"`, "bare chrome"],
+        [`pkill -f "firefox"`, "bare firefox"],
+        [`pkill -f "safari"`, "bare safari"],
+        [`pkill -f "Slack"`, "Slack app"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description} (${command})`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("deny: pkill -9 -f (signal before -f flag)", () => {
+      const denyCommands = [
+        [`pkill -9 -f "node"`, "pkill -9 -f node"],
+        [`pkill -9 -f node`, "pkill -9 -f node unquoted"],
+        [`pkill -KILL -f "Google Chrome"`, "pkill -KILL -f Google Chrome"],
+        [`pkill --signal KILL -f chrome`, "pkill --signal KILL -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("deny: killall with user-visible app names", () => {
+      const denyCommands = [
+        [`killall Chrome`, "killall Chrome"],
+        [`killall "Google Chrome"`, "killall quoted Google Chrome"],
+        [`killall node`, "killall node"],
+        [`killall python`, "killall python"],
+        [`killall firefox`, "killall firefox"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("allow: pkill -f with specific wrapper/script names", () => {
+      const allowCommands = [
+        [`pkill -f "chrome-devtools-mcp"`, "chrome-devtools-mcp wrapper"],
+        [`pkill -f chrome-devtools-mcp`, "unquoted chrome-devtools-mcp"],
+        [`pkill -f "node-server"`, "node-server wrapper"],
+        [`pkill -f "python3.11-foo"`, "python3.11-foo wrapper"],
+        [`pkill -9 -f "chrome-devtools-mcp"`, "pkill -9 -f chrome-devtools-mcp wrapper"],
+        [`kill 12345`, "kill by PID"],
+        [`kill -9 12345`, "kill -9 by PID"],
+        [`kill -TERM 12345`, "kill -TERM by PID"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description} (${command})`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+
+    describe("deny: pkill -f python3 (should not early-return on python prefix)", () => {
+      test("ブロック: pkill -f python3", () => {
+        const result = validateCommand("pkill -f python3");
+        expect(result.isValid).toBe(false);
+        expect(result.severity).toBe("prohibited");
+      });
+    });
+
+    describe("deny: killall with flags", () => {
+      const denyCommands = [
+        [`killall python3`, "killall python3"],
+        [`killall -9 chrome`, "killall -9 chrome (signal flag)"],
+        [`killall -KILL chrome`, "killall -KILL chrome (named signal)"],
+        [`killall -- chrome`, "killall -- chrome (separator)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("deny: pkill combined short options with -f", () => {
+      const denyCommands = [
+        [`pkill -fx chrome`, "pkill -fx chrome (combined)"],
+        [`pkill -xf chrome`, "pkill -xf chrome (reversed)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("Fix 1-1: deny: pkill combined short flags + quoted pattern", () => {
+      const denyCommands = [
+        [`pkill -fx "node"`, "pkill -fx quoted node"],
+        [`pkill -xf "Google Chrome"`, "pkill -xf quoted Google Chrome"],
+        [`pkill -fx "chrome"`, "pkill -fx quoted chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("Fix 1-3: deny: pkill with option-with-arg before -f", () => {
+      const denyCommands = [
+        [`pkill -u alice -f chrome`, "pkill -u alice -f chrome"],
+        [`pkill -G admin -f node`, "pkill -G admin -f node"],
+        [`pkill -U root -f python`, "pkill -U root -f python"],
+        [`pkill --user=alice -f chrome`, "pkill --user=alice -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [
+          `pkill -u alice -f chrome-devtools-mcp`,
+          "pkill -u alice -f chrome-devtools-mcp (wrapper)",
+        ],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+
+    describe("Fix 1-2: deny: killall with option-with-arg before process name", () => {
+      const denyCommands = [
+        [`killall -u alice chrome`, "killall -u alice chrome"],
+        [`killall -s KILL chrome`, "killall -s KILL chrome"],
+        [`killall --user alice chrome`, "killall --user alice chrome"],
+        [`killall --signal=KILL chrome`, "killall --signal=KILL chrome"],
+        [`killall --signal KILL chrome`, "killall --signal KILL chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("Fix #1 round5: pkill -n is standalone selector (no-arg), not option-with-arg", () => {
+      const denyCommands = [
+        [`pkill -n -f chrome`, "pkill -n -f chrome (newest selector + wide pattern)"],
+        [`pkill -n -f node`, "pkill -n -f node"],
+        [`pkill --newest -f chrome`, "pkill --newest -f chrome"],
+        [`pkill -n -u alice -f chrome`, "pkill -n -u alice -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [`pkill -n -f myspecificdaemon`, "pkill -n -f myspecificdaemon (not wide-kill)"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+
+    describe("Fix #2 round5: shellTokenize handles backslash-escaped space as one token", () => {
+      test(`ブロック: pkill -f Google\\ Chrome`, () => {
+        const result = validateCommand(`pkill -f Google\\ Chrome`);
+        expect(result.isValid).toBe(false);
+        expect(result.severity).toBe("prohibited");
+      });
+
+      test(`許可: pkill -f my\\ specific\\ daemon (not a wide-kill app)`, () => {
+        const result = validateCommand(`pkill -f my\\ specific\\ daemon`);
+        expect(result.isValid).toBe(true);
+      });
+    });
+
+    describe("Fix #3 round5: isWideKillPattern denies regex metachar after . separator", () => {
+      const denyCommands = [
+        [`pkill -f 'chrome.*'`, "chrome.* (regex after dot)"],
+        [`pkill -f 'node.+'`, "node.+ (regex after dot)"],
+        [`pkill -f 'python.?'`, "python.? (regex after dot)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [`pkill -f 'python3.11-foo'`, "python3.11-foo (version separator, allow)"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+  });
 });
