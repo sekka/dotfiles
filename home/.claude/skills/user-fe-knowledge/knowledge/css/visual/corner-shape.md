@@ -1,70 +1,71 @@
 ---
 title: corner-shape プロパティ
 category: css/visual
-tags: [corner-shape, squircle, border-radius, rounded-corners, 2026]
-browser_support: Safari 18.2+
+tags: [corner-shape, squircle, border-radius, rounded-corners, bevel, scoop, notch, 2025, 2026]
+browser_support: Safari 18.2+ (2024-12), Chrome/Edge 139+ (2025-08)
 created: 2026-01-31
-updated: 2026-01-31
+updated: 2026-05-13
 ---
 
 # corner-shape プロパティ
 
-> 出典: https://gihyo.jp/article/2026/01/misskey-22
-> 執筆日: 2026年1月26日
-> 追加日: 2026-01-31
+> 出典:
+> - https://gihyo.jp/article/2026/01/misskey-22 (執筆 2026-01-26)
+> - https://ics.media/entry/260226/ — ICS 岩間 日菜「角の形を自在に変える！」
+>
+> 追加日: 2026-01-31 / 更新: 2026-05-13
 
-角の形状を定義するCSSプロパティ。通常の円形の丸みだけでなく、「Squircle（スクワークル）」と呼ばれる滑らかな曲線も実現できます。
+角の形状を定義する CSS プロパティ。`border-radius` で確保した角の領域に対して「どう処理するか」を指定するだけで、丸み・斜め切り・えぐり・切り欠きなどの形状を直感的に実装できる。
 
 ## 概要
 
-`border-radius` で作成される通常の円弧とは異なる、より滑らかで自然な角の形状を定義できます。
+`border-radius` と組み合わせて使う。`border-radius: 0` では視覚的変化なし。半径が大きいほど個性が強く出る。
 
 ## 基本的な使い方
 
 ```css
-.element {
-  border-radius: 20px;
-  corner-shape: round; /* デフォルト */
+button {
+  border-radius: 12px;
+  corner-shape: bevel;
 }
 
-.squircle {
-  border-radius: 20px;
-  corner-shape: squircle; /* Squircle形状 */
+/* 部分指定 */
+.label {
+  border-radius: 12px;
+  corner-left-shape: bevel;
+  corner-right-shape: round;
 }
 ```
 
-## corner-shape の値
+部分指定プロパティ:
+- `corner-top-shape` / `corner-bottom-shape`
+- `corner-left-shape` / `corner-right-shape`
+- `corner-top-left-shape` / `corner-top-right-shape` ...
 
-| 値 | 説明 |
-|----|------|
-| `round` | 標準の円弧（デフォルト） |
-| `squircle` | Squircle（超楕円曲線）|
-| `angle` | 鋭角な角 |
+## 指定可能な値
 
-## Squircle とは
+| 値 | 効果 | 用途例 |
+|-----|------|--------|
+| `round` | 通常の丸み（円弧。デフォルト） | 標準ボタン、カード |
+| `bevel` | 直線的に切り落とした形 | チケット、タグ |
+| `scoop` | 内側にえぐった形 | 装飾的なバッジ |
+| `notch` | 四角く欠けた形 | クーポン、リボン |
+| `square` | 直角（角を保つ） | 角丸の打ち消し |
+| `squircle` | 円と正方形の中間の滑らかな曲線（iOS 風） | アプリアイコン、カード |
+| `superellipse(<n>)` | 曲率を数値で指定（1 に近いほど円、∞ に近いほど四角） | 任意の曲率 |
 
-**Squircle**（スクワークル）は「Square（正方形）」と「Circle（円）」を組み合わせた造語で、円よりも直線に近い部分が長く、角の部分で滑らかに曲がる形状です。
+### Squircle
 
-### 視覚的な違い
+「Square + Circle」の造語。円弧より直線部が長く、角だけ滑らかに曲がる形状。Apple のデザイン言語で多用される。
 
 ```css
-/* 通常の丸み（円弧） */
-.round {
-  border-radius: 40px;
-  corner-shape: round;
-}
-
-/* Squircle（より自然な曲線） */
-.squircle {
-  border-radius: 40px;
+.app-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
   corner-shape: squircle;
 }
 ```
-
-**特徴**:
-- より有機的で自然な見た目
-- Appleのデザイン言語で広く使用
-- アイコン、カード、ボタンに最適
 
 ## ユースケース
 
@@ -80,33 +81,7 @@ updated: 2026-01-31
 }
 ```
 
-### アイコン
-
-```css
-.app-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 18px;
-  corner-shape: squircle;
-  overflow: hidden;
-}
-```
-
-### ボタン
-
-```css
-.button {
-  padding: 12px 24px;
-  border-radius: 12px;
-  corner-shape: squircle;
-  background: #007aff;
-  color: white;
-}
-```
-
-## 実践例
-
-### iOS風アイコングリッド
+### iOS 風アイコングリッド
 
 ```html
 <div class="app-grid">
@@ -123,10 +98,19 @@ updated: 2026-01-31
   border-radius: 14px;
   corner-shape: squircle;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   font-size: 32px;
+}
+```
+
+### チケット（bevel + notch ハイブリッド）
+
+```css
+.ticket {
+  border-radius: 16px;
+  corner-top-left-shape: bevel;
+  corner-top-right-shape: bevel;
 }
 ```
 
@@ -140,66 +124,46 @@ updated: 2026-01-31
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
-
-.product-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
 ```
-
-## angle 値の使用
-
-```css
-.sharp-corner {
-  border-radius: 20px;
-  corner-shape: angle; /* 鋭角な角 */
-}
-```
-
-**用途**: 幾何学的なデザイン、ダイヤモンド形状など。
 
 ## 従来の方法との比較
 
-### SVGやクリップパス（従来）
+### SVG / clip-path（従来）
 
 ```css
-/* 複雑な clip-path が必要 */
+/* 複雑な path 座標が必要、サイズ変更時に再計算 */
 .squircle-fallback {
-  clip-path: path('M 0,20 C 0,5 5,0 20,0 L 80,0 C 95,0 100,5 100,20 L 100,80 C 100,95 95,100 80,100 L 20,100 C 5,100 0,95 0,80 Z');
+  clip-path: path('M 0,20 C 0,5 5,0 20,0 L 80,0 C 95,0 100,5 100,20 ...');
 }
 ```
 
-### corner-shape（新しい方法）
+### corner-shape（推奨）
 
 ```css
-/* シンプルで直感的 */
 .squircle-modern {
   border-radius: 20px;
   corner-shape: squircle;
 }
 ```
 
+**優れている理由**: 角の大きさや形状を変更するたびの座標再計算が不要。色やサイズの変更、アニメーションも容易。
+
 ## ブラウザサポート
 
 | ブラウザ | バージョン | リリース日 |
 |----------|-----------|----------|
 | Safari | 18.2+ | 2024年12月 |
-| Chrome | 未対応 | 検討中 |
+| Chrome | 139+ | 2025年8月 |
+| Edge | 139+ | 2025年8月 |
 | Firefox | 未対応 | 検討中 |
-| Edge | 未対応 | 検討中 |
-
-**現状**: Safariのみ実装。仕様は草案段階。
 
 ## フォールバック
 
 ```css
-/* デフォルト: 通常の丸み */
 .element {
   border-radius: 20px;
 }
 
-/* Safari 18.2+ */
 @supports (corner-shape: squircle) {
   .element {
     corner-shape: squircle;
@@ -207,26 +171,17 @@ updated: 2026-01-31
 }
 ```
 
-### SVGフォールバック（より精密に）
-
-```html
-<svg class="squircle-bg" xmlns="http://www.w3.org/2000/svg">
-  <rect width="100%" height="100%" rx="20" />
-</svg>
-```
-
 ## アクセシビリティ
 
-`corner-shape` は視覚的な装飾であり、アクセシビリティへの影響はありません。
+`corner-shape` は視覚的な装飾のみ。アクセシビリティへの影響なし。
 
 ## パフォーマンス
 
-`border-radius` と同様、GPUアクセラレーションが効きます。大量の要素で使用してもパフォーマンス問題は少ないです。
+`border-radius` と同様、GPU アクセラレーションが効く。大量要素での使用も問題少ない。
 
 ## デザインシステムへの統合
 
 ```css
-/* デザイントークン */
 :root {
   --corner-radius-sm: 8px;
   --corner-radius-md: 16px;
@@ -245,9 +200,10 @@ updated: 2026-01-31
 - [border-radius](./border-radius.md)
 - [clip-path](./clip-path.md)
 - [shape()](./shape-function.md)
-- [Apple Human Interface Guidelines](../../design-guidelines/hig/ios-design.md)
+- [Apple Human Interface Guidelines](../../human-interface-guidelines/README.md)
 
 ## 参考リソース
 
+- [ICS: 角の形を自在に変える！](https://ics.media/entry/260226/)
 - [CSS Backgrounds and Borders Level 4: corner-shape](https://drafts.csswg.org/css-backgrounds-4/#corner-shaping)
 - [Figma: Squircle plugin](https://www.figma.com/community/plugin/763070852025980606/Squircle)

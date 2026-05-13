@@ -34,6 +34,29 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-13 — [@so_ainsight on X](https://x.com/so_ainsight/status/2048341367806726425) — focus: TBD
 - [ ] 2026-05-13 — [@tonkotsuboy_com on X](https://x.com/tonkotsuboy_com/status/2047306307674558761) — focus: TBD
 - [ ] 2026-05-13 — [@Cloudflare on X](https://x.com/Cloudflare/status/2049545195914498139) — focus: TBD
+- [ ] 2026-05-13 — [エージェントを強化する: Google 公式 Skills リポジトリを発表](https://cloud.google.com/blog/ja/topics/developers-practitioners/level-up-your-agents-announcing-googles-official-skills-repository) — focus: TBD
+- [ ] 2026-05-13 — [日常の仕事をほぼAI経由でどう回しているか、またはやりたいことを全部持って行かれる為の備忘録](https://note.com/cuon/n/nc1bc97c22892) — focus: TBD
+- [ ] 2026-05-13 — [話題のGoogle Workspace MCPサーバーをさっそく使ってみた](https://www.yoshidumi.co.jp/collaboration-lab/gws-mcp-server) — focus: TBD
+- [ ] 2026-05-13 — [OpenCode Go + pi-coding-agent のすゝめ](https://zenn.dev/kimuson/articles/pi-coding-agent-with-opencode-go) — focus: TBD
+- [ ] 2026-05-13 — [Claude Codeを"使いこなす"ための個人ルール設定 - 実際にやって効果が高かった設定](https://zenn.dev/dotdtech_blog/articles/92348ee48cc692) — focus: TBD
+- [ ] 2026-05-13 — [AIが書くならMarkdownじゃなくHTMLのほうがいいのでは、という話](https://nowokay.hatenablog.com/entry/2026/05/09/164006) — focus: TBD
+- [ ] 2026-05-13 — [要求を仕様に落とすテンプレートを作ってみた](https://zenn.dev/channnnsm/articles/c3a6de22e71f86) — focus: TBD
+- [ ] 2026-05-13 — [Claude Codeを120%使いこなす設定3選【ECC・Memory.md・Obsidian連携】](https://qiita.com/manchan/items/63745b9198f1989c2a15) — focus: TBD
+- [ ] 2026-05-13 — [不要なレビューをAIにまかせてAIコーディングの環境改善を加速した](https://tech.findy.co.jp/entry/2026/05/08/100000) — focus: TBD
+- [ ] 2026-05-13 — [Codex Reviewを自動化する：Claude Code × Codex レビューループ実装ガイド（SKILL.md・Plugin・パイプライン）](https://smartscope.blog/blog/claude-code-codex-review-loop-automation-2026/) — focus: TBD
+- [ ] 2026-05-13 — [Codexのサブエージェントで実装とレビューを分業してみた](https://acro-engineer.hatenablog.com/entry/2026/05/12/120000) — focus: TBD
+- [ ] 2026-05-13 — [Playwright CLI で AI エージェントに視覚的なフィードバックを与える](https://azukiazusa.dev/blog/playwright-cli-ai-agent-visual-feedback/) — focus: TBD
+- [ ] 2026-05-13 — [【2026年4月更新】Claude Codeの役に立つフロントデザインのskills10選](https://qiita.com/kamome_susume/items/41300417840aa107472e) — focus: TBD
+- [ ] 2026-05-13 — [Claude Design が来た日 ─ Webデザイナーとフロントエンドの仕事はどこまで削られるのか](https://zenn.dev/akasara/articles/ab24affd00d788) — focus: TBD
+- [ ] 2026-05-13 — [コーディングエージェント向けのリモートサンドボックス](https://blog.lai.so/agents-sandbox/) — focus: TBD
+- [ ] 2026-05-13 — [2026年のソフトウェア開発を考える（2026/05版） / Software Engineering Scrum Fest Niigata 2026 Edition](https://speakerdeck.com/twada/software-engineering-scrum-fest-niigata-2026-edition) — focus: TBD
+- [ ] 2026-05-13 — [フロントエンドの相手が変わった - AIが加わったWebの新しいインターフェース設計](https://speakerdeck.com/azukiazusa1/hurontoendonoxiang-shou-gabian-watuta-aigajia-watutawebnoxin-siiintahuesushe-ji) — focus: TBD
+- [ ] 2026-05-13 — [自動テストだけでリリース判断できるチームへ - 鍵はテストの量ではなくリリース判断基準の再設計にあった / Redesigning Release Criteria for Lightweight Releases](https://speakerdeck.com/ewa/redesigning-release-criteria-for-lightweight-releases) — focus: TBD
+- [ ] 2026-05-13 — [メルカリのClaude Codeセキュリティ設定の組織配布戦略 - Claude Code Meetup Japan #4](https://speakerdeck.com/hi120ki/claude-code-organization-settings) — focus: TBD
+- [ ] 2026-05-13 — [【徹底解説】セキュリティスペシャリストが教える、セキュアプログラミングの教科書](https://qiita.com/miruky/items/6fbb0c0e55835ea79e4d) — focus: TBD
+- [ ] 2026-05-13 — [『生成AI時代のクレデンシャルとパーミッション設計 — Claude Code を起点に』を書きます。個人開発者向けにコメント募集](https://blog.takuros.net/entry/2026/05/06/135413) — focus: TBD
+- [ ] 2026-05-13 — [エージェントフレンドリーなウェブサイトを構築する](https://web.dev/articles/ai-agent-site-ux?hl=ja) — focus: TBD
+- [ ] 2026-05-13 — [Claude Code × tmuxの個人的活用術](https://dev.classmethod.jp/articles/shuntaka-claude-code-tmux-personal-tips/) — focus: TBD
 
 ## Deep Research 待ち
 
