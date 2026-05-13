@@ -130,10 +130,27 @@ function shellTokenize(command: string): string[] {
       tokens.push(command.slice(start, i));
       if (i < command.length) i++; // skip closing quote
     } else {
-      // Unquoted token — read until whitespace
-      const start = i;
-      while (i < command.length && !/\s/.test(command[i] as string)) i++;
-      tokens.push(command.slice(start, i));
+      // Unquoted token — read until unescaped whitespace.
+      // A backslash followed by any character (including space) is treated as
+      // an escaped literal, keeping the token intact (e.g. Google\ Chrome → "Google Chrome").
+      const parts: string[] = [];
+      while (i < command.length) {
+        const ch = command[i] as string;
+        if (ch === "\\") {
+          // Consume the backslash and treat the next char as a literal
+          i++;
+          if (i < command.length) {
+            parts.push(command[i] as string);
+            i++;
+          }
+        } else if (/\s/.test(ch)) {
+          break; // end of token
+        } else {
+          parts.push(ch);
+          i++;
+        }
+      }
+      tokens.push(parts.join(""));
     }
   }
   return tokens;

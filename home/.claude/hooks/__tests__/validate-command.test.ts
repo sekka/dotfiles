@@ -523,5 +523,18 @@ describe("validateCommand", () => {
         });
       }
     });
+
+    describe("Fix #2 round5: shellTokenize handles backslash-escaped space as one token", () => {
+      test(`ブロック: pkill -f Google\\ Chrome`, () => {
+        const result = validateCommand(`pkill -f Google\\ Chrome`);
+        expect(result.isValid).toBe(false);
+        expect(result.severity).toBe("prohibited");
+      });
+
+      test(`許可: pkill -f my\\ specific\\ daemon (not a wide-kill app)`, () => {
+        const result = validateCommand(`pkill -f my\\ specific\\ daemon`);
+        expect(result.isValid).toBe(true);
+      });
+    });
   });
 });
