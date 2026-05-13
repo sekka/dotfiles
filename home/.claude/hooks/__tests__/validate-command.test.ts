@@ -390,5 +390,45 @@ describe("validateCommand", () => {
         });
       }
     });
+
+    describe("deny: pkill -f python3 (should not early-return on python prefix)", () => {
+      test("ブロック: pkill -f python3", () => {
+        const result = validateCommand("pkill -f python3");
+        expect(result.isValid).toBe(false);
+        expect(result.severity).toBe("prohibited");
+      });
+    });
+
+    describe("deny: killall with flags", () => {
+      const denyCommands = [
+        [`killall python3`, "killall python3"],
+        [`killall -9 chrome`, "killall -9 chrome (signal flag)"],
+        [`killall -KILL chrome`, "killall -KILL chrome (named signal)"],
+        [`killall -- chrome`, "killall -- chrome (separator)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("deny: pkill combined short options with -f", () => {
+      const denyCommands = [
+        [`pkill -fx chrome`, "pkill -fx chrome (combined)"],
+        [`pkill -xf chrome`, "pkill -xf chrome (reversed)"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
   });
 });

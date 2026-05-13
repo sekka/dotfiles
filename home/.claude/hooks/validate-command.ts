@@ -79,8 +79,35 @@ const WIDE_KILL_APP_NAMES = [
 
 // Matches a pkill -f argument (quoted or unquoted) extracting the pattern string.
 // Handles flags before -f: pkill -9 -f, pkill -KILL -f, pkill --signal KILL -f.
-// Returns undefined if the command is not a pkill -f.
+// Also handles combined short options containing f: pkill -fx, pkill -xf.
+// Returns undefined if the command is not a pkill -f (or combined form).
 function extractPkillPattern(command: string): string | undefined {
+  // Check for combined short options containing -f (e.g. -fx, -xf, -9f)
+  // Split the command into tokens and scan for a token starting with - that contains f
+  const tokens = command.split(/\s+/);
+  const pkillIdx = tokens.findIndex((t) => /^pkill$/i.test(t));
+  if (pkillIdx !== -1) {
+    for (let i = pkillIdx + 1; i < tokens.length; i++) {
+      const tok = tokens[i] as string;
+      if (!tok.startsWith("-")) {
+        // Non-flag token before -f found — not a -f invocation
+        break;
+      }
+      if (tok === "-f") {
+        // Standard -f: next non-flag token is the pattern — fall through to regex for quoting
+        break;
+      }
+      if (tok.startsWith("-") && !tok.startsWith("--") && tok.includes("f")) {
+        // Combined short option like -fx, -xf — next non-flag token is the pattern
+        for (let j = i + 1; j < tokens.length; j++) {
+          const candidate = tokens[j] as string;
+          if (!candidate.startsWith("-")) {
+            return candidate;
+          }
+        }
+      }
+    }
+  }
   // pkill [flags] -f "pattern" (quoted)
   const quoted = command.match(/\bpkill\b(?:\s+(?:-\S+|--\S+(?:\s+\S+)?))*\s+-f\s+"([^"]+)"/);
   if (quoted?.[1]) return quoted[1];
@@ -92,15 +119,33 @@ function extractPkillPattern(command: string): string | undefined {
   return undefined;
 }
 
-// Matches a killall argument (quoted or unquoted).
-// killall uses the app name directly (no -f needed).
+// Matches a killall argument (quoted or unquoted), skipping flag tokens.
+// Handles: killall -9 chrome, killall -KILL chrome, killall -- chrome, killall "App Name"
 function extractKillallTarget(command: string): string | undefined {
-  // killall "App Name" (quoted)
-  const quoted = command.match(/\bkillall\b\s+"([^"]+)"/);
-  if (quoted?.[1]) return quoted[1];
-  // killall AppName (unquoted — single token)
-  const unquoted = command.match(/\bkillall\b\s+(\S+)/);
-  if (unquoted?.[1]) return unquoted[1];
+  // Handle quoted app names (may contain spaces) first, skipping flags
+  // Pattern: killall [flags] "App Name" or killall -- "App Name"
+  const quotedMatch = command.match(/\bkillall\b(?:\s+(?:-\S+))*\s+(?:--\s+)?"([^"]+)"/);
+  if (quotedMatch?.[1]) return quotedMatch[1];
+
+  // Unquoted: split into tokens, skip flag tokens
+  const tokens = command.split(/\s+/);
+  const killallIdx = tokens.findIndex((t) => /^killall$/i.test(t));
+  if (killallIdx === -1) return undefined;
+
+  for (let i = killallIdx + 1; i < tokens.length; i++) {
+    const tok = tokens[i] as string;
+    if (tok === "--") {
+      // End of options — next token is the process name
+      if (i + 1 < tokens.length) return tokens[i + 1] as string;
+      return undefined;
+    }
+    if (tok.startsWith("-")) {
+      // Flag token, skip it
+      continue;
+    }
+    // First non-flag token is the process name
+    return tok;
+  }
   return undefined;
 }
 
@@ -124,13 +169,14 @@ function isWideKillPattern(pattern: string): boolean {
     if (lower === lowerApp) return true;
     if (lower.startsWith(lowerApp)) {
       const nextChar: string | undefined = lower[lowerApp.length];
-      // Wrapper names are separated with -, _, or a digit (e.g. python3.11-foo)
+      // Wrapper names are separated with -, _, ., or a digit (e.g. python3.11-foo)
       if (
         nextChar === "-" ||
         nextChar === "_" ||
+        nextChar === "." ||
         (nextChar !== undefined && nextChar >= "0" && nextChar <= "9")
       )
-        return false;
+        continue; // don't return false — another app name may still match exactly
       // Otherwise it's a wide pattern (metachar, space, etc.)
       return true;
     }
