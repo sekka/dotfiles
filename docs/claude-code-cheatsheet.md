@@ -328,6 +328,18 @@ Claude が内部で起動する専門エージェント（`home/.claude/agents/`
 
 ---
 
+## Opus 4.7 で追加されたコマンド
+
+| Command   | Purpose                                                                                    | 使いどき                                                   |
+| --------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `/effort` | interactive slider で effort level を切替 (low/medium/high/xhigh/max。max は session-only) | task 中に深さを動的調整したい時                            |
+| `/focus`  | transcript を「prompt + tool 要約 (edit diffstat 付) + 最終 response」だけに圧縮表示       | 長い session で見通しを確保したい時 (fullscreen mode のみ) |
+| `/recap`  | 現セッションの 1 行サマリを生成 (席を外した後の自動 recap も別途あり)                      | 復帰時 / 中盤で経緯を要約したい時                          |
+
+`effortLevel` は `home/.claude/settings.json` で永続化済 (`xhigh`)。一時的に下げる時は `/effort` から。
+
+---
+
 ## 組み込みツール
 
 | ツール        | 用途                                                  |

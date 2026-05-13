@@ -39,7 +39,6 @@ Deep research backlog. Two-stage pipeline:
 
 (Quick Eval 済みで Deep Research する価値ありと判断した URL。`/user-research-queue deep` で順番に Deep Research を回す)
 
-- [ ] 2026-05-13 — [Opus 4.7 で Claude Code の使い方が変わる 6 つのこと](https://qiita.com/ot12/items/06420caf41a34a910c53) — focus: Effort Level xhigh の検証 / subagent 明示呼び出し vs 自律判断 (現状 CLAUDE.md section 4 と衝突する可能性)
 - [ ] 2026-05-13 — [Dave Jeffery: アプリのフロー文書化 (HTML + JSON for LLM)](https://x.com/DaveJ/status/2053867258653339746?s=20) — focus: user-dev-flowmap スキル化検討 (HTML + JSON サイドカー / LLM 再投入用途) — Deep Research 済 (2026-05-13 会話)、次は実装プラン策定
 
 ## Done
@@ -47,3 +46,5 @@ Deep research backlog. Two-stage pipeline:
 (処理済み・破棄含む)
 
 <!-- Format: `- [x] <added-date> → <today> — [title](url) — outcome: <quick|deep|discarded> — takeaway: ...` -->
+
+- [x] 2026-05-13 → 2026-05-13 — [Opus 4.7 で Claude Code の使い方が変わる 6 つのこと](https://qiita.com/ot12/items/06420caf41a34a910c53) — outcome: deep — takeaway: §4 は例外条項で併存、Effort xhigh と /focus は即採用

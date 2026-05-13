@@ -344,7 +344,7 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium",
+  "effortLevel": "xhigh",
   "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
