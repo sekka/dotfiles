@@ -1,4 +1,5 @@
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { fileURLToPath } from "node:url";
 import {
   scanForCredentials,
   maskCredential,
@@ -227,7 +228,7 @@ describe("scanForCredentials via Context7 tool (integration)", () => {
   });
 });
 
-const hookPath = new URL("../security-scan.ts", import.meta.url).pathname;
+const hookPath = fileURLToPath(new URL("../security-scan.ts", import.meta.url));
 
 describe("fail-closed on error", () => {
   test("invalid JSON stdin produces permissionDecision: ask", async () => {

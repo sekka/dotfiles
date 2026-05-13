@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { fileURLToPath } from "node:url";
 import { checkAuthCommand } from "../auth-guard";
 
-const hookPath = new URL("../auth-guard.ts", import.meta.url).pathname;
+const hookPath = fileURLToPath(new URL("../auth-guard.ts", import.meta.url));
 
 describe("auth-guard main(): fail-closed on anomalous input (Fix #2)", () => {
   test("empty stdin → permissionDecision: ask", async () => {
