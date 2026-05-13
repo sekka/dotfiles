@@ -46,7 +46,7 @@ TypeScript フックは `bun` で実行し、Shell フックは `bash` で実行
 #### validate-command.ts
 
 - **イベント**: PreToolUse:Bash
-- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`--force-push`/`reset --hard`/`git commit --no-verify` を `deny`、`rm`/`sudo`/`dd`/`shred` への危険なコマンドチェーン (`|` / `;` / `&&` / `||` / バッククォート / `$()` / `xargs`) を `ask` として扱う。
+- **役割**: 破壊的・危険なシェルコマンドを事前にブロックまたは確認要求する。`sed`/`awk`/`git add -A`/`git push --force`/`reset --hard`/`git commit --no-verify` を `deny`、`rm`/`sudo`/`dd`/`shred` への危険なコマンドチェーン (`|` / `;` / `&&` / `||` / バッククォート / `$()` / `xargs`) を `ask` として扱う。
 - **入力**: `tool_input.command` (Bash コマンド文字列)
 - **出力**: `{ hookSpecificOutput: { hookEventName, permissionDecision, permissionDecisionReason } }` を JSON で stderr に出力（`permissionDecision` は `deny | ask | allow`）
 - **由来**: FAILURES.md 由来のエスカレーション。`sed` 使用・`git add -A` 使用などの繰り返し違反を L4 (tool denial) で封じている。
