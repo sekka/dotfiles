@@ -58,7 +58,9 @@ function skipLeadingEnvAssignments(tokens: string[], startIdx: number): number {
 // Returns true if `passwd` appears as an executed command token, not as a path or argument.
 // Handles: passwd, passwd user, sudo passwd, sudo -u root passwd, sudo --user=root passwd,
 //          PATH=/tmp passwd root, FOO=1 sudo passwd root.
-// Rejects: grep passwd, echo passwd, cat /etc/passwd, /usr/bin/passwd (path-prefixed).
+//          Resolves basename for path-prefixed forms: /usr/bin/passwd and /bin/passwd are
+//          both caught and return true (denies them as irreversible credential changes).
+// Skips: grep passwd, echo passwd, cat /etc/passwd (passwd is an argument, not the command).
 function isPasswdCommand(command: string): boolean {
   // Walk shell segments separated by ;  &&  ||  |
   // For each segment, detect if the effective command (after sudo + its flags) is "passwd".

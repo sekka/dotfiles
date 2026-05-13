@@ -100,17 +100,6 @@ const PKILL_OPTIONS_WITH_ARG = new Set([
   "--signal",
 ]);
 
-// Strip surrounding single or double quotes from a token.
-function unquoteToken(token: string): string {
-  if (
-    (token.startsWith('"') && token.endsWith('"')) ||
-    (token.startsWith("'") && token.endsWith("'"))
-  ) {
-    return token.slice(1, -1);
-  }
-  return token;
-}
-
 // Shell-aware tokenizer: splits on whitespace but keeps quoted strings (with spaces) as one token.
 // Strips surrounding quotes from each token.
 function shellTokenize(command: string): string[] {
