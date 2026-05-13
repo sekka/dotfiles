@@ -336,12 +336,48 @@ describe("validateCommand", () => {
       }
     });
 
+    describe("deny: pkill -9 -f (signal before -f flag)", () => {
+      const denyCommands = [
+        [`pkill -9 -f "node"`, "pkill -9 -f node"],
+        [`pkill -9 -f node`, "pkill -9 -f node unquoted"],
+        [`pkill -KILL -f "Google Chrome"`, "pkill -KILL -f Google Chrome"],
+        [`pkill --signal KILL -f chrome`, "pkill --signal KILL -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("deny: killall with user-visible app names", () => {
+      const denyCommands = [
+        [`killall Chrome`, "killall Chrome"],
+        [`killall "Google Chrome"`, "killall quoted Google Chrome"],
+        [`killall node`, "killall node"],
+        [`killall python`, "killall python"],
+        [`killall firefox`, "killall firefox"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
     describe("allow: pkill -f with specific wrapper/script names", () => {
       const allowCommands = [
         [`pkill -f "chrome-devtools-mcp"`, "chrome-devtools-mcp wrapper"],
         [`pkill -f chrome-devtools-mcp`, "unquoted chrome-devtools-mcp"],
         [`pkill -f "node-server"`, "node-server wrapper"],
         [`pkill -f "python3.11-foo"`, "python3.11-foo wrapper"],
+        [`pkill -9 -f "chrome-devtools-mcp"`, "pkill -9 -f chrome-devtools-mcp wrapper"],
         [`kill 12345`, "kill by PID"],
         [`kill -9 12345`, "kill -9 by PID"],
         [`kill -TERM 12345`, "kill -TERM by PID"],

@@ -78,14 +78,29 @@ const WIDE_KILL_APP_NAMES = [
 ];
 
 // Matches a pkill -f argument (quoted or unquoted) extracting the pattern string.
+// Handles flags before -f: pkill -9 -f, pkill -KILL -f, pkill --signal KILL -f.
 // Returns undefined if the command is not a pkill -f.
 function extractPkillPattern(command: string): string | undefined {
-  // pkill -f "pattern" (quoted)
-  const quoted = command.match(/\bpkill\b[^-]*-f\s+"([^"]+)"/);
+  // pkill [flags] -f "pattern" (quoted)
+  const quoted = command.match(/\bpkill\b(?:\s+(?:-\S+|--\S+(?:\s+\S+)?))*\s+-f\s+"([^"]+)"/);
   if (quoted?.[1]) return quoted[1];
-  // pkill -f pattern (unquoted — capture rest of line as the pattern, trimmed)
-  const unquoted = command.match(/\bpkill\b[^-]*-f\s+(.+?)(?:\s*[;&|]|$)/);
+  // pkill [flags] -f pattern (unquoted)
+  const unquoted = command.match(
+    /\bpkill\b(?:\s+(?:-\S+|--\S+(?:\s+\S+)?))*\s+-f\s+(.+?)(?:\s*[;&|]|$)/,
+  );
   if (unquoted?.[1]) return unquoted[1].trim();
+  return undefined;
+}
+
+// Matches a killall argument (quoted or unquoted).
+// killall uses the app name directly (no -f needed).
+function extractKillallTarget(command: string): string | undefined {
+  // killall "App Name" (quoted)
+  const quoted = command.match(/\bkillall\b\s+"([^"]+)"/);
+  if (quoted?.[1]) return quoted[1];
+  // killall AppName (unquoted — single token)
+  const unquoted = command.match(/\bkillall\b\s+(\S+)/);
+  if (unquoted?.[1]) return unquoted[1];
   return undefined;
 }
 
@@ -157,9 +172,19 @@ export function validateCommand(command: string): {
     }
   }
 
-  // Wide kill patterns — block pkill -f targeting user-visible applications
+  // Wide kill patterns — block pkill -f and killall targeting user-visible applications
   const pkillPattern = extractPkillPattern(command);
   if (pkillPattern !== undefined && isWideKillPattern(pkillPattern)) {
+    return {
+      isValid: false,
+      reason:
+        "Wide kill pattern can match user applications. Use 'kill <PID>' after pgrep to confirm a single match.",
+      severity: "prohibited",
+    };
+  }
+
+  const killallTarget = extractKillallTarget(command);
+  if (killallTarget !== undefined && isWideKillPattern(killallTarget)) {
     return {
       isValid: false,
       reason:
