@@ -112,6 +112,24 @@ export function scanForCredentials(text: string): ScanResult {
   return { found: false, reason: "" };
 }
 
+// Recursively collect all string values from an arbitrary value tree
+export function collectStrings(value: unknown, acc: string[]): void {
+  if (typeof value === "string") {
+    acc.push(value);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectStrings(item, acc);
+    return;
+  }
+  if (value !== null && typeof value === "object") {
+    for (const v of Object.values(value as Record<string, unknown>)) {
+      collectStrings(v, acc);
+    }
+  }
+  // number/boolean/null/undefined → skip
+}
+
 // Extract the text content to scan from the tool input
 export function extractScanTarget(toolName: string, toolInput: Record<string, unknown>): string {
   switch (toolName) {
@@ -122,11 +140,9 @@ export function extractScanTarget(toolName: string, toolInput: Record<string, un
       return parts.join(" ");
     }
     default: {
-      // Context7 MCP and similar: scan all string fields
+      // Context7 MCP and similar: recursively scan all string values
       const parts: string[] = [];
-      for (const key of ["code", "query", "question", "topic", "libraryName"]) {
-        if (typeof toolInput[key] === "string") parts.push(toolInput[key] as string);
-      }
+      collectStrings(toolInput, parts);
       return parts.join(" ");
     }
   }

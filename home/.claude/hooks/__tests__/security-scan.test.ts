@@ -1,5 +1,10 @@
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import { scanForCredentials, maskCredential, extractScanTarget } from "../security-scan";
+import {
+  scanForCredentials,
+  maskCredential,
+  extractScanTarget,
+  collectStrings,
+} from "../security-scan";
 
 describe("scanForCredentials", () => {
   describe("allow: benign content", () => {
@@ -190,6 +195,45 @@ describe("fail-closed on error", () => {
     const parsed = JSON.parse(stderrText);
     expect(parsed.hookSpecificOutput.permissionDecision).toBe("ask");
     expect(parsed.hookSpecificOutput.permissionDecisionReason).toContain("failing closed");
+  });
+});
+
+describe("collectStrings", () => {
+  test("collects strings from nested object", () => {
+    const acc: string[] = [];
+    collectStrings({ a: "hello", b: { c: "world" } }, acc);
+    expect(acc).toContain("hello");
+    expect(acc).toContain("world");
+  });
+
+  test("collects strings from array", () => {
+    const acc: string[] = [];
+    collectStrings(["foo", 42, "bar"], acc);
+    expect(acc).toEqual(["foo", "bar"]);
+  });
+
+  test("skips numbers, booleans, null", () => {
+    const acc: string[] = [];
+    collectStrings({ a: 1, b: true, c: null }, acc);
+    expect(acc).toHaveLength(0);
+  });
+});
+
+describe("extractScanTarget: recursive scan for default branch", () => {
+  test("detects credential in nested params.input.secret", () => {
+    const target = extractScanTarget("mcp__plugin_context7_context7__query-docs", {
+      params: { input: { secret: "ghp_" + "x".repeat(36) } },
+    });
+    const result = scanForCredentials(target);
+    expect(result.found).toBe(true);
+  });
+
+  test("detects credential in nested array messages[].content", () => {
+    const target = extractScanTarget("mcp__plugin_context7_context7__query-docs", {
+      messages: [{ content: "AKIAIOSFODNN7EXAMPLE" }],
+    });
+    const result = scanForCredentials(target);
+    expect(result.found).toBe(true);
   });
 });
 
