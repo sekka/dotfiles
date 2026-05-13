@@ -78,7 +78,9 @@ const WIDE_KILL_APP_NAMES = [
 ];
 
 // pkill options that take an argument (next token is the option's value, not the pattern).
-// Reference: pkill(1) man page. Broad list to handle both macOS and GNU variants.
+// Reference: pkill(1) man page. Only options that consume a separate value token.
+// Note: -n/--newest, -o/--oldest, -c/--count, -v/--inverse, -x/--exact, -f/--full are
+// standalone selectors (no argument), so they are NOT in this set.
 const PKILL_OPTIONS_WITH_ARG = new Set([
   "-u",
   "-U",
@@ -87,7 +89,6 @@ const PKILL_OPTIONS_WITH_ARG = new Set([
   "-P",
   "-s",
   "-t",
-  "-n",
   "--euid",
   "--uid",
   "--gid",

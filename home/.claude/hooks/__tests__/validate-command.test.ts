@@ -495,5 +495,33 @@ describe("validateCommand", () => {
         });
       }
     });
+
+    describe("Fix #1 round5: pkill -n is standalone selector (no-arg), not option-with-arg", () => {
+      const denyCommands = [
+        [`pkill -n -f chrome`, "pkill -n -f chrome (newest selector + wide pattern)"],
+        [`pkill -n -f node`, "pkill -n -f node"],
+        [`pkill --newest -f chrome`, "pkill --newest -f chrome"],
+        [`pkill -n -u alice -f chrome`, "pkill -n -u alice -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [`pkill -n -f myspecificdaemon`, "pkill -n -f myspecificdaemon (not wide-kill)"],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
   });
 });
