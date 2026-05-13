@@ -55,12 +55,12 @@ describe("containsEnglish", () => {
     expect(containsEnglish("これは日本語のみのテキストです。")).toBe(false);
   });
 
-  test("3文字未満の英字のみは false (regex 要件)", () => {
-    // /\b[a-zA-Z]{3,}\b/ は 3文字以上が必要
+  test("1文字英字のみは false (regex 要件: 2文字以上が必要)", () => {
+    // /\b[a-zA-Z]{2,}\b/ は 2文字以上が必要
     expect(containsEnglish("a b c")).toBe(false);
   });
 
-  test("3文字以上の英語単語は true", () => {
+  test("2文字以上の英語単語は true", () => {
     expect(containsEnglish("bun test コマンドです")).toBe(true);
   });
 
@@ -70,6 +70,18 @@ describe("containsEnglish", () => {
 
   test("日本語と記号のみは false", () => {
     expect(containsEnglish("確認しました。！？")).toBe(false);
+  });
+
+  test("OK だけ含む場合は true (2文字英単語)", () => {
+    expect(containsEnglish("OK だけ含む")).toBe(true);
+  });
+
+  test("UI/OS 混在は true", () => {
+    expect(containsEnglish("UI と OS の設定")).toBe(true);
+  });
+
+  test("AI を含む場合は true", () => {
+    expect(containsEnglish("AI の応答")).toBe(true);
   });
 });
 

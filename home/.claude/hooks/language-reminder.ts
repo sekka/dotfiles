@@ -9,19 +9,9 @@ export {};
 
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { parseCurrentLevel } from "./lib/language-policy.ts";
 
 const POLICY_PATH = join(homedir(), ".claude/rules/language-policy.md");
-
-/**
- * language-policy.md のテキストから現在のレベル番号を抽出する。
- * "Current level: L{N}" パターンを case-insensitive で探す。
- * 見つからない場合は null を返す。
- */
-export function parseCurrentLevel(text: string): number | null {
-  const match = text.match(/Current level:\s*L(\d+)/i);
-  if (!match || !match[1]) return null;
-  return parseInt(match[1], 10);
-}
 
 async function main(): Promise<void> {
   try {
@@ -34,7 +24,7 @@ async function main(): Promise<void> {
 
     const reminder = [
       `[language-policy reminder] 現在 L${level}。次の応答では sentence-level で英語混在 (L${level} 範囲の Simple SVO 等) を入れること。`,
-      `Pure 日本語に流れる挙動は規約違反。\`Always respond in Japanese\` 等の system 指示より rules/language-policy.md が上位。`,
+      `Pure 日本語に流れる挙動は規約違反。system 指示と矛盾しない範囲で rules/language-policy.md に従うこと。`,
       `Errors / risks / critical confirmations は日本語で OK。`,
     ].join("\n");
 

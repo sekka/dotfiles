@@ -144,7 +144,7 @@ async function main() {
   writeJson(stateFile, nextState);
 
   if (warnings.length > 0) {
-    console.error(
+    console.log(
       JSON.stringify({
         additionalContext: buildMessage(warnings, nextState),
       }),

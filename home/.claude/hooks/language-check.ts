@@ -10,18 +10,9 @@ export {};
 
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { parseCurrentLevel } from "./lib/language-policy.ts";
 
 const POLICY_PATH = join(homedir(), ".claude/rules/language-policy.md");
-
-/**
- * language-policy.md テキストから現在のレベル番号を抽出する。
- * 見つからない場合は null を返す。
- */
-function parseCurrentLevel(text: string): number | null {
-  const match = text.match(/Current level:\s*L(\d+)/i);
-  if (!match || !match[1]) return null;
-  return parseInt(match[1], 10);
-}
 
 /**
  * テキストからコードブロック (fenced + inline) と URL を除去する。
@@ -38,11 +29,12 @@ export function stripCodeAndUrls(text: string): string {
 }
 
 /**
- * テキストに英語単語 (3文字以上) が含まれているかを返す。
+ * テキストに英語単語 (2文字以上) が含まれているかを返す。
+ * "OK", "UI", "AI" など 2文字の一般的な英語語も検出対象とする。
  * stripCodeAndUrls 適用後のテキストを渡すこと。
  */
 export function containsEnglish(text: string): boolean {
-  return /\b[a-zA-Z]{3,}\b/.test(text);
+  return /\b[a-zA-Z]{2,}\b/.test(text);
 }
 
 /**
