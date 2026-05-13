@@ -430,5 +430,70 @@ describe("validateCommand", () => {
         });
       }
     });
+
+    describe("Fix 1-1: deny: pkill combined short flags + quoted pattern", () => {
+      const denyCommands = [
+        [`pkill -fx "node"`, "pkill -fx quoted node"],
+        [`pkill -xf "Google Chrome"`, "pkill -xf quoted Google Chrome"],
+        [`pkill -fx "chrome"`, "pkill -fx quoted chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
+
+    describe("Fix 1-3: deny: pkill with option-with-arg before -f", () => {
+      const denyCommands = [
+        [`pkill -u alice -f chrome`, "pkill -u alice -f chrome"],
+        [`pkill -G admin -f node`, "pkill -G admin -f node"],
+        [`pkill -U root -f python`, "pkill -U root -f python"],
+        [`pkill --user=alice -f chrome`, "pkill --user=alice -f chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+
+      const allowCommands = [
+        [
+          `pkill -u alice -f chrome-devtools-mcp`,
+          "pkill -u alice -f chrome-devtools-mcp (wrapper)",
+        ],
+      ];
+
+      for (const [command, description] of allowCommands) {
+        test(`許可: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(true);
+        });
+      }
+    });
+
+    describe("Fix 1-2: deny: killall with option-with-arg before process name", () => {
+      const denyCommands = [
+        [`killall -u alice chrome`, "killall -u alice chrome"],
+        [`killall -s KILL chrome`, "killall -s KILL chrome"],
+        [`killall --user alice chrome`, "killall --user alice chrome"],
+        [`killall --signal=KILL chrome`, "killall --signal=KILL chrome"],
+        [`killall --signal KILL chrome`, "killall --signal KILL chrome"],
+      ];
+
+      for (const [command, description] of denyCommands) {
+        test(`ブロック: ${description}`, () => {
+          const result = validateCommand(command as string);
+          expect(result.isValid).toBe(false);
+          expect(result.severity).toBe("prohibited");
+        });
+      }
+    });
   });
 });

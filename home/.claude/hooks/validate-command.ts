@@ -77,73 +77,174 @@ const WIDE_KILL_APP_NAMES = [
   "Terminal",
 ];
 
+// pkill options that take an argument (next token is the option's value, not the pattern).
+// Reference: pkill(1) man page. Broad list to handle both macOS and GNU variants.
+const PKILL_OPTIONS_WITH_ARG = new Set([
+  "-u",
+  "-U",
+  "-G",
+  "-g",
+  "-P",
+  "-s",
+  "-t",
+  "-n",
+  "--euid",
+  "--uid",
+  "--gid",
+  "--pgroup",
+  "--session",
+  "--terminal",
+  "--ns",
+  "--nslist",
+  "--signal",
+]);
+
+// Strip surrounding single or double quotes from a token.
+function unquoteToken(token: string): string {
+  if (
+    (token.startsWith('"') && token.endsWith('"')) ||
+    (token.startsWith("'") && token.endsWith("'"))
+  ) {
+    return token.slice(1, -1);
+  }
+  return token;
+}
+
+// Shell-aware tokenizer: splits on whitespace but keeps quoted strings (with spaces) as one token.
+// Strips surrounding quotes from each token.
+function shellTokenize(command: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < command.length) {
+    // Skip whitespace
+    while (i < command.length && /\s/.test(command[i] as string)) i++;
+    if (i >= command.length) break;
+
+    const quote = command[i] as string;
+    if (quote === '"' || quote === "'") {
+      // Quoted token — find closing quote
+      const start = i + 1;
+      i++;
+      while (i < command.length && command[i] !== quote) i++;
+      tokens.push(command.slice(start, i));
+      if (i < command.length) i++; // skip closing quote
+    } else {
+      // Unquoted token — read until whitespace
+      const start = i;
+      while (i < command.length && !/\s/.test(command[i] as string)) i++;
+      tokens.push(command.slice(start, i));
+    }
+  }
+  return tokens;
+}
+
 // Matches a pkill -f argument (quoted or unquoted) extracting the pattern string.
 // Handles flags before -f: pkill -9 -f, pkill -KILL -f, pkill --signal KILL -f.
 // Also handles combined short options containing f: pkill -fx, pkill -xf.
+// Skips option-with-arg pairs (e.g. -u alice) so the arg is not mistaken for the pattern.
 // Returns undefined if the command is not a pkill -f (or combined form).
 function extractPkillPattern(command: string): string | undefined {
-  // Check for combined short options containing -f (e.g. -fx, -xf, -9f)
-  // Split the command into tokens and scan for a token starting with - that contains f
-  const tokens = command.split(/\s+/);
+  const tokens = shellTokenize(command);
   const pkillIdx = tokens.findIndex((t) => /^pkill$/i.test(t));
-  if (pkillIdx !== -1) {
-    for (let i = pkillIdx + 1; i < tokens.length; i++) {
-      const tok = tokens[i] as string;
-      if (!tok.startsWith("-")) {
-        // Non-flag token before -f found — not a -f invocation
-        break;
+  if (pkillIdx === -1) return undefined;
+
+  for (let i = pkillIdx + 1; i < tokens.length; i++) {
+    const tok = tokens[i] as string;
+
+    if (!tok.startsWith("-")) {
+      // Non-flag token before any -f found — not a -f invocation
+      return undefined;
+    }
+
+    // --long=value (no separate arg token needed)
+    if (tok.startsWith("--") && tok.includes("=")) {
+      continue;
+    }
+
+    // Known option that takes a separate arg — skip it and its value
+    if (PKILL_OPTIONS_WITH_ARG.has(tok)) {
+      i++; // skip next token (the option's value)
+      continue;
+    }
+
+    if (tok === "-f") {
+      // Standard -f: join remaining non-flag tokens as the pattern.
+      // "pkill -f Google Chrome" → "Google Chrome"; "pkill -f node" → "node"
+      if (i + 1 >= tokens.length) return undefined;
+      const patternParts: string[] = [];
+      for (let j = i + 1; j < tokens.length; j++) {
+        const p = tokens[j] as string;
+        if (p.startsWith("-")) break; // stop at next flag
+        patternParts.push(p);
       }
-      if (tok === "-f") {
-        // Standard -f: next non-flag token is the pattern — fall through to regex for quoting
-        break;
-      }
-      if (tok.startsWith("-") && !tok.startsWith("--") && tok.includes("f")) {
-        // Combined short option like -fx, -xf — next non-flag token is the pattern
-        for (let j = i + 1; j < tokens.length; j++) {
-          const candidate = tokens[j] as string;
-          if (!candidate.startsWith("-")) {
-            return candidate;
-          }
+      return patternParts.join(" ") || undefined;
+    }
+
+    if (!tok.startsWith("--") && tok.includes("f")) {
+      // Combined short option like -fx, -xf — next non-flag token is the pattern
+      for (let j = i + 1; j < tokens.length; j++) {
+        const candidate = tokens[j] as string;
+        if (!candidate.startsWith("-")) {
+          return candidate;
         }
       }
     }
+
+    // Other single-flag without arg (e.g. -9, -KILL, -x) — skip
   }
-  // pkill [flags] -f "pattern" (quoted)
-  const quoted = command.match(/\bpkill\b(?:\s+(?:-\S+|--\S+(?:\s+\S+)?))*\s+-f\s+"([^"]+)"/);
-  if (quoted?.[1]) return quoted[1];
-  // pkill [flags] -f pattern (unquoted)
-  const unquoted = command.match(
-    /\bpkill\b(?:\s+(?:-\S+|--\S+(?:\s+\S+)?))*\s+-f\s+(.+?)(?:\s*[;&|]|$)/,
-  );
-  if (unquoted?.[1]) return unquoted[1].trim();
+
   return undefined;
 }
 
-// Matches a killall argument (quoted or unquoted), skipping flag tokens.
-// Handles: killall -9 chrome, killall -KILL chrome, killall -- chrome, killall "App Name"
-function extractKillallTarget(command: string): string | undefined {
-  // Handle quoted app names (may contain spaces) first, skipping flags
-  // Pattern: killall [flags] "App Name" or killall -- "App Name"
-  const quotedMatch = command.match(/\bkillall\b(?:\s+(?:-\S+))*\s+(?:--\s+)?"([^"]+)"/);
-  if (quotedMatch?.[1]) return quotedMatch[1];
+// killall options that take a separate argument (next token is the option's value).
+// Reference: killall(1) macOS + GNU variants.
+const KILLALL_OPTIONS_WITH_ARG = new Set([
+  "-s",
+  "--signal",
+  "-u",
+  "--user",
+  "-Z",
+  "--context",
+  "-g",
+  "--pgroup",
+  "-G",
+  "--group",
+  "-n",
+  "-z",
+]);
 
-  // Unquoted: split into tokens, skip flag tokens
-  const tokens = command.split(/\s+/);
+// Matches a killall argument (quoted or unquoted), skipping flag tokens and option args.
+// Handles: killall -9 chrome, killall -KILL chrome, killall -- chrome, killall "App Name"
+// Also handles: killall -u alice chrome, killall -s KILL chrome, killall --signal=KILL chrome
+function extractKillallTarget(command: string): string | undefined {
+  const tokens = shellTokenize(command);
   const killallIdx = tokens.findIndex((t) => /^killall$/i.test(t));
   if (killallIdx === -1) return undefined;
 
   for (let i = killallIdx + 1; i < tokens.length; i++) {
     const tok = tokens[i] as string;
+
     if (tok === "--") {
       // End of options — next token is the process name
       if (i + 1 < tokens.length) return tokens[i + 1] as string;
       return undefined;
     }
+
     if (tok.startsWith("-")) {
-      // Flag token, skip it
+      // --long=value — no separate arg needed
+      if (tok.startsWith("--") && tok.includes("=")) {
+        continue;
+      }
+      // Known option that takes a separate arg — skip it and its value
+      if (KILLALL_OPTIONS_WITH_ARG.has(tok)) {
+        i++; // skip value token
+        continue;
+      }
+      // Other flag (e.g. -9, -KILL, -q, -i, -w) — skip just this token
       continue;
     }
-    // First non-flag token is the process name
+
+    // First non-flag token is the process name (shellTokenize already unquotes)
     return tok;
   }
   return undefined;
