@@ -31,18 +31,66 @@ export interface AuthCheckResult {
   reason: string;
 }
 
+// sudo options that consume the next token as their argument (not the command to run).
+const SUDO_OPTIONS_WITH_ARG = new Set([
+  "-u",
+  "--user",
+  "-g",
+  "--group",
+  "-r",
+  "--role",
+  "-t",
+  "--type",
+  "-C",
+  "-c",
+]);
+
+// Returns true if `passwd` appears as an executed command token, not as a path or argument.
+// Handles: passwd, passwd user, sudo passwd, sudo -u root passwd, sudo --user=root passwd.
+// Rejects: grep passwd, echo passwd, cat /etc/passwd, /usr/bin/passwd (path-prefixed).
+function isPasswdCommand(command: string): boolean {
+  // Walk shell segments separated by ;  &&  ||  |
+  // For each segment, detect if the effective command (after sudo + its flags) is "passwd".
+  const segments = command.split(/;|&&|\|\||(?<!\|)\|(?!\|)/);
+  for (const segment of segments) {
+    const tokens = segment.trim().split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) continue;
+
+    let idx = 0;
+    // Strip sudo and its flag/option tokens
+    if (tokens[idx] === "sudo") {
+      idx++;
+      while (idx < tokens.length) {
+        const t = tokens[idx] as string;
+        if (t === "--") {
+          idx++;
+          break;
+        }
+        if (!t.startsWith("-")) break;
+        // --option=value: no next token consumed
+        if (t.startsWith("--") && t.includes("=")) {
+          idx++;
+          continue;
+        }
+        // Known option-with-arg: skip flag AND its value
+        if (SUDO_OPTIONS_WITH_ARG.has(t)) {
+          idx += 2;
+          continue;
+        }
+        // Other short flags (e.g. -n, -S, -k) — skip just the flag
+        idx++;
+      }
+    }
+
+    // The effective command token
+    const cmd = tokens[idx];
+    if (cmd === "passwd") return true;
+  }
+  return false;
+}
+
 // Patterns that result in an immediate deny (irreversible credential changes)
 const DENY_PATTERNS: { pattern: RegExp; reason: string }[] = [
-  {
-    // passwd command — matches "passwd", "passwd <user>", "sudo passwd <user>",
-    // "sudo -u root passwd", "sudo --user root passwd", "sudo --user=root passwd", etc.
-    // Does NOT match /etc/passwd (path), grep passwd, cat passwd, etc.
-    // Strategy: detect "passwd" as a command token not preceded by a path separator (/).
-    // This means passwd must NOT be immediately preceded by / (no path prefix).
-    pattern: /(?:^|[\s;&|`])passwd(?:\s+\S+)?(?:\s*[;&|`]|\s*$)/,
-    reason:
-      "passwd changes a user password — irreversible without recovery. Requires explicit user approval (auth-changes-need-approval.md).",
-  },
   {
     pattern: /\bchpasswd\b/,
     reason:
@@ -104,7 +152,15 @@ const ASK_PATTERNS: { pattern: RegExp; reason: string }[] = [
 // Build credential env-var export pattern dynamically
 const CRED_ENV_VAR_PATTERN = new RegExp(`\\bexport\\s+(${CREDENTIAL_ENV_VARS.join("|")})\\s*=`);
 
+const PASSWD_DENY_REASON =
+  "passwd changes a user password — irreversible without recovery. Requires explicit user approval (auth-changes-need-approval.md).";
+
 export function checkAuthCommand(command: string): AuthCheckResult {
+  // passwd command check — must be in executed command position, not as arg/path
+  if (isPasswdCommand(command)) {
+    return { decision: "deny", reason: PASSWD_DENY_REASON };
+  }
+
   // Deny patterns first
   for (const { pattern, reason } of DENY_PATTERNS) {
     if (pattern.test(command)) {

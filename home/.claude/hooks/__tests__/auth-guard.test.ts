@@ -170,6 +170,42 @@ describe("checkAuthCommand", () => {
     });
   });
 
+  describe("Fix 1-4: passwd false-positive fixes", () => {
+    describe("allow: passwd as argument/string, not command", () => {
+      const allowCommands = [
+        "grep passwd /etc/passwd",
+        "echo passwd",
+        "cat /var/log/passwd.log",
+        "echo 'check passwd file'",
+      ];
+
+      for (const command of allowCommands) {
+        test(`allow: ${command}`, () => {
+          const result = checkAuthCommand(command);
+          expect(result.decision).toBe("allow");
+        });
+      }
+    });
+
+    describe("deny: passwd as executed command", () => {
+      const denyCommands = [
+        "passwd",
+        "passwd root",
+        "sudo passwd root",
+        "sudo -u root passwd",
+        "sudo --user=root passwd",
+        "sudo --user root passwd",
+      ];
+
+      for (const command of denyCommands) {
+        test(`deny: ${command}`, () => {
+          const result = checkAuthCommand(command);
+          expect(result.decision).toBe("deny");
+        });
+      }
+    });
+  });
+
   describe("reason string is non-empty for non-allow decisions", () => {
     test("deny: passwd has a reason", () => {
       const result = checkAuthCommand("passwd");
