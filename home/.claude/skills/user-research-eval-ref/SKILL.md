@@ -197,6 +197,10 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 - Mode 2: "Should I adopt this for my environment?" → compares against the user's own dotfiles/skills/Brewfile
 - Mode 3: "What is this project, objectively?" → comprehensive external-view wiki, independent of the user's environment
 
+**user-research-eval-ref vs user-research-queue:**
+- user-research-eval-ref: Evaluate a single URL **now** (Quick Eval, Deep Research, or OSS Wiki)
+- user-research-queue: **Queue management** — add URLs for later, list backlog, and process entries over time; delegates actual deep research to this skill
+
 </workflow>
 
 <success_criteria>

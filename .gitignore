@@ -13,6 +13,7 @@ home/.claude/skills/*/
 .claude/logs/
 .claude/sessions/
 .claude/worktrees/
+.claude/scheduled_tasks.lock
 home/.claude/state/
 .superpowers/
 # デザインインテリジェンス参照ライブラリ（PNG・YAML・実行時データ。公開リポジトリに含めない）
@@ -30,6 +31,7 @@ reports/
 # md-preview hook が生成する HTML プレビュー (サブディレクトリ含む)
 plans/**/*.html
 docs/**/*.html
+tasks/**/*.html
 
 # Zsh コンパイル済みバイトコード
 *.zwc

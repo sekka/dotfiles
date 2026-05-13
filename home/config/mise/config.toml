@@ -41,6 +41,9 @@ trusted_config_paths = ["~/dotfiles", "~/src/**", "~/projects/**"]
 # Node.js ダウンロードの GPG 署名検証を無効化
 # HTTPS によるダウンロード整合性で十分、GPG keyboxd の問題を回避
 node.verify = false
+# サプライチェーン攻撃対策: 公開から 7 日経過していないバージョンを fuzzy 解決時に除外
+# mise 2026.5.x 以降で有効化。それ以前のバージョンでは Unknown setting の警告のみで無害
+minimum_release_age = "7d"
 
 # --------------------------------------
 # GitHub/開発ツール

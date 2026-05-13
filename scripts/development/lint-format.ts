@@ -557,6 +557,10 @@ async function main(): Promise<void> {
   } else if (options.staged) {
     // ステージされたファイルモード（pre-commit用）
     files = await getStagedFiles();
+    // .claude/settings.local.json は sort-permissions.ts が専用処理するため
+    // lint/format 対象から除外（oxfmt が JSON を ignore 規則で全除外し
+    // "Expected at least one target file" エラーになるのを防ぐ）
+    files = files.filter((f) => !f.endsWith(".claude/settings.local.json"));
     if (files.length === 0) {
       console.log("No staged files to process");
       process.exit(0);
