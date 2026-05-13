@@ -43,7 +43,7 @@ async function main() {
   writeJson(stateFile, counts);
 
   if (counts[filePath] >= WARN_THRESHOLD) {
-    console.error(
+    console.log(
       JSON.stringify({
         additionalContext: `[edit-counter] "${filePath}" をこのセッションで${counts[filePath]}回編集しています。一度止まってユーザーの要件を再確認してください。`,
       }),

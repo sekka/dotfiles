@@ -43,7 +43,7 @@ async function main() {
     const streak = readNumber(streakFile, 0) + 1;
     writeNumber(streakFile, streak);
     if (streak >= WARN_THRESHOLD) {
-      console.error(
+      console.log(
         JSON.stringify({
           additionalContext: `[error-loop] ${streak}回連続でツールが失敗しています。同じアプローチのリトライを禁止します。何が失敗したか説明し、別のアプローチを試してください。`,
         }),
