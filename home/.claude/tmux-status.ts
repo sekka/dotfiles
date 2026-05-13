@@ -77,14 +77,19 @@ export function parseCache(json: string): CacheRecord | null {
       typeof parsed !== "object" ||
       !("data" in parsed) ||
       !("timestamp" in parsed) ||
-      typeof parsed.timestamp !== "number"
+      typeof parsed.timestamp !== "number" ||
+      !Number.isFinite(parsed.timestamp)
     ) {
       return null;
     }
+    const nextRetryAt =
+      typeof parsed.nextRetryAt === "number" && Number.isFinite(parsed.nextRetryAt)
+        ? parsed.nextRetryAt
+        : null;
     return {
       data: parsed.data as UsageLimits | null,
       timestamp: parsed.timestamp,
-      nextRetryAt: typeof parsed.nextRetryAt === "number" ? parsed.nextRetryAt : null,
+      nextRetryAt,
     };
   } catch {
     return null;
@@ -118,7 +123,7 @@ export function compute429Record(
 ): CacheRecord {
   const nextRetryAt = parseRetryAfter(retryAfterHeader, now, defaultMs);
   if (existing === null) {
-    return { data: null, timestamp: now, nextRetryAt };
+    return { data: null, timestamp: 0, nextRetryAt };
   }
   return { data: existing.data, timestamp: existing.timestamp, nextRetryAt };
 }
@@ -295,45 +300,52 @@ function formatLimit(label: string, limit: LimitEntry, staleMark: string): strin
   return s;
 }
 
-try {
-  let cache = await readCache();
+async function main(): Promise<void> {
+  try {
+    const now = Date.now();
+    let cache = await readCache();
 
-  const decision = shouldFetchNow({
-    staleness: cache.staleness,
-    now: Date.now(),
-    nextRetryAt: cache.nextRetryAt,
-  });
+    const decision = shouldFetchNow({
+      staleness: cache.staleness,
+      now,
+      nextRetryAt: cache.nextRetryAt,
+    });
 
-  if (decision === "sync") {
-    await fetchAndCacheLimits();
-    cache = await readCache();
-  } else if (decision === "background") {
-    fetchAndCacheLimits().catch(() => {});
-  }
+    if (decision === "sync") {
+      await fetchAndCacheLimits();
+      cache = await readCache();
+    } else if (decision === "background") {
+      fetchAndCacheLimits().catch(() => {});
+    }
 
-  if (!cache.data) {
+    if (!cache.data) {
+      console.log("");
+      process.exit(0);
+    }
+
+    const showStale = shouldShowStaleMark({
+      staleness: cache.staleness,
+      nextRetryAt: cache.nextRetryAt,
+      now,
+    });
+    const mark = showStale ? "?" : "";
+    const parts: string[] = [];
+
+    if (cache.data.five_hour) parts.push(formatLimit("LMT", cache.data.five_hour, mark));
+    if (cache.data.seven_day) parts.push(formatLimit("WK", cache.data.seven_day, mark));
+    if (cache.data.seven_day_sonnet)
+      parts.push(formatLimit("WKS", cache.data.seven_day_sonnet, mark));
+
+    if (showStale) {
+      parts.push(`${t.gray}(${Math.floor(cache.ageMs / 60000)}m ago)${t.reset}`);
+    }
+
+    console.log(parts.join(" "));
+  } catch {
     console.log("");
-    process.exit(0);
   }
+}
 
-  const showStale = shouldShowStaleMark({
-    staleness: cache.staleness,
-    nextRetryAt: cache.nextRetryAt,
-    now: Date.now(),
-  });
-  const mark = showStale ? "?" : "";
-  const parts: string[] = [];
-
-  if (cache.data.five_hour) parts.push(formatLimit("LMT", cache.data.five_hour, mark));
-  if (cache.data.seven_day) parts.push(formatLimit("WK", cache.data.seven_day, mark));
-  if (cache.data.seven_day_sonnet)
-    parts.push(formatLimit("WKS", cache.data.seven_day_sonnet, mark));
-
-  if (showStale) {
-    parts.push(`${t.gray}(${Math.floor(cache.ageMs / 60000)}m ago)${t.reset}`);
-  }
-
-  console.log(parts.join(" "));
-} catch {
-  console.log("");
+if (import.meta.main) {
+  await main();
 }

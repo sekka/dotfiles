@@ -236,6 +236,24 @@ describe("parseCache", () => {
     const record = { data: validData, nextRetryAt: null };
     expect(parseCache(JSON.stringify(record))).toBeNull();
   });
+
+  test("timestamp が Infinity → null", () => {
+    // 1e309 parses as Infinity in JS
+    const result = parseCache('{"data":null,"timestamp":1e309,"nextRetryAt":null}');
+    expect(result).toBeNull();
+  });
+
+  test("nextRetryAt が Infinity → null に落ちる", () => {
+    const result = parseCache('{"data":null,"timestamp":1000,"nextRetryAt":1e309}');
+    expect(result).not.toBeNull();
+    expect(result!.nextRetryAt).toBeNull();
+  });
+
+  test("nextRetryAt が -Infinity → null に落ちる", () => {
+    const result = parseCache('{"data":null,"timestamp":1000,"nextRetryAt":-1e309}');
+    expect(result).not.toBeNull();
+    expect(result!.nextRetryAt).toBeNull();
+  });
 });
 
 describe("computeStaleness", () => {
@@ -307,11 +325,31 @@ describe("compute429Record", () => {
     expect(result.nextRetryAt).toBe(now + defaultMs);
   });
 
-  test("既存キャッシュなし: data=null, timestamp=now, nextRetryAt 設定", () => {
+  test("既存キャッシュなし: data=null, timestamp=0 (expired扱い), nextRetryAt 設定", () => {
     const result = compute429Record(null, "30", now, defaultMs);
     expect(result.data).toBeNull();
-    expect(result.timestamp).toBe(now);
+    expect(result.timestamp).toBe(0);
     expect(result.nextRetryAt).toBe(now + 30_000);
+  });
+
+  test("既存キャッシュなし + 429: backoff 中は shouldFetchNow が skip", () => {
+    const record = compute429Record(null, "30", now, defaultMs);
+    const staleness = computeStaleness(record.timestamp, now);
+    const decision = shouldFetchNow({ staleness, now, nextRetryAt: record.nextRetryAt });
+    expect(decision).toBe("skip");
+  });
+
+  test("既存キャッシュなし + 429: backoff 解除後は shouldFetchNow が skip にならない (fetch する)", () => {
+    const record = compute429Record(null, "30", now, defaultMs);
+    const afterBackoff = now + 31_000;
+    const staleness = computeStaleness(record.timestamp, afterBackoff);
+    const decision = shouldFetchNow({
+      staleness,
+      now: afterBackoff,
+      nextRetryAt: record.nextRetryAt,
+    });
+    // timestamp=0 なので staleness は stale or expired → background か sync (skip にはならない)
+    expect(decision).not.toBe("skip");
   });
 
   test("429 後に readCache が skip を返す (nextRetryAt 未来)", () => {
