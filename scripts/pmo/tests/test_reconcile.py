@@ -103,3 +103,32 @@ def test_merge_excel_field_with_none_yaml_value():
     )
     result = merge_matched(matched, ownership)
     assert result.yaml_updates == [("T-001", "status", "進行中")]
+
+
+from lib.reconcile import build_excel_appends, build_yaml_appends
+
+
+def test_build_excel_appends_from_yaml_only():
+    yaml_only = [
+        {"id": "T-003", "phase_l1": "新規", "name": "追加タスク"},
+    ]
+    ownership = make_ownership(
+        yaml_fields={"id", "phase_l1", "name"},
+        excel_fields=set(),
+        column_of={"id": "A", "phase_l1": "B", "name": "D"},
+    )
+    appends = build_excel_appends(yaml_only, ownership)
+    assert appends == [{"A": "T-003", "B": "新規", "D": "追加タスク"}]
+
+
+def test_build_yaml_appends_from_excel_only():
+    excel_only = [
+        {"row": 9, "A": "T-999", "I": "進行中"},
+    ]
+    ownership = make_ownership(
+        yaml_fields={"id"},
+        excel_fields={"status"},
+        column_of={"id": "A", "status": "I"},
+    )
+    appends = build_yaml_appends(excel_only, ownership)
+    assert appends == [{"id": "T-999", "status": "進行中"}]

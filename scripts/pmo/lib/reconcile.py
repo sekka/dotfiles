@@ -72,3 +72,34 @@ def merge_matched(
             if yaml_val != excel_val:
                 result.yaml_updates.append((tid, fname, excel_val))
     return result
+
+
+def build_excel_appends(
+    yaml_only: list[dict[str, Any]],
+    ownership,
+) -> list[dict[str, Any]]:
+    appends = []
+    for t in yaml_only:
+        row_values: dict[str, Any] = {}
+        for fname in ownership.yaml_fields:
+            col = ownership.column_of[fname]
+            if fname in t:
+                row_values[col] = t[fname]
+        appends.append(row_values)
+    return appends
+
+
+def build_yaml_appends(
+    excel_only: list[dict[str, Any]],
+    ownership,
+) -> list[dict[str, Any]]:
+    appends = []
+    for er in excel_only:
+        task: dict[str, Any] = {}
+        id_col = ownership.column_of["id"]
+        task["id"] = er[id_col]
+        for fname in ownership.excel_fields:
+            col = ownership.column_of[fname]
+            task[fname] = er.get(col)
+        appends.append(task)
+    return appends
