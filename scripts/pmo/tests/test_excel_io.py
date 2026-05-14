@@ -1,6 +1,6 @@
 from pathlib import Path
 import openpyxl
-from lib.excel_io import read_rows
+from lib.excel_io import read_rows, write_cells
 
 
 def make_workbook(path: Path) -> None:
@@ -47,3 +47,27 @@ def test_read_rows_stops_at_first_empty_id(tmp_path):
                      columns=["A", "B", "C", "D", "E", "F", "G", "H", "I"],
                      id_column="A")
     assert len(rows) == 2
+
+
+def test_write_cells_updates_existing_cells(tmp_path):
+    xlsx = tmp_path / "wbs.xlsx"
+    make_workbook(xlsx)
+    write_cells(xlsx, sheet="WBS", updates=[
+        (7, "I", "完了"),
+        (7, "G", "2026-04-15"),
+    ])
+    wb = openpyxl.load_workbook(xlsx)
+    ws = wb["WBS"]
+    assert ws["I7"].value == "完了"
+    assert ws["G7"].value == "2026-04-15"
+
+
+def test_write_cells_preserves_other_cells(tmp_path):
+    xlsx = tmp_path / "wbs.xlsx"
+    make_workbook(xlsx)
+    write_cells(xlsx, sheet="WBS", updates=[(7, "I", "完了")])
+    wb = openpyxl.load_workbook(xlsx)
+    ws = wb["WBS"]
+    assert ws["A7"].value == "T-001"
+    assert ws["D7"].value == "ヒアリング"
+    assert ws["A8"].value == "T-002"

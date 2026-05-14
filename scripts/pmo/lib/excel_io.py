@@ -28,3 +28,18 @@ def read_rows(
         rows.append(row_data)
         row += 1
     return rows
+
+
+def write_cells(
+    workbook_path: Path,
+    *,
+    sheet: str,
+    updates: list[tuple[int, str, Any]],
+) -> None:
+    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
+    ws = wb[sheet]
+    for row, col_letter, value in updates:
+        col_idx = column_index_from_string(col_letter)
+        ws.cell(row=row, column=col_idx, value=value)
+    wb.save(workbook_path)
