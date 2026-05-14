@@ -1,6 +1,6 @@
 from pathlib import Path
 import openpyxl
-from lib.excel_io import read_rows, write_cells, append_row
+from lib.excel_io import read_rows, write_cells, append_row, _resolve_value
 
 
 def make_workbook(path: Path) -> None:
@@ -20,6 +20,23 @@ def make_workbook(path: Path) -> None:
     ws.cell(row=8, column=1, value="T-002")
     ws.cell(row=8, column=4, value="次タスク")
     wb.save(path)
+
+
+def test_resolve_value_formula_with_computed_result():
+    """数式セルで計算結果がある場合は computed を返す"""
+    assert _resolve_value("=WORKDAY(A1,5)", "2026-05-20") == "2026-05-20"
+
+
+def test_resolve_value_formula_with_no_computed_result():
+    """数式セルで計算結果が None なら None を返す（数式文字列は絶対に返さない）"""
+    assert _resolve_value("=IF(G6=\"\",WORKDAY(B1,5),G6)", None) is None
+
+
+def test_resolve_value_plain_value_uses_structural():
+    """数式でない通常値は structural をそのまま返す"""
+    assert _resolve_value("T-001", None) == "T-001"
+    assert _resolve_value(None, None) is None
+    assert _resolve_value(42, None) == 42
 
 
 def test_read_rows_returns_dicts_keyed_by_column_letter(tmp_path):
