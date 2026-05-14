@@ -61,3 +61,38 @@ def test_update_task_field_missing_id_raises():
     pmo = load_pmo_yaml(FIXTURE)
     with pytest.raises(KeyError, match="T-999"):
         update_task_field(pmo, task_id="T-999", field="status", value="x")
+
+
+def test_save_pmo_yaml_preserves_comments(tmp_path):
+    """Comments in the YAML source must survive a load → save round-trip."""
+    src = tmp_path / "commented.yaml"
+    src.write_text(
+        "project:\n"
+        "  name: 'Test'\n"
+        "  slug: 'test'\n"
+        "  start: '2026-01-01'\n"
+        "  end: '2026-12-31'\n"
+        "\n"
+        "excel:\n"
+        "  file: 'WBS.xlsx'\n"
+        "  sheet: 'WBS'\n"
+        "  header_row: 1\n"
+        "  data_start_row: 2\n"
+        "  id_column: A\n"
+        "  columns:\n"
+        "    - { col: A, field: id, owner: yaml }\n"
+        "\n"
+        "tasks:\n"
+        "  # 重要な仕事\n"
+        "  - id: T-001\n"
+        "    name: foo\n"
+        "    status: null\n",
+        encoding="utf-8",
+    )
+
+    pmo = load_pmo_yaml(src)
+    out = tmp_path / "out.yaml"
+    save_pmo_yaml(pmo, out)
+
+    saved_text = out.read_text(encoding="utf-8")
+    assert "# 重要な仕事" in saved_text
