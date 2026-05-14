@@ -6,11 +6,13 @@ PMO の `pmo.yaml` と Excel WBS (`*.xlsm`) を列所有権モデルで双方向
 
 ```bash
 cd scripts/pmo
-uv sync                                          # 初回のみ
-uv run python sync.py doctor --project <slug>    # 検証
-uv run python sync.py sync wbs --project <slug>  # 双方向同期
-uv run python sync.py push wbs --project <slug>  # YAML → Excel のみ
-uv run python sync.py pull wbs --project <slug>  # Excel → YAML のみ
+uv sync                                                              # 初回のみ
+uv run python sync.py doctor --project <slug>                        # 検証
+uv run python sync.py sync wbs --project <slug>                      # 双方向同期
+uv run python sync.py push wbs --project <slug>                      # YAML → Excel のみ
+uv run python sync.py pull wbs --project <slug>                      # Excel → YAML のみ
+uv run python sync.py migrate-ids wbs --project <slug>               # 空 id 列を自動採番
+uv run python sync.py migrate-ids wbs --project <slug> --dry-run     # 採番プレビュー（書き戻しなし）
 ```
 
 ## 動作前提

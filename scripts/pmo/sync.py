@@ -13,6 +13,7 @@ from lib.ownership import resolve_ownership
 from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
 from lib.snapshot import load_snapshot, save_snapshot, Snapshot
 from lib.backup import backup_excel, prune_backups
+from lib.migrate import compute_id_assignments, scan_rows, write_id_cells
 
 
 def load_deleted_ids(pdir: Path) -> dict[str, set[str]]:
@@ -95,6 +96,65 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_migrate_ids(args: argparse.Namespace) -> int:
+    """Bootstrap empty id cells in the WBS sheet with T-NNN assignments."""
+    pdir = project_dir(args.project)
+    pmo_path = pdir / "pmo.yaml"
+    pmo = load_pmo_yaml(pmo_path)
+    excel_path = pdir / pmo.excel.file
+    if not excel_path.exists():
+        print(f"error: excel file not found: {excel_path}", file=sys.stderr)
+        return 2
+
+    all_columns = [c.col for c in pmo.excel.columns]
+    rows = scan_rows(
+        excel_path,
+        sheet=pmo.excel.sheet,
+        data_start_row=pmo.excel.data_start_row,
+        id_column=pmo.excel.id_column,
+        all_columns=all_columns,
+    )
+
+    ids = [r[pmo.excel.id_column] for r in rows]
+    assignments = compute_id_assignments(ids)
+
+    if not assignments:
+        print("migrated 0 rows")
+        return 0
+
+    if args.dry_run:
+        for idx, new_id in assignments:
+            row_num = rows[idx]["row"]
+            print(f"  row {row_num}: {new_id}")
+        print(f"dry-run: would migrate {len(assignments)} rows")
+        return 0
+
+    try:
+        dest = backup_excel(excel_path, pdir)
+        if dest is not None:
+            print(f"  backup: {dest}")
+    except OSError as exc:
+        print(f"error: backup failed: {exc}", file=sys.stderr)
+        return 4
+
+    row_map = [r["row"] for r in rows]
+    try:
+        write_id_cells(
+            excel_path,
+            sheet=pmo.excel.sheet,
+            id_column=pmo.excel.id_column,
+            assignments=assignments,
+            row_map=row_map,
+        )
+    except PermissionError:
+        print(f"error: cannot write {excel_path}. Close Excel and retry.", file=sys.stderr)
+        return 3
+
+    prune_backups(pdir)
+    print(f"migrated {len(assignments)} rows")
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="sync.py", description="PMO Excel ⇄ YAML sync")
     sub = p.add_subparsers(dest="command", required=True)
@@ -115,6 +175,11 @@ def make_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("push", parents=[common], help="YAML → Excel only")
     sp.add_argument("sheet", choices=["wbs"])
     sp.set_defaults(func=lambda a: cmd_sync(a, mode="push"))
+
+    mig = sub.add_parser("migrate-ids", parents=[common], help="既存 xlsm の空 id 列を自動採番")
+    mig.add_argument("kind", choices=["wbs"])
+    mig.add_argument("--dry-run", action="store_true")
+    mig.set_defaults(func=cmd_migrate_ids)
     return p
 
 
