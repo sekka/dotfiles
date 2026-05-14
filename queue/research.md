@@ -12,7 +12,6 @@ Deep research backlog. Two-stage pipeline:
 
 (まだ Quick Eval していない URL。`/user-research-queue quick` で順番に Quick Eval を回す)
 
-- [ ] 2026-05-13 — [Gopeed — open-source download engine that works on every platform](https://www.opensourceprojects.dev/post/993c493f-28ec-4a77-9b21-0bed3b45ed5c) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [@yoshiko_pg on X](https://x.com/yoshiko_pg/status/2029938566516855172) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [EdamAme-x/claudex — use codex model on Claude Code](https://github.com/EdamAme-x/claudex) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [Fresh — The Terminal IDE (multi-cursor, LSP, Magit-style Git, SSH remote, TS plugins)](https://getfresh.dev/) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
@@ -93,6 +92,9 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-14 — [音楽の生成・編集が可能な高性能ローカル音楽生成AI【ACE-Step-1.5】はどれほどか？](https://zenn.dev/asap/articles/d03902a7852a61) — focus: TBD
 - [ ] 2026-05-14 — [Claude CodeにCLIツールを渡して精度と効率を上げる](https://zenn.dev/chot/articles/d0cd0425edd869) — focus: TBD
 - [ ] 2026-05-14 — [Marpでいい感じのスライドを生成するClaude Code Pluginを作った](https://zenn.dev/yamakh/articles/e720d66aeeca44) — focus: TBD
+- [ ] 2026-05-14 — [macOS Tahoe Studio Display 画面のちらつき：8つの完全修復ガイド (2025)](https://macos-tahoe.com/ja/blog/macos-tahoe-studio-display-flickering-complete-fix-guide-2025/) — focus: TBD
+- [ ] 2026-05-14 — [nextlevelbuilder/ui-ux-pro-max-skill — An AI SKILL that provide design intelligence for building professional UI/UX multiple platforms](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) — focus: TBD
+- [ ] 2026-05-14 — [hesreallyhim/awesome-claude-code — A curated list of awesome skills, hooks, slash-commands, agent orchestrators, applications, and plugins for Claude Code by Anthropic](https://github.com/hesreallyhim/awesome-claude-code) — focus: TBD
 
 ## Deep Research 待ち
 
@@ -114,3 +116,4 @@ Deep research backlog. Two-stage pipeline:
 - [x] 2026-05-13 → 2026-05-14 — [@tom_doerr on X](https://x.com/tom_doerr/status/2030040275079368847) — outcome: discarded — takeaway: branchlet 紹介ツイート。スコープ外 — 既存 worktree 運用 (using-git-worktrees skill + EnterWorktree harness + tmux 並列) で十分カバー
 - [x] 2026-05-13 → 2026-05-14 — [nabeelhyatt/coworkpowers — Superpowers for knowledge work in Claude Code](https://github.com/nabeelhyatt/coworkpowers) — outcome: discarded — takeaway: 既存 superpowers/memory と重複。Compound loop と granular insight storage は superpowers skill 群 + ~/.claude/projects/*/memory/ で実装済み
 - [x] 2026-05-13 → 2026-05-14 — [playcanvas/editor — Browser-based visual editor for WebGL/WebGPU/WebXR apps](https://github.com/playcanvas/editor) — outcome: discarded — takeaway: ターゲット不一致（3D/ゲーム領域）。dotfiles/Claude Code/Web 制作 PMO と接点なし
+- [x] 2026-05-13 → 2026-05-14 — [Gopeed — open-source download engine that works on every platform](https://www.opensourceprojects.dev/post/993c493f-28ec-4a77-9b21-0bed3b45ed5c) — outcome: discarded — takeaway: 既存資産と重複 — aria2/curl/yt-dlp で日常需要は満たせている
