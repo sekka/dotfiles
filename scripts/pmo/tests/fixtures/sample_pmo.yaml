@@ -1,0 +1,33 @@
+project:
+  name: "Sample"
+  slug: "sample"
+  start: "2026-04-15"
+  end: "2026-06-30"
+
+excel:
+  file: "WBS.xlsx"
+  sheet: "WBS"
+  header_row: 6
+  data_start_row: 7
+  id_column: A
+  columns:
+    - { col: A, field: id, owner: yaml }
+    - { col: B, field: phase_l1, owner: yaml }
+    - { col: C, field: phase_l2, owner: yaml }
+    - { col: D, field: name, owner: yaml }
+    - { col: E, field: assignee, owner: yaml }
+    - { col: F, field: est_hours, owner: yaml }
+    - { col: G, field: start_date, owner: excel }
+    - { col: H, field: end_date, owner: excel }
+    - { col: I, field: status, owner: excel }
+
+tasks:
+  - id: T-001
+    phase_l1: "現状把握"
+    phase_l2: "事前ヒアリング"
+    name: "ヒアリング対象者選定"
+    assignee: "PM"
+    est_hours: 1
+    start_date: null
+    end_date: null
+    status: null
