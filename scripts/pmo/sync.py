@@ -10,6 +10,7 @@ from lib.excel_io import read_rows, write_cells, append_row
 from lib.ownership import resolve_ownership
 from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends
 from lib.snapshot import load_snapshot, save_snapshot, Snapshot
+from lib.backup import backup_excel, prune_backups
 
 
 def project_dir(slug: str) -> Path:
@@ -123,6 +124,16 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     if mode == "push":
         yaml_updates = []
 
+    # backup Excel before any write (sync/push only, skip when nothing to write)
+    if mode != "pull" and (excel_updates or excel_appends):
+        try:
+            dest = backup_excel(excel_path, pdir)
+            if dest is not None:
+                print(f"  backup: {dest}")
+        except OSError as exc:
+            print(f"error: backup failed: {exc}", file=sys.stderr)
+            return 4
+
     # apply Excel changes
     if excel_updates:
         try:
@@ -151,6 +162,10 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     # snapshot
     snap = Snapshot(rows={t["id"]: dict(t) for t in pmo.tasks if "id" in t})
     save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
+
+    # prune old backups (sync/push only)
+    if mode != "pull":
+        prune_backups(pdir)
 
     # summary
     print(f"mode={mode}")
