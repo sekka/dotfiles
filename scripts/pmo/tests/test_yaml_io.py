@@ -24,8 +24,10 @@ def test_load_pmo_yaml_parses_columns():
     assert len(pmo.excel.columns) == 9
     cols_by_field = {c.field: c for c in pmo.excel.columns}
     assert cols_by_field["id"].col == "A"
-    assert cols_by_field["id"].owner == "yaml"
-    assert cols_by_field["status"].owner == "excel"
+    assert cols_by_field["id"].readonly is False
+    assert cols_by_field["status"].readonly is False
+    assert cols_by_field["start_date"].readonly is True
+    assert cols_by_field["end_date"].readonly is True
 
 
 def test_load_pmo_yaml_parses_tasks():
@@ -80,7 +82,7 @@ def test_save_pmo_yaml_preserves_comments(tmp_path):
         "  data_start_row: 2\n"
         "  id_column: A\n"
         "  columns:\n"
-        "    - { col: A, field: id, owner: yaml }\n"
+        "    - { col: A, field: id }\n"
         "\n"
         "tasks:\n"
         "  # 重要な仕事\n"

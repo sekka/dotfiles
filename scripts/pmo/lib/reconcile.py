@@ -1,6 +1,8 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Iterable
+
+from lib.yaml_io import ColumnSpec
 
 
 @dataclass
@@ -59,60 +61,99 @@ class MergeResult:
 
 
 def merge_matched(
-    matched: dict[str, "RowMatch"],
-    ownership: "Any",
+    matched: dict[str, RowMatch],
+    columns: Iterable[ColumnSpec],
+    *,
+    direction: str,
 ) -> MergeResult:
-    from lib.ownership import Ownership  # avoid circular at module import
+    """One-way merge based on the requested direction.
+
+    direction="push": YAML → Excel. For each non-readonly, non-id column whose
+    YAML value differs from Excel, emit an excel_update.
+    direction="pull": Excel → YAML. For each non-readonly, non-id column whose
+    Excel value differs from YAML, emit a yaml_update.
+    """
+    if direction not in ("pull", "push"):
+        raise ValueError(f"invalid direction: {direction!r} (expected 'pull' or 'push')")
+    cols = list(columns)
     result = MergeResult()
     for tid, m in matched.items():
-        for fname in ownership.yaml_fields:
-            if fname == "id":
+        for c in cols:
+            if c.field == "id" or c.readonly:
                 continue
-            col = ownership.column_of[fname]
-            yaml_val = m.yaml_task.get(fname)
-            excel_val = m.excel_data.get(col)
-            if _normalize_for_compare(yaml_val) != _normalize_for_compare(excel_val):
-                result.excel_updates.append((m.excel_row, col, yaml_val))
-        for fname in ownership.excel_fields:
-            col = ownership.column_of[fname]
-            yaml_val = m.yaml_task.get(fname)
-            excel_val = m.excel_data.get(col)
-            if _normalize_for_compare(yaml_val) != _normalize_for_compare(excel_val):
-                result.yaml_updates.append((tid, fname, excel_val))
+            yaml_val = m.yaml_task.get(c.field)
+            excel_val = m.excel_data.get(c.col)
+            if _normalize_for_compare(yaml_val) == _normalize_for_compare(excel_val):
+                continue
+            if direction == "push":
+                result.excel_updates.append((m.excel_row, c.col, yaml_val))
+            else:  # pull
+                result.yaml_updates.append((tid, c.field, excel_val))
     return result
 
 
 def build_excel_appends(
     yaml_only: list[dict[str, Any]],
-    ownership,
+    columns: Iterable[ColumnSpec],
 ) -> list[dict[str, Any]]:
-    appends = []
+    """Excel rows to append for YAML-only tasks. Skips readonly columns."""
+    cols = list(columns)
+    appends: list[dict[str, Any]] = []
     for t in yaml_only:
         row_values: dict[str, Any] = {}
-        for fname in ownership.yaml_fields:
-            col = ownership.column_of[fname]
-            if fname in t:
-                row_values[col] = t[fname]
+        for c in cols:
+            if c.readonly:
+                continue
+            if c.field in t:
+                row_values[c.col] = t[c.field]
         appends.append(row_values)
     return appends
 
 
 def build_yaml_appends(
     excel_only: list[dict[str, Any]],
-    ownership,
+    columns: Iterable[ColumnSpec],
+    *,
+    id_column: str,
 ) -> list[dict[str, Any]]:
-    appends = []
+    """YAML tasks to append for Excel-only rows. Includes readonly fields so the
+    next sync sees the same value on both sides (convergence)."""
+    cols = list(columns)
+    appends: list[dict[str, Any]] = []
     for er in excel_only:
-        task: dict[str, Any] = {}
-        id_col = ownership.column_of["id"]
-        task["id"] = er[id_col]
-        for fname in ownership.yaml_fields | ownership.excel_fields:
-            if fname == "id":
+        task: dict[str, Any] = {"id": er[id_column]}
+        for c in cols:
+            if c.field == "id":
                 continue
-            col = ownership.column_of[fname]
-            task[fname] = er.get(col)
+            task[c.field] = er.get(c.col)
         appends.append(task)
     return appends
+
+
+def excel_rows_to_id_keyed(
+    excel_rows: list[dict[str, Any]],
+    columns: Iterable[ColumnSpec],
+    *,
+    id_column: str,
+) -> list[dict[str, Any]]:
+    """Convert Excel rows (column-letter keyed) to id-keyed task dicts.
+
+    Used by the push snapshot guard so the diff against the snapshot operates
+    on the same shape as YAML tasks.
+    """
+    cols = list(columns)
+    out: list[dict[str, Any]] = []
+    for er in excel_rows:
+        tid = er.get(id_column)
+        if not tid:
+            continue
+        task: dict[str, Any] = {"id": tid}
+        for c in cols:
+            if c.field == "id":
+                continue
+            task[c.field] = er.get(c.col)
+        out.append(task)
+    return out
 
 
 def classify_unmatched(

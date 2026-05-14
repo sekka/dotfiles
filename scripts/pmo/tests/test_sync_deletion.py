@@ -174,13 +174,3 @@ def test_compute_new_deleted_push_leaves_yaml_side_untouched():
     assert result["yaml"] == {"T-003"}  # unchanged
 
 
-def test_compute_new_deleted_sync_updates_both_sides():
-    """sync mode: both sides updated."""
-    prev = {"excel": {"OLD-E"}, "yaml": {"OLD-Y"}}
-    yaml_only_deleted = [{"id": "T-001"}]
-    excel_only_deleted = [{"A": "T-002"}]
-
-    result = _compute_new_deleted(prev, yaml_only_deleted, excel_only_deleted, "A", "sync")
-
-    assert result["excel"] == {"T-001"}
-    assert result["yaml"] == {"T-002"}

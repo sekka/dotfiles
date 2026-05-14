@@ -13,7 +13,7 @@ _yaml.width = 4096
 class ColumnSpec:
     col: str
     field: str
-    owner: str
+    readonly: bool = False
 
 
 @dataclass
@@ -39,7 +39,11 @@ def load_pmo_yaml(path: Path) -> PmoYaml:
         data = _yaml.load(f)
     excel_raw = data["excel"]
     columns = [
-        ColumnSpec(col=str(c["col"]), field=c["field"], owner=c["owner"])
+        ColumnSpec(
+            col=str(c["col"]),
+            field=c["field"],
+            readonly=bool(c.get("readonly", False)),
+        )
         for c in excel_raw["columns"]
     ]
     excel = ExcelConfig(

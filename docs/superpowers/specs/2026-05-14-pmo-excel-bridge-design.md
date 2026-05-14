@@ -1,8 +1,10 @@
 # PMO Excel ⇄ YAML 双方向同期設計
 
+> ⚠️ **本ドキュメントは設計史上の初期版です。** 2026-05-14 中に「列単位 ownership による双方向同期」設計から **「snapshot ベース一方向 (pull / push) 同期」設計** へ再設計しました。以降の実装はそちらに準拠しています。最新仕様は `scripts/pmo/README.md` および `git log -- scripts/pmo/` を参照してください。
+
 - 日付: 2026-05-14
 - 対象: PMO 用 WBS / 課題 / 進捗ドキュメントの Excel ⇄ YAML 双方向化
-- ステータス: 設計確定（PoC 実装前）
+- ステータス: **SUPERSEDED** (snapshot ベース一方向同期で置換済み)
 
 ## 背景
 

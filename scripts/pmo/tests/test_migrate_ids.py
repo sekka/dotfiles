@@ -167,8 +167,8 @@ excel:
   data_start_row: 1
   id_column: A
   columns:
-    - {{col: A, field: id, owner: yaml}}
-    - {{col: B, field: name, owner: yaml}}
+    - {{col: A, field: id}}
+    - {{col: B, field: name}}
 tasks: []
 """,
         encoding="utf-8",
@@ -196,7 +196,7 @@ tasks: []
     # Patch project_dir to return pdir
     import sync as sync_mod
 
-    monkeypatch.setattr(sync_mod, "project_dir", lambda slug: pdir)
+    monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
 
     captured_output: list[str] = []
     monkeypatch.setattr(

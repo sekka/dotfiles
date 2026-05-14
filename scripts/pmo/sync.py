@@ -2,16 +2,21 @@
 """PMO Excel ⇄ YAML sync CLI."""
 from __future__ import annotations
 import argparse
+import json
 import sys
 from pathlib import Path
 
-import json
-
 from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, add_task
 from lib.excel_io import read_rows, write_cells, batch_append_rows
-from lib.ownership import resolve_ownership
-from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
-from lib.snapshot import load_snapshot, save_snapshot, Snapshot
+from lib.reconcile import (
+    match_rows,
+    merge_matched,
+    build_excel_appends,
+    build_yaml_appends,
+    classify_unmatched,
+    excel_rows_to_id_keyed,
+)
+from lib.snapshot import load_snapshot, save_snapshot, Snapshot, diff_against_snapshot, SnapshotDiff
 from lib.backup import backup_excel, prune_backups
 from lib.migrate import compute_id_assignments, scan_rows, write_id_cells
 
@@ -50,17 +55,34 @@ def _compute_new_deleted(
     excel_only_deleted: list[dict],
     excel_id_column: str,
     mode: str,
+    *,
+    matched_ids: set[str] | None = None,
 ) -> dict[str, set[str]]:
-    """Return updated deleted-ids dict updating only the directions relevant to mode."""
+    """Compute the new deleted-id state after a sync.
+
+    - The "active" side (matching the current mode) is set from this run's deletions.
+    - The "other" side is preserved from prev, but ids that have been restored
+      (i.e. now appear in matched_ids) are pruned so the next sync stops treating
+      them as deleted.
+    """
     result = dict(prev)
-    if mode in ("sync", "pull"):
+    matched = matched_ids or set()
+    if mode == "pull":
         result["yaml"] = {t[excel_id_column] for t in excel_only_deleted}
-    if mode in ("sync", "push"):
+        # restoration on excel side: anything matched now is no longer excel-deleted
+        result["excel"] = set(prev.get("excel", set())) - matched
+    elif mode == "push":
         result["excel"] = {t["id"] for t in yaml_only_deleted}
+        result["yaml"] = set(prev.get("yaml", set())) - matched
     return result
 
 
-def project_dir(slug: str) -> Path:
+def project_dir(slug: str | None, *, override: Path | None = None) -> Path:
+    if override is not None:
+        return override
+    if slug is None:
+        print("error: --project is required when --pdir is not given", file=sys.stderr)
+        sys.exit(2)
     base = Path.home() / "prj" / slug
     if not base.exists():
         print(f"error: project not found: {base}", file=sys.stderr)
@@ -68,8 +90,39 @@ def project_dir(slug: str) -> Path:
     return base
 
 
+def _format_guard_error(direction: str, diff: SnapshotDiff) -> str:
+    """Format a multi-line abort message describing what changed since last sync."""
+    if direction == "pull":
+        dest, src = "YAML", "Excel"
+        force_hint = "Run 'push' first to commit YAML → Excel"
+    else:  # push
+        dest, src = "Excel", "YAML"
+        force_hint = "Run 'pull' first to commit Excel → YAML"
+    total = len(diff.modified) + len(diff.added) + len(diff.removed)
+    lines = [
+        f"❌ Cannot {direction}: {dest} has {total} uncommitted change(s) since last sync:",
+    ]
+    for tid, fields in list(diff.modified.items())[:10]:
+        for fname, (old, new) in fields.items():
+            lines.append(f"   - {tid}.{fname}: {old!r} → {new!r}")
+    if len(diff.modified) > 10:
+        lines.append(f"   (... +{len(diff.modified) - 10} more modified)")
+    if diff.added:
+        lines.append(f"   - added: {', '.join(diff.added[:10])}{' ...' if len(diff.added) > 10 else ''}")
+    if diff.removed:
+        lines.append(f"   - removed: {', '.join(diff.removed[:10])}{' ...' if len(diff.removed) > 10 else ''}")
+    lines.extend([
+        "",
+        "Options:",
+        f"  1. {force_hint}",
+        f"  2. Re-run with --force to discard {dest} changes",
+        f"  3. Manually resolve in {dest}, then retry {direction}",
+    ])
+    return "\n".join(lines)
+
+
 def cmd_doctor(args: argparse.Namespace) -> int:
-    pdir = project_dir(args.project)
+    pdir = project_dir(args.project, override=getattr(args, "pdir", None))
     pmo_path = pdir / "pmo.yaml"
     pmo = load_pmo_yaml(pmo_path)
     issues: list[str] = []
@@ -84,10 +137,10 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         if tid in seen:
             issues.append(f"duplicate id: {tid}")
         seen.add(tid)
-    try:
-        resolve_ownership(pmo.excel.columns)
-    except ValueError as e:
-        issues.append(str(e))
+    # validate id column is among declared columns
+    cols = {c.col for c in pmo.excel.columns}
+    if pmo.excel.id_column not in cols:
+        issues.append(f"id_column {pmo.excel.id_column!r} not in declared columns {sorted(cols)}")
     if issues:
         for line in issues:
             print(f"⚠️  {line}")
@@ -98,7 +151,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 
 def cmd_migrate_ids(args: argparse.Namespace) -> int:
     """Bootstrap empty id cells in the WBS sheet with T-NNN assignments."""
-    pdir = project_dir(args.project)
+    pdir = project_dir(args.project, override=getattr(args, "pdir", None))
     pmo_path = pdir / "pmo.yaml"
     pmo = load_pmo_yaml(pmo_path)
     excel_path = pdir / pmo.excel.file
@@ -159,21 +212,20 @@ def make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="sync.py", description="PMO Excel ⇄ YAML sync")
     sub = p.add_subparsers(dest="command", required=True)
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--project", required=True, help="project slug (~/prj/<slug>/)")
+    common.add_argument("--project", required=False, help="project slug (~/prj/<slug>/)")
+    common.add_argument("--pdir", type=Path, default=None, help="explicit project dir (overrides --project)")
 
     sp = sub.add_parser("doctor", parents=[common], help="validate pmo.yaml")
     sp.set_defaults(func=cmd_doctor)
 
-    sp = sub.add_parser("sync", parents=[common], help="bidirectional sync")
-    sp.add_argument("sheet", choices=["wbs"], help="sheet to sync")
-    sp.set_defaults(func=lambda a: cmd_sync(a, mode="sync"))
-
-    sp = sub.add_parser("pull", parents=[common], help="Excel → YAML only")
+    sp = sub.add_parser("pull", parents=[common], help="Excel → YAML (one-way)")
     sp.add_argument("sheet", choices=["wbs"])
+    sp.add_argument("--force", action="store_true", help="skip snapshot guard")
     sp.set_defaults(func=lambda a: cmd_sync(a, mode="pull"))
 
-    sp = sub.add_parser("push", parents=[common], help="YAML → Excel only")
+    sp = sub.add_parser("push", parents=[common], help="YAML → Excel (one-way)")
     sp.add_argument("sheet", choices=["wbs"])
+    sp.add_argument("--force", action="store_true", help="skip snapshot guard")
     sp.set_defaults(func=lambda a: cmd_sync(a, mode="push"))
 
     mig = sub.add_parser("migrate-ids", parents=[common], help="既存 xlsm の空 id 列を自動採番")
@@ -190,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
-    pdir = project_dir(args.project)
+    pdir = project_dir(args.project, override=getattr(args, "pdir", None))
     pmo_path = pdir / "pmo.yaml"
     pmo = load_pmo_yaml(pmo_path)
     excel_path = pdir / pmo.excel.file
@@ -198,11 +250,9 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         print(f"error: excel file not found: {excel_path}", file=sys.stderr)
         return 2
 
-    # load snapshot from previous run (empty on first run)
     prev_snapshot = load_snapshot(pdir / ".pmo" / "last-sync.json")
     prev_deleted = load_deleted_ids(pdir)
 
-    ownership = resolve_ownership(pmo.excel.columns)
     column_letters = [c.col for c in pmo.excel.columns]
 
     try:
@@ -226,37 +276,78 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         raw["row"] = row_num
         excel_rows.append(raw)
 
+    # ------------------------------------------------------------------
+    # Snapshot guard: abort if the destination side has changes since last sync.
+    # Readonly fields are excluded from the comparison so formula columns
+    # (whose values differ between pull-shape and push-shape representations)
+    # never trigger spurious diffs.
+    # ------------------------------------------------------------------
+    readonly_fields = {c.field for c in pmo.excel.columns if c.readonly}
+    non_readonly_cols = [c for c in pmo.excel.columns if not c.readonly]
+    force = getattr(args, "force", False)
+    if not force and not prev_snapshot.is_empty():
+        if mode == "pull":
+            # destination = YAML; compare current YAML against the YAML side
+            # of the snapshot (regardless of whether last sync was pull or push)
+            dest_state = [
+                {k: v for k, v in t.items() if k not in readonly_fields}
+                for t in pmo.tasks
+            ]
+            snap_side = prev_snapshot.yaml
+        else:  # push
+            # destination = Excel; compare current Excel against the Excel side
+            # of the snapshot (regardless of whether last sync was pull or push)
+            dest_state = excel_rows_to_id_keyed(
+                excel_rows, non_readonly_cols, id_column=pmo.excel.id_column
+            )
+            snap_side = prev_snapshot.excel
+        # Filter readonly fields from snap_side too: legacy snapshots (or
+        # snapshots saved before a column was marked readonly) may still
+        # carry those values, which would surface as spurious diffs since
+        # dest_state already excludes them.
+        snap_side_filtered = {
+            tid: {k: v for k, v in row.items() if k not in readonly_fields}
+            for tid, row in snap_side.items()
+        }
+        guard_diff = diff_against_snapshot(snap_side_filtered, dest_state)
+        if guard_diff.has_changes():
+            print(_format_guard_error(mode, guard_diff), file=sys.stderr)
+            return 2
+
     match = match_rows(pmo.tasks, excel_rows, id_column=pmo.excel.id_column)
-    merge = merge_matched(match.matched, ownership)
+    merge = merge_matched(match.matched, pmo.excel.columns, direction=mode)
 
     excel_updates = list(merge.excel_updates)
     yaml_updates = list(merge.yaml_updates)
 
-    snapshot_ids = set(prev_snapshot.rows)
+    # snapshot_ids is the "known IDs" set used by classify_unmatched to
+    # distinguish brand-new rows from rows that were intentionally left
+    # un-mirrored on the other side at a previous sync (so they don't get
+    # resurrected as new). We union prev_snapshot's known IDs (both sides)
+    # with prev_deleted because the latter tracks ghost ids that survive
+    # across syncs.
+    snapshot_ids = (
+        prev_snapshot.known_ids()
+        | prev_deleted.get("excel", set())
+        | prev_deleted.get("yaml", set())
+    )
 
-    # classify yaml_only: tasks in YAML missing from Excel
-    #   id_field = "id" (yaml task dict key)
     yaml_only_new, yaml_only_deleted = classify_unmatched(
         match.yaml_only, snapshot_ids, id_field="id"
     )
-
-    # classify excel_only: rows in Excel missing from YAML
-    #   id_field = pmo.excel.id_column (column letter, e.g. "A")
     excel_only_new, excel_only_deleted = classify_unmatched(
         match.excel_only, snapshot_ids, id_field=pmo.excel.id_column
     )
 
-    # build appends using only the *new* items (not deletions)
-    excel_appends = build_excel_appends(yaml_only_new, ownership) if mode != "pull" else []
-    yaml_appends = build_yaml_appends(excel_only_new, ownership) if mode != "push" else []
+    excel_appends = build_excel_appends(yaml_only_new, pmo.excel.columns) if mode == "push" else []
+    yaml_appends = (
+        build_yaml_appends(excel_only_new, pmo.excel.columns, id_column=pmo.excel.id_column)
+        if mode == "pull"
+        else []
+    )
 
-    if mode == "pull":
-        excel_updates = []
-    if mode == "push":
-        yaml_updates = []
-
-    # backup Excel before any write (sync/push only, skip when nothing to write)
-    if mode != "pull" and (excel_updates or excel_appends):
+    # backup Excel before any write (push only)
+    if mode == "push" and (excel_updates or excel_appends):
         try:
             dest = backup_excel(excel_path, pdir)
             if dest is not None:
@@ -265,22 +356,23 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
             print(f"error: backup failed: {exc}", file=sys.stderr)
             return 4
 
-    # apply Excel changes
+    # apply Excel changes (push only)
     if excel_updates:
         try:
             write_cells(excel_path, sheet=pmo.excel.sheet, updates=excel_updates)
         except PermissionError:
             print(f"error: cannot write {excel_path}. Close Excel and retry.", file=sys.stderr)
             return 3
-    batch_append_rows(
-        excel_path,
-        sheet=pmo.excel.sheet,
-        data_start_row=pmo.excel.data_start_row,
-        id_column=pmo.excel.id_column,
-        rows=excel_appends,
-    )
+    if excel_appends:
+        batch_append_rows(
+            excel_path,
+            sheet=pmo.excel.sheet,
+            data_start_row=pmo.excel.data_start_row,
+            id_column=pmo.excel.id_column,
+            rows=excel_appends,
+        )
 
-    # apply YAML changes
+    # apply YAML changes (pull only)
     for tid, field, value in yaml_updates:
         update_task_field(pmo, task_id=tid, field=field, value=value)
     for new_task in yaml_appends:
@@ -288,21 +380,60 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     if yaml_updates or yaml_appends:
         save_pmo_yaml(pmo, pmo_path)
 
-    # snapshot
-    snap = Snapshot(rows={t["id"]: dict(t) for t in pmo.tasks if "id" in t})
+    # ------------------------------------------------------------------
+    # Take a dual-state snapshot of post-sync state.
+    # yaml side  = current pmo.tasks (after any pull-side writes), id-keyed
+    # excel side = post-write Excel state, id-keyed via non-readonly cols
+    # Readonly fields are filtered out so the shape is invariant across modes.
+    # ------------------------------------------------------------------
+    snap_yaml: dict[str, dict] = {}
+    for t in pmo.tasks:
+        tid = t.get("id")
+        if not tid:
+            continue
+        snap_yaml[tid] = {
+            k: v for k, v in t.items() if k != "id" and k not in readonly_fields
+        }
+
+    if mode == "pull":
+        # Excel is untouched by pull — use what we read at the start.
+        post_excel_rows = excel_rows
+    else:  # push: apply the writes we just performed in-memory.
+        by_row = {er["row"]: dict(er) for er in excel_rows}
+        for excel_row, col, new_val in excel_updates:
+            if excel_row in by_row:
+                by_row[excel_row][col] = new_val
+        post_excel_rows = list(by_row.values())
+        # Append synthetic rows for newly-appended Excel rows so they appear
+        # in the snapshot (non-readonly columns only).
+        for t in yaml_only_new:
+            synth: dict = {"row": -1}
+            for c in non_readonly_cols:
+                if c.field in t:
+                    synth[c.col] = t[c.field]
+            post_excel_rows.append(synth)
+    keyed = excel_rows_to_id_keyed(
+        post_excel_rows, non_readonly_cols, id_column=pmo.excel.id_column
+    )
+    snap_excel = {t["id"]: {k: v for k, v in t.items() if k != "id"} for t in keyed}
+
+    snap = Snapshot(yaml=snap_yaml, excel=snap_excel)
     save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
 
-    # prune old backups (sync/push only)
-    if mode != "pull":
+    if mode == "push":
         prune_backups(pdir)
 
-    # update deleted-ids only for the directions relevant to this mode
+    matched_ids = set(match.matched.keys())
     new_deleted = _compute_new_deleted(
-        prev_deleted, yaml_only_deleted, excel_only_deleted, pmo.excel.id_column, mode
+        prev_deleted,
+        yaml_only_deleted,
+        excel_only_deleted,
+        pmo.excel.id_column,
+        mode,
+        matched_ids=matched_ids,
     )
     save_deleted_ids(pdir, new_deleted)
 
-    # summary
     print(f"mode={mode}")
     print(f"  Excel updates: {len(excel_updates)} cells, {len(excel_appends)} new rows")
     print(f"  YAML updates: {len(yaml_updates)} fields, {len(yaml_appends)} new tasks")
@@ -310,13 +441,12 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         print(f"  ⚠️  {len(match.excel_only)} rows in Excel not in YAML (push mode, kept)")
     if match.yaml_only and mode == "pull":
         print(f"  ⚠️  {len(match.yaml_only)} tasks in YAML not in Excel (pull mode, kept)")
-    # deletion warnings (snapshot-based, suppress already-warned ids)
-    if yaml_only_deleted and mode in ("sync", "push"):
+    if yaml_only_deleted and mode == "push":
         new_excel_deleted = [t for t in yaml_only_deleted if t["id"] not in prev_deleted["excel"]]
         if new_excel_deleted:
             ids = ", ".join(t["id"] for t in new_excel_deleted)
             print(f"  ⚠️  deleted in excel (kept in yaml): {ids}")
-    if excel_only_deleted and mode in ("sync", "pull"):
+    if excel_only_deleted and mode == "pull":
         new_yaml_deleted = [t for t in excel_only_deleted if t[pmo.excel.id_column] not in prev_deleted["yaml"]]
         if new_yaml_deleted:
             ids = ", ".join(t[pmo.excel.id_column] for t in new_yaml_deleted)
