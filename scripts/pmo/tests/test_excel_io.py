@@ -1,6 +1,6 @@
 from pathlib import Path
 import openpyxl
-from lib.excel_io import read_rows, write_cells
+from lib.excel_io import read_rows, write_cells, append_row
 
 
 def make_workbook(path: Path) -> None:
@@ -71,3 +71,16 @@ def test_write_cells_preserves_other_cells(tmp_path):
     assert ws["A7"].value == "T-001"
     assert ws["D7"].value == "ヒアリング"
     assert ws["A8"].value == "T-002"
+
+
+def test_append_row_inserts_at_next_empty_row(tmp_path):
+    xlsx = tmp_path / "wbs.xlsx"
+    make_workbook(xlsx)
+    # 既存: row 7 と row 8 にデータ。row 9 が空。
+    append_row(xlsx, sheet="WBS", data_start_row=7, id_column="A",
+               values={"A": "T-003", "D": "新規タスク"})
+    wb = openpyxl.load_workbook(xlsx)
+    ws = wb["WBS"]
+    assert ws["A9"].value == "T-003"
+    assert ws["D9"].value == "新規タスク"
+    assert ws["A7"].value == "T-001"  # 既存維持

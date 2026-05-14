@@ -43,3 +43,24 @@ def write_cells(
         col_idx = column_index_from_string(col_letter)
         ws.cell(row=row, column=col_idx, value=value)
     wb.save(workbook_path)
+
+
+def append_row(
+    workbook_path: Path,
+    *,
+    sheet: str,
+    data_start_row: int,
+    id_column: str,
+    values: dict[str, Any],
+) -> int:
+    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
+    ws = wb[sheet]
+    id_idx = column_index_from_string(id_column)
+    row = data_start_row
+    while ws.cell(row=row, column=id_idx).value not in (None, ""):
+        row += 1
+    for col_letter, value in values.items():
+        ws.cell(row=row, column=column_index_from_string(col_letter), value=value)
+    wb.save(workbook_path)
+    return row
