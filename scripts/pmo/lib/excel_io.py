@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 import openpyxl
+from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import column_index_from_string
 
 
@@ -61,6 +62,35 @@ def write_cells(
     for row, col_letter, value in updates:
         col_idx = column_index_from_string(col_letter)
         ws.cell(row=row, column=col_idx, value=value)
+    wb.save(workbook_path)
+
+
+def append_rows(ws: Worksheet, rows: list[list[Any]]) -> None:
+    for row in rows:
+        ws.append(row)
+
+
+def batch_append_rows(
+    workbook_path: Path,
+    *,
+    sheet: str,
+    data_start_row: int,
+    id_column: str,
+    rows: list[dict[str, Any]],
+) -> None:
+    if not rows:
+        return
+    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
+    ws = wb[sheet]
+    id_idx = column_index_from_string(id_column)
+    row_num = data_start_row
+    while ws.cell(row=row_num, column=id_idx).value not in (None, ""):
+        row_num += 1
+    for values in rows:
+        for col_letter, value in values.items():
+            ws.cell(row=row_num, column=column_index_from_string(col_letter), value=value)
+        row_num += 1
     wb.save(workbook_path)
 
 

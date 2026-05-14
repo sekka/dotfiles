@@ -1,6 +1,6 @@
 from pathlib import Path
 import openpyxl
-from lib.excel_io import read_rows, write_cells, append_row, _resolve_value
+from lib.excel_io import read_rows, write_cells, append_row, append_rows, batch_append_rows, _resolve_value
 
 
 def make_workbook(path: Path) -> None:
@@ -88,6 +88,46 @@ def test_write_cells_preserves_other_cells(tmp_path):
     assert ws["A7"].value == "T-001"
     assert ws["D7"].value == "ヒアリング"
     assert ws["A8"].value == "T-002"
+
+
+def test_append_rows_writes_rows_in_order():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    append_rows(ws, [["A", "B"], ["C", "D"]])
+    assert ws.cell(row=1, column=1).value == "A"
+    assert ws.cell(row=1, column=2).value == "B"
+    assert ws.cell(row=2, column=1).value == "C"
+    assert ws.cell(row=2, column=2).value == "D"
+
+
+def test_append_rows_empty_list_does_not_raise():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    max_row_before = ws.max_row
+    append_rows(ws, [])
+    assert ws.max_row == max_row_before
+
+
+def test_batch_append_rows_inserts_multiple_rows(tmp_path):
+    xlsx = tmp_path / "wbs.xlsx"
+    make_workbook(xlsx)
+    batch_append_rows(xlsx, sheet="WBS", data_start_row=7, id_column="A",
+                      rows=[{"A": "T-003", "D": "タスク3"}, {"A": "T-004", "D": "タスク4"}])
+    wb = openpyxl.load_workbook(xlsx)
+    ws = wb["WBS"]
+    assert ws["A9"].value == "T-003"
+    assert ws["D9"].value == "タスク3"
+    assert ws["A10"].value == "T-004"
+    assert ws["D10"].value == "タスク4"
+    assert ws["A7"].value == "T-001"
+
+
+def test_batch_append_rows_empty_list_does_not_modify(tmp_path):
+    xlsx = tmp_path / "wbs.xlsx"
+    make_workbook(xlsx)
+    mtime_before = xlsx.stat().st_mtime
+    batch_append_rows(xlsx, sheet="WBS", data_start_row=7, id_column="A", rows=[])
+    assert xlsx.stat().st_mtime == mtime_before
 
 
 def test_append_row_inserts_at_next_empty_row(tmp_path):

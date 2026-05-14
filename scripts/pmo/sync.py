@@ -8,7 +8,7 @@ from pathlib import Path
 import json
 
 from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field
-from lib.excel_io import read_rows, write_cells, append_row
+from lib.excel_io import read_rows, write_cells, batch_append_rows
 from lib.ownership import resolve_ownership
 from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
 from lib.snapshot import load_snapshot, save_snapshot, Snapshot
@@ -207,14 +207,13 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         except PermissionError:
             print(f"error: cannot write {excel_path}. Close Excel and retry.", file=sys.stderr)
             return 3
-    for row_values in excel_appends:
-        append_row(
-            excel_path,
-            sheet=pmo.excel.sheet,
-            data_start_row=pmo.excel.data_start_row,
-            id_column=pmo.excel.id_column,
-            values=row_values,
-        )
+    batch_append_rows(
+        excel_path,
+        sheet=pmo.excel.sheet,
+        data_start_row=pmo.excel.data_start_row,
+        id_column=pmo.excel.id_column,
+        rows=excel_appends,
+    )
 
     # apply YAML changes
     for tid, field, value in yaml_updates:
