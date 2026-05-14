@@ -12,13 +12,6 @@ Deep research backlog. Two-stage pipeline:
 
 (まだ Quick Eval していない URL。`/user-research-queue quick` で順番に Quick Eval を回す)
 
-- [ ] 2026-05-13 — [googleworkspace/cli — Google Workspace CLI (Drive/Gmail/Calendar/Sheets etc., AI agent skills 同梱)](https://github.com/googleworkspace/cli) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [@tomoaki_imai on X](https://x.com/tomoaki_imai/status/2030061902295093466) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [@pouhiroshi on X](https://x.com/pouhiroshi/status/2030071072968871977) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [@azu_re on X](https://x.com/azu_re/status/2029936988670021940) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [@tom_doerr on X](https://x.com/tom_doerr/status/2030040275079368847) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [nabeelhyatt/coworkpowers — Superpowers for knowledge work in Claude Code](https://github.com/nabeelhyatt/coworkpowers) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
-- [ ] 2026-05-13 — [playcanvas/editor — Browser-based visual editor for WebGL/WebGPU/WebXR apps](https://github.com/playcanvas/editor) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [Gopeed — open-source download engine that works on every platform](https://www.opensourceprojects.dev/post/993c493f-28ec-4a77-9b21-0bed3b45ed5c) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [@yoshiko_pg on X](https://x.com/yoshiko_pg/status/2029938566516855172) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [EdamAme-x/claudex — use codex model on Claude Code](https://github.com/EdamAme-x/claudex) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
@@ -91,10 +84,23 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-13 — [Google Workspaceをコマンドラインで操作する「gws」、Googleがオープンソースで公開。Agent Skillsファイルも提供し、AIエージェントによる適切な操作実現](https://www.publickey1.jp/blog/26/google_workspacegwsgoogleagent_skillsai.html) — focus: TBD
 - [ ] 2026-05-13 — [15以上のアイコンライブラリから5万点以上のアイコンを用意したMCP対応アイコン検索システム・「Iconstack」](https://kachibito.net/useful-resource/iconstack) — focus: TBD
 - [ ] 2026-05-13 — [blog.tsubotax.com/n/n2dadfe4bd019](https://blog.tsubotax.com/n/n2dadfe4bd019) — focus: TBD (タイトル取得失敗 — note session redirect)
+- [ ] 2026-05-14 — [Claude CodeユーザーのためのCodex入門](https://zenn.dev/k9i/articles/20260504_cc_to_codex) — focus: TBD
+- [ ] 2026-05-14 — [「うちのAIは喋るぞ」音声MCPを作って公開してみた【Codex・Claude Code】](https://zenn.dev/forward/articles/38a9a5bf2e114b) — focus: TBD
+- [ ] 2026-05-14 — [AIにUIを作らせる前に、デザインの土台を自分で決めるツールを作った](https://zenn.dev/pepabo/articles/74653f4d78eb7b) — focus: TBD
+- [ ] 2026-05-14 — [Claude Code も Gemini CLI も、みんな仲良く働いてほしい](https://zenn.dev/sonicmoov/articles/577f3de925f3c4) — focus: TBD
+- [ ] 2026-05-14 — [あなたの Claude Code、実は前回のセッションを完全に忘れている (5 分で永続記憶を入れる)](https://zenn.dev/kanseilink/articles/linksee-memory-claude-code-recall-20260508) — focus: TBD
+- [ ] 2026-05-14 — [個人的 AI情報の追い方](https://zenn.dev/knowledgework/articles/my-ai-catchup) — focus: TBD
+- [ ] 2026-05-14 — [音楽の生成・編集が可能な高性能ローカル音楽生成AI【ACE-Step-1.5】はどれほどか？](https://zenn.dev/asap/articles/d03902a7852a61) — focus: TBD
+- [ ] 2026-05-14 — [Claude CodeにCLIツールを渡して精度と効率を上げる](https://zenn.dev/chot/articles/d0cd0425edd869) — focus: TBD
+- [ ] 2026-05-14 — [Marpでいい感じのスライドを生成するClaude Code Pluginを作った](https://zenn.dev/yamakh/articles/e720d66aeeca44) — focus: TBD
 
 ## Deep Research 待ち
 
 (Quick Eval 済みで Deep Research する価値ありと判断した URL。`/user-research-queue deep` で順番に Deep Research を回す)
+
+- [ ] 2026-05-13 — [googleworkspace/cli — Google Workspace CLI (Drive/Gmail/Calendar/Sheets etc., AI agent skills 同梱)](https://github.com/googleworkspace/cli) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
+- [ ] 2026-05-13 — [@tomoaki_imai: ClaudeCode Agents team で Architect + Devil's advocate を入れる運用](https://x.com/tomoaki_imai/status/2030061902295093466) — focus: 導入検討 (#20) Devil's advocate サブエージェント化の可否
+- [ ] 2026-05-13 — [@azu_re: cmuxでDiffレビューコメントをClaude Codeプロンプトに流す試作](https://x.com/azu_re/status/2029936988670021940) — focus: cmux成熟度確認 + difit-review/coderabbit代替としての評価
 
 ## Done
 
@@ -104,3 +110,7 @@ Deep research backlog. Two-stage pipeline:
 
 - [x] 2026-05-13 → 2026-05-13 — [Opus 4.7 で Claude Code の使い方が変わる 6 つのこと](https://qiita.com/ot12/items/06420caf41a34a910c53) — outcome: deep — takeaway: §4 は例外条項で併存、Effort xhigh と /focus は即採用
 - [x] 2026-05-13 → 2026-05-13 — [Dave Jeffery: アプリのフロー文書化 (HTML + JSON for LLM)](https://x.com/DaveJ/status/2053867258653339746?s=20) — outcome: deep — takeaway: user-dev-flowmap として採用候補だが visual-explainer:generate-web-diagram と機能が被る。先に user-harness-interview で JSON schema と差別化軸 (永続化+LLM再投入) を確定してから実装
+- [x] 2026-05-13 → 2026-05-14 — [@pouhiroshi on X](https://x.com/pouhiroshi/status/2030071072968871977) — outcome: discarded — takeaway: Unity MCP の驚嘆ツイートのみで技術内容なし、スコープ外
+- [x] 2026-05-13 → 2026-05-14 — [@tom_doerr on X](https://x.com/tom_doerr/status/2030040275079368847) — outcome: discarded — takeaway: branchlet 紹介ツイート。スコープ外 — 既存 worktree 運用 (using-git-worktrees skill + EnterWorktree harness + tmux 並列) で十分カバー
+- [x] 2026-05-13 → 2026-05-14 — [nabeelhyatt/coworkpowers — Superpowers for knowledge work in Claude Code](https://github.com/nabeelhyatt/coworkpowers) — outcome: discarded — takeaway: 既存 superpowers/memory と重複。Compound loop と granular insight storage は superpowers skill 群 + ~/.claude/projects/*/memory/ で実装済み
+- [x] 2026-05-13 → 2026-05-14 — [playcanvas/editor — Browser-based visual editor for WebGL/WebGPU/WebXR apps](https://github.com/playcanvas/editor) — outcome: discarded — takeaway: ターゲット不一致（3D/ゲーム領域）。dotfiles/Claude Code/Web 制作 PMO と接点なし
