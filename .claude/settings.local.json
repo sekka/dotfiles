@@ -27,6 +27,8 @@
       "Skill(user-dev-review)",
       "Skill(user-dotfiles-tool-config)",
       "Skill(user-harness-ship)",
+      "Skill(user-research-eval-ref)",
+      "Skill(user-research-x-posts)",
       "WebFetch(domain:agent-browser.io)",
       "WebFetch(domain:aimanavo.com)",
       "WebFetch(domain:api.github.com)",
