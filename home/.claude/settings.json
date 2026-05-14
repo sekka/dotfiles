@@ -188,6 +188,14 @@
             "command": "bun $HOME/.claude/hooks/language-check.ts"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/queue-stop-guard.ts"
+          }
+        ]
       }
     ],
     "StopFailure": [

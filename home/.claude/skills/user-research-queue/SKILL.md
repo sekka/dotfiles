@@ -36,6 +36,7 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 
 1. Do not modify the queue file without reading its current contents first.
 2. Do not mark an item done without confirming with the user when a takeaway is missing.
+3. Sub-skill completion is NOT subcommand completion. After delegating to `user-research-eval-ref` in `quick` or `deep`, the workflow continues — you MUST issue the post-delegation `AskUserQuestion` before emitting `Status: DONE`. A child skill's `Status: DONE` line is a hand-off marker, never a terminal signal for this skill.
 
 <workflow>
 
@@ -180,15 +181,28 @@ Runs Quick Eval on the first entry in Inbox.
 3. If Inbox is empty, report and stop
 4. Extract the URL and focus note from the entry
 5. Launch `/user-research-eval-ref` via the Skill tool in **Quick Eval mode**, passing the URL and focus note as context
-6. After Quick Eval completes, ask the user via AskUserQuestion with 3 choices:
-   > "Quick Eval complete. What next?
-   > - `promote` — move to Deep Research 待ち (you can update focus)
-   > - `discard` — remove from queue (provide reason)
-   > - `keep` — return to end of Inbox"
+6. **MANDATORY — do not skip after sub-skill returns.** Per Iron Law #3, the child's `Status: DONE` is not your terminal signal. Even if the sub-skill ended with `## Status: DONE` and its recommended action is unambiguous (e.g., "discard 寄り"), you MUST still issue the AskUserQuestion below. NEVER end the turn with only the eval card and expect the user to type the next action — selection is the queue skill's job. Use `AskUserQuestion` (NOT a free-text prompt) so the user picks from buttons:
+
+   ```
+   question: "Quick Eval 完了 (I<n>: <title>)。次のアクションは？"
+   header: "Next action"
+   options:
+     - label: "discard"
+       description: "Inbox から削除し Done に移動 (outcome: discarded)。理由を次で聞きます"
+     - label: "promote"
+       description: "Deep Research 待ちへ昇格。深掘り評価対象として残す"
+     - label: "keep"
+       description: "Inbox の末尾に戻して保留"
+   ```
+
+   The labels MUST be exactly `discard` / `promote` / `keep` so step 7 can dispatch mechanically.
+
 7. Handle the response:
    - **promote**: remove from Inbox, optionally update focus (ask if user provided new focus), append to `## Deep Research 待ち`. Done entry is NOT created yet.
-   - **discard**: ask for one-line reason via AskUserQuestion if not provided. Remove from Inbox and append to `## Done` with `outcome: discarded — takeaway: <reason>`
+   - **discard**: ask for a one-line reason via AskUserQuestion (button options, NOT free text). Generate 2-4 reason options grounded in the eval card content — typical buckets: 既存資産と重複 / ターゲット不一致 / メンテ不活発 / 一次情報なし / その他. Then remove from Inbox and append to `## Done` with `outcome: discarded — takeaway: <reason>`.
    - **keep**: remove from first position in Inbox and re-append at the end of Inbox
+
+   **Anti-pattern (do NOT do this):** "Recommended action: discard 寄り" を出して終わる、ユーザーに `/user-research-queue done I1 ...` を手打ちさせる、Status: DONE のみで返す。これらはすべて Iron Law #3 違反。
 
 ---
 
@@ -201,8 +215,21 @@ Runs Deep Research on the first entry in Deep Research 待ち.
 3. If Deep Research 待ち is empty, report and stop
 4. Extract the URL and focus note from the entry
 5. Launch `/user-research-eval-ref` via the Skill tool in **Deep Research mode**, passing the URL and focus note as context
-6. After Deep Research completes, ask the user via AskUserQuestion:
-   > "Deep Research complete. Provide a one-line takeaway (or press Enter to use 'TBD')."
+6. **MANDATORY — do not skip after sub-skill returns.** Per Iron Law #3, the child's `Status: DONE` is not your terminal signal. Even when the sub-skill output already contains a clear "Recommendation: Adopt / Do not adopt", you MUST still issue the AskUserQuestion below. Use `AskUserQuestion` with 2-4 takeaway options grounded in the Deep Research output (NOT a free-text prompt):
+
+   ```
+   question: "Deep Research 完了 (D<n>: <title>)。Done に残す takeaway を選んでください"
+   header: "Takeaway"
+   options:
+     - label: "<採用判断 + 一行根拠>"   # eval-ref の Recommendation: Adopt から生成
+       description: "..."
+     - label: "<不採用判断 + 一行根拠>" # Recommendation: Do not adopt から生成
+       description: "..."
+     - label: "TBD (後で書く)"
+       description: "今は確定できない。Done エントリの takeaway は TBD で記録"
+   ```
+
+   Anti-pattern: ユーザーに takeaway 文を手打ちさせる、Status: DONE のみで終わる、sub-skill の出力をそのまま貼って終わる。
 7. Remove the entry from Deep Research 待ち and append to `## Done` with `outcome: deep — takeaway: <takeaway>`
 8. Report the moved entry to the user
 
@@ -256,6 +283,18 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 
 **done:** Entry moves from the specified tier (Inbox or Deep Research 待ち) to Done with correct date range, outcome, and takeaway; tier-prefixed index validation works.
 </success_criteria>
+
+## Pre-output Self-Check (quick / deep only)
+
+Before writing the `## Status:` line at the end of a `quick` or `deep` turn, run this 1-step check:
+
+- [ ] Did this turn actually call the `AskUserQuestion` tool **in the same turn**, after the `user-research-eval-ref` Skill returned?
+
+If **NO** → STOP. Do **NOT** emit `## Status: DONE`, do **NOT** emit any closing summary, do **NOT** end the turn. Call `AskUserQuestion` first (Step 6 of `quick` / Step 6 of `deep`). The sub-skill's `## Status: DONE` line is a hand-off marker, NEVER your terminal signal — see Iron Law #3.
+
+If **YES** → proceed to the Status section below.
+
+**Why this check exists:** The most common failure mode is "sub-skill returned a clean answer (e.g., 'Out of scope / Recommended action: discard'), so the parent skill silently emitted `## Status: DONE` and ended the turn, forcing the user to type the next subcommand manually." That is an Iron Law #3 violation regardless of how unambiguous the recommendation looked. The clarity of the sub-skill's recommendation is irrelevant — selection-button presentation is the queue skill's contractual job, not the user's typing job.
 
 ## Status
 
