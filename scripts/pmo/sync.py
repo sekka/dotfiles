@@ -19,8 +19,12 @@ def load_deleted_ids(pdir: Path) -> dict[str, set[str]]:
     path = pdir / ".pmo" / "deleted-ids.json"
     if not path.exists():
         return {"excel": set(), "yaml": set()}
-    with path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"warn: deleted-ids.json unreadable ({exc}), starting fresh", file=sys.stderr)
+        return {"excel": set(), "yaml": set()}
     return {
         "excel": set(data.get("excel", [])),
         "yaml": set(data.get("yaml", [])),
@@ -37,6 +41,22 @@ def save_deleted_ids(pdir: Path, deleted: dict[str, set[str]]) -> None:
             ensure_ascii=False,
             indent=2,
         )
+
+
+def _compute_new_deleted(
+    prev: dict[str, set[str]],
+    yaml_only_deleted: list[dict],
+    excel_only_deleted: list[dict],
+    excel_id_column: str,
+    mode: str,
+) -> dict[str, set[str]]:
+    """Return updated deleted-ids dict updating only the directions relevant to mode."""
+    result = dict(prev)
+    if mode in ("sync", "pull"):
+        result["yaml"] = {t[excel_id_column] for t in excel_only_deleted}
+    if mode in ("sync", "push"):
+        result["excel"] = {t["id"] for t in yaml_only_deleted}
+    return result
 
 
 def project_dir(slug: str) -> Path:
@@ -213,10 +233,11 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     if mode != "pull":
         prune_backups(pdir)
 
-    # compute current full deletion sets (rewritten each run so restorations are tracked)
-    current_excel_deleted = {t["id"] for t in yaml_only_deleted}
-    current_yaml_deleted = {t[pmo.excel.id_column] for t in excel_only_deleted}
-    save_deleted_ids(pdir, {"excel": current_excel_deleted, "yaml": current_yaml_deleted})
+    # update deleted-ids only for the directions relevant to this mode
+    new_deleted = _compute_new_deleted(
+        prev_deleted, yaml_only_deleted, excel_only_deleted, pmo.excel.id_column, mode
+    )
+    save_deleted_ids(pdir, new_deleted)
 
     # summary
     print(f"mode={mode}")

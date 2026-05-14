@@ -1,9 +1,6 @@
 """Tests for snapshot-based deletion detection in cmd_sync (F2)."""
-import json
-from pathlib import Path
-import pytest
 from lib.reconcile import classify_unmatched
-from sync import load_deleted_ids, save_deleted_ids
+from sync import load_deleted_ids, save_deleted_ids, _compute_new_deleted  # noqa: PLC2701
 
 
 # ---------------------------------------------------------------------------
@@ -147,3 +144,43 @@ def test_restored_id_removed_from_deleted_ids(tmp_path):
     loaded = load_deleted_ids(tmp_path)
     assert "T-001" not in loaded["excel"]
     assert "T-002" in loaded["excel"]
+
+
+# ---------------------------------------------------------------------------
+# Concern 1: pull mode must not touch the excel side of deleted-ids
+# ---------------------------------------------------------------------------
+
+def test_compute_new_deleted_pull_leaves_excel_side_untouched():
+    """pull mode: yaml side updated, excel side preserved from prev."""
+    prev = {"excel": {"T-001"}, "yaml": set()}
+    yaml_only_deleted: list = []  # pull doesn't process yaml_only_deleted
+    excel_only_deleted = [{"A": "T-002"}]  # row deleted in yaml
+
+    result = _compute_new_deleted(prev, yaml_only_deleted, excel_only_deleted, "A", "pull")
+
+    assert result["yaml"] == {"T-002"}
+    assert result["excel"] == {"T-001"}  # unchanged
+
+
+def test_compute_new_deleted_push_leaves_yaml_side_untouched():
+    """push mode: excel side updated, yaml side preserved from prev."""
+    prev = {"excel": set(), "yaml": {"T-003"}}
+    yaml_only_deleted = [{"id": "T-001"}]  # task deleted in excel
+    excel_only_deleted: list = []  # push doesn't process excel_only_deleted
+
+    result = _compute_new_deleted(prev, yaml_only_deleted, excel_only_deleted, "A", "push")
+
+    assert result["excel"] == {"T-001"}
+    assert result["yaml"] == {"T-003"}  # unchanged
+
+
+def test_compute_new_deleted_sync_updates_both_sides():
+    """sync mode: both sides updated."""
+    prev = {"excel": {"OLD-E"}, "yaml": {"OLD-Y"}}
+    yaml_only_deleted = [{"id": "T-001"}]
+    excel_only_deleted = [{"A": "T-002"}]
+
+    result = _compute_new_deleted(prev, yaml_only_deleted, excel_only_deleted, "A", "sync")
+
+    assert result["excel"] == {"T-001"}
+    assert result["yaml"] == {"T-002"}
