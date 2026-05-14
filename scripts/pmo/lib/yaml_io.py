@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap
 
 _yaml = YAML(typ="rt")
 _yaml.preserve_quotes = True
@@ -60,6 +61,13 @@ def load_pmo_yaml(path: Path) -> PmoYaml:
 def save_pmo_yaml(pmo: PmoYaml, path: Path) -> None:
     with path.open("w", encoding="utf-8") as f:
         _yaml.dump(pmo._raw, f)
+
+
+def add_task(pmo: PmoYaml, row: dict[str, Any]) -> None:
+    """Append a new task row to both internal representations atomically."""
+    cm = CommentedMap(row)
+    pmo._raw["tasks"].append(cm)
+    pmo.tasks.append(cm)
 
 
 def update_task_field(pmo: PmoYaml, *, task_id: str, field: str, value: Any) -> None:

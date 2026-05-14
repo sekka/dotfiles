@@ -7,7 +7,7 @@ from pathlib import Path
 
 import json
 
-from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field
+from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, add_task
 from lib.excel_io import read_rows, write_cells, batch_append_rows
 from lib.ownership import resolve_ownership
 from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
@@ -219,8 +219,7 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     for tid, field, value in yaml_updates:
         update_task_field(pmo, task_id=tid, field=field, value=value)
     for new_task in yaml_appends:
-        pmo.tasks.append(new_task)
-        pmo._raw["tasks"].append(new_task)
+        add_task(pmo, new_task)
     if yaml_updates or yaml_appends:
         save_pmo_yaml(pmo, pmo_path)
 

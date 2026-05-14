@@ -1,5 +1,5 @@
 from pathlib import Path
-from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, PmoYaml, ColumnSpec
+from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, add_task, PmoYaml, ColumnSpec
 
 FIXTURE = Path(__file__).parent / "fixtures" / "sample_pmo.yaml"
 
@@ -96,3 +96,52 @@ def test_save_pmo_yaml_preserves_comments(tmp_path):
 
     saved_text = out.read_text(encoding="utf-8")
     assert "# 重要な仕事" in saved_text
+
+
+_NEW_ROW = {
+    "id": "T-999",
+    "phase_l1": "テスト",
+    "phase_l2": "単体",
+    "name": "test task",
+    "assignee": "Dev",
+    "est_hours": 2,
+    "start_date": None,
+    "end_date": None,
+    "status": None,
+}
+
+
+def test_add_task_appends_to_tasks_list():
+    pmo = load_pmo_yaml(FIXTURE)
+    add_task(pmo, _NEW_ROW)
+    assert any(t.get("id") == "T-999" for t in pmo.tasks)
+
+
+def test_add_task_appends_to_raw():
+    pmo = load_pmo_yaml(FIXTURE)
+    add_task(pmo, _NEW_ROW)
+    last = pmo._raw["tasks"][-1]
+    assert last.get("id") == "T-999"
+    assert last.get("name") == "test task"
+
+
+def test_add_task_survives_round_trip(tmp_path):
+    pmo = load_pmo_yaml(FIXTURE)
+    add_task(pmo, _NEW_ROW)
+    out = tmp_path / "out.yaml"
+    save_pmo_yaml(pmo, out)
+    reloaded = load_pmo_yaml(out)
+    ids = [t.get("id") for t in reloaded.tasks]
+    assert "T-999" in ids
+
+
+def test_add_task_preserves_field_order(tmp_path):
+    pmo = load_pmo_yaml(FIXTURE)
+    add_task(pmo, _NEW_ROW)
+    out = tmp_path / "out.yaml"
+    save_pmo_yaml(pmo, out)
+    reloaded = load_pmo_yaml(out)
+    last = reloaded._raw["tasks"][-1]
+    keys = list(last.keys())
+    assert keys.index("id") < keys.index("name")
+    assert keys.index("name") < keys.index("status")
