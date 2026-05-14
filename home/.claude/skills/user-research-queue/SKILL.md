@@ -6,7 +6,7 @@ effort: low
 ---
 
 <objective>
-Manage `~/dotfiles/tasks/research-queue.md` — a two-stage backlog of URLs to evaluate and deep-research.
+Manage `~/dotfiles/queue/research.md` — a two-stage backlog of URLs to evaluate and deep-research.
 Six subcommands: `add`, `add-deep`, `list`, `quick`, `deep`, `done`.
 Parse `$ARGUMENTS` to determine which subcommand to run.
 </objective>
@@ -41,7 +41,7 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 
 ## Queue File
 
-Path: `~/dotfiles/tasks/research-queue.md`
+Path: `~/dotfiles/queue/research.md`
 
 **Sections (in order):**
 1. `## Inbox — Quick Eval 待ち`
@@ -111,7 +111,7 @@ exceed 80 chars (because `<owner>/<repo>` is added on top); that is expected.
 
 ## Subcommand: `add <url> [focus-note...]`
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. **Duplicate check**: scan both Inbox and Deep Research 待ち sections for the same URL. If found, warn and stop.
 3. Fetch the page title using the **Title Fetching** flow above (x.com → user-research-x-posts, github.com repo → `gh`, otherwise WebFetch).
 4. Build entry: `- [ ] <today> — [<title>](<url>) — focus: <focus-note or TBD>`
@@ -126,7 +126,7 @@ exceed 80 chars (because `<owner>/<repo>` is added on top); that is expected.
 
 Use when the URL has already been evaluated elsewhere and should go directly to Deep Research 待ち.
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. **Duplicate check**: scan both Inbox and Deep Research 待ち sections for the same URL. If found, warn and stop.
 3. Fetch the page title using the **Title Fetching** flow above (x.com → user-research-x-posts, github.com repo → `gh`, otherwise WebFetch).
 4. Build entry: `- [ ] <today> — [<title>](<url>) — focus: <focus-note or TBD>`
@@ -137,18 +137,33 @@ Use when the URL has already been evaluated elsewhere and should go directly to 
 
 ## Subcommand: `list` (or no arguments)
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. Extract all lines under `## Inbox — Quick Eval 待ち` and `## Deep Research 待ち`
-3. Display with tier-prefixed 1-based index numbers:
+3. Display with tier-prefixed 1-based index numbers. For each entry, show four fields explicitly: **url**, **author**, **time**, **text** (one field per line, indented under the index line). Always render the raw URL so the target is unambiguous.
+
+   Field extraction rules:
+   - **url**: the raw URL from the entry's markdown link (or the plain URL when the entry uses URL fallback rendering)
+   - **author**: for x.com / twitter.com URLs, the `@handle` from the title or URL path; for `github.com/<owner>/<repo>`, use `<owner>`; otherwise the URL host (e.g., `zenn.dev`)
+   - **time**: the entry's `YYYY-MM-DD` added date
+   - **text**: the title portion of the entry (post excerpt for X, `<owner>/<repo> — <description>` for GitHub, page title otherwise); fall back to the focus note when no title exists. Truncate to ~80 chars with "…" if longer.
 
 ```
 Inbox (N items)
-  I1. YYYY-MM-DD — Title — focus: ...
-  I2. YYYY-MM-DD — Title — focus: ...
+  I1.
+    url:    <url>
+    author: <author>
+    time:   YYYY-MM-DD
+    text:   <title or post excerpt> — focus: ...
+  I2.
+    url:    ...
+    ...
 
 Deep Research 待ち (M items)
-  D1. YYYY-MM-DD — Title — focus: ...
-  D2. YYYY-MM-DD — Title — focus: ...
+  D1.
+    url:    <url>
+    author: <author>
+    time:   YYYY-MM-DD
+    text:   <title> — focus: ...
 ```
 
 If both sections are empty, output: "Research Queue is empty. Use `add <url>` to add an item."
@@ -160,7 +175,7 @@ If only one section is empty, show the non-empty section normally and omit the e
 
 Runs Quick Eval on the first entry in Inbox.
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. Take the **first** entry in `## Inbox — Quick Eval 待ち` (index I1)
 3. If Inbox is empty, report and stop
 4. Extract the URL and focus note from the entry
@@ -181,7 +196,7 @@ Runs Quick Eval on the first entry in Inbox.
 
 Runs Deep Research on the first entry in Deep Research 待ち.
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. Take the **first** entry in `## Deep Research 待ち` (index D1)
 3. If Deep Research 待ち is empty, report and stop
 4. Extract the URL and focus note from the entry
@@ -197,7 +212,7 @@ Runs Deep Research on the first entry in Deep Research 待ち.
 
 Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox; `D1`, `D2`, ... for Deep Research 待ち.
 
-1. Read `~/dotfiles/tasks/research-queue.md`
+1. Read `~/dotfiles/queue/research.md`
 2. Parse the tier prefix (`I` or `D`) and numeric index
 3. Locate the entry in the appropriate section. If index is out of range, report an error with the invalid index, list current queue showing BOTH tiers (Inbox and Deep Research 待ち) in the same format as the `list` subcommand, and emit `## Status: BLOCKED`
 4. If `takeaway` is omitted, ask via AskUserQuestion: "One-line takeaway for this entry?"
@@ -233,7 +248,7 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 
 **add-deep:** Entry appears in Deep Research 待ち with correct format; duplicate URLs are rejected.
 
-**list:** Inbox entries shown as I1, I2, ...; Deep Research 待ち entries shown as D1, D2, ...; counts shown per section.
+**list:** Inbox entries shown as I1, I2, ...; Deep Research 待ち entries shown as D1, D2, ...; counts shown per section; each entry displays four fields (url / author / time / text) with the raw URL visible.
 
 **quick:** Quick Eval completes via user-research-eval-ref; user chooses promote/discard/keep; entry moves or stays accordingly.
 
