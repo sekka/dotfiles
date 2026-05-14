@@ -105,3 +105,30 @@ def build_yaml_appends(
             task[fname] = er.get(col)
         appends.append(task)
     return appends
+
+
+def classify_unmatched(
+    items: list[dict[str, Any]],
+    snapshot_rows: dict[str, Any],
+    *,
+    id_field: str = "id",
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Split unmatched items into new (not in snapshot) vs deleted_remote (known to snapshot).
+
+    Args:
+        items: list of task/row dicts that were unmatched (yaml_only or excel_only)
+        snapshot_rows: rows dict from the previous Snapshot (keyed by id)
+        id_field: the key to look up the id in each item dict
+
+    Returns:
+        (new_items, deleted_remote_items)
+    """
+    new_items: list[dict[str, Any]] = []
+    deleted_remote: list[dict[str, Any]] = []
+    for item in items:
+        tid = item.get(id_field)
+        if tid is not None and tid in snapshot_rows:
+            deleted_remote.append(item)
+        else:
+            new_items.append(item)
+    return new_items, deleted_remote

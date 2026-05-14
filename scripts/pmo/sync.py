@@ -8,7 +8,7 @@ from pathlib import Path
 from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field
 from lib.excel_io import read_rows, write_cells, append_row
 from lib.ownership import resolve_ownership
-from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends
+from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
 from lib.snapshot import load_snapshot, save_snapshot, Snapshot
 from lib.backup import backup_excel, prune_backups
 
@@ -87,6 +87,9 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         print(f"error: excel file not found: {excel_path}", file=sys.stderr)
         return 2
 
+    # load snapshot from previous run (empty on first run)
+    prev_snapshot = load_snapshot(pdir / ".pmo" / "last-sync.json")
+
     ownership = resolve_ownership(pmo.excel.columns)
     column_letters = [c.col for c in pmo.excel.columns]
 
@@ -116,8 +119,22 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
 
     excel_updates = list(merge.excel_updates)
     yaml_updates = list(merge.yaml_updates)
-    excel_appends = build_excel_appends(match.yaml_only, ownership) if mode != "pull" else []
-    yaml_appends = build_yaml_appends(match.excel_only, ownership) if mode != "push" else []
+
+    # classify yaml_only: tasks in YAML missing from Excel
+    #   id_field = "id" (yaml task dict key)
+    yaml_only_new, yaml_only_deleted = classify_unmatched(
+        match.yaml_only, prev_snapshot.rows, id_field="id"
+    )
+
+    # classify excel_only: rows in Excel missing from YAML
+    #   id_field = pmo.excel.id_column (column letter, e.g. "A")
+    excel_only_new, excel_only_deleted = classify_unmatched(
+        match.excel_only, prev_snapshot.rows, id_field=pmo.excel.id_column
+    )
+
+    # build appends using only the *new* items (not deletions)
+    excel_appends = build_excel_appends(yaml_only_new, ownership) if mode != "pull" else []
+    yaml_appends = build_yaml_appends(excel_only_new, ownership) if mode != "push" else []
 
     if mode == "pull":
         excel_updates = []
@@ -175,6 +192,13 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         print(f"  ⚠️  {len(match.excel_only)} rows in Excel not in YAML (push mode, kept)")
     if match.yaml_only and mode == "pull":
         print(f"  ⚠️  {len(match.yaml_only)} tasks in YAML not in Excel (pull mode, kept)")
+    # deletion warnings (snapshot-based)
+    if yaml_only_deleted and mode in ("sync", "push"):
+        ids = ", ".join(t["id"] for t in yaml_only_deleted)
+        print(f"  ⚠️  deleted in excel (kept in yaml): {ids}")
+    if excel_only_deleted and mode in ("sync", "pull"):
+        ids = ", ".join(t[pmo.excel.id_column] for t in excel_only_deleted)
+        print(f"  ⚠️  deleted in yaml (kept in excel): {ids}")
     return 0
 
 
