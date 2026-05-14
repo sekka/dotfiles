@@ -1,4 +1,6 @@
-from lib.reconcile import match_rows, RowMatch
+import datetime
+
+from lib.reconcile import _normalize_for_compare, match_rows, RowMatch
 
 
 def test_match_rows_all_matched():
@@ -153,3 +155,34 @@ def test_build_yaml_appends_includes_yaml_owned_fields():
     assert task["name"] == "次タスク"
     assert task["phase_l1"] == "新規"
     assert task["status"] == "進行中"
+
+
+def test_normalize_midnight_datetime_returns_date():
+    assert _normalize_for_compare(datetime.datetime(2026, 4, 15, 0, 0)) == datetime.date(2026, 4, 15)
+
+
+def test_normalize_datetime_with_time_unchanged():
+    dt = datetime.datetime(2026, 4, 15, 10, 30)
+    assert _normalize_for_compare(dt) == dt
+
+
+def test_normalize_date_unchanged():
+    d = datetime.date(2026, 4, 15)
+    assert _normalize_for_compare(d) == d
+
+
+def test_merge_no_change_when_yaml_date_equals_excel_midnight_datetime():
+    matched = {"T-001": RowMatch(
+        task_id="T-001",
+        yaml_task={"id": "T-001", "due_date": datetime.date(2026, 4, 15)},
+        excel_row=7,
+        excel_data={"row": 7, "A": "T-001", "E": datetime.datetime(2026, 4, 15, 0, 0)},
+    )}
+    ownership = make_ownership(
+        yaml_fields={"id", "due_date"},
+        excel_fields=set(),
+        column_of={"id": "A", "due_date": "E"},
+    )
+    result = merge_matched(matched, ownership)
+    assert result.excel_updates == []
+    assert result.yaml_updates == []

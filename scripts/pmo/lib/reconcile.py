@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -15,6 +16,13 @@ class MatchResult:
     matched: dict[str, RowMatch] = field(default_factory=dict)
     yaml_only: list[dict[str, Any]] = field(default_factory=list)
     excel_only: list[dict[str, Any]] = field(default_factory=list)
+
+
+def _normalize_for_compare(value: Any) -> Any:
+    if isinstance(value, datetime.datetime):
+        if value.time() == datetime.time(0, 0):
+            return value.date()
+    return value
 
 
 def match_rows(
@@ -63,13 +71,13 @@ def merge_matched(
             col = ownership.column_of[fname]
             yaml_val = m.yaml_task.get(fname)
             excel_val = m.excel_data.get(col)
-            if yaml_val != excel_val:
+            if _normalize_for_compare(yaml_val) != _normalize_for_compare(excel_val):
                 result.excel_updates.append((m.excel_row, col, yaml_val))
         for fname in ownership.excel_fields:
             col = ownership.column_of[fname]
             yaml_val = m.yaml_task.get(fname)
             excel_val = m.excel_data.get(col)
-            if yaml_val != excel_val:
+            if _normalize_for_compare(yaml_val) != _normalize_for_compare(excel_val):
                 result.yaml_updates.append((tid, fname, excel_val))
     return result
 
