@@ -1,17 +1,19 @@
 ---
 title: sibling-index() / sibling-count()（兄弟要素の位置・数）
 category: css/values
-tags: [sibling, index, count, animation, stagger, Chrome 138]
+tags: [sibling, index, count, animation, stagger, circular-menu, oklch, Chrome 138]
 browser_support: Chrome 138+, Edge 138+, Safari 26.2+
 created: 2026-01-31
-updated: 2026-01-31
+updated: 2026-05-13
 ---
 
 ## sibling-index() / sibling-count()
 
-> 出典: https://ics.media/entry/260116/
-> 執筆日: 2026-01-19
-> 追加日: 2026-01-31
+> 出典:
+> - https://ics.media/entry/260116/ (執筆 2026-01-19)
+> - https://azukiazusa.dev/blog/sibling-index-css-function/ — azukiazusa (公開 2026-05-06)
+>
+> 追加日: 2026-01-31 / 更新: 2026-05-13
 
 兄弟要素内での位置や総数を取得できるCSS関数。HTMLに属性を追加せずにスタッガーアニメーションや段階的なスタイル変更が可能。
 
@@ -359,6 +361,74 @@ li {
 - 1行で完結
 - 要素数に自動対応
 - メンテナンスが容易
+
+### 応用パターン
+
+#### 色相の均等分散（oklch + sibling-count）
+
+要素数に応じて色相を均等に分散させる。`sibling-count() - 1` で割ることで、最初と最後の要素を `--start` と `--end` の色相にちょうど揃えられる。
+
+```css
+li {
+  --start: 200;
+  --end: 320;
+  background: oklch(
+    65% 0.15
+    calc(
+      var(--start) + (var(--end) - var(--start)) /
+      (sibling-count() - 1) * (sibling-index() - 1)
+    )
+  );
+}
+```
+
+**ポイント**: 要素数を変えてもグラデーション帯域は `--start` 〜 `--end` のまま保たれる。`hsl` の明度を変える従来パターンと異なり、色相方向の連続性を保てる。
+
+#### 円形メニュー展開（弾性イージング込み）
+
+ホバーで放射状に展開するメニュー。インデックスで遅延を制御し、各要素を `360deg / 総数` ずつ回転させて配置する。
+
+```html
+<nav class="menu">
+  <button class="item">1</button>
+  <button class="item">2</button>
+  <button class="item">3</button>
+  <button class="item">4</button>
+  <button class="item">5</button>
+</nav>
+```
+
+```css
+.menu {
+  position: relative;
+}
+
+.menu .item {
+  position: absolute;
+  inset: 0;
+  --i: calc(sibling-index() - 1);
+  --total: calc(sibling-count() - 1);
+  --angle: calc(360deg / var(--total) * var(--i));
+  --radius: 110px;
+  --delay-step: 70ms;
+
+  transform: rotate(var(--angle)) translateY(0) rotate(calc(var(--angle) * -1));
+  opacity: 0;
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--i) * var(--delay-step)),
+    opacity 0.3s ease-out calc(var(--i) * var(--delay-step));
+}
+
+.menu:hover .item {
+  transform: rotate(var(--angle)) translateY(calc(var(--radius) * -1)) rotate(calc(var(--angle) * -1));
+  opacity: 1;
+}
+```
+
+**ポイント**:
+- `cubic-bezier(0.34, 1.56, 0.64, 1)` で弾みのある展開（`back.out` 相当）
+- 外側で `rotate(var(--angle))` → `translateY` → 内側で `rotate(calc(var(--angle) * -1))` で「位置だけ回転、向きは元のまま」を実現
+- 遅延を `--i * 70ms` で順番に発火させ、波状の展開アニメーションになる
 
 ### 関連技術
 

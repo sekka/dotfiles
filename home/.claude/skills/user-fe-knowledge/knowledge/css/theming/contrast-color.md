@@ -1,19 +1,21 @@
 ---
 title: contrast-color() 関数（自動コントラスト調整）
 category: css/theming
-tags: [color, contrast, accessibility, oklch, RCS]
-browser_support: 未実装（提案段階）
+tags: [color, contrast, accessibility, oklch, RCS, contrast-color, 2026]
+browser_support: Chrome 147+ (2026年実装), 他ブラウザ未対応
 created: 2026-01-31
-updated: 2026-01-31
+updated: 2026-05-13
 ---
 
 ## contrast-color() 関数
 
-> 出典: https://lea.verou.me/blog/2024/contrast-color/
-> 執筆日: 2024-05-17
-> 追加日: 2026-01-31
+> 出典:
+> - https://lea.verou.me/blog/2024/contrast-color/ (執筆 2024-05-17)
+> - https://azukiazusa.dev/blog/automatic-contrast-adjustment-with-contrast-color-function — azukiazusa1 (公開 2026-04-28)
+>
+> 追加日: 2026-01-31 / 更新: 2026-05-13
 
-背景色に対して読みやすいテキスト色を自動的に生成する関数（提案段階）。
+背景色に対して読みやすいテキスト色（白または黒）を自動的に生成する関数。**Chrome v147 で実装済み**。
 
 ### 問題
 
@@ -281,21 +283,113 @@ Chrome DevTools:
 - JavaScriptでの計算よりも高速
 - リペイント時のみ再計算
 
-### 将来の contrast-color()
+### contrast-color() の実装（Chrome v147+）
 
-提案されている構文（実装待ち）:
+Chrome v147 で `contrast-color()` 関数が実装された。背景色に対して白または黒のいずれが高いコントラスト比を持つかを自動判断する。
+
+#### 基本構文
 
 ```css
-.button {
-  background: var(--user-color);
-  color: contrast-color(var(--user-color)); /* 将来の構文 */
+.element {
+  --bg-color: attr(data-bg-color type(<color>));
+  background-color: var(--bg-color);
+  color: contrast-color(var(--bg-color));
 }
 ```
 
-**機能:**
-- 自動でWCAG基準を満たす色を選択
-- 白・黒以外の選択肢も指定可能
-- 最小コントラスト比の指定が可能
+#### フォールバック付き実装（推奨）
+
+```css
+.element {
+  background-color: var(--bg-color);
+  color: white;
+}
+
+@supports (color: contrast-color(red)) {
+  .element {
+    color: contrast-color(var(--bg-color));
+  }
+}
+```
+
+#### ダークモード対応
+
+```css
+:root {
+  --bg-color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: black;
+  }
+}
+
+.element {
+  background-color: var(--bg-color);
+  color: contrast-color(var(--bg-color));
+}
+```
+
+#### color-mix() との組み合わせ
+
+完全な白黒ではなく、背景色に少し馴染ませる場合:
+
+```css
+.element {
+  --bg-color: oklch(50% 0.1 270);
+  background-color: var(--bg-color);
+  color: color-mix(
+    in srgb,
+    contrast-color(var(--bg-color)) 80%,
+    var(--bg-color) 20%
+  );
+}
+```
+
+ただし白黒以外の色を生成すると WCAG コントラスト比が下がる可能性あり。要検証。
+
+#### if() との組み合わせ（contrast-color の結果で色を分岐）
+
+```css
+@property --contrast-color {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: true;
+}
+
+.element {
+  --bg-color: attr(data-bg-color type(<color>));
+  background-color: var(--bg-color);
+  --contrast-color: contrast-color(var(--bg-color));
+  color: if(
+    style(--contrast-color: black): oklch(43.5% 0.029 321.78);
+    else: oklch(86.9% 0.005 56.366)
+  );
+}
+```
+
+contrast-color が黒なら濃いテーマ色、白なら明るいテーマ色を返す応用パターン。
+
+### contrast-color() の制限
+
+- **白黒のみ返す** — 白・黒以外の選択肢は現時点では指定不可
+- **コントラスト比が同じ場合は白が返される**
+- 中間色（例: #2277d3）では数値上黒推奨でも視覚的に白の方が見やすいケースがある
+- **完全な WCAG 保証ではない** — 文字サイズ・太さ・フォント種により実効コントラストは変動
+- `prefers-contrast: more` には別途対応が必要
+- WCAG AA (4.5:1) / AAA (7:1) を満たすかは別途検証推奨
+
+### ブラウザサポート（contrast-color）
+
+| ブラウザ | バージョン | 対応時期 |
+|----------|-----------|----------|
+| Chrome | 147+ | 2026年 |
+| Edge | 未対応 | 検討中 |
+| Firefox | 未対応 | 検討中 |
+| Safari | 未対応 | 検討中 |
+
+→ 当面は RCS フォールバックとの併用が現実的。
 
 ### 関連技術
 

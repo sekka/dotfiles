@@ -127,6 +127,8 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 tap "hmarr/tap"
 #cask "vitals"                      # https://hmarr.com/vitals/                                 # システムリソースモニタ
 #cask "lzt1008/tap/powerflow"       # https://github.com/lzt1008/powerflow                      # メニューバー電力表示
+#tap "darrylmorley/whatcable"
+#cask "darrylmorley/whatcable/whatcable" # https://github.com/darrylmorley/whatcable                # USB-Cケーブル能力診断メニューバーアプリ（充電速度のボトルネック特定）
 
 # === QuickLook ===
 #cask "apparency"                   # https://formulae.brew.sh/cask/apparency                   # .app バンドルの内容・署名情報を表示
