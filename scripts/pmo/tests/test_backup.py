@@ -60,9 +60,9 @@ def test_backup_excel_preserves_extension(tmp_path):
 def test_prune_backups_keeps_latest_n(tmp_path):
     backup_dir = tmp_path / ".pmo" / "backups"
     backup_dir.mkdir(parents=True)
-    # Create 12 fake backups with lexicographically sortable names
+    # Create 12 fake backups with lexicographically sortable names (May 01..12)
     for i in range(12):
-        ts = f"2026050{i:02d}T120000" if i < 10 else f"202605{i}T120000"
+        ts = f"202605{i + 1:02d}T120000"
         (backup_dir / f"WBS_{ts}.xlsm").write_bytes(b"x")
 
     deleted = prune_backups(tmp_path, keep=10)
@@ -76,7 +76,7 @@ def test_prune_backups_returns_zero_when_count_le_keep(tmp_path):
     backup_dir = tmp_path / ".pmo" / "backups"
     backup_dir.mkdir(parents=True)
     for i in range(5):
-        (backup_dir / f"WBS_2026050{i}T120000.xlsm").write_bytes(b"x")
+        (backup_dir / f"WBS_202605{i + 1:02d}T120000.xlsm").write_bytes(b"x")
 
     deleted = prune_backups(tmp_path, keep=10)
     assert deleted == 0
@@ -88,10 +88,25 @@ def test_prune_backups_empty_dir_returns_zero(tmp_path):
     assert deleted == 0
 
 
+def test_prune_backups_ignores_non_excel_files(tmp_path):
+    backup_dir = tmp_path / ".pmo" / "backups"
+    backup_dir.mkdir(parents=True)
+    (backup_dir / ".DS_Store").write_bytes(b"junk")
+    (backup_dir / "notes.txt").write_text("scratch")
+    for i in range(12):
+        (backup_dir / f"WBS_202605{i + 1:02d}T120000.xlsm").write_bytes(b"x")
+
+    deleted = prune_backups(tmp_path, keep=10)
+
+    assert deleted == 2
+    assert (backup_dir / ".DS_Store").exists()
+    assert (backup_dir / "notes.txt").exists()
+
+
 def test_prune_backups_removes_oldest(tmp_path):
     backup_dir = tmp_path / ".pmo" / "backups"
     backup_dir.mkdir(parents=True)
-    names = [f"WBS_2026050{i}T120000.xlsm" for i in range(3)]
+    names = [f"WBS_202605{i + 1:02d}T120000.xlsm" for i in range(3)]
     for n in names:
         (backup_dir / n).write_bytes(b"x")
 

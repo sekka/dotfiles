@@ -34,7 +34,7 @@ def prune_backups(project_dir: Path, *, keep: int = 10) -> int:
     if not backup_dir.exists():
         return 0
 
-    all_backups = sorted(backup_dir.iterdir())
+    all_backups = sorted(backup_dir.glob("*.xls*"))
     excess = len(all_backups) - keep
     if excess <= 0:
         return 0
