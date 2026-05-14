@@ -1,7 +1,15 @@
 import json
+import datetime
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+
+class _DateTimeEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, (datetime.datetime, datetime.date)):
+            return o.isoformat()
+        return super().default(o)
 
 
 @dataclass
@@ -15,7 +23,7 @@ class Snapshot:
 def save_snapshot(snap: Snapshot, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
-        json.dump({"rows": snap.rows}, f, ensure_ascii=False, indent=2)
+        json.dump({"rows": snap.rows}, f, ensure_ascii=False, indent=2, cls=_DateTimeEncoder)
 
 
 def load_snapshot(path: Path) -> Snapshot:
