@@ -8,6 +8,8 @@ from typing import Any
 import openpyxl
 from openpyxl.utils import column_index_from_string
 
+from lib import xlsm_writer as _xlsm_writer
+
 
 def compute_id_assignments(
     existing_ids: list[str | None], prefix: str = "T-"
@@ -92,11 +94,5 @@ def write_id_cells(
     assignments: list of (index_in_row_map, new_id)
     row_map: list of 1-based row numbers corresponding to scanned rows
     """
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
-    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
-    ws = wb[sheet]
-    id_idx = column_index_from_string(id_column)
-    for idx, new_id in assignments:
-        row_num = row_map[idx]
-        ws.cell(row=row_num, column=id_idx, value=new_id)
-    wb.save(workbook_path)
+    updates = [(row_map[idx], id_column, new_id) for idx, new_id in assignments]
+    _xlsm_writer.write_cells(workbook_path, sheet, updates)

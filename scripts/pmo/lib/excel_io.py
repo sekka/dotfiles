@@ -4,6 +4,8 @@ import openpyxl
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.utils import column_index_from_string
 
+from lib import xlsm_writer as _xlsm_writer
+
 
 def _resolve_value(structural: Any, computed: Any) -> Any:
     """Return the appropriate cell value, preferring computed over formula strings.
@@ -56,13 +58,7 @@ def write_cells(
     sheet: str,
     updates: list[tuple[int, str, Any]],
 ) -> None:
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
-    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
-    ws = wb[sheet]
-    for row, col_letter, value in updates:
-        col_idx = column_index_from_string(col_letter)
-        ws.cell(row=row, column=col_idx, value=value)
-    wb.save(workbook_path)
+    _xlsm_writer.write_cells(workbook_path, sheet, updates)
 
 
 def append_rows(ws: Worksheet, rows: list[list[Any]]) -> None:
@@ -81,17 +77,13 @@ def batch_append_rows(
     if not rows:
         return
     keep_vba = workbook_path.suffix.lower() == ".xlsm"
-    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
+    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=True)
     ws = wb[sheet]
     id_idx = column_index_from_string(id_column)
     row_num = data_start_row
     while ws.cell(row=row_num, column=id_idx).value not in (None, ""):
         row_num += 1
-    for values in rows:
-        for col_letter, value in values.items():
-            ws.cell(row=row_num, column=column_index_from_string(col_letter), value=value)
-        row_num += 1
-    wb.save(workbook_path)
+    _xlsm_writer.append_rows(workbook_path, sheet, rows, start_row=row_num)
 
 
 def append_row(
@@ -103,13 +95,11 @@ def append_row(
     values: dict[str, Any],
 ) -> int:
     keep_vba = workbook_path.suffix.lower() == ".xlsm"
-    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba)
+    wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=True)
     ws = wb[sheet]
     id_idx = column_index_from_string(id_column)
     row = data_start_row
     while ws.cell(row=row, column=id_idx).value not in (None, ""):
         row += 1
-    for col_letter, value in values.items():
-        ws.cell(row=row, column=column_index_from_string(col_letter), value=value)
-    wb.save(workbook_path)
+    _xlsm_writer.append_rows(workbook_path, sheet, [values], start_row=row)
     return row
