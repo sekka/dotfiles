@@ -177,6 +177,33 @@ describe("extractCurrentTurn", () => {
     const msgs: TranscriptMessage[] = [];
     expect(extractCurrentTurn(msgs)).toEqual([]);
   });
+
+  // 回帰: Skill ツール呼び出し後に Claude Code が注入する synthetic user message
+  // (`Base directory for this skill:` で始まる) をターン境界として扱わないこと。
+  // これを実メッセージと誤認すると /user-research-queue 起動 message が前ターン扱いに
+  // なって isQueueDrivenTurn が false を返し、block されなくなる (4 回目再発の原因)。
+  test("Skill loader 由来の synthetic user message はスキップする (regression #4)", () => {
+    const skillLoaderMsg: TranscriptMessage = {
+      type: "user",
+      message: {
+        content: [
+          {
+            type: "text",
+            text: "Base directory for this skill: /Users/kei/.claude/skills/user-research-eval-ref\n\n<objective>...",
+          },
+        ],
+      },
+    };
+    const msgs = [makeQueueQuickMsg(), makeEvalRefSkillMsg(), skillLoaderMsg];
+    const turn = extractCurrentTurn(msgs);
+    // 期待: index 0 (makeQueueQuickMsg) から末尾まで = 3 件
+    expect(turn).toHaveLength(3);
+    const firstMsg = turn[0];
+    const firstContent = firstMsg?.message?.content;
+    const firstText =
+      Array.isArray(firstContent) && firstContent[0]?.type === "text" ? firstContent[0].text : "";
+    expect(firstText).toContain("/user-research-queue");
+  });
 });
 
 describe("isQueueDrivenTurn", () => {
@@ -316,6 +343,32 @@ describe("shouldBlock — truth table", () => {
   test("#7 deep eval-ref 後 AUQ なし → true (block)", () => {
     const turn = [makeQueueDeepMsg(), makeEvalRefSkillMsg()];
     expect(shouldBlock(turn)).toBe(true);
+  });
+
+  // Case #9 (regression #4): quick → eval-ref → Skill loader synthetic → text → END (AUQ なし) → block
+  // 旧実装は Skill loader を「実 user message」と誤認しターン境界を後ろにずらしていた。
+  // 修正後は Skill loader をスキップして /user-research-queue 起動 message を見つけ block する。
+  test("#9 quick eval-ref 後 Skill loader 注入あり AUQ なし → true (block)", () => {
+    const skillLoaderMsg: TranscriptMessage = {
+      type: "user",
+      message: {
+        content: [
+          {
+            type: "text",
+            text: "Base directory for this skill: /Users/kei/.claude/skills/user-research-eval-ref",
+          },
+        ],
+      },
+    };
+    const turn = [
+      makeQueueQuickMsg(),
+      makeEvalRefSkillMsg(),
+      skillLoaderMsg,
+      makeAssistantTextMsg("評価カード"),
+    ];
+    // extractCurrentTurn を経由してから shouldBlock を呼ぶ (実運用と同じパス)
+    const slice = extractCurrentTurn(turn);
+    expect(shouldBlock(slice)).toBe(true);
   });
 
   // Case #8: 壊れた JSONL を含む transcript → エラーをスローしない

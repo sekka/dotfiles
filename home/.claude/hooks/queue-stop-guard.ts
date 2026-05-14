@@ -51,14 +51,38 @@ export function parseTranscript(jsonl: string): TranscriptMessage[] {
 }
 
 /**
+ * Skill ツール呼び出し後に Claude Code が注入する synthetic user message かを判定する。
+ * Skill loader は本文を `Base directory for this skill:` で始めるため、それをマーカーに使う。
+ * これを「実ユーザーメッセージ」と誤認すると現ターン境界が後ろにずれ、
+ * /user-research-queue 起動 user message が検出されなくなる (false negative)。
+ */
+function isSkillLoaderMessage(m: TranscriptMessage): boolean {
+  const content = m.message?.content;
+  const texts: string[] = [];
+  if (typeof content === "string") {
+    texts.push(content);
+  } else if (Array.isArray(content)) {
+    for (const item of content) {
+      if (item.type === "text" && typeof item.text === "string") texts.push(item.text);
+    }
+  }
+  return texts.some((t) => t.trimStart().startsWith("Base directory for this skill:"));
+}
+
+/**
  * 末尾から最後の「実ユーザーメッセージ」を探し、そこから末尾までを現ターンとして返す。
  * 注意: tool_result も type:"user" で包まれるため、content に text 項目を持つ
  * メッセージだけを「実ユーザーメッセージ」として扱う。
+ * さらに Skill ツール呼び出し後に注入される synthetic user message
+ * (Skill loader、`Base directory for this skill:` で始まる) もスキップする。
  */
 export function extractCurrentTurn(messages: TranscriptMessage[]): TranscriptMessage[] {
   for (let i = messages.length - 1; i >= 0; i--) {
     const m = messages[i];
     if (!m || m.type !== "user") continue;
+
+    // Skill loader 由来の synthetic user message はターン境界として扱わない
+    if (isSkillLoaderMessage(m)) continue;
 
     const content = m.message?.content;
     // content が文字列の場合は実メッセージとみなす (古い形式)
