@@ -5,12 +5,38 @@ import argparse
 import sys
 from pathlib import Path
 
+import json
+
 from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field
 from lib.excel_io import read_rows, write_cells, append_row
 from lib.ownership import resolve_ownership
 from lib.reconcile import match_rows, merge_matched, build_excel_appends, build_yaml_appends, classify_unmatched
 from lib.snapshot import load_snapshot, save_snapshot, Snapshot
 from lib.backup import backup_excel, prune_backups
+
+
+def load_deleted_ids(pdir: Path) -> dict[str, set[str]]:
+    path = pdir / ".pmo" / "deleted-ids.json"
+    if not path.exists():
+        return {"excel": set(), "yaml": set()}
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    return {
+        "excel": set(data.get("excel", [])),
+        "yaml": set(data.get("yaml", [])),
+    }
+
+
+def save_deleted_ids(pdir: Path, deleted: dict[str, set[str]]) -> None:
+    path = pdir / ".pmo" / "deleted-ids.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(
+            {"excel": sorted(deleted["excel"]), "yaml": sorted(deleted["yaml"])},
+            f,
+            ensure_ascii=False,
+            indent=2,
+        )
 
 
 def project_dir(slug: str) -> Path:
@@ -89,6 +115,7 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
 
     # load snapshot from previous run (empty on first run)
     prev_snapshot = load_snapshot(pdir / ".pmo" / "last-sync.json")
+    prev_deleted = load_deleted_ids(pdir)
 
     ownership = resolve_ownership(pmo.excel.columns)
     column_letters = [c.col for c in pmo.excel.columns]
@@ -120,16 +147,18 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     excel_updates = list(merge.excel_updates)
     yaml_updates = list(merge.yaml_updates)
 
+    snapshot_ids = set(prev_snapshot.rows)
+
     # classify yaml_only: tasks in YAML missing from Excel
     #   id_field = "id" (yaml task dict key)
     yaml_only_new, yaml_only_deleted = classify_unmatched(
-        match.yaml_only, prev_snapshot.rows, id_field="id"
+        match.yaml_only, snapshot_ids, id_field="id"
     )
 
     # classify excel_only: rows in Excel missing from YAML
     #   id_field = pmo.excel.id_column (column letter, e.g. "A")
     excel_only_new, excel_only_deleted = classify_unmatched(
-        match.excel_only, prev_snapshot.rows, id_field=pmo.excel.id_column
+        match.excel_only, snapshot_ids, id_field=pmo.excel.id_column
     )
 
     # build appends using only the *new* items (not deletions)
@@ -184,6 +213,11 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     if mode != "pull":
         prune_backups(pdir)
 
+    # compute current full deletion sets (rewritten each run so restorations are tracked)
+    current_excel_deleted = {t["id"] for t in yaml_only_deleted}
+    current_yaml_deleted = {t[pmo.excel.id_column] for t in excel_only_deleted}
+    save_deleted_ids(pdir, {"excel": current_excel_deleted, "yaml": current_yaml_deleted})
+
     # summary
     print(f"mode={mode}")
     print(f"  Excel updates: {len(excel_updates)} cells, {len(excel_appends)} new rows")
@@ -192,13 +226,17 @@ def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
         print(f"  ⚠️  {len(match.excel_only)} rows in Excel not in YAML (push mode, kept)")
     if match.yaml_only and mode == "pull":
         print(f"  ⚠️  {len(match.yaml_only)} tasks in YAML not in Excel (pull mode, kept)")
-    # deletion warnings (snapshot-based)
+    # deletion warnings (snapshot-based, suppress already-warned ids)
     if yaml_only_deleted and mode in ("sync", "push"):
-        ids = ", ".join(t["id"] for t in yaml_only_deleted)
-        print(f"  ⚠️  deleted in excel (kept in yaml): {ids}")
+        new_excel_deleted = [t for t in yaml_only_deleted if t["id"] not in prev_deleted["excel"]]
+        if new_excel_deleted:
+            ids = ", ".join(t["id"] for t in new_excel_deleted)
+            print(f"  ⚠️  deleted in excel (kept in yaml): {ids}")
     if excel_only_deleted and mode in ("sync", "pull"):
-        ids = ", ".join(t[pmo.excel.id_column] for t in excel_only_deleted)
-        print(f"  ⚠️  deleted in yaml (kept in excel): {ids}")
+        new_yaml_deleted = [t for t in excel_only_deleted if t[pmo.excel.id_column] not in prev_deleted["yaml"]]
+        if new_yaml_deleted:
+            ids = ", ".join(t[pmo.excel.id_column] for t in new_yaml_deleted)
+            print(f"  ⚠️  deleted in yaml (kept in excel): {ids}")
     return 0
 
 

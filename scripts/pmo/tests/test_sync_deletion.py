@@ -1,14 +1,18 @@
 """Tests for snapshot-based deletion detection in cmd_sync (F2)."""
+import json
+from pathlib import Path
+import pytest
 from lib.reconcile import classify_unmatched
+from sync import load_deleted_ids, save_deleted_ids
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def snap_rows(*ids: str) -> dict:
-    """Build a simple snapshot rows dict with the given ids."""
-    return {tid: {"id": tid} for tid in ids}
+def snap_rows(*ids: str) -> set[str]:
+    """Build a snapshot id set with the given ids."""
+    return set(ids)
 
 
 # ---------------------------------------------------------------------------
@@ -62,7 +66,7 @@ def test_yaml_only_id_not_in_snapshot_is_new():
 def test_empty_snapshot_all_new():
     """When snapshot is empty (first run), every unmatched item is new."""
     items = [{"id": "T-001"}, {"id": "T-002"}, {"id": "T-003"}]
-    new, deleted = classify_unmatched(items, {}, id_field="id")
+    new, deleted = classify_unmatched(items, set(), id_field="id")
 
     assert len(new) == 3
     assert deleted == []
@@ -82,3 +86,64 @@ def test_classify_unmatched_all_deleted():
 
     assert new == []
     assert sorted(t["id"] for t in deleted) == ["T-001", "T-002"]
+
+
+# ---------------------------------------------------------------------------
+# Sticky warn suppression: load_deleted_ids / save_deleted_ids
+# ---------------------------------------------------------------------------
+
+def test_load_deleted_ids_missing_file(tmp_path):
+    """Returns empty sets when deleted-ids.json does not exist."""
+    result = load_deleted_ids(tmp_path)
+    assert result == {"excel": set(), "yaml": set()}
+
+
+def test_save_and_load_deleted_ids_roundtrip(tmp_path):
+    """Saved deleted ids can be loaded back correctly."""
+    data = {"excel": {"T-001", "T-002"}, "yaml": {"T-003"}}
+    save_deleted_ids(tmp_path, data)
+    loaded = load_deleted_ids(tmp_path)
+    assert loaded["excel"] == {"T-001", "T-002"}
+    assert loaded["yaml"] == {"T-003"}
+
+
+def test_save_deleted_ids_overwrites_previous(tmp_path):
+    """Second save replaces first (shrink supported: removed ids disappear)."""
+    save_deleted_ids(tmp_path, {"excel": {"T-001", "T-002"}, "yaml": set()})
+    save_deleted_ids(tmp_path, {"excel": {"T-002"}, "yaml": set()})
+    loaded = load_deleted_ids(tmp_path)
+    assert loaded["excel"] == {"T-002"}
+
+
+def test_sticky_warn_suppressed_on_second_sync(tmp_path):
+    """Deletions already in prev_deleted must not appear in new_excel_deleted."""
+    yaml_only_deleted = [{"id": "T-001"}, {"id": "T-002"}]
+    prev_deleted = {"excel": {"T-001"}, "yaml": set()}
+
+    new_excel_deleted = [
+        t for t in yaml_only_deleted if t["id"] not in prev_deleted["excel"]
+    ]
+
+    assert [t["id"] for t in new_excel_deleted] == ["T-002"]
+
+
+def test_sticky_warn_fires_on_first_sync(tmp_path):
+    """When prev_deleted is empty, all deletions trigger a warn."""
+    yaml_only_deleted = [{"id": "T-001"}, {"id": "T-002"}]
+    prev_deleted = {"excel": set(), "yaml": set()}
+
+    new_excel_deleted = [
+        t for t in yaml_only_deleted if t["id"] not in prev_deleted["excel"]
+    ]
+
+    assert sorted(t["id"] for t in new_excel_deleted) == ["T-001", "T-002"]
+
+
+def test_restored_id_removed_from_deleted_ids(tmp_path):
+    """If a previously-deleted id is restored, it is absent from the saved file."""
+    save_deleted_ids(tmp_path, {"excel": {"T-001", "T-002"}, "yaml": set()})
+    # Next sync: T-001 is no longer in the deletion list (restored)
+    save_deleted_ids(tmp_path, {"excel": {"T-002"}, "yaml": set()})
+    loaded = load_deleted_ids(tmp_path)
+    assert "T-001" not in loaded["excel"]
+    assert "T-002" in loaded["excel"]
