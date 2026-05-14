@@ -78,8 +78,88 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
-    # stub - implemented in Task 13
-    print(f"[stub] mode={mode} project={args.project} sheet={args.sheet}")
+    pdir = project_dir(args.project)
+    pmo_path = pdir / "pmo.yaml"
+    pmo = load_pmo_yaml(pmo_path)
+    excel_path = pdir / pmo.excel.file
+    if not excel_path.exists():
+        print(f"error: excel file not found: {excel_path}", file=sys.stderr)
+        return 2
+
+    ownership = resolve_ownership(pmo.excel.columns)
+    column_letters = [c.col for c in pmo.excel.columns]
+
+    try:
+        excel_rows_raw = read_rows(
+            excel_path,
+            sheet=pmo.excel.sheet,
+            data_start_row=pmo.excel.data_start_row,
+            columns=column_letters,
+            id_column=pmo.excel.id_column,
+        )
+    except PermissionError:
+        print(
+            f"error: cannot read {excel_path}. Close Excel and retry.",
+            file=sys.stderr,
+        )
+        return 3
+
+    excel_rows = []
+    for idx, raw in enumerate(excel_rows_raw):
+        row_num = pmo.excel.data_start_row + idx
+        raw["row"] = row_num
+        excel_rows.append(raw)
+
+    match = match_rows(pmo.tasks, excel_rows, id_column=pmo.excel.id_column)
+    merge = merge_matched(match.matched, ownership)
+
+    excel_updates = list(merge.excel_updates)
+    yaml_updates = list(merge.yaml_updates)
+    excel_appends = build_excel_appends(match.yaml_only, ownership) if mode != "pull" else []
+    yaml_appends = build_yaml_appends(match.excel_only, ownership) if mode != "push" else []
+
+    if mode == "pull":
+        excel_updates = []
+    if mode == "push":
+        yaml_updates = []
+
+    # apply Excel changes
+    if excel_updates:
+        try:
+            write_cells(excel_path, sheet=pmo.excel.sheet, updates=excel_updates)
+        except PermissionError:
+            print(f"error: cannot write {excel_path}. Close Excel and retry.", file=sys.stderr)
+            return 3
+    for row_values in excel_appends:
+        append_row(
+            excel_path,
+            sheet=pmo.excel.sheet,
+            data_start_row=pmo.excel.data_start_row,
+            id_column=pmo.excel.id_column,
+            values=row_values,
+        )
+
+    # apply YAML changes
+    for tid, field, value in yaml_updates:
+        update_task_field(pmo, task_id=tid, field=field, value=value)
+    for new_task in yaml_appends:
+        pmo.tasks.append(new_task)
+        pmo._raw["tasks"].append(new_task)
+    if yaml_updates or yaml_appends:
+        save_pmo_yaml(pmo, pmo_path)
+
+    # snapshot
+    snap = Snapshot(rows={t["id"]: dict(t) for t in pmo.tasks if "id" in t})
+    save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
+
+    # summary
+    print(f"mode={mode}")
+    print(f"  Excel updates: {len(excel_updates)} cells, {len(excel_appends)} new rows")
+    print(f"  YAML updates: {len(yaml_updates)} fields, {len(yaml_appends)} new tasks")
+    if match.excel_only and mode == "push":
+        print(f"  ⚠️  {len(match.excel_only)} rows in Excel not in YAML (push mode, kept)")
+    if match.yaml_only and mode == "pull":
+        print(f"  ⚠️  {len(match.yaml_only)} tasks in YAML not in Excel (pull mode, kept)")
     return 0
 
 
