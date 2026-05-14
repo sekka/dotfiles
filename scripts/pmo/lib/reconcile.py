@@ -98,7 +98,9 @@ def build_yaml_appends(
         task: dict[str, Any] = {}
         id_col = ownership.column_of["id"]
         task["id"] = er[id_col]
-        for fname in ownership.excel_fields:
+        for fname in ownership.yaml_fields | ownership.excel_fields:
+            if fname == "id":
+                continue
             col = ownership.column_of[fname]
             task[fname] = er.get(col)
         appends.append(task)

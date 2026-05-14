@@ -132,3 +132,24 @@ def test_build_yaml_appends_from_excel_only():
     )
     appends = build_yaml_appends(excel_only, ownership)
     assert appends == [{"id": "T-999", "status": "進行中"}]
+
+
+def test_build_yaml_appends_includes_yaml_owned_fields():
+    # Excel-only rows must include yaml-owned fields as initial state.
+    # Without this, the next sync would see yaml.name=None vs excel.name="次タスク"
+    # and never converge.
+    excel_only = [
+        {"row": 8, "A": "T-002", "D": "次タスク", "B": "新規", "I": "進行中"},
+    ]
+    ownership = make_ownership(
+        yaml_fields={"id", "name", "phase_l1"},
+        excel_fields={"status"},
+        column_of={"id": "A", "phase_l1": "B", "name": "D", "status": "I"},
+    )
+    appends = build_yaml_appends(excel_only, ownership)
+    assert len(appends) == 1
+    task = appends[0]
+    assert task["id"] == "T-002"
+    assert task["name"] == "次タスク"
+    assert task["phase_l1"] == "新規"
+    assert task["status"] == "進行中"
