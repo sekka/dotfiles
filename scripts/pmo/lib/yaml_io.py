@@ -55,3 +55,22 @@ def load_pmo_yaml(path: Path) -> PmoYaml:
         tasks=[dict(t) for t in data.get("tasks", [])],
         _raw=data,
     )
+
+
+def save_pmo_yaml(pmo: PmoYaml, path: Path) -> None:
+    data = pmo._raw
+    data["project"] = pmo.project
+    raw_tasks = []
+    for t in pmo.tasks:
+        raw_tasks.append(t)
+    data["tasks"] = raw_tasks
+    with path.open("w", encoding="utf-8") as f:
+        _yaml.dump(data, f)
+
+
+def update_task_field(pmo: PmoYaml, *, task_id: str, field: str, value: Any) -> None:
+    for t in pmo.tasks:
+        if t.get("id") == task_id:
+            t[field] = value
+            return
+    raise KeyError(f"task id not found: {task_id}")

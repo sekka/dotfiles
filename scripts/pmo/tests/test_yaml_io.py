@@ -1,5 +1,5 @@
 from pathlib import Path
-from lib.yaml_io import load_pmo_yaml, PmoYaml, ColumnSpec
+from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, PmoYaml, ColumnSpec
 
 FIXTURE = Path(__file__).parent / "fixtures" / "sample_pmo.yaml"
 
@@ -36,3 +36,28 @@ def test_load_pmo_yaml_parses_tasks():
     assert t["phase_l1"] == "現状把握"
     assert t["assignee"] == "PM"
     assert t["start_date"] is None
+
+
+def test_save_pmo_yaml_round_trip(tmp_path):
+    pmo = load_pmo_yaml(FIXTURE)
+    out = tmp_path / "out.yaml"
+    save_pmo_yaml(pmo, out)
+    reloaded = load_pmo_yaml(out)
+    assert reloaded.project == pmo.project
+    assert reloaded.tasks == pmo.tasks
+
+
+def test_update_task_field_writes_back(tmp_path):
+    pmo = load_pmo_yaml(FIXTURE)
+    update_task_field(pmo, task_id="T-001", field="status", value="進行中")
+    out = tmp_path / "out.yaml"
+    save_pmo_yaml(pmo, out)
+    reloaded = load_pmo_yaml(out)
+    assert reloaded.tasks[0]["status"] == "進行中"
+
+
+def test_update_task_field_missing_id_raises():
+    import pytest
+    pmo = load_pmo_yaml(FIXTURE)
+    with pytest.raises(KeyError, match="T-999"):
+        update_task_field(pmo, task_id="T-999", field="status", value="x")
