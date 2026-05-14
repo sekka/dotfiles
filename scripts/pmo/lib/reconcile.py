@@ -42,3 +42,33 @@ def match_rows(
         if er.get(id_column) and er[id_column] not in yaml_ids:
             result.excel_only.append(er)
     return result
+
+
+@dataclass
+class MergeResult:
+    excel_updates: list[tuple[int, str, Any]] = field(default_factory=list)
+    yaml_updates: list[tuple[str, str, Any]] = field(default_factory=list)
+
+
+def merge_matched(
+    matched: dict[str, "RowMatch"],
+    ownership: "Any",
+) -> MergeResult:
+    from lib.ownership import Ownership  # avoid circular at module import
+    result = MergeResult()
+    for tid, m in matched.items():
+        for fname in ownership.yaml_fields:
+            if fname == "id":
+                continue
+            col = ownership.column_of[fname]
+            yaml_val = m.yaml_task.get(fname)
+            excel_val = m.excel_data.get(col)
+            if yaml_val != excel_val:
+                result.excel_updates.append((m.excel_row, col, yaml_val))
+        for fname in ownership.excel_fields:
+            col = ownership.column_of[fname]
+            yaml_val = m.yaml_task.get(fname)
+            excel_val = m.excel_data.get(col)
+            if yaml_val != excel_val:
+                result.yaml_updates.append((tid, fname, excel_val))
+    return result

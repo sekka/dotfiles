@@ -41,3 +41,65 @@ def test_match_rows_preserves_yaml_order():
     ]
     result = match_rows(yaml_tasks, excel_rows, id_column="A")
     assert list(result.matched.keys()) == ["T-003", "T-001", "T-002"]
+
+
+from lib.reconcile import merge_matched, MergeResult
+from lib.ownership import Ownership
+
+
+def make_ownership(yaml_fields, excel_fields, column_of):
+    o = Ownership()
+    o.yaml_fields = set(yaml_fields)
+    o.excel_fields = set(excel_fields)
+    o.column_of = column_of
+    return o
+
+
+def test_merge_yaml_fields_overwrite_excel():
+    matched = {"T-001": RowMatch(
+        task_id="T-001",
+        yaml_task={"id": "T-001", "name": "新", "status": "完了"},
+        excel_row=7,
+        excel_data={"row": 7, "A": "T-001", "D": "古", "I": "進行中"},
+    )}
+    ownership = make_ownership(
+        yaml_fields={"id", "name"},
+        excel_fields={"status"},
+        column_of={"id": "A", "name": "D", "status": "I"},
+    )
+    result = merge_matched(matched, ownership)
+    assert result.excel_updates == [(7, "D", "新")]
+    assert result.yaml_updates == [("T-001", "status", "進行中")]
+
+
+def test_merge_no_change_when_values_equal():
+    matched = {"T-001": RowMatch(
+        task_id="T-001",
+        yaml_task={"id": "T-001", "name": "同じ", "status": "進行中"},
+        excel_row=7,
+        excel_data={"row": 7, "A": "T-001", "D": "同じ", "I": "進行中"},
+    )}
+    ownership = make_ownership(
+        yaml_fields={"id", "name"},
+        excel_fields={"status"},
+        column_of={"id": "A", "name": "D", "status": "I"},
+    )
+    result = merge_matched(matched, ownership)
+    assert result.excel_updates == []
+    assert result.yaml_updates == []
+
+
+def test_merge_excel_field_with_none_yaml_value():
+    matched = {"T-001": RowMatch(
+        task_id="T-001",
+        yaml_task={"id": "T-001", "status": None},
+        excel_row=7,
+        excel_data={"row": 7, "A": "T-001", "I": "進行中"},
+    )}
+    ownership = make_ownership(
+        yaml_fields={"id"},
+        excel_fields={"status"},
+        column_of={"id": "A", "status": "I"},
+    )
+    result = merge_matched(matched, ownership)
+    assert result.yaml_updates == [("T-001", "status", "進行中")]
