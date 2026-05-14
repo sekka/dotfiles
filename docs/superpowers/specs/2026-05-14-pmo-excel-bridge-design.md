@@ -83,7 +83,7 @@ WBS シート（PoC 対象）の所有権マップ：
 
 WBS の各行を一意に識別する `id` を YAML と Excel の両方に持たせる。これが双方向マージのキー。
 
-- 既存 xlsm に id 列が無い場合、初回 import 時に振る（移行スクリプトを別途）
+- 既存 xlsm に id 列が無い場合、`sync.py migrate-ids wbs --project <slug>` で初回採番
 - id は `T-001` 形式（既存 pmo.yaml 慣習に従う）
 
 ## アーキテクチャ
@@ -166,6 +166,9 @@ uv run sync.py push wbs --project oaks-aux-compass
 
 uv run sync.py doctor --project oaks-aux-compass
   → id 重複・スキーマ違反・所有権の食い違いを検出
+
+uv run sync.py migrate-ids wbs --project oaks-aux-compass [--dry-run]
+  → 既存 xlsm の空 id 列に T-001 形式で連番を採番（初回 import 時の bootstrap）
 ```
 
 スキル `user-pmo-excel` 経由では `/user-pmo-excel sync` といった形でラップする。
