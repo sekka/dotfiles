@@ -1,437 +1,151 @@
-"""Tests for snapshot guard in cmd_pull / cmd_push (pull=Excel→YAML, push=YAML→Excel)."""
+"""End-to-end tests for the pull/init/doctor CLI."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
 
+import openpyxl
 import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from lib.snapshot import Snapshot, save_snapshot
+import sync as sync_mod
+from lib.yaml_io import load_yaml
 
 
-SAMPLE_PMO_YAML_TMPL = """\
-project:
-  name: "Test Project"
-  slug: "{slug}"
-  start: "2026-01-01"
-  end: "2026-12-31"
-
-excel:
-  file: "WBS.xlsx"
-
-tasks:
-{tasks}
-"""
-
-
-def _task_block(tasks: list[dict[str, Any]]) -> str:
-    lines = []
-    for t in tasks:
-        lines.append(f"  - id: {t['id']}")
-        for k, v in t.items():
-            if k == "id":
-                continue
-            val = f'"{v}"' if v is not None else "null"
-            lines.append(f"    {k}: {val}")
-    return "\n".join(lines)
+def _make_wbs_xlsx(path: Path) -> None:
+    """Create a minimal WBS workbook matching WBS_SCHEMA (header row 4, data start row 6)."""
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "WBS"
+    headers = [
+        "id", "phase_l1", "phase_l2", "name", "assignee",
+        "est_days", "start_date", "end_date", "notes", "status",
+    ]
+    for col_idx, h in enumerate(headers, start=1):
+        ws.cell(row=4, column=col_idx, value=h)
+    ws.cell(row=6, column=1, value="T-001")
+    ws.cell(row=6, column=2, value="現状把握")
+    ws.cell(row=6, column=4, value="ヒアリング")
+    ws.cell(row=6, column=10, value="進行中")
+    ws.cell(row=7, column=1, value="T-002")
+    ws.cell(row=7, column=4, value="次タスク")
+    wb.save(path)
 
 
-def setup_project(
-    pdir: Path,
-    tasks: list[dict[str, Any]],
-    snapshot_tasks: list[dict[str, Any]] | None = None,
-    *,
-    yaml_snapshot: list[dict[str, Any]] | None = None,
-    excel_snapshot: list[dict[str, Any]] | None = None,
-) -> Path:
-    """Create a minimal project dir.
-
-    - snapshot_tasks: convenience — applies the same task list to both
-      yaml and excel sides of the snapshot.
-    - yaml_snapshot / excel_snapshot: explicit per-side override, used when
-      the two sides legitimately differ (e.g. excel_only rows post-push).
-    """
+def _setup_project(pdir: Path, *, with_excel: bool = True) -> Path:
     pdir.mkdir(parents=True, exist_ok=True)
-    slug = pdir.name
-    pmo_path = pdir / "WBS.yaml"
-    pmo_path.write_text(
-        SAMPLE_PMO_YAML_TMPL.format(slug=slug, tasks=_task_block(tasks)),
+    (pdir / "WBS.yaml").write_text(
+        'project:\n  name: "T"\n  slug: "t"\n\nexcel:\n  file: "WBS.xlsx"\n\ntasks: []\n',
         encoding="utf-8",
     )
-    (pdir / "WBS.xlsx").write_bytes(b"")
-    if snapshot_tasks is not None or yaml_snapshot is not None or excel_snapshot is not None:
-        y = yaml_snapshot if yaml_snapshot is not None else (snapshot_tasks or [])
-        e = excel_snapshot if excel_snapshot is not None else (snapshot_tasks or [])
-        snap = Snapshot(
-            yaml={t["id"]: {k: v for k, v in t.items() if k != "id"} for t in y},
-            excel={t["id"]: {k: v for k, v in t.items() if k != "id"} for t in e},
-        )
-        save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
+    if with_excel:
+        _make_wbs_xlsx(pdir / "WBS.xlsx")
     return pdir
 
 
-def make_args(mode: str, *, force: bool = False) -> SimpleNamespace:
-    return SimpleNamespace(sheet="wbs", command=mode, project="proj", force=force)
+def _args(**overrides) -> SimpleNamespace:
+    base = {"project": None, "pdir": None, "file": None, "force": False}
+    base.update(overrides)
+    return SimpleNamespace(**base)
 
 
-class TestPullSnapshotGuard:
-    def test_pull_aborts_when_yaml_modified(self, tmp_path, monkeypatch):
-        pdir = setup_project(
-            tmp_path / "proj",
-            tasks=[{"id": "T-001", "name": "new", "status": None}],
-            snapshot_tasks=[{"id": "T-001", "name": "old", "status": None}],
-        )
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 2
-
-    def test_pull_aborts_when_yaml_has_added_task(self, tmp_path, monkeypatch):
-        pdir = setup_project(
-            tmp_path / "proj",
-            tasks=[
-                {"id": "T-001", "name": "foo", "status": None},
-                {"id": "T-002", "name": "bar", "status": None},
-            ],
-            snapshot_tasks=[{"id": "T-001", "name": "foo", "status": None}],
-        )
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 2
-
-    def test_pull_proceeds_on_first_run_no_snapshot(self, tmp_path, monkeypatch):
-        pdir = setup_project(
-            tmp_path / "proj",
-            tasks=[{"id": "T-001", "name": "foo", "status": None}],
-            snapshot_tasks=None,
-        )
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 0
-
-    def test_pull_proceeds_when_yaml_unchanged(self, tmp_path, monkeypatch):
-        tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", tasks, snapshot_tasks=tasks)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 0
-
-    def test_pull_force_skips_guard(self, tmp_path, monkeypatch):
-        pdir = setup_project(
-            tmp_path / "proj",
-            tasks=[{"id": "T-001", "name": "new", "status": None}],
-            snapshot_tasks=[{"id": "T-001", "name": "old", "status": None}],
-        )
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-
-        rc = sync_mod.cmd_sync(make_args("pull", force=True), mode="pull")
-        assert rc == 0
+def test_pull_regenerates_tasks_from_excel(tmp_path):
+    pdir = _setup_project(tmp_path / "proj")
+    rc = sync_mod.cmd_pull(_args(pdir=pdir))
+    assert rc == 0
+    doc = load_yaml(pdir / "WBS.yaml")
+    ids = [t["id"] for t in doc["tasks"]]
+    assert ids == ["T-001", "T-002"]
+    assert doc["tasks"][0]["phase_l1"] == "現状把握"
+    assert doc["tasks"][0]["status"] == "進行中"
 
 
-class TestPushSnapshotGuard:
-    def test_push_aborts_when_excel_modified(self, tmp_path, monkeypatch):
-        snap_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snap_tasks)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name, J=status in canonical; status changed from None to "完了"
-        monkeypatch.setattr(
-            sync_mod,
-            "read_rows",
-            lambda *a, **kw: [{"A": "T-001", "D": "foo", "J": "完了", "row": 2}],
-        )
-
-        rc = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc == 2
-
-    def test_push_proceeds_on_first_run_no_snapshot(self, tmp_path, monkeypatch):
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: [])
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-
-        rc = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc == 0
-
-    def test_push_force_skips_guard(self, tmp_path, monkeypatch):
-        snap_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snap_tasks)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name, J=status in canonical; status changed — but --force skips guard
-        monkeypatch.setattr(
-            sync_mod,
-            "read_rows",
-            lambda *a, **kw: [{"A": "T-001", "D": "foo", "J": "完了", "row": 2}],
-        )
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-
-        rc = sync_mod.cmd_sync(make_args("push", force=True), mode="push")
-        assert rc == 0
+def test_pull_overwrites_previous_tasks(tmp_path):
+    """If YAML had stale tasks not in Excel, pull must drop them."""
+    pdir = _setup_project(tmp_path / "proj")
+    (pdir / "WBS.yaml").write_text(
+        'project:\n  name: "T"\n  slug: "t"\n\nexcel:\n  file: "WBS.xlsx"\n\n'
+        'tasks:\n  - id: T-999\n    name: ghost\n',
+        encoding="utf-8",
+    )
+    rc = sync_mod.cmd_pull(_args(pdir=pdir))
+    assert rc == 0
+    doc = load_yaml(pdir / "WBS.yaml")
+    ids = [t["id"] for t in doc["tasks"]]
+    assert "T-999" not in ids
+    assert ids == ["T-001", "T-002"]
 
 
-class TestSnapshotConsistencyAcrossSyncs:
-    """Regression tests for back-to-back sync correctness.
+def test_pull_preserves_project_header(tmp_path):
+    pdir = _setup_project(tmp_path / "proj")
+    (pdir / "WBS.yaml").write_text(
+        'project:\n  name: "Custom"\n  slug: "custom"\n  owner: "alice"\n\n'
+        'excel:\n  file: "WBS.xlsx"\n\ntasks: []\n',
+        encoding="utf-8",
+    )
+    rc = sync_mod.cmd_pull(_args(pdir=pdir))
+    assert rc == 0
+    doc = load_yaml(pdir / "WBS.yaml")
+    assert doc["project"]["name"] == "Custom"
+    assert doc["project"]["owner"] == "alice"
+    assert doc["excel"]["file"] == "WBS.xlsx"
 
-    These exercise the snapshot construction logic to make sure:
-      1. push does NOT abort when Excel contains rows not present in YAML
-         (excel_only is a legitimate state, not "uncommitted changes").
-      2. pull → next-pull does not resurrect tasks that were deleted from YAML
-         (the prev_deleted ledger must keep classifying them as deleted).
-      3. push snapshot reflects the post-write Excel state, not YAML, so the
-         very next push of the same content is a no-op.
-    """
 
-    def test_push_does_not_abort_when_excel_has_unmanaged_rows(self, tmp_path, monkeypatch):
-        """After a push that captured an excel_only row in the snapshot, a
-        subsequent push of the same state must NOT trip the guard. This is the
-        canonical "snapshot was built from YAML state, then push compared
-        Excel-shape against YAML-shape and saw spurious added rows" bug."""
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        # Realistic post-push snapshot: excel side uses canonical field names
-        # (as produced by excel_rows_to_id_keyed with canonical columns).
-        # D=name, J=status in canonical schema.
-        pdir = setup_project(
-            tmp_path / "proj",
-            yaml_tasks,
-            yaml_snapshot=[{"id": "T-001", "name": "foo", "status": None}],
-            excel_snapshot=[
-                {"id": "T-001", "phase_l1": None, "phase_l2": None, "name": "foo",
-                 "assignee": None, "est_days": None, "status": None},
-                {"id": "X-999", "phase_l1": None, "phase_l2": None, "name": "manual entry",
-                 "assignee": None, "est_days": None, "status": None},
-            ],
-        )
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name in canonical
-        monkeypatch.setattr(
-            sync_mod,
-            "read_rows",
-            lambda *a, **kw: [
-                {"A": "T-001", "D": "foo", "row": 2},
-                {"A": "X-999", "D": "manual entry", "row": 3},
-            ],
-        )
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
+def test_pull_aborts_when_yaml_missing(tmp_path, capsys):
+    pdir = tmp_path / "proj"
+    pdir.mkdir()
+    rc = sync_mod.cmd_pull(_args(pdir=pdir))
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "WBS.yaml not found" in err
 
-        rc = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc == 0, "push should not abort when Excel matches snapshot incl. excel_only rows"
 
-    def test_back_to_back_push_is_noop(self, tmp_path, monkeypatch):
-        """Two consecutive pushes against the same state: second push must not
-        fire the guard. This is the canonical "did the snapshot get saved in the
-        right shape" test."""
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name, J=status in canonical
-        excel_state = [
-            {"A": "T-001", "D": "foo", "J": None, "row": 2},
-            {"A": "X-999", "D": "kept", "J": None, "row": 3},
-        ]
-        monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: list(excel_state))
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
+def test_pull_aborts_when_excel_missing(tmp_path, capsys):
+    pdir = _setup_project(tmp_path / "proj", with_excel=False)
+    rc = sync_mod.cmd_pull(_args(pdir=pdir))
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "excel file not found" in err
 
-        rc1 = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc1 == 0
-        rc2 = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc2 == 0, "second push of the same state must not trip the guard"
 
-    def test_pull_then_pull_does_not_resurrect_yaml_deletion(self, tmp_path, monkeypatch):
-        """After a pull that classified T-002 as 'deleted from yaml' (kept in
-        Excel), the snapshot drops T-002 but prev_deleted retains it. The next
-        pull MUST NOT resurrect T-002 — classify_unmatched needs to consult
-        prev_deleted to know T-002 was a previously-seen id."""
-        # Setup: this state represents "post first pull where T-002 was kept-
-        # deleted-from-yaml". Snapshot reflects yaml (no T-002). deleted-ids
-        # retains T-002 on the yaml side.
-        from lib.snapshot import Snapshot, save_snapshot
+def test_init_creates_skeleton(tmp_path, monkeypatch):
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+    rc = sync_mod.cmd_init(_args(project="new", file=None, force=False))
+    assert rc == 0
+    pmo = tmp_path / "prj" / "new" / "WBS.yaml"
+    assert pmo.exists()
+    doc = load_yaml(pmo)
+    assert doc["project"]["slug"] == "new"
+    assert doc["excel"]["file"] == "WBS.xlsx"
+    assert doc["tasks"] == []
 
-        yaml_tasks = [{"id": "T-001", "name": "alpha", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
-        # After the prior pull: yaml has only T-001; excel still has both
-        # (T-002 was kept-deleted-from-yaml). Snapshot reflects that asymmetry.
-        # Excel side uses canonical field names (D=name, I=status).
-        save_snapshot(
-            Snapshot(
-                yaml={"T-001": {"name": "alpha", "status": None}},
-                excel={
-                    "T-001": {"name": "alpha", "status": None},
-                    "T-002": {"name": "beta", "status": None},
-                },
-            ),
-            pdir / ".pmo" / "last-sync.json",
-        )
-        # deleted-ids carries T-002 as kept-deleted-from-yaml
-        import json
-        (pdir / ".pmo").mkdir(exist_ok=True)
-        with (pdir / ".pmo" / "deleted-ids.json").open("w") as f:
-            json.dump({"excel": [], "yaml": ["T-002"]}, f)
 
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # Excel still has both rows (T-002 was kept on excel side).
-        # D=name in canonical
-        monkeypatch.setattr(
-            sync_mod,
-            "read_rows",
-            lambda *a, **kw: [
-                {"A": "T-001", "D": "alpha", "row": 2},
-                {"A": "T-002", "D": "beta", "row": 3},
-            ],
-        )
+def test_init_refuses_existing_without_force(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+    sync_mod.cmd_init(_args(project="new"))
+    rc = sync_mod.cmd_init(_args(project="new"))
+    assert rc == 1
+    assert "already exists" in capsys.readouterr().err
 
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 0
 
-        from lib.yaml_io import load_pmo_yaml
-        pmo_after = load_pmo_yaml(pdir / "WBS.yaml")
-        ids_after = [t["id"] for t in pmo_after.tasks]
-        assert "T-002" not in ids_after, "T-002 was resurrected — prev_deleted not consulted"
+def test_doctor_passes_on_clean_yaml(tmp_path, capsys):
+    pdir = _setup_project(tmp_path / "proj")
+    sync_mod.cmd_pull(_args(pdir=pdir))
+    rc = sync_mod.cmd_doctor(_args(pdir=pdir))
+    assert rc == 0
+    assert "no issues" in capsys.readouterr().out
 
-        # deleted-ids must still contain T-002 (stable across syncs as long as
-        # T-002 remains absent from YAML).
-        with (pdir / ".pmo" / "deleted-ids.json").open() as f:
-            saved = json.load(f)
-        assert "T-002" in saved["yaml"], "T-002 should remain in deleted-ids after pull"
 
-    def test_push_snapshot_reflects_excel_not_yaml(self, tmp_path, monkeypatch):
-        """After push, the snapshot file must contain Excel-shape rows. Verify
-        by inspecting the saved snapshot — its rows must include the excel_only
-        ID even though it never appeared in YAML."""
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name in canonical
-        monkeypatch.setattr(
-            sync_mod,
-            "read_rows",
-            lambda *a, **kw: [
-                {"A": "T-001", "D": "foo", "row": 2},
-                {"A": "X-999", "D": "manual", "row": 3},
-            ],
-        )
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
-
-        rc = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc == 0
-
-        from lib.snapshot import load_snapshot
-        snap = load_snapshot(pdir / ".pmo" / "last-sync.json")
-        assert "T-001" in snap.excel
-        assert "X-999" in snap.excel, "push snapshot must include excel_only rows on the excel side"
-        # And the yaml side reflects pmo.tasks (no X-999).
-        assert "T-001" in snap.yaml
-        assert "X-999" not in snap.yaml, "yaml side must NOT contain excel_only rows"
-
-    def test_push_then_pull_does_not_trip_guard(self, tmp_path, monkeypatch):
-        """Cross-mode regression: a push captures excel_only rows on the excel
-        side of the snapshot. A subsequent pull (no edits anywhere) compares
-        current YAML against snap.yaml — which does NOT contain the excel_only
-        IDs — so the guard must not see them as 'removed from YAML'."""
-        yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
-        # D=name in canonical
-        excel_state = [
-            {"A": "T-001", "D": "foo", "row": 2},
-            {"A": "X-999", "D": "kept", "row": 3},
-        ]
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # Return a fresh list each read so cmd_sync's in-place mutation of
-        # "row" sentinels doesn't pollute subsequent reads.
-        monkeypatch.setattr(
-            sync_mod, "read_rows", lambda *a, **kw: [dict(r) for r in excel_state]
-        )
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
-
-        rc_push = sync_mod.cmd_sync(make_args("push"), mode="push")
-        assert rc_push == 0, "first push should succeed"
-        rc_pull = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc_pull == 0, "pull right after push must not trip the cross-mode guard"
-
-    def test_pull_ignores_readonly_values_in_snapshot(self, tmp_path, monkeypatch):
-        """Snapshots may contain values for a readonly column — either because
-        the snapshot was written under the legacy ``{"rows": ...}`` format
-        (where readonly didn't exist), or because the column was promoted to
-        ``readonly: true`` after a sync. The pull guard must filter those
-        readonly values out of the snapshot side so they don't surface as
-        spurious diffs against the readonly-stripped current YAML."""
-        pdir = tmp_path / "proj"
-        pdir.mkdir()
-        # Minimal new-format WBS.yaml: only excel.file, no layout fields.
-        (pdir / "WBS.yaml").write_text(
-            """project:
-  name: "Test"
-  slug: "proj"
-  start: "2026-01-01"
-  end: "2026-12-31"
-excel:
-  file: "WBS.xlsx"
-tasks:
-  - id: T-001
-    name: foo
-    end_date: null
-""",
-            encoding="utf-8",
-        )
-        (pdir / "WBS.xlsx").write_bytes(b"")
-        # Snapshot retains a readonly field value (e.g. legacy format).
-        # The current YAML has end_date: null, so without filtering the
-        # snapshot side, diff would report "T-001.end_date changed".
-        # Canonical: end_date is readonly (col H, WORKDAY formula).
-        snap = Snapshot(
-            yaml={"T-001": {"name": "foo", "end_date": "2026-04-15T00:00:00"}},
-            excel={"T-001": {"name": "foo", "end_date": "2026-04-15T00:00:00"}},
-        )
-        save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
-
-        import sync as sync_mod
-        monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name, H=end_date(readonly) in canonical
-        monkeypatch.setattr(
-            sync_mod, "read_rows", lambda *a, **kw: [
-                {"A": "T-001", "D": "foo", "H": None, "row": 2}
-            ]
-        )
-        monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
-        monkeypatch.setattr(sync_mod, "batch_append_rows", lambda *a, **kw: None)
-
-        rc = sync_mod.cmd_sync(make_args("pull"), mode="pull")
-        assert rc == 0, "readonly-only diffs in snapshot must not trip the pull guard"
+def test_doctor_detects_duplicate_ids(tmp_path, capsys):
+    pdir = tmp_path / "proj"
+    pdir.mkdir()
+    (pdir / "WBS.yaml").write_text(
+        'project:\n  name: t\n  slug: t\nexcel:\n  file: WBS.xlsx\n'
+        'tasks:\n  - id: T-001\n    name: a\n  - id: T-001\n    name: b\n',
+        encoding="utf-8",
+    )
+    rc = sync_mod.cmd_doctor(_args(pdir=pdir))
+    assert rc == 1
+    assert "duplicate id" in capsys.readouterr().out

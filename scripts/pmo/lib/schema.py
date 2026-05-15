@@ -1,4 +1,8 @@
-"""Canonical WBS schema — single source of truth for all column layout."""
+"""Canonical WBS schema — single source of truth for column layout.
+
+Pull-only design: Excel is the source of truth, YAML is regenerated each
+pull. Per-column write metadata (readonly) is no longer needed.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,10 +12,8 @@ from dataclasses import dataclass
 class ColumnSpec:
     col: str
     field: str
-    readonly: bool = False
 
 
-# WBS sheet canonical schema — update here when WBS layout changes.
 WBS_SCHEMA: dict = {
     "sheet": "WBS",
     "header_row": 4,
@@ -25,23 +27,8 @@ WBS_SCHEMA: dict = {
         ColumnSpec(col="E", field="assignee"),
         ColumnSpec(col="F", field="est_days"),
         ColumnSpec(col="G", field="start_date"),
-        ColumnSpec(col="H", field="end_date", readonly=True),
+        ColumnSpec(col="H", field="end_date"),
         ColumnSpec(col="I", field="notes"),
         ColumnSpec(col="J", field="status"),
     ],
 }
-
-
-def get_schema(name: str = "wbs") -> dict:
-    """Return the canonical schema for the given sheet type.
-
-    Future sheet types (e.g. 'issues') can be added here.
-    """
-    if name == "wbs":
-        return WBS_SCHEMA
-    raise ValueError(f"unknown schema: {name}")
-
-
-def sync_columns() -> list[ColumnSpec]:
-    """Return columns that are written during sync (non-readonly)."""
-    return [c for c in WBS_SCHEMA["columns"] if not c.readonly]

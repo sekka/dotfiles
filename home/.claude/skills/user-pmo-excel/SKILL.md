@@ -1,91 +1,81 @@
 ---
 name: user-pmo-excel
 description: >
-  Use when the user asks to sync ~/prj/{slug}/WBS.yaml with the project's WBS
-  Excel (.xlsm), push plan changes to Excel, or pull actuals from Excel.
-  Performs snapshot-based one-way sync; direction is always explicit: `pull`
-  (Excel → YAML) or `push` (YAML → Excel). Triggers: "Excel sync", "WBS 同期",
-  "pmo excel", "pmo pull", "pmo push".
+  Use when the user asks to regenerate ~/prj/{slug}/WBS.yaml from the project's
+  WBS Excel (.xlsx), pull Excel-side updates into YAML for AI-readable analysis,
+  or bootstrap a new WBS.yaml. One-way only — Excel is the source of truth, YAML
+  is rewritten each pull. Triggers: "Excel pull", "WBS 同期", "pmo excel",
+  "pmo pull", "WBS.yaml 更新".
 effort: low
 context: fork
 agent: general-purpose
 ---
 
-# PMO Excel ⇄ YAML Sync
+# PMO Excel → YAML Pull
 
-Run the Python sync CLI at `~/dotfiles/scripts/pmo/sync.py`. The sync is
-snapshot-based one-way: each run writes `.pmo/last-sync.json` capturing both
-YAML and Excel state, and the next run aborts (exit 2) if the destination side
-has uncommitted changes since that snapshot.
+Run the Python CLI at `~/dotfiles/scripts/pmo/sync.py`. Each `pull` reads the
+WBS sheet and rewrites the `tasks` section of `WBS.yaml` atomically. The
+`project` and `excel` header blocks are preserved.
 
 ## Iron Law
 
-1. Never edit Excel files directly — always go through `sync.py` (Why: VBA
-   macros depend on the column structure, and direct edits trip the snapshot
-   guard)
-2. Close Excel before running sync (PermissionError otherwise, exit 3)
-3. The Gantt chart area (date columns after the last declared column in the
-   canonical schema) is off-limits — VBA owns it
-4. Columns marked `readonly=True` in `lib/schema.py` (H: end_date — WORKDAY
-   formula) are skipped by sync — never remove the flag without confirming
+1. Never write to Excel from this tool — pull is the only direction. The user
+   edits Excel directly; this tool ingests the result.
+2. Close Excel before running pull (otherwise PermissionError, exit 3).
+3. The Gantt chart area (date columns past the canonical schema) is not read.
+4. Edits applied to `WBS.yaml` by hand are not persisted — the next pull
+   overwrites the `tasks` block. To make a change durable, edit Excel.
 
 ## Trigger
 
 Use when the user wants to:
 
 - **init**: Create a new `WBS.yaml` skeleton for a new project
-- **pull**: Bring Excel-side updates (actual dates, status, comments) into `WBS.yaml`
-- **push**: Send YAML-side updates (new tasks, edited estimates) to Excel
-- **doctor**: Validate `WBS.yaml` schema and id uniqueness
-- **migrate-ids**: Auto-number empty id column in a fresh Excel template
+- **pull**: Regenerate `WBS.yaml` tasks from the Excel WBS sheet
+- **doctor**: Validate `WBS.yaml` (id uniqueness, missing ids)
 
 ## Arguments
 
 - `project-slug`: project directory name under `~/prj/`. Ask if not provided.
-- `direction`: `pull` or `push`. Required and explicit — there is no default.
-  Ask if ambiguous; never guess.
-- `--force` (optional): bypass the snapshot guard. Only suggest this after the
-  user has reviewed the guard's diff output.
 
 ## Process
 
 1. If `project-slug` is missing, ask with AskUserQuestion.
-2. Verify `~/prj/{slug}/WBS.yaml` exists and has an `excel.file` field. If not,
-   offer `init` to create a minimal skeleton (`--project <slug>`).
+2. Verify `~/prj/{slug}/WBS.yaml` exists. If not, offer `init` to create a
+   minimal skeleton.
 3. Run the appropriate sub-command from the dotfiles directory:
+
    ```bash
    cd ~/dotfiles/scripts/pmo
-   uv run python sync.py init --project <slug>               # create WBS.yaml skeleton
-   uv run python sync.py init --project <slug> --file WBS.xlsm --force  # overwrite
-   uv run python sync.py pull wbs --project <slug>          # Excel → YAML
-   uv run python sync.py push wbs --project <slug>          # YAML → Excel
-   uv run python sync.py doctor --project <slug>            # validate only
-   uv run python sync.py migrate-ids wbs --project <slug>   # number empty ids
+   uv run python sync.py init --project <slug>                   # create WBS.yaml skeleton
+   uv run python sync.py init --project <slug> --file WBS.xlsx --force  # overwrite
+   uv run python sync.py pull --project <slug>                   # Excel → WBS.yaml (regenerate)
+   uv run python sync.py doctor --project <slug>                 # validate only
    ```
 
-   For `init`: creates `~/prj/<slug>/WBS.yaml` with minimal skeleton. `--file` sets the Excel filename (default `WBS.xlsm`). Fails if WBS.yaml already exists unless `--force` is passed. WBS column layout is baked into `lib/schema.py` — no need to specify columns in WBS.yaml.
-4. Relay the output. Map exit codes to user-facing causes:
+   For `init`: creates `~/prj/<slug>/WBS.yaml` with minimal skeleton. `--file`
+   sets the Excel filename (default `WBS.xlsx`). Fails if WBS.yaml already
+   exists unless `--force` is passed. The WBS column layout is baked into
+   `lib/schema.py` — no need to specify columns in WBS.yaml.
+4. Relay the output. Map exit codes:
    - **0**: success
-   - **2**: snapshot guard tripped — destination has uncommitted changes.
-     Show the guard's diff to the user and surface the 3 options the CLI
-     printed (run the opposite direction first / `--force` / manual resolve).
-     Do NOT add `--force` on the user's behalf.
-   - **3**: Excel is open in another process (PermissionError) — ask the user
-     to close it
-   - **4**: backup failed (push only) — disk full or permission issue
-5. After a successful `pull` / `push`, summarize what changed: cell updates,
-   appended rows, and any "kept in other side" warnings.
+   - **1**: doctor found issues, or init refused to overwrite existing WBS.yaml
+   - **2**: WBS.yaml or Excel file missing
+   - **3**: Excel is open in another process — ask the user to close it
+5. After a successful `pull`, report the task count and any unexpected
+   reductions (e.g. tasks the user expected to see that aren't present means
+   their id cell is blank or they're past the first empty row in Excel).
 
 ## Notes
 
-- The sync CLI targets the WBS sheet only. Issues / master sync is a future
+- The CLI targets the WBS sheet only. Issues / master sync is a future
   extension.
-- For a brand-new project, run `sync.py doctor` first to confirm the YAML
-  schema, then `migrate-ids` if the Excel `id` column is empty.
-- Excel backups are written to `.pmo/backups/` on push only (last 10 kept).
-  Pull does not back up.
-- The snapshot file (`.pmo/last-sync.json`) holds both `yaml` and `excel`
-  side states; this prevents cross-mode false positives (e.g. a push-then-pull
-  sequence on the same data).
+- This is a destructive operation on the `tasks` block of `WBS.yaml`: it is
+  fully regenerated each run. User edits to YAML tasks are lost on the next
+  pull — that is the intended one-way design.
+- Atomic write protects the existing WBS.yaml if `ruamel.yaml.dump` raises
+  mid-write (e.g. an unserializable value); the destination is preserved.
+- `read_rows` stops at the first empty id cell in column A. If tasks appear
+  missing after pull, check whether a blank id row interrupted the range.
 
 ## Status: DONE
