@@ -1,8 +1,10 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
+
+from lib.schema import ColumnSpec, WBS_SCHEMA  # noqa: F401 — re-exported for callers
 
 _yaml = YAML(typ="rt")
 _yaml.preserve_quotes = True
@@ -10,20 +12,21 @@ _yaml.width = 4096
 
 
 @dataclass
-class ColumnSpec:
-    col: str
-    field: str
-    readonly: bool = False
-
-
-@dataclass
 class ExcelConfig:
+    """Excel layout config.
+
+    Post-refactor: only ``file`` is read from pmo.yaml.  All layout fields
+    (sheet, header_row, data_start_row, id_column, columns) are filled from
+    the canonical WBS_SCHEMA.  Any ``excel.*`` keys beyond ``file`` present in
+    a legacy pmo.yaml are silently ignored.
+    """
+
     file: str
     sheet: str
     header_row: int
     data_start_row: int
     id_column: str
-    columns: list[ColumnSpec] = field(default_factory=list)
+    columns: list[ColumnSpec]
 
 
 @dataclass
@@ -38,21 +41,14 @@ def load_pmo_yaml(path: Path) -> PmoYaml:
     with path.open("r", encoding="utf-8") as f:
         data = _yaml.load(f)
     excel_raw = data["excel"]
-    columns = [
-        ColumnSpec(
-            col=str(c["col"]),
-            field=c["field"],
-            readonly=bool(c.get("readonly", False)),
-        )
-        for c in excel_raw["columns"]
-    ]
+    # Only the file name is read from pmo.yaml; all layout comes from canonical.
     excel = ExcelConfig(
-        file=excel_raw["file"],
-        sheet=excel_raw["sheet"],
-        header_row=int(excel_raw["header_row"]),
-        data_start_row=int(excel_raw["data_start_row"]),
-        id_column=str(excel_raw["id_column"]),
-        columns=columns,
+        file=str(excel_raw["file"]),
+        sheet=WBS_SCHEMA["sheet"],
+        header_row=WBS_SCHEMA["header_row"],
+        data_start_row=WBS_SCHEMA["data_start_row"],
+        id_column=WBS_SCHEMA["id_column"],
+        columns=list(WBS_SCHEMA["columns"]),
     )
     return PmoYaml(
         project=data["project"],

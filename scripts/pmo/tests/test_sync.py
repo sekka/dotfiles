@@ -22,14 +22,6 @@ project:
 
 excel:
   file: "WBS.xlsx"
-  sheet: "WBS"
-  header_row: 1
-  data_start_row: 2
-  id_column: A
-  columns:
-    - {{col: A, field: id}}
-    - {{col: B, field: name}}
-    - {{col: C, field: status}}
 
 tasks:
 {tasks}
@@ -160,10 +152,11 @@ class TestPushSnapshotGuard:
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snap_tasks)
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name, J=status in canonical; status changed from None to "完了"
         monkeypatch.setattr(
             sync_mod,
             "read_rows",
-            lambda *a, **kw: [{"A": "T-001", "B": "foo", "C": "完了", "row": 2}],
+            lambda *a, **kw: [{"A": "T-001", "D": "foo", "J": "完了", "row": 2}],
         )
 
         rc = sync_mod.cmd_sync(make_args("push"), mode="push")
@@ -188,10 +181,11 @@ class TestPushSnapshotGuard:
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snap_tasks)
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name, J=status in canonical; status changed — but --force skips guard
         monkeypatch.setattr(
             sync_mod,
             "read_rows",
-            lambda *a, **kw: [{"A": "T-001", "B": "foo", "C": "完了", "row": 2}],
+            lambda *a, **kw: [{"A": "T-001", "D": "foo", "J": "完了", "row": 2}],
         )
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
         monkeypatch.setattr(sync_mod, "backup_excel", lambda *a, **kw: None)
@@ -218,25 +212,29 @@ class TestSnapshotConsistencyAcrossSyncs:
         canonical "snapshot was built from YAML state, then push compared
         Excel-shape against YAML-shape and saw spurious added rows" bug."""
         yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
-        # Realistic post-push state: yaml side only knows T-001; excel side
-        # captures both rows.
+        # Realistic post-push snapshot: excel side uses canonical field names
+        # (as produced by excel_rows_to_id_keyed with canonical columns).
+        # D=name, J=status in canonical schema.
         pdir = setup_project(
             tmp_path / "proj",
             yaml_tasks,
             yaml_snapshot=[{"id": "T-001", "name": "foo", "status": None}],
             excel_snapshot=[
-                {"id": "T-001", "name": "foo", "status": None},
-                {"id": "X-999", "name": "manual entry", "status": None},
+                {"id": "T-001", "phase_l1": None, "phase_l2": None, "name": "foo",
+                 "assignee": None, "est_hours": None, "status": None},
+                {"id": "X-999", "phase_l1": None, "phase_l2": None, "name": "manual entry",
+                 "assignee": None, "est_hours": None, "status": None},
             ],
         )
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name in canonical
         monkeypatch.setattr(
             sync_mod,
             "read_rows",
             lambda *a, **kw: [
-                {"A": "T-001", "B": "foo", "C": None, "row": 2},
-                {"A": "X-999", "B": "manual entry", "C": None, "row": 3},
+                {"A": "T-001", "D": "foo", "row": 2},
+                {"A": "X-999", "D": "manual entry", "row": 3},
             ],
         )
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
@@ -254,9 +252,10 @@ class TestSnapshotConsistencyAcrossSyncs:
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name, J=status in canonical
         excel_state = [
-            {"A": "T-001", "B": "foo", "C": None, "row": 2},
-            {"A": "X-999", "B": "kept", "C": None, "row": 3},
+            {"A": "T-001", "D": "foo", "J": None, "row": 2},
+            {"A": "X-999", "D": "kept", "J": None, "row": 3},
         ]
         monkeypatch.setattr(sync_mod, "read_rows", lambda *a, **kw: list(excel_state))
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
@@ -282,12 +281,13 @@ class TestSnapshotConsistencyAcrossSyncs:
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
         # After the prior pull: yaml has only T-001; excel still has both
         # (T-002 was kept-deleted-from-yaml). Snapshot reflects that asymmetry.
+        # Excel side uses canonical field names (D=name, I=status).
         save_snapshot(
             Snapshot(
                 yaml={"T-001": {"name": "alpha", "status": None}},
                 excel={
-                    "T-001": {"B": "alpha", "C": None},
-                    "T-002": {"B": "beta", "C": None},
+                    "T-001": {"name": "alpha", "status": None},
+                    "T-002": {"name": "beta", "status": None},
                 },
             ),
             pdir / ".pmo" / "last-sync.json",
@@ -301,12 +301,13 @@ class TestSnapshotConsistencyAcrossSyncs:
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
         # Excel still has both rows (T-002 was kept on excel side).
+        # D=name in canonical
         monkeypatch.setattr(
             sync_mod,
             "read_rows",
             lambda *a, **kw: [
-                {"A": "T-001", "B": "alpha", "C": None, "row": 2},
-                {"A": "T-002", "B": "beta", "C": None, "row": 3},
+                {"A": "T-001", "D": "alpha", "row": 2},
+                {"A": "T-002", "D": "beta", "row": 3},
             ],
         )
 
@@ -332,12 +333,13 @@ class TestSnapshotConsistencyAcrossSyncs:
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name in canonical
         monkeypatch.setattr(
             sync_mod,
             "read_rows",
             lambda *a, **kw: [
-                {"A": "T-001", "B": "foo", "C": None, "row": 2},
-                {"A": "X-999", "B": "manual", "C": None, "row": 3},
+                {"A": "T-001", "D": "foo", "row": 2},
+                {"A": "X-999", "D": "manual", "row": 3},
             ],
         )
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)
@@ -362,9 +364,10 @@ class TestSnapshotConsistencyAcrossSyncs:
         IDs — so the guard must not see them as 'removed from YAML'."""
         yaml_tasks = [{"id": "T-001", "name": "foo", "status": None}]
         pdir = setup_project(tmp_path / "proj", yaml_tasks, snapshot_tasks=None)
+        # D=name in canonical
         excel_state = [
-            {"A": "T-001", "B": "foo", "C": None, "row": 2},
-            {"A": "X-999", "B": "kept", "C": None, "row": 3},
+            {"A": "T-001", "D": "foo", "row": 2},
+            {"A": "X-999", "D": "kept", "row": 3},
         ]
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
@@ -391,6 +394,7 @@ class TestSnapshotConsistencyAcrossSyncs:
         spurious diffs against the readonly-stripped current YAML."""
         pdir = tmp_path / "proj"
         pdir.mkdir()
+        # Minimal new-format pmo.yaml: only excel.file, no layout fields.
         (pdir / "pmo.yaml").write_text(
             """project:
   name: "Test"
@@ -399,14 +403,6 @@ class TestSnapshotConsistencyAcrossSyncs:
   end: "2026-12-31"
 excel:
   file: "WBS.xlsx"
-  sheet: "WBS"
-  header_row: 1
-  data_start_row: 2
-  id_column: A
-  columns:
-    - {col: A, field: id}
-    - {col: B, field: name}
-    - {col: C, field: start_date, readonly: true}
 tasks:
   - id: T-001
     name: foo
@@ -418,6 +414,7 @@ tasks:
         # Snapshot retains a readonly field value (e.g. legacy format).
         # The current YAML has start_date: null, so without filtering the
         # snapshot side, diff would report "T-001.start_date changed".
+        # Canonical: start_date is readonly (col G).
         snap = Snapshot(
             yaml={"T-001": {"name": "foo", "start_date": "2026-04-15T00:00:00"}},
             excel={"T-001": {"name": "foo", "start_date": "2026-04-15T00:00:00"}},
@@ -426,9 +423,10 @@ tasks:
 
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
+        # D=name, G=start_date(readonly) in canonical
         monkeypatch.setattr(
             sync_mod, "read_rows", lambda *a, **kw: [
-                {"A": "T-001", "B": "foo", "C": None, "row": 2}
+                {"A": "T-001", "D": "foo", "G": None, "row": 2}
             ]
         )
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)

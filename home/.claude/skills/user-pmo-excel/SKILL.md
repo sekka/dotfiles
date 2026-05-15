@@ -24,15 +24,17 @@ has uncommitted changes since that snapshot.
    macros depend on the column structure, and direct edits trip the snapshot
    guard)
 2. Close Excel before running sync (PermissionError otherwise, exit 3)
-3. The Gantt chart area (date columns after the last declared `excel.columns`
-   entry) is off-limits — VBA owns it
-4. Columns marked `readonly: true` in `pmo.yaml` (e.g. WORKDAY formulas) are
-   skipped by sync — never strip the flag without confirming
+3. The Gantt chart area (date columns after the last declared column in the
+   canonical schema) is off-limits — VBA owns it
+4. Columns marked `readonly=True` in `lib/schema.py` (G: start_date, H: end_date
+   — WORKDAY formulas) are skipped by sync — never remove the flag without
+   confirming
 
 ## Trigger
 
 Use when the user wants to:
 
+- **init**: Create a new `pmo.yaml` skeleton for a new project
 - **pull**: Bring Excel-side updates (actual dates, status, comments) into `pmo.yaml`
 - **push**: Send YAML-side updates (new tasks, edited estimates) to Excel
 - **doctor**: Validate `pmo.yaml` schema and id uniqueness
@@ -49,16 +51,20 @@ Use when the user wants to:
 ## Process
 
 1. If `project-slug` is missing, ask with AskUserQuestion.
-2. Verify `~/prj/{slug}/pmo.yaml` exists and has an `excel:` section. If not,
-   point to `scripts/pmo/README.md` and stop.
+2. Verify `~/prj/{slug}/pmo.yaml` exists and has an `excel.file` field. If not,
+   offer `init` to create a minimal skeleton (`--project <slug>`).
 3. Run the appropriate sub-command from the dotfiles directory:
    ```bash
    cd ~/dotfiles/scripts/pmo
+   uv run python sync.py init --project <slug>               # create pmo.yaml skeleton
+   uv run python sync.py init --project <slug> --file WBS.xlsm --force  # overwrite
    uv run python sync.py pull wbs --project <slug>          # Excel → YAML
    uv run python sync.py push wbs --project <slug>          # YAML → Excel
    uv run python sync.py doctor --project <slug>            # validate only
    uv run python sync.py migrate-ids wbs --project <slug>   # number empty ids
    ```
+
+   For `init`: creates `~/prj/<slug>/pmo.yaml` with minimal skeleton. `--file` sets the Excel filename (default `WBS.xlsm`). Fails if pmo.yaml already exists unless `--force` is passed. WBS column layout is baked into `lib/schema.py` — no need to specify columns in pmo.yaml.
 4. Relay the output. Map exit codes to user-facing causes:
    - **0**: success
    - **2**: snapshot guard tripped — destination has uncommitted changes.

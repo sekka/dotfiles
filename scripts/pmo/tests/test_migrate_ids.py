@@ -149,26 +149,30 @@ def test_dry_run_does_not_write(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     import sys
     from sync import main
 
-    p = _make_workbook(tmp_path, [["", "Task A"], ["", "Task B"]])
-    # Build a minimal pmo.yaml for the project
+    # Create workbook with sheet "WBS" and data at canonical data_start_row=6
+    p = tmp_path / "test.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "WBS"
+    # Put data at rows 6 and 7 (canonical data_start_row=6)
+    ws.cell(row=6, column=1, value="")      # id (empty → will be assigned)
+    ws.cell(row=6, column=4, value="Task A")  # name (col D in canonical)
+    ws.cell(row=7, column=1, value="")
+    ws.cell(row=7, column=4, value="Task B")
+    wb.save(p)
+
+    # Build a minimal new-format pmo.yaml for the project
     pdir = tmp_path / "proj"
     pdir.mkdir()
     (pdir / ".pmo").mkdir()
     (pdir / "pmo.yaml").write_text(
-        f"""project:
+        """project:
   name: test
   slug: test
   start: "2026-01-01"
   end: "2026-12-31"
 excel:
   file: test.xlsx
-  sheet: Sheet1
-  header_row: 0
-  data_start_row: 1
-  id_column: A
-  columns:
-    - {{col: A, field: id}}
-    - {{col: B, field: name}}
 tasks: []
 """,
         encoding="utf-8",

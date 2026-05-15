@@ -137,10 +137,6 @@ def cmd_doctor(args: argparse.Namespace) -> int:
         if tid in seen:
             issues.append(f"duplicate id: {tid}")
         seen.add(tid)
-    # validate id column is among declared columns
-    cols = {c.col for c in pmo.excel.columns}
-    if pmo.excel.id_column not in cols:
-        issues.append(f"id_column {pmo.excel.id_column!r} not in declared columns {sorted(cols)}")
     if issues:
         for line in issues:
             print(f"⚠️  {line}")
@@ -208,6 +204,47 @@ def cmd_migrate_ids(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_init(args: argparse.Namespace) -> int:
+    """Create a minimal pmo.yaml skeleton for a new project."""
+    from ruamel.yaml import YAML
+    from ruamel.yaml.comments import CommentedMap
+
+    yaml_rt = YAML(typ="rt")
+    yaml_rt.preserve_quotes = True
+    yaml_rt.width = 4096
+
+    slug = args.project
+    file_name = args.file if args.file else "WBS.xlsm"
+    pdir = Path.home() / "prj" / slug
+    pdir.mkdir(parents=True, exist_ok=True)
+    pmo_path = pdir / "pmo.yaml"
+
+    if pmo_path.exists() and not args.force:
+        print(
+            f"error: {pmo_path} already exists. Use --force to overwrite.",
+            file=sys.stderr,
+        )
+        return 1
+
+    doc = CommentedMap()
+    project_section = CommentedMap()
+    project_section["name"] = slug
+    project_section["slug"] = slug
+    doc["project"] = project_section
+
+    excel_section = CommentedMap()
+    excel_section["file"] = file_name
+    doc["excel"] = excel_section
+
+    doc["tasks"] = []
+
+    with pmo_path.open("w", encoding="utf-8") as f:
+        yaml_rt.dump(doc, f)
+
+    print(f"created {pmo_path}")
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="sync.py", description="PMO Excel ⇄ YAML sync")
     sub = p.add_subparsers(dest="command", required=True)
@@ -232,6 +269,12 @@ def make_parser() -> argparse.ArgumentParser:
     mig.add_argument("kind", choices=["wbs"])
     mig.add_argument("--dry-run", action="store_true")
     mig.set_defaults(func=cmd_migrate_ids)
+
+    init = sub.add_parser("init", help="新規プロジェクトの pmo.yaml スケルトンを作成")
+    init.add_argument("--project", required=True, help="project slug (~/prj/<slug>/)")
+    init.add_argument("--file", default=None, help="Excel ファイル名 (default: WBS.xlsm)")
+    init.add_argument("--force", action="store_true", help="既存 pmo.yaml を上書き")
+    init.set_defaults(func=cmd_init)
     return p
 
 

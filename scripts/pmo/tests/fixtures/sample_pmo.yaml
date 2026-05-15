@@ -6,20 +6,6 @@ project:
 
 excel:
   file: "WBS.xlsx"
-  sheet: "WBS"
-  header_row: 6
-  data_start_row: 7
-  id_column: A
-  columns:
-    - { col: A, field: id }
-    - { col: B, field: phase_l1 }
-    - { col: C, field: phase_l2 }
-    - { col: D, field: name }
-    - { col: E, field: assignee }
-    - { col: F, field: est_hours }
-    - { col: G, field: start_date, readonly: true }
-    - { col: H, field: end_date, readonly: true }
-    - { col: I, field: status }
 
 tasks:
   - id: T-001
