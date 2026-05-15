@@ -3,6 +3,8 @@ name: user-pm-meeting
 description: Parse raw meeting notes into structured records — decisions.md entry, meetings archive file, and pmo.yaml sync. Triggered by "議事録", "meeting", "ミーティング記録", "meeting notes".
 argument-hint: [slug] [meeting-notes]
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 # PM Meeting — Notes → Structured Record

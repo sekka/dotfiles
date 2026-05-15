@@ -3,6 +3,8 @@ name: user-pm-report
 description: Generate a project status report from pmo.yaml and decisions.md. Outputs CSV (always) and Notion page (if notion_page_id is set in pmo.yaml). Triggered by "レポート生成", "report", "週次報告", "status report".
 argument-hint: [slug] [period]
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # PM Report — Status Report Generation

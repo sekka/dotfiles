@@ -3,6 +3,8 @@ name: user-doc-discovery
 description: Generate a customized client briefing questionnaire before the first meeting. Input: project type and industry. Output: structured Markdown briefing sheet with answer fields, saved to ~/prj/{slug}/discovery.md. Triggered by "briefing sheet", "ヒアリングシート", "discovery", or "client questionnaire". Also use proactively when a new project is being kicked off and no briefing sheet exists yet.
 argument-hint: [project-type] [industry]
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # Client Discovery — Briefing Questionnaire Generator

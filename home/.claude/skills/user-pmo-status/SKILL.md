@@ -7,6 +7,8 @@ description: >
   Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard".
   Also use proactively at the start of weekly planning sessions or when the user mentions any project's status without asking for the dashboard.
 effort: low
+context: fork
+agent: Explore
 ---
 
 # Multi-Project Status Dashboard

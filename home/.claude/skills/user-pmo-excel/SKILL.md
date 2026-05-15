@@ -8,6 +8,8 @@ description: >
   "pmo excel", or whenever a user asks to push plan changes to Excel or pull
   actuals from Excel.
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 # PMO Excel ⇄ YAML Sync

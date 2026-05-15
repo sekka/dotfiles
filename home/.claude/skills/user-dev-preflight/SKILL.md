@@ -3,6 +3,8 @@ name: user-dev-preflight
 description: Pre-commit integrated check. Runs lint, type check, change review, secret scan, and draft commit message in one command. Triggered by "preflight" or "pre-commit check".
 allowed-tools: Bash, Read, Grep, Glob
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 # Preflight

@@ -2,6 +2,8 @@
 name: user-research-design-dna
 description: Use when analyzing a competitor or reference website for design intelligence — design tokens, layout patterns, component screenshots, AI-powered tone/manner analysis, 7-axis evaluation scoring, and Design DNA. Triggered by "analyze this site's design", "extract design tokens from", "design DNA", "competitor design analysis", "design direction for project", "study the visual language of", "デザインDNA", "デザイン分析". Accumulates results in ~/.claude/design-references/ for reuse. Also generates DESIGN.md for projects.
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # Website Design Analysis Skill

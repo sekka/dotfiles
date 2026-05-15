@@ -3,6 +3,8 @@ name: user-pm-spec
 description: Read discovery.md and generate a Requirements Spec (RTM) and Design Doc. Triggered by "仕様書作成", "spec", "design doc", or "仕様化". Saves spec.md and design-doc.md to ~/prj/{slug}/.
 argument-hint: [slug]
 effort: high
+context: fork
+agent: general-purpose
 ---
 
 # PM Spec — Requirements Spec and Design Doc Generation

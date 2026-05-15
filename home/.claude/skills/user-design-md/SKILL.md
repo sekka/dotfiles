@@ -7,6 +7,8 @@ description: >
   Three modes: Init (create from scratch), Lint/Verify (check existing), Update (edit tokens).
 disable-model-invocation: false
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # DESIGN.md Management Skill

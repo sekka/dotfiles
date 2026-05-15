@@ -8,6 +8,8 @@ description: >
   to ensure the code is clean before it moves to the next stage.
 allowed-tools: Bash, Read, Edit, Glob
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 # Quality Loop

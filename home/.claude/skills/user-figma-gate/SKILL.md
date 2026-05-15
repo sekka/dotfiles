@@ -4,6 +4,8 @@ description: Use when Figma design is complete and coding is about to start, and
 argument-hint: [rtm-file-path] [figma-url]
 allowed-tools: Read, Glob, Grep, AskUserQuestion, mcp__figma__get_file, mcp__figma__get_file_nodes
 effort: medium
+context: fork
+agent: Explore
 ---
 
 # Design Review Gate

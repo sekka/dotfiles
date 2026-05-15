@@ -12,6 +12,8 @@ description: >
   — GSAP, CSS, Three.js, etc.; (3) UX/UI Evaluation — guidance, feedback, performance,
   accessibility; (4) Code Example. Accepts URL, video, code snippet, or verbal description.
 effort: medium
+context: fork
+agent: Explore
 ---
 
 # Web Animation Analysis Skill
