@@ -1,6 +1,6 @@
 ---
 name: user-research-queue
-description: Manage the two-stage deep research backlog queue. Add URLs to Inbox or Deep Research 待ち via `add` or `add-deep`, list pending items across both tiers, run Quick Eval on the next Inbox entry, run Deep Research on the next Deep Research 待ち entry, or mark items as done. Triggered by commands like "add to research queue", "what's in my research queue", "quick eval next", "deep research next", or "mark research done".
+description: Manage the two-stage deep research backlog queue. Add URLs to Inbox or Deep Research 待ち via `add` or `add-deep`, list pending items across both tiers, run Quick Eval on the next N Inbox entries (`quick [N]`, defaults to 1), run Deep Research on the next N Deep Research 待ち entries (`deep [N]`, defaults to 1), or mark items as done. Triggered by commands like "add to research queue", "what's in my research queue", "quick eval next", "quick 10", "deep research next", "deep 5", or "mark research done".
 disable-model-invocation: false
 effort: low
 ---
@@ -15,8 +15,10 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 **Add to Inbox:** `/user-research-queue add <url> [focus note]`
 **Skip to Deep Research 待ち:** `/user-research-queue add-deep <url> [focus note]`
 **List both tiers:** `/user-research-queue list` (or just `/user-research-queue`)
-**Quick Eval next Inbox entry:** `/user-research-queue quick`
-**Deep Research next entry:** `/user-research-queue deep`
+**Quick Eval next Inbox entry:** `/user-research-queue quick` (1 件)
+**Quick Eval next N Inbox entries (batch):** `/user-research-queue quick <N>` (例: `quick 10` で先頭 10 件を並列取得 → 順に質問)
+**Deep Research next entry:** `/user-research-queue deep` (1 件)
+**Deep Research next N entries (batch):** `/user-research-queue deep <N>` (例: `deep 5` で先頭 5 件を並列取得 → 順に質問)
 **Mark done manually:** `/user-research-queue done <I|D><index> [takeaway]`
 
 **Trigger phrases:**
@@ -26,8 +28,8 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 | `add` | "add to research queue", "queue this for later", "I'll research this later" |
 | `add-deep` | "add directly to deep research", "skip quick eval", "queue for deep research", "add-deep" |
 | `list` | "what's in my research queue", "show queue", no arguments |
-| `quick` | "quick eval next", "process inbox next", "evaluate next" |
-| `deep` | "deep research next", "process deep queue", "research next item" |
+| `quick` | "quick eval next", "process inbox next", "evaluate next", "quick 10" (= バッチ N=10) |
+| `deep` | "deep research next", "process deep queue", "research next item", "deep 5" (= バッチ N=5) |
 | `done` | "mark research done", "queue done I2", "done D1 great takeaway" |
 | Auto detection | URL + "later" / "queue" → `add` / no args → `list` |
 </quick_start>
@@ -36,7 +38,7 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 
 1. Do not modify the queue file without reading its current contents first.
 2. Do not mark an item done without confirming with the user when a takeaway is missing.
-3. Sub-skill completion is NOT subcommand completion. After delegating to `user-research-eval-ref` in `quick` or `deep`, the workflow continues — you MUST issue the post-delegation `AskUserQuestion` before emitting `Status: DONE`. A child skill's `Status: DONE` line is a hand-off marker, never a terminal signal for this skill.
+3. Sub-skill completion is NOT subcommand completion. After delegating to `user-research-eval-ref` in `quick` or `deep`, the workflow continues — you MUST issue the post-delegation `AskUserQuestion` before emitting `Status: DONE`. A child skill's `Status: DONE` line is a hand-off marker, never a terminal signal for this skill. (Why: A child skill's DONE is a handoff marker, not terminal — skipping post-delegation confirmation drops follow-up work)
 
 <workflow>
 
@@ -172,9 +174,11 @@ If only one section is empty, show the non-empty section normally and omit the e
 
 ---
 
-## Subcommand: `quick`
+## Subcommand: `quick [N]`
 
-Runs Quick Eval on the first entry in Inbox.
+Runs Quick Eval on the first **N** entries in Inbox. `N` defaults to `1` when omitted. `N` is clamped to the available Inbox length.
+
+### Mode A — N == 1 (default, single-item flow)
 
 1. Read `~/dotfiles/queue/research.md`
 2. Take the **first** entry in `## Inbox — Quick Eval 待ち` (index I1)
@@ -204,11 +208,54 @@ Runs Quick Eval on the first entry in Inbox.
 
    **Anti-pattern (do NOT do this):** "Recommended action: discard 寄り" を出して終わる、ユーザーに `/user-research-queue done I1 ...` を手打ちさせる、Status: DONE のみで返す。これらはすべて Iron Law #3 違反。
 
+### Mode B — N >= 2 (batch flow)
+
+Goal: 評価カード生成を並列化してネットワーク待ち時間を圧縮し、ユーザーへの質問は 1 件ずつ順番に回す。メインコンテキスト保護のため、コンテンツ取得は subagent に委譲する。
+
+1. Read `~/dotfiles/queue/research.md`
+2. Take the first `min(N, len(Inbox))` entries (I1 .. IN). If Inbox is empty, report and stop.
+3. **Parallel Quick Eval (subagent fan-out):** **In a single message, dispatch one `general-purpose` Agent per entry** (Agent tool, `subagent_type: general-purpose`) so they run concurrently. Each subagent's prompt must:
+   - Receive the entry's URL and focus note
+   - Invoke `user-research-eval-ref` via the Skill tool in **Quick Eval mode** for that one URL
+   - Return ONLY the structured eval card (Reference Evaluation table + Summary + Recommended action) — no extra prose, no tool-call narration
+   - For x.com / twitter.com URLs, the subagent must pass `--session quick-batch-<index>` to any agent-browser invocation it makes (or, more simply, rely on user-research-eval-ref → user-research-x-posts internal chain which already handles this when each subagent has its own session scope)
+
+   Dispatching all N Agent calls in one message is mandatory — sequential dispatch defeats the purpose of batch mode.
+
+4. **Collect eval cards.** After all N subagents return, you hold N eval cards labelled by their original Inbox index. Do NOT mutate the queue file yet.
+5. **Sequential decision loop.** For each entry in I1..IN order:
+
+   a. Render the eval card for this entry (table + summary + recommended action) in the visible response, prefixed with "**[i/N] I<idx>: <title>**" so the user sees progress.
+
+   b. Issue `AskUserQuestion` with the same three labels as Mode A (`discard` / `promote` / `keep`). The question text must include batch position: `"[i/N] Quick Eval 完了 (I<idx>: <title>)。次のアクションは？"`.
+
+   c. On `discard`, follow up with the discard-reason AskUserQuestion (2-4 grounded options) just like Mode A.
+
+   d. Accumulate the decision (entry, action, reason) into an in-memory decision list. Do NOT write to the queue file yet.
+
+6. **Apply all mutations in one final pass** after the loop ends. Mutate the queue file in a single read-then-write pass:
+   - Remove all decided entries from Inbox
+   - Append `promote` entries to `## Deep Research 待ち` (preserve original date and focus, optionally updated)
+   - Append `discard` entries to `## Done` with `outcome: discarded — takeaway: <reason>`
+   - Re-append `keep` entries to the end of Inbox
+
+7. Report a one-line summary per decision (e.g., `I1 → promote`, `I2 → discard (既存資産と重複)`, `I3 → keep`).
+
+**Batch mode constraints:**
+- `N` is clamped to the available Inbox length without warning (so `quick 100` on a 7-entry Inbox processes 7).
+- Hard upper bound: 20. If `N > 20`, clamp to 20 and emit `## Status: DONE_WITH_CONCERNS` noting the clamp — keeps subagent fan-out and AskUserQuestion turn count manageable.
+- All N subagents MUST be dispatched in a single message for true concurrency.
+- The "MANDATORY AskUserQuestion after eval-ref returns" rule from Iron Law #3 applies **per item** in the loop. Skipping AskUserQuestion for any item violates the contract.
+- Mid-loop user interrupt: if the user aborts during the decision loop (or asks to stop), apply the mutations decided so far, leave the rest in Inbox untouched, and report what was processed vs. skipped.
+- The `Mid-batch user response with extra context` case (e.g., user types "discard, 理由は X" instead of clicking a button) — accept the free text, normalize to the closest label, and record the user's text as the reason verbatim.
+
 ---
 
-## Subcommand: `deep`
+## Subcommand: `deep [N]`
 
-Runs Deep Research on the first entry in Deep Research 待ち.
+Runs Deep Research on the first **N** entries in Deep Research 待ち. `N` defaults to `1` when omitted. `N` is clamped to the available queue length.
+
+### Mode A — N == 1 (default, single-item flow)
 
 1. Read `~/dotfiles/queue/research.md`
 2. Take the **first** entry in `## Deep Research 待ち` (index D1)
@@ -232,6 +279,23 @@ Runs Deep Research on the first entry in Deep Research 待ち.
    Anti-pattern: ユーザーに takeaway 文を手打ちさせる、Status: DONE のみで終わる、sub-skill の出力をそのまま貼って終わる。
 7. Remove the entry from Deep Research 待ち and append to `## Done` with `outcome: deep — takeaway: <takeaway>`
 8. Report the moved entry to the user
+
+### Mode B — N >= 2 (batch flow)
+
+Same shape as `quick` Mode B, but for Deep Research:
+
+1. Read the queue file and take the first `min(N, len(Deep Research 待ち))` entries (D1..DN).
+2. **Parallel Deep Research:** Dispatch N `general-purpose` Agents in a single message. Each runs `user-research-eval-ref` in **Deep Research mode** for one URL and returns only the Research Results block (Overview / Comparison with Existing Environment / Implementation Plan / Primary Sources / Recommendation).
+   - Hard upper bound: **10** for `deep` (Deep Research is heavier than Quick Eval; large fan-outs eat too much wall-clock and subagent budget). If `N > 10`, clamp to 10 and emit `## Status: DONE_WITH_CONCERNS` noting the clamp.
+3. Collect all N research reports.
+4. **Sequential takeaway loop.** For each Di in order:
+   - Render the report (prefixed `[i/N] D<idx>: <title>`)
+   - Issue `AskUserQuestion` with takeaway options grounded in that report's Recommendation (採用判断 / 不採用判断 / TBD) — same shape as Mode A's takeaway question
+   - Accumulate the decision (entry, takeaway).
+5. **Apply all mutations** after the loop: remove all N entries from Deep Research 待ち, append each to `## Done` with `outcome: deep — takeaway: <takeaway>`.
+6. Report a one-line summary per entry.
+
+**Batch mode constraints** match `quick` Mode B (single-message subagent dispatch, mid-loop interrupt = apply-what-was-decided, per-item AskUserQuestion is mandatory).
 
 ---
 
@@ -277,9 +341,13 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 
 **list:** Inbox entries shown as I1, I2, ...; Deep Research 待ち entries shown as D1, D2, ...; counts shown per section; each entry displays four fields (url / author / time / text) with the raw URL visible.
 
-**quick:** Quick Eval completes via user-research-eval-ref; user chooses promote/discard/keep; entry moves or stays accordingly.
+**quick (N==1):** Quick Eval completes via user-research-eval-ref; user chooses promote/discard/keep; entry moves or stays accordingly.
 
-**deep:** Deep Research completes via user-research-eval-ref; user provides takeaway; entry moves to Done with `outcome: deep`.
+**quick (N>=2):** All `min(N, len(Inbox), 20)` subagents are dispatched in a single message; each returns an eval card; user is asked sequentially per item with AskUserQuestion (mandatory per item); all mutations are applied in one final pass after the loop.
+
+**deep (N==1):** Deep Research completes via user-research-eval-ref; user provides takeaway; entry moves to Done with `outcome: deep`.
+
+**deep (N>=2):** All `min(N, len(Deep Research 待ち), 10)` subagents are dispatched in a single message; each returns a Research Results block; user is asked sequentially per item; all entries move to Done with `outcome: deep` in one final mutation pass.
 
 **done:** Entry moves from the specified tier (Inbox or Deep Research 待ち) to Done with correct date range, outcome, and takeaway; tier-prefixed index validation works.
 </success_criteria>
@@ -288,11 +356,13 @@ Manual move of a specific entry to Done. Index format: `I1`, `I2`, ... for Inbox
 
 Before writing the `## Status:` line at the end of a `quick` or `deep` turn, run this 1-step check:
 
-- [ ] Did this turn actually call the `AskUserQuestion` tool **in the same turn**, after the `user-research-eval-ref` Skill returned?
+- [ ] Did this turn actually call the `AskUserQuestion` tool **in the same turn**, after the `user-research-eval-ref` Skill (or batch-mode Agent fan-out) returned?
 
-If **NO** → STOP. Do **NOT** emit `## Status: DONE`, do **NOT** emit any closing summary, do **NOT** end the turn. Call `AskUserQuestion` first (Step 6 of `quick` / Step 6 of `deep`). The sub-skill's `## Status: DONE` line is a hand-off marker, NEVER your terminal signal — see Iron Law #3.
+If **NO** → STOP. Do **NOT** emit `## Status: DONE`, do **NOT** emit any closing summary, do **NOT** end the turn. Call `AskUserQuestion` first (Step 6 of `quick` Mode A / Step 6 of `deep` Mode A / Step 5b of either Mode B). The sub-skill's `## Status: DONE` line is a hand-off marker, NEVER your terminal signal — see Iron Law #3.
 
 If **YES** → proceed to the Status section below.
+
+**Batch mode note:** In Mode B (N>=2), `AskUserQuestion` is invoked once per item inside the decision loop. The turn boundary is each AskUserQuestion call. The Pre-output Self-Check evaluates the **current turn** — it passes as long as the current turn ends with an AskUserQuestion (per-item) OR with the final mutation-summary message (after the last item's decision was applied).
 
 **Why this check exists:** The most common failure mode is "sub-skill returned a clean answer (e.g., 'Out of scope / Recommended action: discard'), so the parent skill silently emitted `## Status: DONE` and ended the turn, forcing the user to type the next subcommand manually." That is an Iron Law #3 violation regardless of how unambiguous the recommendation looked. The clarity of the sub-skill's recommendation is irrelevant — selection-button presentation is the queue skill's contractual job, not the user's typing job.
 
