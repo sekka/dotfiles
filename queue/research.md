@@ -16,7 +16,6 @@ Deep research backlog. Two-stage pipeline:
 
 (Quick Eval 済みで Deep Research する価値ありと判断した URL。`/user-research-queue deep` で順番に Deep Research を回す)
 
-- [ ] 2026-05-13 — [googleworkspace/cli — Google Workspace CLI (Drive/Gmail/Calendar/Sheets etc., AI agent skills 同梱)](https://github.com/googleworkspace/cli) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 - [ ] 2026-05-13 — [@tomoaki_imai: ClaudeCode Agents team で Architect + Devil's advocate を入れる運用](https://x.com/tomoaki_imai/status/2030061902295093466) — focus: 導入検討 (#20) Devil's advocate サブエージェント化の可否
 - [ ] 2026-05-13 — [@azu_re: cmuxでDiffレビューコメントをClaude Codeプロンプトに流す試作](https://x.com/azu_re/status/2029936988670021940) — focus: cmux成熟度確認 + difit-review/coderabbit代替としての評価
 - [ ] 2026-05-13 — [Fresh — The Terminal IDE (multi-cursor, LSP, Magit-style Git, SSH remote, TS plugins)](https://getfresh.dev/) — focus: 導入検討 (#20) AI連携性 / 既存 nvim 設定資産との比較 / TS plugin で skill・hook 的拡張ができるか
@@ -65,6 +64,7 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-14 — [WBSは単なる「予定表」じゃない。エンジニアの魂を社会の実装へ繋ぐ「対話の地図」だ。](https://zenn.dev/headwaters/articles/82cd9d0181acb3) — focus: WBS=合意形成の地図 観点を user-pmo-wbs / user-pm-spec の SKILL.md にどう反映するか (完了基準・手法選定・納品後価値継続の取り込み箇所)
 - [ ] 2026-05-14 — [AI駆動PMの5原則と12の具体例 — Claude Code × Obsidian](https://zenn.dev/assign/articles/4ba3d41bf59a61) — focus: 投機 (projects/) vs 確定 (products/) 分離 / frontmatter state / calendar-to-task drift 検出 の 3 点を user-pm-session / user-pmo-status に取り込み可否 (Obsidian 部分は捨てる)
 - [ ] 2026-05-14 — [Claude Code 実践検証 Day 27｜長期プロジェクトでAIと分業する―WBS + /auto-execの基本設計](https://zenn.dev/akira_cloudjob/articles/ecbe77f3150cec) — focus: [→] アクティブマーカー方式 + /auto-exec カスタムコマンドを user-pmo-wbs / superpowers:executing-plans と統合評価
+- [ ] 2026-05-13 — [googleworkspace/cli — Google Workspace CLI (Drive/Gmail/Calendar/Sheets etc., AI agent skills 同梱)](https://github.com/googleworkspace/cli) — focus: 導入検討 (#20) 効用/メリット/デメリット評価
 
 ## Done
 
