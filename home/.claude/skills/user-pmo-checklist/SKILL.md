@@ -13,7 +13,7 @@ Generate a project phase checklist for kickoff, pre-launch, or handoff.
 
 ## Iron Law
 
-1. Do not skip checklist items — output all items for the requested phase
+1. Do not skip checklist items — output all items for the requested phase (Why: Skipped items hide missing phase deliverables until merge)
 2. Output is plain Markdown — ready to copy-paste into Notion, Google Docs, or a project file
 3. Never mix phases in one output — one checklist per invocation
 

@@ -49,7 +49,7 @@ Use this skill when:
 | Client flagged as uncertain | 🟡 PENDING | Block design on this until client answers. | Brief line number + client's own "確認中/TBD" text |
 | Client cancelled (strikethrough) | ~~CANCELLED~~ | Record it existed and was cancelled. Do not implement. | Brief line number |
 
-**Never invent a requirement without either a brief citation or a research basis.**
+**Never invent a requirement without either a brief citation or a research basis.** (Why: Spec validity rests on citation chain; uncited items fail audit)
 
 ---
 

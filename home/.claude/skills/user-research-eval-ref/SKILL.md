@@ -30,7 +30,7 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 ## Iron Law
 
-1. Do not evaluate without reading the article content
+1. Do not evaluate without reading the article content (Why: Evaluating from title/abstract alone raises recommendation hallucination rate)
 2. Do not recommend adoption without checking the current environment
 
 <workflow>

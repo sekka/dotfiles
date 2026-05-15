@@ -19,7 +19,7 @@ Show status of all active projects at a glance.
 
 1. Read all `~/prj/*/pmo.yaml` files — do not ask the user to specify projects
 2. Flag 🔴 for any project with deadline within 14 days
-3. Never invent data — if pmo.yaml is missing or malformed, show the project as "⚠️ Data missing"
+3. Never invent data — if pmo.yaml is missing or malformed, show the project as "⚠️ Data missing" (Why: Fabricated data misleads; "Data missing" surfaces the real problem)
 4. When decisions.md action items exist, always check for overdue and due-soon — never silently skip
 
 ## Trigger

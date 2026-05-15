@@ -30,7 +30,7 @@ Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-[
 
 ## Iron Law
 
-1. Do not fill in information about inaccessible sites with guesswork.
+1. Do not fill in information about inaccessible sites with guesswork. (Why: Guesses become the source of truth and corrupt the design brief)
 
 <success_criteria>
 **Completeness:**

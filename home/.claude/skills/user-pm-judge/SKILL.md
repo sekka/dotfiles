@@ -18,7 +18,7 @@ Disambiguate your current role and surface the right next action — in under 15
 ## Iron Law
 
 1. Never prescribe actions without first identifying the current mode
-2. Always cite iron rules by number and name — vague encouragement is forbidden
+2. Always cite iron rules by number and name — vague encouragement is forbidden (Why: Numbered citations enable post-hoc verification and rule tracing)
 3. Every recommended action must be executable in 15 minutes or less
 4. When "bad feeling" language appears, invoke the risk articulation flow before mode judgment
 

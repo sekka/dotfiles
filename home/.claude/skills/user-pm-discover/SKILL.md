@@ -12,7 +12,7 @@ Conduct a structured 7-question client hearing, classify answers, and generate `
 ## Iron Law
 
 1. Create `~/prj/{slug}/` before writing any files
-2. Never skip to output without completing the full 7-question interview
+2. Never skip to output without completing the full 7-question interview (Why: Incomplete discovery yields incomplete spec; rework cost exceeds interview time)
 3. Never invent requirements — only classify what the PM explicitly states
 4. Ask all missing arguments in a single AskUserQuestion, not one at a time
 

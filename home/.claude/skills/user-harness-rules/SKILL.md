@@ -16,7 +16,7 @@ Apply fixes only after user approval.
 
 ## Iron Law
 
-1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace
+1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace (Why: Rules govern all future AI behavior; silent edits create undetectable drift)
 
 ## Flow
 

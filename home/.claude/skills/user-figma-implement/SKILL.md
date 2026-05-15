@@ -19,7 +19,7 @@ Uses the official Figma MCP server tools to maximize token efficiency while accu
 
 ## Iron Law
 
-1. Do not claim "matches the design" without Figma data
+1. Do not claim "matches the design" without Figma data (Why: "Matches design" without Figma data is guesswork; production diverges from design)
 2. Do not ignore rate limits
 
 ## Available MCP Tools

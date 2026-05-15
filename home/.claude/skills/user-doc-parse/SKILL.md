@@ -12,7 +12,7 @@ Converts PDF, PPTX, DOCX, and XLSX files to text so Claude Code can process them
 
 ## Iron Law
 
-1. Do not try to read binary files directly
+1. Do not try to read binary files directly (Why: Direct binary reads produce garbage; detect type with `file` first)
 
 ## Usage
 

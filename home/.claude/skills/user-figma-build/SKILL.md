@@ -223,7 +223,7 @@ Section, Container, Row, Header pattern examples: `references/auto-layout-patter
 | Mistake | Correct |
 |---------|---------|
 | `frame.primaryAxisSizingMode = 'HUG'` | Use `'AUTO'` for auto-size. `'HUG'` goes on `layoutSizingHorizontal/Vertical` |
-| Set `layoutSizingHorizontal = 'FILL'` before `appendChild` | **ALWAYS** set AFTER `parent.appendChild(child)` |
+| Set `layoutSizingHorizontal = 'FILL'` before `appendChild` | **ALWAYS** set AFTER `parent.appendChild(child)` (Why: Figma plugin API applies parent constraints after appendChild; pre-append values get overwritten) |
 | Use sync page setter `figma.currentPage = page` | Use `await figma.setCurrentPageAsync(page)` |
 | `lineHeight = 28` (bare number) | `lineHeight = { unit: 'PIXELS', value: 28 }` |
 | Color values `{ r: 255, g: 0, b: 0 }` | Colors are 0–1 range: `{ r: 1, g: 0, b: 0 }` |

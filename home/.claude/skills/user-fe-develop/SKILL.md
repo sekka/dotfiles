@@ -19,7 +19,7 @@ A skill for comprehensive support of frontend development, React/Vue/Next.js imp
 
 ## Iron Law
 
-1. Do not make breaking changes to existing components without permission
+1. Do not make breaking changes to existing components without permission (Why: Breaking changes cascade to dependent pages and force app-wide rework)
 2. Do not make accessibility worse
 
 ## Execution Flow

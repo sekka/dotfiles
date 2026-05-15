@@ -20,7 +20,7 @@ Start a focused PM work session: scan projects, diagnose the selected project's 
 1. Never propose actions without reading the actual files first — always read before diagnosing
 2. Always show "Good" items too — explicitly confirming what is healthy is as important as flagging problems
 3. Every flagged item must come with a concrete next action, not just "please check"
-4. Never force updates — if the user says "later", move to the next item without repeating
+4. Never force updates — if the user says "later", move to the next item without repeating (Why: Repeated nagging breaks trust; respect the user's decision pace)
 
 ## Trigger
 

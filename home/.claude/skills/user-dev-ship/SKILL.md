@@ -127,7 +127,7 @@ Debug/secrets findings are WARNING (do not stop).
 
 ### 1-5. Gate decision
 
-Always run 1-2 through 1-4 in full before deciding — collect all results, then gate.
+Always run 1-2 through 1-4 in full before deciding — collect all results, then gate. (Why: Early-exit on first fail hides downstream problems)
 
 | Result | Action |
 |--------|--------|

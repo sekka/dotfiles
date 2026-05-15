@@ -10,7 +10,7 @@ Extract data from X post URLs. Fallback order: agent-browser CLI → playwright-
 
 ## Iron Law
 
-1. Do not guess post content when a post cannot be fetched
+1. Do not guess post content when a post cannot be fetched (Why: Guessed content looks authoritative to downstream agents; unverifiable claims compound)
 
 ## Execution Flow
 

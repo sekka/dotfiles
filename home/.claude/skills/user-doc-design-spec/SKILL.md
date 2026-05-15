@@ -15,8 +15,8 @@ A skill for designing UIs that are not just visually appealing, but also impleme
 
 ## Iron Law
 
-1. Do not propose designs that cannot be implemented.
-2. Do not skip responsive support.
+1. Do not propose designs that cannot be implemented. (Why: Unimplementable designs block implementation)
+2. Do not skip responsive support. (Why: Skipping responsive breaks the site on mobile after launch)
 
 ## Execution Flow
 
