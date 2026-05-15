@@ -1,10 +1,10 @@
 ---
 name: user-design-md
 description: >
-  Manage DESIGN.md files for projects. Use this skill when the user says "create a DESIGN.md",
+  Manages DESIGN.md files for projects — creates, validates, and updates the machine-readable design
+  system spec (brand colors, typography, spacing tokens). Use when the user says "create a DESIGN.md",
   "add a design system", "lint DESIGN.md", "update the design tokens", "verify the design file",
   or when starting a new web project that needs brand/style definitions for AI-generated UI.
-  Three modes: Init (create from scratch), Lint/Verify (check existing), Update (edit tokens).
 disable-model-invocation: false
 effort: medium
 context: fork

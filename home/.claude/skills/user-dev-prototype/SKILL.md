@@ -1,7 +1,7 @@
 ---
 name: user-dev-prototype
 description: >
-  Use when you want to build an initial prototype fast.
+  Builds an initial prototype fast.
   Orchestrates Opus 4.6 (1M context) + feature-dev agents + auto-approve mode + worktree isolation for maximum velocity.
   Triggered by "rapid prototype", "プロトタイプ", "prototype fast", "quick prototype".
 effort: high

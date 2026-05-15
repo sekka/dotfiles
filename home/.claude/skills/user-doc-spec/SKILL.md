@@ -1,6 +1,6 @@
 ---
 name: user-doc-spec
-description: Convert a client brief into a requirements spec with explicit provenance for every item, or audit an existing RTM against the brief. Use proactively before the design phase begins when a client brief is ready but requirements need formalization — and whenever spec drift is suspected. Works as both a spec creator (Mode A) and an audit tool (Mode B). Covers extraction, classification, gap research, coverage check, and RTM formatting.
+description: Use when a client brief is ready and requirements need formal documentation, or when an existing RTM must be audited against the brief. Works as a spec creator (Mode A: brief → RTM with BINDING/SUPPLEMENTED/PENDING provenance) and an audit tool (Mode B: gap report + coverage check). Use proactively before the design phase and whenever spec drift is suspected.
 effort: high
 context: fork
 agent: general-purpose

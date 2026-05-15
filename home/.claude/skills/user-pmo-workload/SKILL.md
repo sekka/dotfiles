@@ -1,6 +1,11 @@
 ---
 name: user-pmo-workload
-description: Show member workload for the current week across all projects. Reads ~/prj/*/pmo.yaml and ~/prj/members.yaml. Falls back to 40h default capacity per member if members.yaml is absent. Flags overloaded members (🔴) and suggests reassignment. Triggered by "稼働確認", "workload", "メンバー工数", or "リソース確認". Also use proactively before sprint planning or task assignment discussions.
+description: >
+  Use when checking team capacity or planning task assignments. Shows planned
+  workload per member for the current week across all active projects. Reads
+  ~/prj/*/pmo.yaml and ~/prj/members.yaml; falls back to 40h default per member
+  if members.yaml is absent. Flags overloaded members (🔴) and suggests
+  reassignment. Triggers: "稼働確認", "workload", "メンバー工数", "リソース確認".
 effort: low
 context: fork
 agent: Explore

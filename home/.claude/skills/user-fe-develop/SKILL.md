@@ -1,12 +1,12 @@
 ---
 name: user-fe-develop
 description: >
-  Help with frontend UI/UX implementation and optimization. Use this skill whenever the user says
+  Use when implementing frontend UI/UX or optimizing frontend code. Triggered by phrases like
   "implement this feature", "build this component", "write the frontend code", "create this UI",
-  "code this up", "add this to the page", or asks for help with React, Vue, Next.js, Tailwind,
-  TypeScript, CSS, animation, or accessibility. Also use proactively when implementing components,
-  building layouts, managing state, optimizing performance, or writing frontend tests — even if the
-  user doesn't explicitly name a framework. Any frontend coding task is a trigger.
+  "code this up", or "add this to the page". Also triggered by any request involving React, Vue,
+  Next.js, Tailwind, TypeScript, CSS, animation, or accessibility — including component
+  implementation, layout, state management, performance optimization, and frontend testing, even
+  if no framework is named explicitly. Any frontend coding task is a trigger.
 disable-model-invocation: false
 effort: medium
 ---

@@ -1,6 +1,12 @@
 ---
 name: user-harness-gen-skills
-description: Extract patterns from Claude Code session history using 3-axis analysis (WHAT/HOW/FLOW). Classifies candidates by output type (skill / CLAUDE.md rule / ast-grep rule) before generation. Confirms scope interactively (project, period, CLI history) before collecting. Evaluates candidates by frequency threshold and deduplicates against existing skills and rules. Saves generated skills to ~/dotfiles/home/.claude/skills/. Triggered by "generate skills from history" or "extract patterns".
+description: >
+  Use when asked to generate skills from session history, extract patterns from past sessions,
+  or discover reusable automation candidates. Triggered by "generate skills from history",
+  "extract patterns", or "what patterns do I repeat?".
+  Analyzes Claude Code session logs with 3-axis analysis (WHAT/HOW/FLOW), classifies candidates
+  by output type (skill / CLAUDE.md rule / ast-grep rule), deduplicates against existing skills,
+  and saves generated skills to ~/dotfiles/home/.claude/skills/.
 allowed-tools: Task, Read, Glob, Grep, Write, Edit, Bash
 disable-model-invocation: false
 effort: high

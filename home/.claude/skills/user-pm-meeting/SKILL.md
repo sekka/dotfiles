@@ -14,7 +14,7 @@ Parse raw meeting notes and produce a `decisions.md` entry, a `meetings/YYYY-MM-
 ## Iron Law
 
 1. Never invent decisions or action items — only extract what is explicitly stated in the notes
-2. `decisions.md` に新エントリを先頭追加する（上書き禁止、最新が先頭）
+2. Prepend new entries to `decisions.md` — never overwrite; newest entry must appear first
 3. Always sync action items with `status: pending` to `pmo.yaml` tasks (Why: Single source of truth prevents task loss and enables rollup automation)
 4. If slug is ambiguous, ask before writing any files
 

@@ -1,6 +1,11 @@
 ---
 name: user-pmo-wbs
-description: Generate a domain-aware WBS (Work Breakdown Structure) for a new project. Supports corporate-site, lp, ec, video-production, animation, branding, logo-design, cms-setup, migration. Saves to ~/prj/{slug}/pmo.yaml. Triggered by "WBS", "工数見積", "タスク洗い出し", or "work breakdown".
+description: >
+  Use when starting a new project and a WBS is needed. Generates a
+  domain-aware Work Breakdown Structure with hour estimates from built-in
+  templates (corporate-site, lp, ec, video-production, animation, branding,
+  logo-design, cms-setup, migration) and saves to ~/prj/{slug}/pmo.yaml.
+  Triggers: "WBS", "工数見積", "タスク洗い出し", "work breakdown".
 argument-hint: [project-name] [deliverable-types] [deadline] [team-members]
 effort: medium
 context: fork

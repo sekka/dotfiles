@@ -1,9 +1,9 @@
 ---
 name: user-figma-implement
 description: >
-  Implement Figma designs as high-fidelity code using Figma MCP tools.
-  Triggered by requests to implement a Figma file, frame, or component, or phrases like
-  "match the Figma design" or "implement this Figma".
+  Use when implementing a Figma file, frame, or component as high-fidelity code via Figma MCP tools.
+  Triggered by phrases like "match the Figma design", "implement this Figma", or any request to
+  turn a Figma node into React/Vue/iOS code.
   Key constraints: Starter/View/Collab seats have a 6-per-month API call limit (use get_metadata first to save budget).
   Large Figma API responses must be delegated to a sub-agent to protect the main session context.
 disable-model-invocation: false
@@ -280,13 +280,13 @@ If all deltas are 0 or -1, implementation is complete. If any delta ≤ -2, proc
 For each axis with delta ≤ -2, generate a DESIGN.md update proposal:
 
 ```
-以下の差分を分析して、DESIGN.md への修正提案を作成してください。
-実装スクリーンショット: [path]
-Figma スクリーンショット: [path]
-差分軸: [axis name], delta: [score]
+Analyze the following diff and create a proposal for DESIGN.md corrections.
+Implementation screenshot: [path]
+Figma screenshot: [path]
+Diff axis: [axis name], delta: [score]
 
-DESIGN.md の tokens または prose セクションで修正すべき箇所を
-具体的な値（例: line_height_body: 1.6 → 1.75）で提案してください。
+Propose specific changes (e.g., line_height_body: 1.6 → 1.75) to the tokens
+or prose sections of DESIGN.md that should be corrected.
 ```
 
 Present proposals to the user. Do NOT update DESIGN.md automatically — wait for approval.
@@ -310,11 +310,10 @@ After user approves proposals from Step 9:
 If the Visual Diff reveals a design intent in Figma that is NOT yet captured in DESIGN.md, run this prompt to propose new prose sections:
 
 ```
-Figma デザインと実装の差分から、DESIGN.md に追加すべき
-デザイン意図（Tone & Manner, Emotional Value, Designer Intent）の
-記述を提案してください。
-現在の DESIGN.md: [paste current prose sections]
-Figma スクリーンショット: [image]
+Based on the diff between the Figma design and implementation, propose new prose sections
+(Tone & Manner, Emotional Value, Designer Intent) to add to DESIGN.md.
+Current DESIGN.md: [paste current prose sections]
+Figma screenshot: [image]
 ```
 
 Present the proposal to the user. Apply only after approval.

@@ -1,10 +1,12 @@
 ---
 name: user-research-websites
-description: "Analyze an existing website and create a sitemap and wireframes. Confirms 6 scope\
-  \ parameters before starting: crawl depth, sitemap format (Mermaid/Markdown/JSON), wireframe format\
-  \ (ASCII/HTML), content analysis level, design analysis level, and output directory. Use proactively\
-  \ before competitive analysis, planning a redesign, or when a client asks to reference another site's\
-  \ structure — can also summarize a page's purpose and target audience."
+description: >
+  Use when given a website URL and asked to analyze its structure, generate a sitemap, or create
+  wireframes. Triggered by "analyze this site", "create a sitemap for", "make wireframes of",
+  "map the site structure", or proactively before competitive analysis or a redesign. Crawls the
+  site to the specified depth, then outputs Mermaid/Markdown/JSON sitemaps and ASCII/HTML
+  wireframes. Optionally adds content analysis (page purpose, key messages) and design analysis
+  (color palette, typography, spacing tokens). Confirms 6 scope parameters before starting.
 disable-model-invocation: false
 effort: high
 ---

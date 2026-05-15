@@ -1,11 +1,9 @@
 ---
 name: user-pm-session
 description: >
-  Start a PM work session. Scans all active projects in ~/prj/*/pmo.yaml,
-  identifies the focus project, reads its documents, and proactively flags
-  items that need attention (overdue tasks, unresolved risks, stale fields,
-  missing stakeholder reports). Suggests the next action for each issue with
-  a specific skill to invoke.
+  Use when starting a PM work session or weekly project health review.
+  Scans ~/prj/*/pmo.yaml, diagnoses the selected project for overdue tasks, unresolved risks,
+  stale fields, and missing reports, then recommends the next action per finding.
   Triggered by "PM始める", "今週のPM", "pm-session", "案件確認", "セッション開始", or "session start".
 argument-hint: [project-slug]
 effort: medium

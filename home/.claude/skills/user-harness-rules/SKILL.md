@@ -1,11 +1,10 @@
 ---
 name: user-harness-rules
 description: >
-  Keep the harness (CLAUDE.md, rules, skills, memory) fresh and consistent.
-  Detect gaps between the codebase and documentation, then propose updates.
-  Apply changes only after user approval.
   Use when asked to "update rules", "check CLAUDE.md", "clean up memory",
   "check if docs are stale", "maintain rule files", or "review settings".
+  Audits the harness (CLAUDE.md, rules, skills, memory) for staleness and inconsistency,
+  proposes fixes, and applies them only after user approval.
 effort: medium
 ---
 

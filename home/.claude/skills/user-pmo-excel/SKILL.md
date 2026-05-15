@@ -1,12 +1,11 @@
 ---
 name: user-pmo-excel
 description: >
-  Sync ~/prj/{slug}/pmo.yaml with the project's WBS Excel (.xlsm) using
-  snapshot-based one-way sync. Direction is always explicit: `pull` (Excel →
-  YAML) or `push` (YAML → Excel). The Gantt chart area (date columns) is left
-  to VBA macros. Triggered by "Excel sync", "WBS 同期", "pmo excel", "pmo pull",
-  "pmo push", or whenever a user asks to push plan changes to Excel or pull
-  actuals from Excel.
+  Use when the user asks to sync ~/prj/{slug}/pmo.yaml with the project's WBS
+  Excel (.xlsm), push plan changes to Excel, or pull actuals from Excel.
+  Performs snapshot-based one-way sync; direction is always explicit: `pull`
+  (Excel → YAML) or `push` (YAML → Excel). Triggers: "Excel sync", "WBS 同期",
+  "pmo excel", "pmo pull", "pmo push".
 effort: low
 context: fork
 agent: general-purpose

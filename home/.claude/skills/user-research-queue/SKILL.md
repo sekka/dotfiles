@@ -15,10 +15,10 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 **Add to Inbox:** `/user-research-queue add <url> [focus note]`
 **Skip to Deep Research 待ち:** `/user-research-queue add-deep <url> [focus note]`
 **List both tiers:** `/user-research-queue list` (or just `/user-research-queue`)
-**Quick Eval next Inbox entry:** `/user-research-queue quick` (1 件)
-**Quick Eval next N Inbox entries (batch):** `/user-research-queue quick <N>` (例: `quick 10` で先頭 10 件を並列取得 → 順に質問)
-**Deep Research next entry:** `/user-research-queue deep` (1 件)
-**Deep Research next N entries (batch):** `/user-research-queue deep <N>` (例: `deep 5` で先頭 5 件を並列取得 → 順に質問)
+**Quick Eval next Inbox entry:** `/user-research-queue quick` (1 item)
+**Quick Eval next N Inbox entries (batch):** `/user-research-queue quick <N>` (e.g., `quick 10` fetches first 10 in parallel → prompts one by one)
+**Deep Research next entry:** `/user-research-queue deep` (1 item)
+**Deep Research next N entries (batch):** `/user-research-queue deep <N>` (e.g., `deep 5` fetches first 5 in parallel → prompts one by one)
 **Mark done manually:** `/user-research-queue done <I|D><index> [takeaway]`
 
 **Trigger phrases:**
@@ -28,8 +28,8 @@ Parse `$ARGUMENTS` to determine which subcommand to run.
 | `add` | "add to research queue", "queue this for later", "I'll research this later" |
 | `add-deep` | "add directly to deep research", "skip quick eval", "queue for deep research", "add-deep" |
 | `list` | "what's in my research queue", "show queue", no arguments |
-| `quick` | "quick eval next", "process inbox next", "evaluate next", "quick 10" (= バッチ N=10) |
-| `deep` | "deep research next", "process deep queue", "research next item", "deep 5" (= バッチ N=5) |
+| `quick` | "quick eval next", "process inbox next", "evaluate next", "quick 10" (= batch N=10) |
+| `deep` | "deep research next", "process deep queue", "research next item", "deep 5" (= batch N=5) |
 | `done` | "mark research done", "queue done I2", "done D1 great takeaway" |
 | Auto detection | URL + "later" / "queue" → `add` / no args → `list` |
 </quick_start>
@@ -185,7 +185,7 @@ Runs Quick Eval on the first **N** entries in Inbox. `N` defaults to `1` when om
 3. If Inbox is empty, report and stop
 4. Extract the URL and focus note from the entry
 5. Launch `/user-research-eval-ref` via the Skill tool in **Quick Eval mode**, passing the URL and focus note as context
-6. **MANDATORY — do not skip after sub-skill returns.** Per Iron Law #3, the child's `Status: DONE` is not your terminal signal. Even if the sub-skill ended with `## Status: DONE` and its recommended action is unambiguous (e.g., "discard 寄り"), you MUST still issue the AskUserQuestion below. NEVER end the turn with only the eval card and expect the user to type the next action — selection is the queue skill's job. Use `AskUserQuestion` (NOT a free-text prompt) so the user picks from buttons:
+6. **MANDATORY — do not skip after sub-skill returns.** Per Iron Law #3, the child's `Status: DONE` is not your terminal signal. Even if the sub-skill ended with `## Status: DONE` and its recommended action is unambiguous (e.g., "leaning toward discard"), you MUST still issue the AskUserQuestion below. NEVER end the turn with only the eval card and expect the user to type the next action — selection is the queue skill's job. Use `AskUserQuestion` (NOT a free-text prompt) so the user picks from buttons:
 
    ```
    question: "Quick Eval 完了 (I<n>: <title>)。次のアクションは？"
@@ -206,11 +206,11 @@ Runs Quick Eval on the first **N** entries in Inbox. `N` defaults to `1` when om
    - **discard**: ask for a one-line reason via AskUserQuestion (button options, NOT free text). Generate 2-4 reason options grounded in the eval card content — typical buckets: 既存資産と重複 / ターゲット不一致 / メンテ不活発 / 一次情報なし / その他. Then remove from Inbox and append to `## Done` with `outcome: discarded — takeaway: <reason>`.
    - **keep**: remove from first position in Inbox and re-append at the end of Inbox
 
-   **Anti-pattern (do NOT do this):** "Recommended action: discard 寄り" を出して終わる、ユーザーに `/user-research-queue done I1 ...` を手打ちさせる、Status: DONE のみで返す。これらはすべて Iron Law #3 違反。
+   **Anti-pattern (do NOT do this):** Outputting "Recommended action: discard" and ending the turn, making the user type `/user-research-queue done I1 ...` manually, or returning only `Status: DONE` — all of these violate Iron Law #3.
 
 ### Mode B — N >= 2 (batch flow)
 
-Goal: 評価カード生成を並列化してネットワーク待ち時間を圧縮し、ユーザーへの質問は 1 件ずつ順番に回す。メインコンテキスト保護のため、コンテンツ取得は subagent に委譲する。
+Goal: parallelize eval card generation to compress network wait time while prompting the user one item at a time. Delegate content fetching to subagents to protect the main context.
 
 1. Read `~/dotfiles/queue/research.md`
 2. Take the first `min(N, len(Inbox))` entries (I1 .. IN). If Inbox is empty, report and stop.
@@ -276,7 +276,7 @@ Runs Deep Research on the first **N** entries in Deep Research 待ち. `N` defau
        description: "今は確定できない。Done エントリの takeaway は TBD で記録"
    ```
 
-   Anti-pattern: ユーザーに takeaway 文を手打ちさせる、Status: DONE のみで終わる、sub-skill の出力をそのまま貼って終わる。
+   Anti-pattern: Making the user type the takeaway manually, ending with only `Status: DONE`, or pasting the sub-skill output verbatim and ending the turn.
 7. Remove the entry from Deep Research 待ち and append to `## Done` with `outcome: deep — takeaway: <takeaway>`
 8. Report the moved entry to the user
 

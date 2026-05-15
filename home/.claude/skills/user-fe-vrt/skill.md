@@ -1,6 +1,6 @@
 ---
 name: user-fe-vrt
-description: Visual regression test that captures screenshots at multiple viewports before and after code changes, then diffs them with ImageMagick. Triggered by "visual check", "layout check", "VRT", "screenshot compare", or "check if layout is broken".
+description: Use when running a visual regression test to detect pixel-level layout changes. Captures screenshots at multiple viewports before and after code changes, then diffs them with ImageMagick. Triggered by "visual check", "layout check", "VRT", "screenshot compare", or "check if layout is broken".
 effort: high
 ---
 

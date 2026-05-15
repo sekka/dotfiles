@@ -1,14 +1,14 @@
 ---
 name: user-pmo-status
 description: >
-  Show a multi-project status dashboard. Reads ~/prj/*/pmo.yaml automatically.
-  Also checks each project's decisions.md for overdue and due-soon action items.
-  Flags projects with deadline within 2 weeks.
-  Triggered by "プロジェクト状況", "project status", "案件一覧", or "dashboard".
-  Also use proactively at the start of weekly planning sessions or when the user mentions any project's status without asking for the dashboard.
+  Use when the user wants a multi-project status dashboard, asks about project
+  health, or starts a weekly review. Reads ~/prj/*/pmo.yaml automatically,
+  checks decisions.md for overdue and due-soon action items, and flags deadlines
+  within 2 weeks. Triggers: "プロジェクト状況", "project status", "案件一覧",
+  "dashboard".
 effort: low
 context: fork
-agent: Explore
+agent: general-purpose
 ---
 
 # Multi-Project Status Dashboard
