@@ -153,7 +153,23 @@ export function isQueueDrivenTurn(turn: TranscriptMessage[]): boolean {
 }
 
 /**
- * 現ターンの assistant メッセージに user-research-eval-ref の Skill tool_use が含まれるかを返す。
+ * tool_use item が user-research-eval-ref の呼び出しに該当するかを判定する。
+ * subagent 経由 (Agent tool_use の prompt 内に skill 名を含むケース) も同等とみなす。
+ */
+function isEvalRefToolUse(item: ContentItem): boolean {
+  if (item.type !== "tool_use") return false;
+  if (item.name === "Skill") {
+    return (item.input as { skill?: string })?.skill === EVAL_REF_SKILL;
+  }
+  if (item.name === "Agent") {
+    const prompt = (item.input as { prompt?: string })?.prompt;
+    return typeof prompt === "string" && prompt.includes(EVAL_REF_SKILL);
+  }
+  return false;
+}
+
+/**
+ * 現ターンの assistant メッセージに user-research-eval-ref 呼び出しが含まれるかを返す。
  */
 export function hasEvalRefCall(turn: TranscriptMessage[]): boolean {
   for (const msg of turn) {
@@ -161,13 +177,7 @@ export function hasEvalRefCall(turn: TranscriptMessage[]): boolean {
     const content = msg.message?.content;
     if (!Array.isArray(content)) continue;
     for (const item of content) {
-      if (
-        item.type === "tool_use" &&
-        item.name === "Skill" &&
-        (item.input as { skill?: string })?.skill === EVAL_REF_SKILL
-      ) {
-        return true;
-      }
+      if (isEvalRefToolUse(item)) return true;
     }
   }
   return false;
@@ -192,10 +202,7 @@ export function hasAskUserQuestionAfterEvalRef(turn: TranscriptMessage[]): boole
     }
   }
 
-  // eval-ref の最初のインデックスを探す
-  const evalRefIndex = toolUses.findIndex(
-    (item) => item.name === "Skill" && (item.input as { skill?: string })?.skill === EVAL_REF_SKILL,
-  );
+  const evalRefIndex = toolUses.findIndex(isEvalRefToolUse);
 
   if (evalRefIndex === -1) return false;
 
