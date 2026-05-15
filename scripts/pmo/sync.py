@@ -29,13 +29,18 @@ from lib.schema import WBS_SCHEMA
 from lib.yaml_io import load_yaml, save_yaml
 
 
-def project_dir(slug: str | None, *, override: Path | None = None) -> Path:
+def project_dir(slug: str | None, *, override: Path | None = None, create: bool = False) -> Path:
     if override is not None:
+        if create:
+            override.mkdir(parents=True, exist_ok=True)
         return override
     if slug is None:
         print("error: --project is required when --pdir is not given", file=sys.stderr)
         sys.exit(2)
     base = Path.home() / "prj" / slug
+    if create:
+        base.mkdir(parents=True, exist_ok=True)
+        return base
     if not base.exists():
         print(f"error: project not found: {base}", file=sys.stderr)
         sys.exit(2)
@@ -52,8 +57,7 @@ def _row_to_task(row: dict[str, Any], columns: list) -> CommentedMap:
 
 def cmd_init(args: argparse.Namespace) -> int:
     slug = args.project
-    pdir = Path.home() / "prj" / slug
-    pdir.mkdir(parents=True, exist_ok=True)
+    pdir = project_dir(slug, create=True)
     pmo_path = pdir / "WBS.yaml"
 
     if pmo_path.exists() and not args.force:

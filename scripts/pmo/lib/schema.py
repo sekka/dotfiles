@@ -1,8 +1,4 @@
-"""Canonical WBS schema — single source of truth for column layout.
-
-Pull-only design: Excel is the source of truth, YAML is regenerated each
-pull. Per-column write metadata (readonly) is no longer needed.
-"""
+"""Canonical WBS schema — single source of truth for column layout."""
 from __future__ import annotations
 
 from dataclasses import dataclass

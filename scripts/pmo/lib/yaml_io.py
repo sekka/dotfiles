@@ -1,8 +1,4 @@
-"""Atomic YAML read/write helpers for WBS.yaml.
-
-Pull-only design: callers read the existing config (project block, excel.file),
-mutate the tasks list, and write back atomically.
-"""
+"""Atomic YAML read/write helpers for WBS.yaml."""
 from __future__ import annotations
 
 from pathlib import Path
