@@ -90,6 +90,46 @@ function makeEvalRefSkillMsg(): TranscriptMessage {
   };
 }
 
+// テスト fixture: Mode B - general-purpose Agent tool_use の prompt 内に
+// user-research-eval-ref が含まれる (subagent 経由で eval-ref を起動するパターン)
+function makeEvalRefAgentMsg(): TranscriptMessage {
+  return {
+    type: "assistant",
+    message: {
+      content: [
+        {
+          type: "tool_use",
+          name: "Agent",
+          input: {
+            subagent_type: "general-purpose",
+            prompt:
+              "Run user-research-eval-ref Quick Eval on https://example.com/article and return the eval card.",
+          },
+        },
+      ],
+    },
+  };
+}
+
+// テスト fixture: eval-ref と無関係な Agent tool_use
+function makeUnrelatedAgentMsg(): TranscriptMessage {
+  return {
+    type: "assistant",
+    message: {
+      content: [
+        {
+          type: "tool_use",
+          name: "Agent",
+          input: {
+            subagent_type: "general-purpose",
+            prompt: "Search for files matching foo.ts",
+          },
+        },
+      ],
+    },
+  };
+}
+
 // テスト fixture: AskUserQuestion tool_use を含む assistant メッセージ
 function makeAskUserQuestionMsg(): TranscriptMessage {
   return {
@@ -272,6 +312,17 @@ describe("hasEvalRefCall", () => {
     ];
     expect(hasEvalRefCall(turn)).toBe(false);
   });
+
+  // Mode B: Agent tool_use の prompt に eval-ref が含まれるパターン
+  test("Mode B: Agent prompt に eval-ref が含まれれば true", () => {
+    const turn = [makeQueueQuickMsg(), makeEvalRefAgentMsg()];
+    expect(hasEvalRefCall(turn)).toBe(true);
+  });
+
+  test("Mode B: 無関係な Agent tool_use は false", () => {
+    const turn = [makeQueueQuickMsg(), makeUnrelatedAgentMsg()];
+    expect(hasEvalRefCall(turn)).toBe(false);
+  });
 });
 
 describe("hasAskUserQuestionAfterEvalRef", () => {
@@ -369,6 +420,40 @@ describe("shouldBlock — truth table", () => {
     // extractCurrentTurn を経由してから shouldBlock を呼ぶ (実運用と同じパス)
     const slice = extractCurrentTurn(turn);
     expect(shouldBlock(slice)).toBe(true);
+  });
+
+  // Mode B Case #10: quick 10 → Agent (eval-ref prompt) → AUQ なし → block
+  test("#10 Mode B: quick N で Agent eval-ref 後 AUQ なし → true (block)", () => {
+    const quickBatchMsg: TranscriptMessage = {
+      type: "user",
+      message: {
+        content: [
+          {
+            type: "text",
+            text: "<command-name>/user-research-queue</command-name><command-args>quick 10</command-args>",
+          },
+        ],
+      },
+    };
+    const turn = [quickBatchMsg, makeEvalRefAgentMsg(), makeAssistantTextMsg("評価カード")];
+    expect(shouldBlock(turn)).toBe(true);
+  });
+
+  // Mode B Case #11: quick 10 → Agent (eval-ref prompt) → AUQ あり → no block
+  test("#11 Mode B: quick N で Agent eval-ref 後 AUQ あり → false", () => {
+    const quickBatchMsg: TranscriptMessage = {
+      type: "user",
+      message: {
+        content: [
+          {
+            type: "text",
+            text: "<command-name>/user-research-queue</command-name><command-args>quick 10</command-args>",
+          },
+        ],
+      },
+    };
+    const turn = [quickBatchMsg, makeEvalRefAgentMsg(), makeAskUserQuestionMsg()];
+    expect(shouldBlock(turn)).toBe(false);
   });
 
   // Case #8: 壊れた JSONL を含む transcript → エラーをスローしない
