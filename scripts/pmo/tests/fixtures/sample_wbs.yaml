@@ -13,7 +13,7 @@ tasks:
     phase_l2: "事前ヒアリング"
     name: "ヒアリング対象者選定"
     assignee: "PM"
-    est_hours: 1
+    est_days: 1
     start_date: null
     end_date: null
     status: null

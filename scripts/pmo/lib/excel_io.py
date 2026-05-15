@@ -7,6 +7,10 @@ from openpyxl.utils import column_index_from_string
 from lib import xlsm_writer as _xlsm_writer
 
 
+def _keep_vba(path: Path) -> bool:
+    return path.suffix.lower() == ".xlsm"
+
+
 def _resolve_value(structural: Any, computed: Any) -> Any:
     """Return the appropriate cell value, preferring computed over formula strings.
 
@@ -27,7 +31,7 @@ def read_rows(
     columns: list[str],
     id_column: str = "A",
 ) -> list[dict[str, Any]]:
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    keep_vba = _keep_vba(workbook_path)
     # Pass 1: structural workbook — drives row iteration and gives raw/formula values
     wb_struct = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=False)
     ws_struct = wb_struct[sheet]
@@ -76,7 +80,7 @@ def batch_append_rows(
 ) -> None:
     if not rows:
         return
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    keep_vba = _keep_vba(workbook_path)
     wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=True)
     ws = wb[sheet]
     id_idx = column_index_from_string(id_column)
@@ -94,7 +98,7 @@ def append_row(
     id_column: str,
     values: dict[str, Any],
 ) -> int:
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    keep_vba = _keep_vba(workbook_path)
     wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=True)
     ws = wb[sheet]
     id_idx = column_index_from_string(id_column)

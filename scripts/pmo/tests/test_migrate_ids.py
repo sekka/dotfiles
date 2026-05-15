@@ -161,11 +161,11 @@ def test_dry_run_does_not_write(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     ws.cell(row=7, column=4, value="Task B")
     wb.save(p)
 
-    # Build a minimal new-format pmo.yaml for the project
+    # Build a minimal new-format WBS.yaml for the project
     pdir = tmp_path / "proj"
     pdir.mkdir()
     (pdir / ".pmo").mkdir()
-    (pdir / "pmo.yaml").write_text(
+    (pdir / "WBS.yaml").write_text(
         """project:
   name: test
   slug: test

@@ -57,7 +57,7 @@ def setup_project(
     """
     pdir.mkdir(parents=True, exist_ok=True)
     slug = pdir.name
-    pmo_path = pdir / "pmo.yaml"
+    pmo_path = pdir / "WBS.yaml"
     pmo_path.write_text(
         SAMPLE_PMO_YAML_TMPL.format(slug=slug, tasks=_task_block(tasks)),
         encoding="utf-8",
@@ -221,9 +221,9 @@ class TestSnapshotConsistencyAcrossSyncs:
             yaml_snapshot=[{"id": "T-001", "name": "foo", "status": None}],
             excel_snapshot=[
                 {"id": "T-001", "phase_l1": None, "phase_l2": None, "name": "foo",
-                 "assignee": None, "est_hours": None, "status": None},
+                 "assignee": None, "est_days": None, "status": None},
                 {"id": "X-999", "phase_l1": None, "phase_l2": None, "name": "manual entry",
-                 "assignee": None, "est_hours": None, "status": None},
+                 "assignee": None, "est_days": None, "status": None},
             ],
         )
         import sync as sync_mod
@@ -315,7 +315,7 @@ class TestSnapshotConsistencyAcrossSyncs:
         assert rc == 0
 
         from lib.yaml_io import load_pmo_yaml
-        pmo_after = load_pmo_yaml(pdir / "pmo.yaml")
+        pmo_after = load_pmo_yaml(pdir / "WBS.yaml")
         ids_after = [t["id"] for t in pmo_after.tasks]
         assert "T-002" not in ids_after, "T-002 was resurrected — prev_deleted not consulted"
 
@@ -394,8 +394,8 @@ class TestSnapshotConsistencyAcrossSyncs:
         spurious diffs against the readonly-stripped current YAML."""
         pdir = tmp_path / "proj"
         pdir.mkdir()
-        # Minimal new-format pmo.yaml: only excel.file, no layout fields.
-        (pdir / "pmo.yaml").write_text(
+        # Minimal new-format WBS.yaml: only excel.file, no layout fields.
+        (pdir / "WBS.yaml").write_text(
             """project:
   name: "Test"
   slug: "proj"
@@ -406,27 +406,27 @@ excel:
 tasks:
   - id: T-001
     name: foo
-    start_date: null
+    end_date: null
 """,
             encoding="utf-8",
         )
         (pdir / "WBS.xlsx").write_bytes(b"")
         # Snapshot retains a readonly field value (e.g. legacy format).
-        # The current YAML has start_date: null, so without filtering the
-        # snapshot side, diff would report "T-001.start_date changed".
-        # Canonical: start_date is readonly (col G).
+        # The current YAML has end_date: null, so without filtering the
+        # snapshot side, diff would report "T-001.end_date changed".
+        # Canonical: end_date is readonly (col H, WORKDAY formula).
         snap = Snapshot(
-            yaml={"T-001": {"name": "foo", "start_date": "2026-04-15T00:00:00"}},
-            excel={"T-001": {"name": "foo", "start_date": "2026-04-15T00:00:00"}},
+            yaml={"T-001": {"name": "foo", "end_date": "2026-04-15T00:00:00"}},
+            excel={"T-001": {"name": "foo", "end_date": "2026-04-15T00:00:00"}},
         )
         save_snapshot(snap, pdir / ".pmo" / "last-sync.json")
 
         import sync as sync_mod
         monkeypatch.setattr(sync_mod, "project_dir", lambda *a, **kw: pdir)
-        # D=name, G=start_date(readonly) in canonical
+        # D=name, H=end_date(readonly) in canonical
         monkeypatch.setattr(
             sync_mod, "read_rows", lambda *a, **kw: [
-                {"A": "T-001", "D": "foo", "G": None, "row": 2}
+                {"A": "T-001", "D": "foo", "H": None, "row": 2}
             ]
         )
         monkeypatch.setattr(sync_mod, "write_cells", lambda *a, **kw: None)

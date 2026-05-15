@@ -83,7 +83,7 @@ For each rule, write one sentence explaining how it applies to the *specific* si
 
 Provide 1–3 concrete actions, each completable within 15 minutes:
 - Player mode: focus actions (defer PM work, set a clear stop time, block distractions)
-- PM mode: management actions (log the risk, send a message, update pmo.yaml, call a quick sync)
+- PM mode: management actions (log the risk, send a message, update WBS.yaml, call a quick sync)
 - Mixed mode: sequencing actions (do PM task first, then resume player work with a defined window)
 
 ## Output Format

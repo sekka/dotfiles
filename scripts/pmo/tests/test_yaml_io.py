@@ -1,7 +1,7 @@
 from pathlib import Path
 from lib.yaml_io import load_pmo_yaml, save_pmo_yaml, update_task_field, add_task, PmoYaml, ColumnSpec
 
-FIXTURE = Path(__file__).parent / "fixtures" / "sample_pmo.yaml"
+FIXTURE = Path(__file__).parent / "fixtures" / "sample_wbs.yaml"
 
 
 def test_load_pmo_yaml_parses_project():
@@ -26,7 +26,7 @@ def test_load_pmo_yaml_parses_columns():
     assert cols_by_field["id"].col == "A"
     assert cols_by_field["id"].readonly is False
     assert cols_by_field["status"].readonly is False
-    assert cols_by_field["start_date"].readonly is True
+    assert cols_by_field["start_date"].readonly is False
     assert cols_by_field["end_date"].readonly is True
 
 
@@ -106,7 +106,7 @@ _NEW_ROW = {
     "phase_l2": "単体",
     "name": "test task",
     "assignee": "Dev",
-    "est_hours": 2,
+    "est_days": 2,
     "start_date": None,
     "end_date": None,
     "status": None,

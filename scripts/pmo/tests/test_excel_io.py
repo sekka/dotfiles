@@ -9,7 +9,7 @@ def make_workbook(path: Path) -> None:
     ws.title = "WBS"
     # header row 6
     headers = ["id", "phase_l1", "phase_l2", "name", "assignee",
-               "est_hours", "start_date", "end_date", "status"]
+               "est_days", "start_date", "end_date", "status"]
     for col_idx, h in enumerate(headers, start=1):
         ws.cell(row=6, column=col_idx, value=h)
     # data rows from row 7

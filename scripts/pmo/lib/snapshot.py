@@ -65,17 +65,21 @@ def load_snapshot(path: Path) -> Snapshot:
 
 
 def _normalize_value(value: Any) -> Any:
-    """Normalize values for comparison (e.g., midnight datetime → date, isoformat string → date)."""
+    """Collapse midnight datetimes to dates so a `datetime` round-tripped
+    through ISO-string snapshot storage compares equal to a `date` read fresh
+    from a source that has no time component."""
     if isinstance(value, datetime.datetime):
         if value.time() == datetime.time(0, 0):
             return value.date()
         return value
     if isinstance(value, str):
-        # snapshot stores dates as isoformat strings; normalize for comparison
         try:
-            return datetime.date.fromisoformat(value)
-        except (ValueError, TypeError):
-            pass
+            dt = datetime.datetime.fromisoformat(value)
+        except ValueError:
+            return value
+        if dt.time() == datetime.time(0, 0):
+            return dt.date()
+        return dt
     return value
 
 

@@ -21,6 +21,8 @@ class MatchResult:
 
 
 def _normalize_for_compare(value: Any) -> Any:
+    # NOTE: keep in sync with snapshot._normalize_value (snapshot also handles str ISO parsing
+    # for values round-tripped through JSON; omitted here since inputs are live YAML/Excel values)
     if isinstance(value, datetime.datetime):
         if value.time() == datetime.time(0, 0):
             return value.date()

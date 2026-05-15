@@ -18,7 +18,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
       ↓
 [Phase 1] /user-pm-discover
   AI対話 → Goals/Non-Goals/要件/制約/リスクを分類
-  出力: ~/prj/{slug}/discovery.md + pmo.yaml（初期）
+  出力: ~/prj/{slug}/discovery.md + WBS.yaml（初期）
       ↓
 [Phase 2] /user-pm-spec
   discovery.md → 要件定義書（RTM）+ Design Doc（10項目）
@@ -30,7 +30,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
   /user-pm-meeting → 議事録→decisions.md構造化
       ↓
 [Phase 4] /user-pm-report
-  pmo.yaml + decisions.md → ステータスレポート
+  WBS.yaml + decisions.md → ステータスレポート
   出力: CSV + Notion（設定時）
 ```
 
@@ -40,7 +40,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 
 | ファイル                 | 内容                 | 生成スキル                     |
 | ------------------------ | -------------------- | ------------------------------ |
-| `pmo.yaml`               | プロジェクトマスタ   | discover (初期) / wbs / status |
+| `WBS.yaml`               | プロジェクトマスタ   | discover (初期) / wbs / status |
 | `discovery.md`           | ヒアリング構造化記録 | pm-discover                    |
 | `spec.md`                | 要件定義書（RTM）    | pm-spec                        |
 | `design-doc.md`          | Design Doc（10項目） | pm-spec                        |
@@ -70,15 +70,15 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 
 **Claude がやること:**
 
-1. `~/prj/*/pmo.yaml` を全スキャン（期限・ステータスを確認）
+1. `~/prj/*/WBS.yaml` を全スキャン（期限・ステータスを確認）
 2. 緊急度順に案件一覧を表示（複数案件の場合、フォーカス案件を確認）
-3. 対象案件の全ドキュメントを読み込む（pmo.yaml / discovery.md / decisions.md / 最新レポート）
+3. 対象案件の全ドキュメントを読み込む（WBS.yaml / discovery.md / decisions.md / 最新レポート）
 4. 以下の観点で診断し、🔴 / 🟡 / ✅ の3段階に分類:
 
 | 観点                 | 🔴 要対応                             | 🟡 確認推奨          |
 | -------------------- | ------------------------------------- | -------------------- |
 | 期限                 | 7日以内                               | 8〜14日              |
-| 期限切れタスク       | pmo.yaml にあり                       | —                    |
+| 期限切れタスク       | WBS.yaml にあり                       | —                    |
 | Open Questions       | decisions.md の期日超過アイテム       | 期日未設定アイテム   |
 | リスク対応           | mitigation が TBD                     | mitigation なし      |
 | チーム状態           | 14日以上レポートなし                  | 8〜14日レポートなし  |
@@ -103,7 +103,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 
 🔴 要対応 (2)
 - 期限切れタスク: T-003「デザインレビュー」が3日超過
-  → pmo.yaml のステータスを更新、または /user-pm-meeting でアクション記録
+  → WBS.yaml のステータスを更新、または /user-pm-meeting でアクション記録
 - リスク対応: K-002「外部API仕様未確定」の mitigation が TBD
   → /user-pm-meeting でリスク対応方針を記録
 
@@ -187,7 +187,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 1. プロジェクトディレクトリを作成
 2. 7問のインタビューを1問ずつ実施
 3. 各回答を Goals / Non-Goals / Requirements / Constraints / Risks に自動分類
-4. `discovery.md` と `pmo.yaml` を生成
+4. `discovery.md` と `WBS.yaml` を生成
 
 **あなたがやること:**
 
@@ -246,7 +246,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 /user-pmo-status
 ```
 
-引数不要。`~/prj/*/pmo.yaml` を全読み込みし、全案件を一覧表示。
+引数不要。`~/prj/*/WBS.yaml` を全読み込みし、全案件を一覧表示。
 `decisions.md` があれば、期限切れ・期限間近のアクションアイテムも統合表示します。
 
 ---
@@ -289,7 +289,7 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 - 決定事項 / アクションアイテム / 未解決事項 / 新リスクを抽出
 - `decisions.md` に追記（最新が先頭）
 - `meetings/2026-04-23.md` として保存
-- アクションアイテムとリスクを `pmo.yaml` に自動追記
+- アクションアイテムとリスクを `WBS.yaml` に自動追記
 
 ---
 
@@ -307,10 +307,10 @@ Claude Code が担うのは: 構造化変換、カバレッジ検証、初稿生
 
 - チャットにレポート表示
 - `~/prj/{slug}/report-YYYY-MM-DD.csv` を保存（Excel対応）
-- `pmo.yaml` に `notion_page_id` が設定されていれば Notion にも出力
+- `WBS.yaml` に `notion_page_id` が設定されていれば Notion にも出力
 
 **Notion 連携の設定:**
-`~/prj/{slug}/pmo.yaml` の `notion_page_id` に Notion ページの UUID を記入:
+`~/prj/{slug}/WBS.yaml` の `notion_page_id` に Notion ページの UUID を記入:
 
 ```yaml
 notion_page_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -318,7 +318,7 @@ notion_page_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 ---
 
-## 6. pmo.yaml フィールドリファレンス
+## 6. WBS.yaml フィールドリファレンス
 
 ```yaml
 project:
@@ -339,7 +339,7 @@ tasks:
     phase: "要件定義"
     name: "RTM作成"
     assignee: "PM"
-    est_hours: 3
+    est_days: 3
     deadline: "YYYY-MM-DD"
     status: pending # pending / in_progress / done
     source: "" # 任意、meeting YYYY-MM-DD など
@@ -360,7 +360,7 @@ risks:
 | --------------------------------------------------------- | ---------------------------------------------------------------- |
 | `/user-pm-spec` が "discovery.md が見つかりません" と言う | 先に `/user-pm-discover` を実行                                  |
 | `/user-pm-report` の Notion 出力が失敗する                | `notion_page_id` が正しいか確認。問題があっても CSV は保存される |
-| `/user-pmo-status` でプロジェクトが表示されない           | `~/prj/{slug}/pmo.yaml` が存在するか確認                         |
+| `/user-pmo-status` でプロジェクトが表示されない           | `~/prj/{slug}/WBS.yaml` が存在するか確認                         |
 | WBS の工数が大きく補正される                              | `discovery.md` の要件数や高リスク数を確認。見直して再実行        |
 | PENDING 要件が多くて仕様書が作れない                      | クライアントに確認後、`discovery.md` を手動で編集して再実行      |
 | 同日に2回目の議事録を記録したい                           | 自動的に `meetings/YYYY-MM-DD-2.md` として保存される             |

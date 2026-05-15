@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from lxml import etree
+from openpyxl.utils import column_index_from_string
 
 # ---------------------------------------------------------------------------
 # Namespaces
@@ -79,20 +80,6 @@ def _resolve_sheet_path(zf: zipfile.ZipFile, sheet_name: str) -> str:
     if target.startswith("/"):
         return target.lstrip("/")
     return f"xl/{target}"
-
-
-# ---------------------------------------------------------------------------
-# Internal: column letter → 1-based index
-# ---------------------------------------------------------------------------
-
-
-def _col_to_index(col: str) -> int:
-    """Convert column letter(s) to 1-based index. 'A'→1, 'Z'→26, 'AA'→27."""
-    col = col.upper()
-    result = 0
-    for ch in col:
-        result = result * 26 + (ord(ch) - ord("A") + 1)
-    return result
 
 
 def _cell_ref(row: int, col: str) -> str:
@@ -270,13 +257,13 @@ def _set_cell(root: etree._Element, row_num: int, col_letter: str, value: Any) -
         _encode_value(new_cell, value)
 
         # Insert in column order
-        col_idx = _col_to_index(col_upper)
+        col_idx = column_index_from_string(col_upper)
         cells = row_el.findall(f"{{{NS}}}c")
         insert_before_cell: etree._Element | None = None
         for c in cells:
             c_ref = c.get("r", "")
             c_col = "".join(ch for ch in c_ref if ch.isalpha())
-            if _col_to_index(c_col) > col_idx:
+            if column_index_from_string(c_col) > col_idx:
                 insert_before_cell = c
                 break
 

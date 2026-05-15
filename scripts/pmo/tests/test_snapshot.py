@@ -147,6 +147,16 @@ def test_diff_against_snapshot_datetime_vs_date_no_change():
     assert not diff.has_changes()
 
 
+def test_diff_against_snapshot_iso_datetime_string_vs_midnight_datetime_no_change():
+    """Snapshot serializes datetime as 'YYYY-MM-DDTHH:MM:SS'. After load the
+    snapshot side holds the string while the current side holds a datetime
+    object — these must compare equal at the date level."""
+    snap_rows = {"T-001": {"start_date": "2026-06-10T00:00:00"}}
+    current = [{"id": "T-001", "start_date": datetime.datetime(2026, 6, 10, 0, 0)}]
+    diff = diff_against_snapshot(snap_rows, current)
+    assert not diff.has_changes()
+
+
 def test_diff_against_snapshot_multiple_changes():
     snap_rows = {
         "T-001": {"name": "設計", "assignee": "佐藤"},
@@ -165,3 +175,4 @@ def test_diff_against_snapshot_multiple_changes():
     assert diff.added == ["T-004"]
     assert diff.removed == ["T-003"]
     assert diff.has_changes()
+

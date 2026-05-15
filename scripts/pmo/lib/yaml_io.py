@@ -15,10 +15,10 @@ _yaml.width = 4096
 class ExcelConfig:
     """Excel layout config.
 
-    Post-refactor: only ``file`` is read from pmo.yaml.  All layout fields
+    Post-refactor: only ``file`` is read from WBS.yaml.  All layout fields
     (sheet, header_row, data_start_row, id_column, columns) are filled from
     the canonical WBS_SCHEMA.  Any ``excel.*`` keys beyond ``file`` present in
-    a legacy pmo.yaml are silently ignored.
+    a legacy WBS.yaml are silently ignored.
     """
 
     file: str
@@ -41,7 +41,7 @@ def load_pmo_yaml(path: Path) -> PmoYaml:
     with path.open("r", encoding="utf-8") as f:
         data = _yaml.load(f)
     excel_raw = data["excel"]
-    # Only the file name is read from pmo.yaml; all layout comes from canonical.
+    # Only the file name is read from WBS.yaml; all layout comes from canonical.
     excel = ExcelConfig(
         file=str(excel_raw["file"]),
         sheet=WBS_SCHEMA["sheet"],

@@ -123,7 +123,7 @@ def _format_guard_error(direction: str, diff: SnapshotDiff) -> str:
 
 def cmd_doctor(args: argparse.Namespace) -> int:
     pdir = project_dir(args.project, override=getattr(args, "pdir", None))
-    pmo_path = pdir / "pmo.yaml"
+    pmo_path = pdir / "WBS.yaml"
     pmo = load_pmo_yaml(pmo_path)
     issues: list[str] = []
     ids: list[str] = []
@@ -148,7 +148,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
 def cmd_migrate_ids(args: argparse.Namespace) -> int:
     """Bootstrap empty id cells in the WBS sheet with T-NNN assignments."""
     pdir = project_dir(args.project, override=getattr(args, "pdir", None))
-    pmo_path = pdir / "pmo.yaml"
+    pmo_path = pdir / "WBS.yaml"
     pmo = load_pmo_yaml(pmo_path)
     excel_path = pdir / pmo.excel.file
     if not excel_path.exists():
@@ -205,7 +205,7 @@ def cmd_migrate_ids(args: argparse.Namespace) -> int:
 
 
 def cmd_init(args: argparse.Namespace) -> int:
-    """Create a minimal pmo.yaml skeleton for a new project."""
+    """Create a minimal WBS.yaml skeleton for a new project."""
     from ruamel.yaml import YAML
     from ruamel.yaml.comments import CommentedMap
 
@@ -217,7 +217,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     file_name = args.file if args.file else "WBS.xlsm"
     pdir = Path.home() / "prj" / slug
     pdir.mkdir(parents=True, exist_ok=True)
-    pmo_path = pdir / "pmo.yaml"
+    pmo_path = pdir / "WBS.yaml"
 
     if pmo_path.exists() and not args.force:
         print(
@@ -252,7 +252,7 @@ def make_parser() -> argparse.ArgumentParser:
     common.add_argument("--project", required=False, help="project slug (~/prj/<slug>/)")
     common.add_argument("--pdir", type=Path, default=None, help="explicit project dir (overrides --project)")
 
-    sp = sub.add_parser("doctor", parents=[common], help="validate pmo.yaml")
+    sp = sub.add_parser("doctor", parents=[common], help="validate WBS.yaml")
     sp.set_defaults(func=cmd_doctor)
 
     sp = sub.add_parser("pull", parents=[common], help="Excel → YAML (one-way)")
@@ -270,10 +270,10 @@ def make_parser() -> argparse.ArgumentParser:
     mig.add_argument("--dry-run", action="store_true")
     mig.set_defaults(func=cmd_migrate_ids)
 
-    init = sub.add_parser("init", help="新規プロジェクトの pmo.yaml スケルトンを作成")
+    init = sub.add_parser("init", help="新規プロジェクトの WBS.yaml スケルトンを作成")
     init.add_argument("--project", required=True, help="project slug (~/prj/<slug>/)")
     init.add_argument("--file", default=None, help="Excel ファイル名 (default: WBS.xlsm)")
-    init.add_argument("--force", action="store_true", help="既存 pmo.yaml を上書き")
+    init.add_argument("--force", action="store_true", help="既存 WBS.yaml を上書き")
     init.set_defaults(func=cmd_init)
     return p
 
@@ -286,7 +286,7 @@ def main(argv: list[str] | None = None) -> int:
 
 def cmd_sync(args: argparse.Namespace, *, mode: str) -> int:
     pdir = project_dir(args.project, override=getattr(args, "pdir", None))
-    pmo_path = pdir / "pmo.yaml"
+    pmo_path = pdir / "WBS.yaml"
     pmo = load_pmo_yaml(pmo_path)
     excel_path = pdir / pmo.excel.file
     if not excel_path.exists():

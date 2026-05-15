@@ -9,6 +9,7 @@ import openpyxl
 from openpyxl.utils import column_index_from_string
 
 from lib import xlsm_writer as _xlsm_writer
+from lib.excel_io import _keep_vba
 
 
 def compute_id_assignments(
@@ -54,7 +55,7 @@ def scan_rows(
     (1-based row number). Rows where every column is None/empty are treated as
     the end sentinel and scanning stops.
     """
-    keep_vba = workbook_path.suffix.lower() == ".xlsm"
+    keep_vba = _keep_vba(workbook_path)
     wb = openpyxl.load_workbook(workbook_path, keep_vba=keep_vba, data_only=True)
     ws = wb[sheet]
 

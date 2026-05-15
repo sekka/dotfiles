@@ -2,7 +2,7 @@
 name: user-pmo-status
 description: >
   Use when the user wants a multi-project status dashboard, asks about project
-  health, or starts a weekly review. Reads ~/prj/*/pmo.yaml automatically,
+  health, or starts a weekly review. Reads ~/prj/*/WBS.yaml automatically,
   checks decisions.md for overdue and due-soon action items, and flags deadlines
   within 2 weeks. Triggers: "プロジェクト状況", "project status", "案件一覧",
   "dashboard".
@@ -17,9 +17,9 @@ Show status of all active projects at a glance.
 
 ## Iron Law
 
-1. Read all `~/prj/*/pmo.yaml` files — do not ask the user to specify projects
+1. Read all `~/prj/*/WBS.yaml` files — do not ask the user to specify projects
 2. Flag 🔴 for any project with deadline within 14 days
-3. Never invent data — if pmo.yaml is missing or malformed, show the project as "⚠️ Data missing" (Why: Fabricated data misleads; "Data missing" surfaces the real problem)
+3. Never invent data — if WBS.yaml is missing or malformed, show the project as "⚠️ Data missing" (Why: Fabricated data misleads; "Data missing" surfaces the real problem)
 4. When decisions.md action items exist, always check for overdue and due-soon — never silently skip
 
 ## Trigger
@@ -30,12 +30,12 @@ No arguments required.
 
 ## Process
 
-1. Glob `~/prj/*/pmo.yaml` — read all files found
+1. Glob `~/prj/*/WBS.yaml` — read all files found
 2. If no files found, output the header line followed by the no-projects message:
    ```
    Project Status — {today's date}
 
-   No projects found. Create a pmo.yaml in ~/prj/{name}/ to start tracking.
+   No projects found. Create a WBS.yaml in ~/prj/{name}/ to start tracking.
    ```
 3. For each project: extract name, phase, deadline, and task list
 4. Calculate progress: `done tasks / total tasks × 100` (round to nearest 10%)
@@ -93,10 +93,10 @@ Project              Phase          Progress  Deadline   Alert
 ...
 ```
 
-If a pmo.yaml is malformed or unreadable:
+If a WBS.yaml is malformed or unreadable:
 
 ```
-⚠️ {slug} — pmo.yaml unreadable
+⚠️ {slug} — WBS.yaml unreadable
 ```
 
 ## Example Output (project with action items)

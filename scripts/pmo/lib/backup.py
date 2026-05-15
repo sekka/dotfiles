@@ -12,15 +12,15 @@ def backup_excel(excel_path: Path, project_dir: Path) -> Path | None:
     Returns the destination Path on success, or None if the source does not exist.
     Raises OSError / shutil.Error on IO failure.
     """
-    if not excel_path.exists():
-        return None
-
     backup_dir = project_dir / ".pmo" / "backups"
     backup_dir.mkdir(parents=True, exist_ok=True)
 
     ts = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
     dest = backup_dir / f"{excel_path.stem}_{ts}{excel_path.suffix}"
-    shutil.copy2(excel_path, dest)
+    try:
+        shutil.copy2(excel_path, dest)
+    except FileNotFoundError:
+        return None
     return dest
 
 

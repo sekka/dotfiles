@@ -1,6 +1,6 @@
 ---
 name: user-pm-meeting
-description: Parse raw meeting notes into structured records — decisions.md entry, meetings archive file, and pmo.yaml sync. Triggered by "議事録", "meeting", "ミーティング記録", "meeting notes".
+description: Parse raw meeting notes into structured records — decisions.md entry, meetings archive file, and WBS.yaml sync. Triggered by "議事録", "meeting", "ミーティング記録", "meeting notes".
 argument-hint: [slug] [meeting-notes]
 effort: low
 context: fork
@@ -9,13 +9,13 @@ agent: general-purpose
 
 # PM Meeting — Notes → Structured Record
 
-Parse raw meeting notes and produce a `decisions.md` entry, a `meetings/YYYY-MM-DD.md` archive, and updated `pmo.yaml` tasks and risks.
+Parse raw meeting notes and produce a `decisions.md` entry, a `meetings/YYYY-MM-DD.md` archive, and updated `WBS.yaml` tasks and risks.
 
 ## Iron Law
 
 1. Never invent decisions or action items — only extract what is explicitly stated in the notes
 2. Prepend new entries to `decisions.md` — never overwrite; newest entry must appear first
-3. Always sync action items with `status: pending` to `pmo.yaml` tasks (Why: Single source of truth prevents task loss and enables rollup automation)
+3. Always sync action items with `status: pending` to `WBS.yaml` tasks (Why: Single source of truth prevents task loss and enables rollup automation)
 4. If slug is ambiguous, ask before writing any files
 
 ## Trigger
@@ -72,7 +72,7 @@ Analyze the raw notes and extract the following four categories. Extract only wh
 
 Read existing files once now and do not re-read them mid-process:
 - Read `~/prj/{slug}/decisions.md` if it exists → scan all entries and find the single highest number across D{n}, A{n}, U{n}, K{n}
-- Read `~/prj/{slug}/pmo.yaml` if it exists → find highest T-{nnn} task id and K-{nnn} risk id
+- Read `~/prj/{slug}/WBS.yaml` if it exists → find highest T-{nnn} task id and K-{nnn} risk id
 - New IDs for this meeting all start from (highest found + 1) and increment sequentially from there (e.g., if D3, A3, U2, K2 exist, the next available number is 4 — use D4, A4, U4, K4 as needed)
 - If no existing file, start at D1, A1, U1, K1, T-001, K-001
 
@@ -128,7 +128,7 @@ Save to `~/prj/{slug}/meetings/{YYYY-MM-DD}.md`. If that file already exists, us
 ```markdown
 # Meeting: {Meeting Title}
 
-Date: {YYYY-MM-DD} | Project: {project name from pmo.yaml} | Attendees: {list if mentioned, else omit this field}
+Date: {YYYY-MM-DD} | Project: {project name from WBS.yaml} | Attendees: {list if mentioned, else omit this field}
 
 ## Raw Notes
 
@@ -153,28 +153,28 @@ Date: {YYYY-MM-DD} | Project: {project name from pmo.yaml} | Attendees: {list if
 
 Apply same edge-case rules as Step 6 for missing sections.
 
-### Step 8 — Sync action items to pmo.yaml
+### Step 8 — Sync action items to WBS.yaml
 
-For each action item extracted, append a new task entry under `tasks:` in `~/prj/{slug}/pmo.yaml`:
+For each action item extracted, append a new task entry under `tasks:` in `~/prj/{slug}/WBS.yaml`:
 
 ```yaml
 - id: T-{next number, 3-digit zero-padded}
   phase: "{YYYY-MM-DD} action"
   name: "{action item text}"
   assignee: "{owner or TBD}"
-  est_hours: 0
+  est_days: 0
   deadline: "{YYYY-MM-DD or TBD}"
   status: pending
   source: "meeting {YYYY-MM-DD}"
 ```
 
-If no action items were found, skip this step entirely (do not create an empty `tasks:` key or modify pmo.yaml).
+If no action items were found, skip this step entirely (do not create an empty `tasks:` key or modify WBS.yaml).
 
-If action items exist and `tasks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
+If action items exist and `tasks:` key does not exist in WBS.yaml, add it as an empty list first, then append.
 
-### Step 9 — Sync new risks to pmo.yaml
+### Step 9 — Sync new risks to WBS.yaml
 
-For each new risk extracted, append under `risks:` in `~/prj/{slug}/pmo.yaml`:
+For each new risk extracted, append under `risks:` in `~/prj/{slug}/WBS.yaml`:
 
 ```yaml
 - id: K-{next number, 3-digit zero-padded}
@@ -184,13 +184,13 @@ For each new risk extracted, append under `risks:` in `~/prj/{slug}/pmo.yaml`:
   source: "meeting {YYYY-MM-DD}"
 ```
 
-If no new risks were found, skip this step entirely (do not create an empty `risks:` key or modify pmo.yaml).
+If no new risks were found, skip this step entirely (do not create an empty `risks:` key or modify WBS.yaml).
 
-If risks exist and `risks:` key does not exist in pmo.yaml, add it as an empty list first, then append.
+If risks exist and `risks:` key does not exist in WBS.yaml, add it as an empty list first, then append.
 
-### Step 10 — Update pmo.yaml project section
+### Step 10 — Update WBS.yaml project section
 
-Check the `project:` section in `~/prj/{slug}/pmo.yaml`:
+Check the `project:` section in `~/prj/{slug}/WBS.yaml`:
 - If `decisions_file:` is absent or empty string `""`: set it to `decisions.md`
 - If already set to a non-empty value: leave unchanged
 
@@ -209,18 +209,18 @@ Print a summary in chat:
 Files updated:
 - ~/prj/{slug}/decisions.md
 - ~/prj/{slug}/meetings/{YYYY-MM-DD}.md
-- ~/prj/{slug}/pmo.yaml
+- ~/prj/{slug}/WBS.yaml
 ```
 
 ## Completion Condition
 
-`decisions.md` updated with newest entry first, `meetings/YYYY-MM-DD.md` saved, `pmo.yaml` synced with action items and risks.
+`decisions.md` updated with newest entry first, `meetings/YYYY-MM-DD.md` saved, `WBS.yaml` synced with action items and risks.
 
 ## Status
 
 Add one of the following at the end of every response:
 
-- `## Status: DONE` — decisions.md updated, meeting file saved, pmo.yaml synced, no [owner TBD] items
+- `## Status: DONE` — decisions.md updated, meeting file saved, WBS.yaml synced, no [owner TBD] items
 - `## Status: DONE_WITH_CONCERNS` — saved successfully, but one or more action items have `[owner TBD]` (list the items)
 - `## Status: NEEDS_CONTEXT` — notes not provided or slug not found (specify what is missing)
 - `## Status: BLOCKED` — cannot parse notes or write files (add reason)

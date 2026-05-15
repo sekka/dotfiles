@@ -1,13 +1,13 @@
 # PMO Excel ⇄ YAML Sync
 
-PMO の `pmo.yaml` と Excel WBS (`*.xlsm`) を snapshot ベースの一方向同期で連携する CLI。
+PMO の `WBS.yaml` と Excel WBS (`*.xlsm`) を snapshot ベースの一方向同期で連携する CLI。
 
 ## 使い方
 
 ```bash
 cd scripts/pmo
 uv sync                                                              # 初回のみ
-uv run python sync.py init --project <slug>                          # pmo.yaml スケルトンを作成
+uv run python sync.py init --project <slug>                          # WBS.yaml スケルトンを作成
 uv run python sync.py init --project <slug> --file WBS.xlsm         # Excel ファイル名を指定
 uv run python sync.py doctor --project <slug>                        # 検証
 uv run python sync.py pull wbs --project <slug>                      # Excel → YAML
@@ -20,13 +20,13 @@ uv run python sync.py migrate-ids wbs --project <slug> --dry-run     # 採番プ
 
 ## ブートストラップ
 
-新規プロジェクトを開始する場合は `init` で pmo.yaml スケルトンを作成する。
+新規プロジェクトを開始する場合は `init` で WBS.yaml スケルトンを作成する。
 
 ```bash
 uv run python sync.py init --project <slug>
 ```
 
-作成される `~/prj/<slug>/pmo.yaml`:
+作成される `~/prj/<slug>/WBS.yaml`:
 
 ```yaml
 project:
@@ -39,11 +39,11 @@ excel:
 tasks: []
 ```
 
-WBS の Excel カラム構成は `lib/schema.py` の `WBS_SCHEMA` として baked in されている。`pmo.yaml` の `excel:` セクションには `file` のみ記載すればよい。`sheet / header_row / columns` などのレイアウト情報は一切不要。
+WBS の Excel カラム構成は `lib/schema.py` の `WBS_SCHEMA` として baked in されている。`WBS.yaml` の `excel:` セクションには `file` のみ記載すればよい。`sheet / header_row / columns` などのレイアウト情報は一切不要。
 
 ## 動作前提
 
-- `~/prj/<slug>/pmo.yaml` に `excel.file` が設定されている（`init` コマンドで生成）
+- `~/prj/<slug>/WBS.yaml` に `excel.file` が設定されている（`init` コマンドで生成）
 - `excel.file` で指定した Excel が同ディレクトリに存在する
 - Excel ファイルが他プロセスで開かれていない（PermissionError 対応）
 - WBS の Excel レイアウトは canonical schema (`lib/schema.py`) に準拠していること
@@ -59,8 +59,8 @@ WBS シートのカラム構成は `lib/schema.py` の `WBS_SCHEMA` が正規情
 | C  | phase_l2   |                         |
 | D  | name       |                         |
 | E  | assignee   |                         |
-| F  | est_hours  |                         |
-| G  | start_date | readonly (WORKDAY 数式) |
+| F  | est_days   |                         |
+| G  | start_date |                         |
 | H  | end_date   | readonly (WORKDAY 数式) |
 | I  | status     |                         |
 
@@ -86,7 +86,7 @@ abort 時は「件数」「具体的な差分」「3 つの選択肢 (push first
 
 ### readonly 列
 
-`lib/schema.py` で `readonly=True` と指定された列 (G: start_date, H: end_date) は同期対象から除外される。WORKDAY などの数式列を保護する用途。
+`lib/schema.py` で `readonly=True` と指定された列 (H: end_date) は同期対象から除外される。WORKDAY などの数式列を保護する用途。
 
 ### Excel バックアップ
 
