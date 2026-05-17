@@ -188,6 +188,18 @@ if [[ -e "$HOME/dotfiles/.git" ]] && command -v git &>/dev/null && repo_root=$(g
     log_skip "Git clean filter 'codex-strip' (既に設定済み)"
   fi
 
+  # smudge は cat 固定（checkout/restore 時にフィルタ未定義で失敗するのを防ぐ）
+  current_smudge=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.smudge 2>/dev/null || true)
+  if [[ $current_smudge != "cat" ]]; then
+    if git -C "$HOME/dotfiles" config filter.codex-strip.smudge cat; then
+      log_info "Git smudge filter 'codex-strip' を cat に設定しました"
+    else
+      log_warn "Git smudge filter 'codex-strip' の設定に失敗しました（続行します）"
+    fi
+  else
+    log_skip "Git smudge filter 'codex-strip' (既に設定済み)"
+  fi
+
   # filter 未設定時に git add を失敗させて漏えいを防ぐ
   current_required=$(git -C "$HOME/dotfiles" config --get filter.codex-strip.required 2>/dev/null || true)
   if [[ $current_required != "true" ]]; then
