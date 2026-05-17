@@ -66,7 +66,10 @@
       "WebFetch(domain:zenn.dev)",
       "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
-      "mcp__plugin_playwright_playwright__*"
+      "mcp__plugin_playwright_playwright__*",
+      "Bash(git config *)",
+      "WebFetch(domain:speakerdeck.com)",
+      "WebFetch(domain:efcl.info)"
     ],
     "deny": [],
     "ask": [
