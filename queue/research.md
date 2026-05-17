@@ -12,6 +12,23 @@ Deep research backlog. Two-stage pipeline:
 
 (まだ Quick Eval していない URL。`/user-research-queue quick` で順番に Quick Eval を回す)
 
+- [ ] 2026-05-17 — [ログイン済みの Chrome をそのまま Claude Code から操作する — playwright-cli attach](https://zenn.dev/optimisuke/articles/40529cd970cbf0) — focus: TBD
+- [ ] 2026-05-17 — [Windowsに最初から入ってる不要なソフト、重くなる原因かも。「簡単に一掃」する方法 | ライフハッカー・ジャパン](https://www.lifehacker.jp/article/2605-you-need-hack-faster-windows-11-tkh/) — focus: TBD
+- [ ] 2026-05-17 — [鹿野さんに聞く！CSSの最新トレンド Ver.2026 - Speaker Deck](https://speakerdeck.com/tonkotsuboy_com/lu-ye-sanniwen-ku-cssnozui-xin-torendo-ver-dot-2026) — focus: TBD
+- [ ] 2026-05-17 — [Claude Codeの1000 セッションを分析して、一週間目でリードタイムを10%縮めた話](https://zenn.dev/globis/articles/94762dc8ec7914) — focus: TBD
+- [ ] 2026-05-17 — [Vibe Coding のトークン消費量の40-60%を占めることもある、Markdownファイルの読み込みトーク…](https://qiita.com/dahatake/items/ce9917268d8d18aa9b6c) — focus: TBD
+- [ ] 2026-05-17 — [Claude Code を社内で使うための「AIエージェントセキュリティ」実践編 #Security - Qiita](https://qiita.com/sharu389no/items/ab5bf50d9f68e7c8de56) — focus: TBD
+- [ ] 2026-05-17 — [Andrej Karpathy氏のLLM Wikiを1ヶ月運用してわかった、LLMの知識を『繋げる力』](https://zenn.dev/tsurubee/articles/llm-wiki-connecting-knowledge) — focus: TBD
+- [ ] 2026-05-17 — [Anthropic公式プラグイン「hookify」でClaude Codeのフックを自然言語で作る](https://zenn.dev/shirochan/articles/198a0537a79469) — focus: TBD
+- [ ] 2026-05-17 — [automerge-gate: GitHubのAuto Mergeをひとつの必須チェックに集約するGitHub Action | Web Scratch](https://efcl.info/2026/05/13/automerge-gate/) — focus: TBD
+- [ ] 2026-05-17 — [AI企業が「受託」を始めた日。エンジニア、PM、デザイナーはどうこの先生きのこるか｜深津 貴之 (fladdict)](https://note.com/fladdict/n/nd42977e5443e) — focus: TBD
+- [ ] 2026-05-17 — [Web制作者は要チェック！ コンテナクエリの進化、動画の遅延読み込みなど、Chrome 148で新しく追加され…](https://coliss.com/articles/build-websites/architectonics/chrome-148-adds-7-new-css-feature.html) — focus: TBD
+- [ ] 2026-05-17 — [Codex を利用した iOS アプリ開発を試してみた](https://azukiazusa.dev/blog/ios-app-development-with-codex/) — focus: TBD
+- [ ] 2026-05-17 — [Gen Interface JP](https://gen.typesetting.jp/) — focus: TBD
+- [ ] 2026-05-17 — [Codex の Computer Use を試す｜npaka](https://note.com/npaka/n/nd62f3e1fe802) — focus: TBD
+- [ ] 2026-05-17 — [（メモ）アクセシブルなEPUB制作のためのガイドブック - 水底の血](https://momdo.hatenablog.jp/entry/20260429/1777457386) — focus: TBD
+- [ ] 2026-05-17 — [macOSのネイティブ仮想技術を利用しLinuxコンテナを作成/実行できるAppleのコマンドラインツールcon…](https://applech2.com/archives/20260427-orchard-macos-gui-for-apple-container.html) — focus: TBD
+
 ## Deep Research 待ち
 
 (Quick Eval 済みで Deep Research する価値ありと判断した URL。`/user-research-queue deep` で順番に Deep Research を回す)
