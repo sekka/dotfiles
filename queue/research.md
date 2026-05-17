@@ -28,6 +28,35 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-17 — [Codex の Computer Use を試す｜npaka](https://note.com/npaka/n/nd62f3e1fe802) — focus: TBD
 - [ ] 2026-05-17 — [（メモ）アクセシブルなEPUB制作のためのガイドブック - 水底の血](https://momdo.hatenablog.jp/entry/20260429/1777457386) — focus: TBD
 - [ ] 2026-05-17 — [macOSのネイティブ仮想技術を利用しLinuxコンテナを作成/実行できるAppleのコマンドラインツールcon…](https://applech2.com/archives/20260427-orchard-macos-gui-for-apple-container.html) — focus: TBD
+- [ ] 2026-05-17 — [GitHub Copilot CLI で考える複数エージェント設計｜くさば](https://zenn.dev/tomokusaba/articles/a599cb645ca2c5) — focus: TBD
+- [ ] 2026-05-17 — [microsoft/ghqr — GitHub Quick Review. Evaluate your enterprise and organizations with GitHub best practices](https://github.com/microsoft/ghqr) — focus: TBD
+- [ ] 2026-05-17 — [agents-cli の中身を見てみよう｜Makoto Mase](https://zenn.dev/makocchan/articles/whats_agents_cli) — focus: TBD
+- [ ] 2026-05-17 — [Neovim で最高の Markdown ビューワーを作る - md-render.nvim #Lua - Qiita](https://qiita.com/delphinus/items/7dab609ef95bf030f217) — focus: TBD
+- [ ] 2026-05-17 — [Anthropic公式「skill-creator」完全活用ガイド — SKILL.md設計・eval最適化・チーム運用・トラブル…](https://qiita.com/TaichiEndoh/items/8b8ed06bb76a80bb34c2) — focus: TBD
+- [ ] 2026-05-17 — [smol-machines/smolvm — Tool to build & run portable, lightweight, self-contained virtual machines.](https://github.com/smol-machines/smolvm) — focus: TBD
+- [ ] 2026-05-17 — [Claude Code と二人七脚 DB 設計](https://zenn.dev/techtrain_blog/articles/0991bc406b58e2) — focus: TBD
+- [ ] 2026-05-17 — [仕様駆動開発への期待と誤解 ～「仕様」とは、結局何なのか～ (1/3)|CodeZine（コードジン）](https://codezine.jp/article/detail/23908) — focus: TBD
+- [ ] 2026-05-17 — [YouMind-OpenLab/awesome-gpt-image-2 — World's largest GPT Image 2 prompt library, 2000+ curated prompts…](https://github.com/YouMind-OpenLab/awesome-gpt-image-2) — focus: TBD
+- [ ] 2026-05-17 — [あなたのチームの頼れる相棒に。CodeRabbit Agent for Slackリリース！ #AIエージェント - Qiita](https://qiita.com/goofmint/items/06486fe88ad6baa7ed48) — focus: TBD
+- [ ] 2026-05-17 — [ハーネスエンジニアリングの本質 ー従来の開発規律を、エージェントが回せるように再設計する](https://developers.gmo.jp/technology/81971/) — focus: TBD
+- [ ] 2026-05-17 — [Vim使いでなくてもdotfilesを管理しよう](https://slide.burio16.com/you-must-have-dotfiles) — focus: TBD
+- [ ] 2026-05-17 — [ひとり会社をClaude Codeで完全自動化する「AI-CEO Framework」を徹底解説｜7788](https://zenn.dev/7788/articles/6c3f54d0efc958) — focus: TBD
+- [ ] 2026-05-17 — [CLAUDE.md の肥大化を 3 層構造で 83% 軽くした — 実測と試行錯誤の記録](https://zenn.dev/pepabo/articles/claude-code-rules-skills-split) — focus: TBD
+- [ ] 2026-05-17 — [Claude Codeで開発を自動化するSkills 5選 #AI - Qiita](https://qiita.com/kamome_susume/items/3b9b18e7e54f15721837) — focus: TBD
+- [ ] 2026-05-17 — [ハーネスエンジニアリングにどう向き合うか 〜ルールファイルを超えて開発プロセスを設計する〜](https://speakerdeck.com/rkaga/how-to-approach-harness-engineering) — focus: TBD
+- [ ] 2026-05-17 — [AIにコードを読ませるならopensrc！調査コードを一元管理 | eiji.page](https://eiji.page/blog/opensrc-intro) — focus: TBD
+- [ ] 2026-05-17 — [AIにコーディングを全任せした結果、ドメイン設計に辿り着いた話](https://zenn.dev/tan_go238/articles/002437e923913c) — focus: TBD
+- [ ] 2026-05-17 — [Claude Codeでバックオフィス業務のために「back-officeリポジトリ」を作ったほうがいいよ｜すてぃお](https://note.com/suthio/n/nf03d4f1df801) — focus: TBD
+- [ ] 2026-05-17 — [AIに仕様書を書かせるベストプラクティス 2026 #AIエージェント - Qiita](https://qiita.com/YushiYamamoto/items/484792459af3afcba1a8) — focus: TBD
+- [ ] 2026-05-17 — [Claude Code × Obsidian Vault で作る「何でも相談」プロジェクト ― フォルダ構成・CLAUDE.md・MCP…](https://qiita.com/htani0817/items/0cb5e8f91fa64fb9ba8c) — focus: TBD
+- [ ] 2026-05-17 — [Claude Codeで日常のタスクを45個自動化した東大院生の全記録](https://zenn.dev/shunya_sudo/articles/claude-code-45-automation-tasks) — focus: TBD
+- [ ] 2026-05-17 — [Claude Code で仕事しながら英語を学ぶ環境を整えてみた | DevelopersIO](https://dev.classmethod.jp/articles/claude-code-working-in-english-environment-setup/) — focus: TBD
+- [ ] 2026-05-17 — [2026年3月にBaselineになったReporting APIを活用してフロントエンドのObservabilityを高める - プププなテクブ](https://blog.inorinrinrin.com/entry/2026/04/18/232104) — focus: TBD
+- [ ] 2026-05-17 — [60分で学ぶ最新Webフロントエンド - Speaker Deck](https://speakerdeck.com/mizdra/geek-camp-2026-frontend) — focus: TBD
+- [ ] 2026-05-17 — [要件定義書の成果物を1枚ずつ解説する記事がなかったので、架空のプロジェクトで自分でつくって解説します](https://zenn.dev/h4gi/articles/612cff3d96b3c0) — focus: TBD
+- [ ] 2026-05-17 — [デザイナーはアクセシビリティチェックツールの夢を見るか — Claude Codeでつくる3エンジン評価ツール - enechain Tech Blog](https://techblog.enechain.com/entry/a11ychecker-claudecode) — focus: TBD
+- [ ] 2026-05-17 — [PRを出すだけでスクショ付き動作確認レポートが自動生成される仕組みを作る（Claude × Playwright）](https://zenn.dev/datum_studio/articles/ebefce70f39a0d) — focus: TBD
+- [ ] 2026-05-17 — [【有料級】Claude Codeで1人マーケ部門を作った全記録｜KAWAI](https://note.com/kawaidesign/n/n229818b75aa1) — focus: TBD
 
 ## Deep Research 待ち
 
