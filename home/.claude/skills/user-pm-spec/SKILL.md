@@ -3,6 +3,8 @@ name: user-pm-spec
 description: Read discovery.md and generate a Requirements Spec (RTM) and Design Doc. Triggered by "仕様書作成", "spec", "design doc", or "仕様化". Saves spec.md and design-doc.md to ~/prj/{slug}/.
 argument-hint: [slug]
 effort: high
+context: fork
+agent: general-purpose
 ---
 
 # PM Spec — Requirements Spec and Design Doc Generation
@@ -30,8 +32,8 @@ Arguments:
 If `slug` is provided as an argument, use it directly.
 
 If no slug is given:
-- Run: `ls ~/prj/*/pmo.yaml 2>/dev/null`
-- If exactly one `pmo.yaml` exists, extract its slug and auto-detect (inform the user which slug was chosen)
+- Run: `ls ~/prj/*/WBS.yaml 2>/dev/null`
+- If exactly one `WBS.yaml` exists, extract its slug and auto-detect (inform the user which slug was chosen)
 - If zero or multiple exist, ask the user: "プロジェクトのスラッグを入力してください（例: oo-corporate-renewal）"
 
 ### Step 2 — Check discovery.md
@@ -170,9 +172,9 @@ Date: {YYYY-MM-DD} | Status: Draft
 *To be filled after project delivery.*
 ```
 
-### Step 9 — Update pmo.yaml
+### Step 9 — Update WBS.yaml
 
-Check if `~/prj/{slug}/pmo.yaml` exists:
+Check if `~/prj/{slug}/WBS.yaml` exists:
 
 - **If it does not exist**, create a minimal one:
 
@@ -205,7 +207,7 @@ Coverage matrix: {n} items — {n} ✅ mapped, {n} 🔴 missing
 Files written:
 - ~/prj/{slug}/spec.md
 - ~/prj/{slug}/design-doc.md
-- ~/prj/{slug}/pmo.yaml (updated)
+- ~/prj/{slug}/WBS.yaml (updated)
 ```
 
 If PENDING items exist, add:
@@ -215,7 +217,7 @@ If PENDING items exist, add:
 
 ## Completion Condition
 
-`spec.md` and `design-doc.md` are written, coverage matrix shows 0 🔴 gaps, and pmo.yaml is updated with `spec_file` and `design_doc_file`.
+`spec.md` and `design-doc.md` are written, coverage matrix shows 0 🔴 gaps, and WBS.yaml is updated with `spec_file` and `design_doc_file`.
 
 **0 🔴 gaps** means all discovery.md requirement items are mapped to a spec row (or covered by a Coverage Exceptions entry). PENDING spec items do **not** block completion — their presence triggers `DONE_WITH_CONCERNS` status, not `BLOCKED`.
 

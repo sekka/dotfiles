@@ -1,6 +1,6 @@
 ---
 name: user-doc-parse
-description: Activated automatically when reading PDF, PPTX, DOCX, or XLSX files. Converts documents to text using the liteparse CLI before processing. Triggered by "read this PDF", "check this PPTX", or "summarize this document".
+description: Use when reading PDF, PPTX, DOCX, or XLSX files that need text extraction before processing. Converts documents to text using the liteparse CLI. Triggered by "read this PDF", "check this PPTX", or "summarize this document".
 disable-model-invocation: false
 allowed-tools: Bash(lit:*), Bash(npx:*), Read, Write
 effort: low
@@ -12,7 +12,7 @@ Converts PDF, PPTX, DOCX, and XLSX files to text so Claude Code can process them
 
 ## Iron Law
 
-1. Do not try to read binary files directly
+1. Do not try to read binary files directly (Why: Direct binary reads produce garbage; detect type with `file` first)
 
 ## Usage
 

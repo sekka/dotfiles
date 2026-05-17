@@ -3,6 +3,8 @@ name: user-doc-design-spec
 description: Use when creating UI design documentation before Figma work or coding: text wireframes, layout specifications, design system definitions (colors, typography, spacing tokens), component state inventories, or design handoff documents. Outputs Markdown specs, not code. To generate UI code directly, use the frontend-design skill instead.
 disable-model-invocation: false
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # UI Design Specification
@@ -13,8 +15,8 @@ A skill for designing UIs that are not just visually appealing, but also impleme
 
 ## Iron Law
 
-1. Do not propose designs that cannot be implemented.
-2. Do not skip responsive support.
+1. Do not propose designs that cannot be implemented. (Why: Unimplementable designs block implementation)
+2. Do not skip responsive support. (Why: Skipping responsive breaks the site on mobile after launch)
 
 ## Execution Flow
 

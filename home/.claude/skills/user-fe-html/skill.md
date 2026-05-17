@@ -1,9 +1,8 @@
 ---
 name: user-fe-html
 description: >
-  Run a 4-phase HTML semantics and accessibility audit using check-html.ts (requires bun).
-  Delegates the automated scan to an implementer subagent; main agent handles qualitative analysis and report.
-  Inputs: file path, URL, git diff, or code block.
+  Use when auditing HTML semantics and accessibility. Runs a 4-phase check using check-html.ts (requires bun).
+  Accepts file path, URL, git diff, or code block as input.
   Triggered by "improve HTML", "a11y check", "accessibility", "ARIA", "semantics", or "improve markup".
 effort: medium
 ---

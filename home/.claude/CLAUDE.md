@@ -88,6 +88,21 @@ See section 4 for delegation rules by subagent type (researcher / implementer / 
 
 ## 4. Forced Routing to Save Context
 
+> **Opus 4.7 note (effort-aware application):** Opus 4.7 では behavior change として
+> "Fewer subagents spawned by default" + "More literal instruction following at lower
+> effort levels" が入った。下記の定量トリガー (3 Read / 2 Grep / 30 行) は引き続き
+> base ルールだが、effort level で運用を分ける:
+>
+> - **`low` / `medium`**: トリガー超過 → delegate **(mandatory)**
+> - **`high` / `xhigh`**: トリガー超過 → delegate **(default)**。inline 判断する場合は
+>   理由を 1 行で justify
+>
+> 定量トリガーと "If unsure, delegate" は引き続き binding。justify 節は
+> 「トリガーは満たすが inline で正しく処理できる積極的な理由がある」場合にのみ適用する
+> (例: ファイルが既に context にあり、変更が purely mechanical)。
+>
+> 出典: https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7
+
 The main agent's context window is limited and expensive. Focus on **directing work**, not **executing work**.
 
 ### Operations the main agent may do directly
@@ -150,8 +165,8 @@ Custom skills (`~/.claude/skills/`) and plugin skills are matched automatically 
 
 ## References
 
-- Security policy: `.claude/rules/security.md`
-- Visual output policy (when to use visual-explainer skills): `.claude/rules/visual-output.md`
+- Security policy: `home/.claude/rules/security.md`
+- Visual output policy (when to use visual-explainer skills): `home/.claude/rules/visual-output.md`
 - Subagent definitions: `home/.claude/agents/`
 - Skill list and usage: `docs/claude-code-cheatsheet.md`
 

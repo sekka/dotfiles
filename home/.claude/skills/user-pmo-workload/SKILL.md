@@ -1,7 +1,14 @@
 ---
 name: user-pmo-workload
-description: Show member workload for the current week across all projects. Reads ~/prj/*/pmo.yaml and ~/prj/members.yaml. Falls back to 40h default capacity per member if members.yaml is absent. Flags overloaded members (🔴) and suggests reassignment. Triggered by "稼働確認", "workload", "メンバー工数", or "リソース確認". Also use proactively before sprint planning or task assignment discussions.
+description: >
+  Use when checking team capacity or planning task assignments. Shows planned
+  workload per member for the current week across all active projects. Reads
+  ~/prj/*/WBS.yaml and ~/prj/members.yaml; falls back to 40h default per member
+  if members.yaml is absent. Flags overloaded members (🔴) and suggests
+  reassignment. Triggers: "稼働確認", "workload", "メンバー工数", "リソース確認".
 effort: low
+context: fork
+agent: Explore
 ---
 
 # Member Workload Visualizer
@@ -10,7 +17,7 @@ Show planned workload per member for the current week across all active projects
 
 ## Iron Law
 
-1. Read `~/prj/*/pmo.yaml` and `~/prj/members.yaml` — never ask the user to specify files
+1. Read `~/prj/*/WBS.yaml` and `~/prj/members.yaml` — never ask the user to specify files
 2. Scope is current week only (Monday–Sunday of the week containing today)
 3. Only visualize planned allocation — do not estimate actuals, costs, or billing
 4. Flag 🔴 if any member exceeds their weekly capacity
@@ -24,9 +31,9 @@ No arguments required.
 ## Process
 
 1. Read `~/prj/members.yaml` — get member names and weekly capacities
-2. Glob `~/prj/*/pmo.yaml` — read all project task lists
+2. Glob `~/prj/*/WBS.yaml` — read all project task lists
 3. For each task: check if the task deadline falls within the current week AND status is not `done`
-4. Sum `est_hours` per assignee across all projects for the current week
+4. Sum `est_days` per assignee across all projects for the current week
 5. Compare to each member's `weekly_capacity_hours`
 6. Output visualization per member
 7. For any overloaded member: suggest 1–2 specific tasks to move or reassign
@@ -34,7 +41,7 @@ No arguments required.
 ## Members.yaml Fallback
 
 If `~/prj/members.yaml` does not exist:
-- Derive member list from all unique `assignee` values in pmo.yaml files
+- Derive member list from all unique `assignee` values in WBS.yaml files
 - Set capacity to 40h for all members (default)
 - Place the following note block at the very top of the output (before the week header):
   ```
@@ -83,12 +90,12 @@ Members with no tasks this week: {comma-separated names or "none"}
 If no tasks fall in the current week for any member:
 
 ```
-No tasks scheduled for the week of {Monday date}. Check pmo.yaml deadlines.
+No tasks scheduled for the week of {Monday date}. Check WBS.yaml deadlines.
 ```
 
 ## Assignee Not in members.yaml
 
-If an assignee appears in pmo.yaml tasks but is not listed in members.yaml (members.yaml exists but the name is missing):
+If an assignee appears in WBS.yaml tasks but is not listed in members.yaml (members.yaml exists but the name is missing):
 - Include them in the output using the 40h default capacity
 - Add "⚠️ {name} — not in members.yaml, using 40h default" at the top of the output, before the week header
 - If members.yaml is absent entirely, the note block in the Members.yaml Fallback section above covers this — do not add a separate ⚠️ note per member in addition

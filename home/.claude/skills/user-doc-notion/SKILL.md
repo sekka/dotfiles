@@ -27,7 +27,7 @@ Trigger keywords: "notionify", "Notionページに操作説明を作って", "sc
 ## Iron Law
 
 1. **Check `NOTION_TOKEN` first.** If the env var is unset, stop immediately and tell the user to set it before continuing.
-2. **Never screenshot login-required pages without confirmation.** If the target URL shows a login wall or the user mentions authentication is required, ask for explicit confirmation before proceeding.
+2. **Never screenshot login-required pages without confirmation.** If the target URL shows a login wall or the user mentions authentication is required, ask for explicit confirmation before proceeding. (Why: Unauthorized screenshots risk ToS violation and data leakage; confirmation marks the responsibility boundary)
 3. **Always save screenshots locally before uploading.** Write every file to `/tmp/notionify/` first. Never send a screenshot directly to Notion without a local copy existing.
 
 ---

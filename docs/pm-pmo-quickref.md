@@ -43,7 +43,7 @@
 2. `/user-pmo-status` で全案件確認
 3. `/user-pm-report` で週次レポート生成
 
-## pmo.yaml フェーズ値
+## WBS.yaml フェーズ値
 
 `discovery` → `spec` → `design` → `development` → `qa` → `launch`
 

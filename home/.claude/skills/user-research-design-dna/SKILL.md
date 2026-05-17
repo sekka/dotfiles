@@ -2,6 +2,8 @@
 name: user-research-design-dna
 description: Use when analyzing a competitor or reference website for design intelligence — design tokens, layout patterns, component screenshots, AI-powered tone/manner analysis, 7-axis evaluation scoring, and Design DNA. Triggered by "analyze this site's design", "extract design tokens from", "design DNA", "competitor design analysis", "design direction for project", "study the visual language of", "デザインDNA", "デザイン分析". Accumulates results in ~/.claude/design-references/ for reuse. Also generates DESIGN.md for projects.
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # Website Design Analysis Skill
@@ -180,9 +182,9 @@ For each component screenshot taken in Step 4 (nav, hero, card, footer, etc.):
 
 Prompt template:
 ```
-コンポーネント「{name}」のスクリーンショットを評価してください。
-~/.claude/skills/user-research-design-dna/references/evaluation-model.md の component.yaml 形式で出力してください。
-関連する3〜4軸でスコアを付け、borrow_value と borrow_note を含めてください。
+Evaluate the screenshot of component "{name}".
+Output in the component.yaml format defined in ~/.claude/skills/user-research-design-dna/references/evaluation-model.md.
+Score on 3–4 relevant axes and include borrow_value and borrow_note.
 ```
 
 ## Step 5d: Metadata Generation
@@ -191,10 +193,10 @@ AI generates a draft `metadata.yaml` and shows it to the user. If the user wants
 
 Prompt:
 ```
-以下の情報を元に metadata.yaml を生成してください（references/evaluation-model.md の形式）:
+Generate metadata.yaml using the format in references/evaluation-model.md, based on the following:
 - site: {domain}
 - url: {full URL}
-- evaluation.yaml の overall, dna, context, borrow を引用
+- Cite overall, dna, context, borrow from evaluation.yaml
 - date: {today's date}
 - about_url: {if analyzed, else empty string}
 ```
@@ -204,8 +206,8 @@ Prompt:
 After saving `motion-raw.json`, pass the transitions/animations data to AI with this prompt:
 
 ```
-上記の transitions/animations データを見て、このサイトのモーション言語を
-1〜2文で言語化してください（motion_language フィールドとして）。
+Review the transitions/animations data above and describe this site's motion language
+in 1–2 sentences (as the motion_language field).
 ```
 
 Append the returned `motion_language` value to `motion.yaml`.
@@ -292,9 +294,9 @@ for quick review — the authoritative data is in the YAML files and analysis.md
 
 After saving to dotfiles, offer to generate `./DESIGN.md` for the current project.
 
-1. Ask: "DESIGN.md をプロジェクトルートに生成しますか？"
-2. If yes, ask: "ベースにする参照サイト: [{slug}] ← 今分析したサイト。他に追加しますか？"
-3. Ask: "プロジェクト固有のトークン上書きはありますか？（なければスキップ）"
+1. Ask: "Generate DESIGN.md in the project root?"
+2. If yes, ask: "Base reference site: [{slug}] ← site just analyzed. Add more?"
+3. Ask: "Any project-specific token overrides? (skip if none)"
 4. Generate `./DESIGN.md` following `user-figma-implement/references/design-md-format.md`:
    - Pre-fill `tokens` and `grid` from `~/.claude/design-references/{slug}/tokens.yaml`
    - Pre-fill prose sections from `~/.claude/design-references/{slug}/analysis.md`

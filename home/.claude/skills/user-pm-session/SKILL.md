@@ -1,11 +1,9 @@
 ---
 name: user-pm-session
 description: >
-  Start a PM work session. Scans all active projects in ~/prj/*/pmo.yaml,
-  identifies the focus project, reads its documents, and proactively flags
-  items that need attention (overdue tasks, unresolved risks, stale fields,
-  missing stakeholder reports). Suggests the next action for each issue with
-  a specific skill to invoke.
+  Use when starting a PM work session or weekly project health review.
+  Scans ~/prj/*/WBS.yaml, diagnoses the selected project for overdue tasks, unresolved risks,
+  stale fields, and missing reports, then recommends the next action per finding.
   Triggered by "PM始める", "今週のPM", "pm-session", "案件確認", "セッション開始", or "session start".
 argument-hint: [project-slug]
 effort: medium
@@ -20,7 +18,7 @@ Start a focused PM work session: scan projects, diagnose the selected project's 
 1. Never propose actions without reading the actual files first — always read before diagnosing
 2. Always show "Good" items too — explicitly confirming what is healthy is as important as flagging problems
 3. Every flagged item must come with a concrete next action, not just "please check"
-4. Never force updates — if the user says "later", move to the next item without repeating
+4. Never force updates — if the user says "later", move to the next item without repeating (Why: Repeated nagging breaks trust; respect the user's decision pace)
 
 ## Trigger
 
@@ -33,9 +31,9 @@ Arguments:
 
 ### Step 1 — Scan all projects
 
-Glob `~/prj/*/pmo.yaml` and read each file. If no files found, output:
+Glob `~/prj/*/WBS.yaml` and read each file. If no files found, output:
 ```
-No projects found. Create a pmo.yaml in ~/prj/{name}/ to start tracking.
+No projects found. Create a WBS.yaml in ~/prj/{name}/ to start tracking.
 ```
 
 Identify projects that need attention (flag criteria for project list ordering only — detailed classification happens in Step 4):
@@ -64,7 +62,7 @@ Ask with AskUserQuestion if more than one project exists.
 ### Step 3 — Read project documents
 
 Read all available files for the selected project in parallel:
-- `~/prj/{slug}/pmo.yaml` (required)
+- `~/prj/{slug}/WBS.yaml` (required)
 - `~/prj/{slug}/discovery.md` (if exists)
 - `~/prj/{slug}/decisions.md` (if exists)
 - Most recent `~/prj/{slug}/report-*.csv` (if any — use glob to find latest by filename)
@@ -76,11 +74,11 @@ Evaluate the following criteria and classify each as 🔴 Action required / 🟡
 | Criterion | 🔴 Condition | 🟡 Condition |
 | --------- | ------------ | ------------ |
 | Deadline proximity | ≤ 7 days | 8–14 days |
-| Overdue tasks | Any pmo.yaml task with deadline < today and status ≠ done | — |
+| Overdue tasks | Any WBS.yaml task with deadline < today and status ≠ done | — |
 | Open Questions | decisions.md has open items (questions OR action items) past their deferred-until / due date | items with no deferred-until date; or if decisions.md does not exist, treat as 🟡 and suggest creating it via /user-pm-meeting |
-| Risk mitigation | Any risk mitigation = "TBD" | Any risk with no mitigation note. If pmo.yaml has no risks section or an empty risks list, treat as ✅ — do not flag. |
+| Risk mitigation | Any risk mitigation = "TBD" | Any risk with no mitigation note. If WBS.yaml has no risks section or an empty risks list, treat as ✅ — do not flag. |
 | Team & Health | No report in last 14 days | Last report 8–14 days ago |
-| Phase staleness | phase unchanged + no done tasks in 14 days | phase unchanged 8–14 days; if no phase-change date is recorded in pmo.yaml, treat as 🟡 |
+| Phase staleness | phase unchanged + no done tasks in 14 days | phase unchanged 8–14 days; if no phase-change date is recorded in WBS.yaml, treat as 🟡 |
 | Approver set | **approver field missing or empty** | — |
 | Stakeholder comms | No report file in 21+ days, OR no report file has ever been created | No report in 14–21 days |
 
@@ -97,19 +95,19 @@ Available skill suggestions:
 - Risk or decision update → `/user-pm-meeting`
 - Weekly report → `/user-pm-report`
 - WBS adjustment → `/user-pmo-wbs`
-- Phase / task update → edit pmo.yaml directly
+- Phase / task update → edit WBS.yaml directly
 - Discovery update → `/user-pm-discover`
 - Role or judgment call → `/user-pm-judge`
 
 **Consolidation rule**: If both Team & Health and Stakeholder comms trigger 🔴 simultaneously (both caused by the same absent report), merge them into a single Stakeholder comms entry. Do not list Team & Health separately when Stakeholder comms already covers the same fact.
 
-**Named contact rule**: When the suggested action involves reporting to a stakeholder and `approver` is set in pmo.yaml, name them explicitly in the suggestion (e.g., "→ {approver}への報告が必要 — /user-pm-report" instead of generic "report to stakeholder").
+**Named contact rule**: When the suggested action involves reporting to a stakeholder and `approver` is set in WBS.yaml, name them explicitly in the suggestion (e.g., "→ {approver}への報告が必要 — /user-pm-report" instead of generic "report to stakeholder").
 
 After presenting the diagnosis, output a single "Top priority" line:
 ```
 🎯 今日の最優先: {the single most urgent 🔴 item in one line} → {concrete action} — /{skill-name}
 ```
-If the action is "edit pmo.yaml directly" (no skill), omit the `— /{skill-name}` part.
+If the action is "edit WBS.yaml directly" (no skill), omit the `— /{skill-name}` part.
 If no 🔴 items exist, output: `🎯 今日の最優先: なし — 全項目良好`
 
 **Top priority selection order** (when multiple 🔴 items exist, pick the first that applies):
@@ -151,11 +149,11 @@ Next session: /user-pm-session
 
 🎯 今日の最優先: {most urgent 🔴 item in one line} → {concrete action} — /{skill-name}
 ```
-(Omit `— /{skill-name}` when the action is "edit pmo.yaml directly".)
+(Omit `— /{skill-name}` when the action is "edit WBS.yaml directly".)
 
 ## Status
 
 - `## Status: DONE` — session completed and summary output
 - `## Status: DONE_WITH_CONCERNS` — session completed but some items were deferred without resolution
 - `## Status: NEEDS_CONTEXT` — no project slug provided and multiple projects exist with equal urgency
-- `## Status: BLOCKED` — no pmo.yaml files found in ~/prj/
+- `## Status: BLOCKED` — no WBS.yaml files found in ~/prj/

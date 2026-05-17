@@ -23,16 +23,21 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 | Deep Research | "I want to use this", "I want to adopt this", "Research this", "I'm interested", "Check if this is implementable" |
 | OSS Project Wiki | GitHub URL + "document this", "wiki化して", "まとめて", "解析してまとめて", "どんなプロジェクト", "comprehensive summary" |
 | Auto detection | URL + short question → Quick / URL + detailed background → Deep / GitHub URL + "wiki/document/まとめ" → OSS Wiki |
+
+**Precedence rule:** Explicit trigger phrases in the table above take precedence over the auto-detection heuristics. Auto-detection applies only when no trigger phrase matches the user's message.
+
 </quick_start>
 
 ## Iron Law
 
-1. Do not evaluate without reading the article content
+1. Do not evaluate without reading the article content (Why: Evaluating from title/abstract alone raises recommendation hallucination rate)
 2. Do not recommend adoption without checking the current environment
 
 <workflow>
 
 ## Content Retrieval Flow (Common to All Modes)
+
+**Pre-step — X / Twitter post URL:** If the URL host is `x.com` or `twitter.com` AND the path matches an individual post (`/<user>/status/<id>`), delegate content extraction to **user-research-x-posts** via the Skill tool first. Use its extracted post text/thread as the content. Then continue mode evaluation. Do NOT attempt WebFetch on x.com post URLs — it is blocked.
 
 ```
 1. Try WebFetch → 200 OK → done
@@ -56,18 +61,24 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 | Technical articles on CSS/JS/HTML/performance/accessibility | user-fe-knowledge | Detect by keywords in content |
 | Design examples, awards, creative works | user-research-creative | Detect by keywords in content |
 | Explicit request like "analyze the structure of this site" | user-research-websites | Detect from user message |
+| X / Twitter individual post URL (`x.com/*/status/*`, `twitter.com/*/status/*`) | user-research-x-posts | Used as a **content-extraction sub-step**, not a terminal route — fetch the post text/thread, then continue evaluation in the chosen mode |
 
 → If applicable, launch the target skill using the Skill tool, then end evaluating-references here.
 
 ---
 
+## Routing Check (Applies to All Modes)
+
+Before entering Mode 1, 2, or 3, evaluate the routing table above. If the content type matches one of the **terminal** routing targets (user-fe-knowledge, user-research-creative, user-research-websites), launch the target skill via the Skill tool and end evaluating-references here.
+
+**Non-terminal sub-step:** user-research-x-posts is a content-extraction helper, not a terminal route. After it returns the post content, continue with the chosen mode (Quick / Deep / OSS Wiki) using that content.
+
 ## Mode 1: Quick Evaluation
 
 **Flow:**
-1. Routing check (see table above)
-2. Summary in 3 lines or less
-3. Evaluate on a 5-point scale
-4. Output in structured card format
+1. Summary in 3 lines or less
+2. Evaluate on a 5-point scale
+3. Output in structured card format
 
 **5-point scale:**
 
@@ -108,8 +119,30 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 **Flow:**
 1. Detailed analysis
-2. Check existing environment (in priority order)
-3. Output adoption recommendation + implementation plan (if adopting)
+2. **Verify against primary sources** (mandatory — see below)
+3. Check existing environment (in priority order)
+4. Output adoption recommendation + implementation plan (if adopting)
+
+**Primary-source verification (mandatory):**
+
+When the shared URL is a secondary source (blog post, Zenn/Qiita/Medium article, X post, news summary, AI-generated summary, third-party comparison), do NOT rely on it alone. Identify and fetch the primary source for every load-bearing claim before recommending adoption.
+
+| Topic of claim | Primary source to check |
+|---|---|
+| Library / framework / SDK API, options, version behavior | Official docs (prefer context7 MCP) + the project's GitHub repo (README, CHANGELOG, source) |
+| CLI tool flags, behavior | Official docs / `--help` output / upstream repo |
+| Spec / standard (CSS, HTML, ECMAScript, HTTP, WCAG) | W3C / WHATWG / TC39 / IETF / W3C spec pages |
+| Browser support / compatibility | MDN + caniuse |
+| Cloud service pricing / limits / features | Official vendor docs (not third-party summaries) |
+| Benchmarks / performance claims | Original benchmark repo + methodology; if absent, mark as "unverified" |
+| Security advisory / CVE | NVD / GHSA / vendor advisory |
+| Academic / research claims | Original paper (arXiv, publisher), not a blog summary |
+
+**Rules:**
+- If the shared URL IS the primary source (official docs, upstream repo, spec page, vendor advisory), note that and skip duplicate fetching.
+- If a primary source cannot be located or fetched, mark the affected claim as **"未検証 (一次ソース未確認)"** in the output. Do NOT silently downgrade to the secondary source.
+- Cite primary-source URLs in the output. Distinguish them from the originally shared URL.
+- Secondary sources may still be cited for opinion, adoption stories, or community reception — but factual claims (API behavior, limits, support) must trace to a primary source.
 
 **Existing environment check targets (in priority order):**
 1. `CLAUDE.md`, `.claude/rules/*` — Check for conflicts with settings and policies
@@ -135,6 +168,11 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 ### Implementation Plan (if adopting)
 [Step-by-step overview-level adoption procedure]
 
+### Primary Sources Consulted
+- [Official docs / spec / upstream repo] — <url> (checked: <claim verified>)
+- [...] 
+- Unverified claims: [list any claim marked 未検証 (一次ソース未確認), or "none"]
+
 ### Recommendation: [Adopt / Do not adopt]
 [Rationale]
 ```
@@ -145,13 +183,15 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 
 **Purpose:** Given a GitHub repository URL, produce a comprehensive Japanese wiki-style report that captures what the project is, how it works, how it compares to alternatives, and how the community receives it.
 
-**Trigger condition:** The URL matches `github.com/{owner}/{repo}` AND the user's message contains wiki/document/まとめ intent. If the URL is a GitHub repo but the intent is adoption-for-own-use, prefer Mode 2 (Deep Research) instead.
+**Trigger condition:** The URL matches `github.com/{owner}/{repo}` AND the user's message contains wiki/document/まとめ intent.
+
+**⚠️ OVERRIDE:** If the URL is a GitHub repo BUT the user's intent is adoption-for-own-use ("use this", "adopt this", "should I use this", "research for my environment"), **switch to Mode 2 (Deep Research)** instead. Adoption-intent supersedes the GitHub URL default.
 
 **Flow:**
 1. Gather repo metadata via `gh` CLI (stars, description, topics, recent commits, latest release)
 2. Fetch `README.md` and skim top-level directory structure for architecture signals
 3. Identify 3-5 similar/competing projects (web search)
-4. Search community reactions — X/Twitter, Hacker News, Reddit, Japanese tech blogs (Zenn/Qiita). Note both positive and negative voices.
+4. Search community reactions — X/Twitter, Hacker News, Reddit, Japanese tech blogs (Zenn/Qiita). Note both positive and negative voices. **For specific X posts found during this step, delegate content extraction to user-research-x-posts** (do not WebFetch x.com URLs directly).
 5. Render the structured wiki (section list below) in **Japanese**
 6. Output to stdout. Do NOT auto-save to disk. If the user asks to save, ask for a destination path.
 
@@ -197,6 +237,10 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 - Mode 2: "Should I adopt this for my environment?" → compares against the user's own dotfiles/skills/Brewfile
 - Mode 3: "What is this project, objectively?" → comprehensive external-view wiki, independent of the user's environment
 
+**user-research-eval-ref vs user-research-x-posts:**
+- user-research-eval-ref: Evaluates value / adoption fit of a URL
+- user-research-x-posts: **Content-extraction helper** for x.com / twitter.com post URLs. Called as a sub-step from this skill when an X post URL is shared, because WebFetch is blocked on x.com. After extraction, evaluation continues here.
+
 **user-research-eval-ref vs user-research-queue:**
 - user-research-eval-ref: Evaluate a single URL **now** (Quick Eval, Deep Research, or OSS Wiki)
 - user-research-queue: **Queue management** — add URLs for later, list backlog, and process entries over time; delegates actual deep research to this skill
@@ -210,6 +254,7 @@ Three modes: Quick Evaluation (light reference check), Deep Research (detailed a
 - State adoption/rejection recommendation with rationale
 - Attach an overview-level implementation plan when adopting
 - Include comparison with existing environment (CLAUDE.md, Brewfile, skills/)
+- **Cite primary sources** (official docs, spec, upstream repo) for every load-bearing factual claim; any claim without a primary source must be marked 未検証
 
 **OSS Project Wiki:**
 - All 10 sections present, in order, in Japanese

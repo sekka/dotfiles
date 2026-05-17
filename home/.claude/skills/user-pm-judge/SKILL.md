@@ -1,10 +1,9 @@
 ---
 name: user-pm-judge
 description: >
-  Help a playing manager decide whether to act as a player or as a PM in the current situation.
-  Identifies the current mode (player / PM / mixed), matches 1–3 of the 10 PM iron rules,
-  and outputs actionable steps executable within 15 minutes.
-  Also helps articulate vague "bad feelings" into concrete risk statements.
+  Use when a playing manager needs role clarity or senses something is off but cannot name it.
+  Classifies the current situation as player / PM / mixed mode, applies the relevant PM iron rules,
+  and returns concrete actions completable in 15 minutes.
   Triggered by "判断に迷う", "PMとして", "役割整理", "モード確認", "なんか嫌な予感がする",
   "これはPMの仕事？", "どう動くべき？", "what should I do as PM", or "mode check".
 argument-hint: [situation]
@@ -18,7 +17,7 @@ Disambiguate your current role and surface the right next action — in under 15
 ## Iron Law
 
 1. Never prescribe actions without first identifying the current mode
-2. Always cite iron rules by number and name — vague encouragement is forbidden
+2. Always cite iron rules by number and name — vague encouragement is forbidden (Why: Numbered citations enable post-hoc verification and rule tracing)
 3. Every recommended action must be executable in 15 minutes or less
 4. When "bad feeling" language appears, invoke the risk articulation flow before mode judgment
 
@@ -84,7 +83,7 @@ For each rule, write one sentence explaining how it applies to the *specific* si
 
 Provide 1–3 concrete actions, each completable within 15 minutes:
 - Player mode: focus actions (defer PM work, set a clear stop time, block distractions)
-- PM mode: management actions (log the risk, send a message, update pmo.yaml, call a quick sync)
+- PM mode: management actions (log the risk, send a message, update WBS.yaml, call a quick sync)
 - Mixed mode: sequencing actions (do PM task first, then resume player work with a defined window)
 
 ## Output Format

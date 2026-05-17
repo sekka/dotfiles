@@ -1,7 +1,7 @@
 ---
 name: user-dev-prototype
 description: >
-  Use when you want to build an initial prototype fast.
+  Builds an initial prototype fast.
   Orchestrates Opus 4.6 (1M context) + feature-dev agents + auto-approve mode + worktree isolation for maximum velocity.
   Triggered by "rapid prototype", "プロトタイプ", "prototype fast", "quick prototype".
 effort: high
@@ -23,7 +23,7 @@ Always isolate prototype work in a git worktree so main stays clean. If the appr
 ## Iron Law
 
 1. Prototype quality only. No production polish unless explicitly requested.
-2. Always isolate in a worktree — never prototype directly on main/master.
+2. Always isolate in a worktree — never prototype directly on main/master. (Why: Prototyping on main risks accidental merge; worktrees discard safely)
 3. Speed > perfection. Ship a working skeleton first.
 
 ## Pre-flight Checklist

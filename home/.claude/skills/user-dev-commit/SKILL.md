@@ -9,6 +9,8 @@ description: >
 allowed-tools: Bash(git status:*), Bash(git diff:*), Bash(git add:*), Bash(git commit:*), Bash(git log:*), Bash(git reset:*)
 model: haiku
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 Analyze the changes by logical unit and commit related changes together.

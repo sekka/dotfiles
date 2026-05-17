@@ -8,20 +8,82 @@
   },
   "permissions": {
     "allow": [
+      "Bash(agent-browser *)",
+      "Bash(brew *)",
+      "Bash(bun scripts/development/lint-format.ts)",
+      "Bash(bun test:*)",
+      "Bash(cairosvg --version)",
+      "Bash(cat)",
+      "Bash(claude *)",
       "Bash(codex:*)",
+      "Bash(darwin-rebuild *)",
+      "Bash(dprint *)",
+      "Bash(gh repo:*)",
+      "Bash(gh skill *)",
+      "Bash(mise *)",
       "Bash(mkdir:*)",
+      "Bash(nix search:*)",
+      "Bash(npx *)",
+      "Bash(qmd *)",
+      "Bash(rsvg-convert --version)",
+      "Bash(rtk *)",
+      "Bash(shellcheck:*)",
+      "Bash(tmux list-panes *)",
+      "Bash(wait)",
+      "Bash(wrangler *)",
+      "Skill(codex:rescue)",
       "Skill(commit-commands:*)",
       "Skill(creating-hooks)",
       "Skill(difit-here)",
       "Skill(review-pr)",
+      "Skill(schedule)",
       "Skill(user-dev-commit)",
       "Skill(user-dev-review)",
+      "Skill(user-dotfiles-tool-config)",
       "Skill(user-fe-knowledge)",
       "Skill(user-harness-gen-skills)",
+      "Skill(user-harness-ship)",
+      "Skill(user-research-eval-ref)",
+      "Skill(user-research-x-posts)",
+      "WebFetch(domain:agent-browser.io)",
+      "WebFetch(domain:aimanavo.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:azukiazusa.dev)",
+      "WebFetch(domain:bun.com)",
+      "WebFetch(domain:cli.github.com)",
+      "WebFetch(domain:coliss.com)",
+      "WebFetch(domain:dev.classmethod.jp)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:docs.coderabbit.ai)",
+      "WebFetch(domain:formulae.brew.sh)",
+      "WebFetch(domain:gihyo.jp)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:ics.media)",
+      "WebFetch(domain:liginc.co.jp)",
+      "WebFetch(domain:loftwork.com)",
+      "WebFetch(domain:martinfowler.com)",
+      "WebFetch(domain:note.com)",
+      "WebFetch(domain:photoshopvip.net)",
+      "WebFetch(domain:playwright.dev)",
+      "WebFetch(domain:qiita.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "WebFetch(domain:search.nixos.org)",
+      "WebFetch(domain:togetter.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:www.celebrain.com)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:www.hrpro.co.jp)",
+      "WebFetch(domain:x.com)",
+      "WebFetch(domain:zenn.dev)",
       "WebSearch",
       "Write",
       "mcp__deepwiki__*",
       "mcp__drawio__*",
+      "mcp__playwright__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
       "mcp__plugin_context7_context7__*",
       "mcp__plugin_playwright_playwright__*",
@@ -44,11 +106,14 @@
     "ask": [
       "Bash(chmod:*)",
       "Bash(curl:*)",
+      "Bash(gh extension *)",
       "Bash(git merge:*)",
       "Bash(git push:*)",
+      "Bash(open *)",
       "Bash(rm:*)",
       "Bash(wget:*)"
-    ]
+    ],
+    "defaultMode": "default"
   },
   "hooks": {
     "PreToolUse": [
@@ -188,6 +253,14 @@
             "command": "bun $HOME/.claude/hooks/language-check.ts"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun $HOME/.claude/hooks/queue-stop-guard.ts"
+          }
+        ]
       }
     ],
     "StopFailure": [
@@ -302,7 +375,8 @@
     "skill-creator@claude-plugins-official": true,
     "visual-explainer@visual-explainer-marketplace": true,
     "cloudflare@claude-plugins-official": false,
-    "plugin-dev@claude-plugins-official": true
+    "plugin-dev@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -344,11 +418,12 @@
   },
   "language": "Japanese",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "medium",
+  "effortLevel": "xhigh",
   "advisorModel": "opus",
   "plansDirectory": "./plans",
   "showThinkingSummaries": true,
   "remoteControlAtStartup": false,
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
 }

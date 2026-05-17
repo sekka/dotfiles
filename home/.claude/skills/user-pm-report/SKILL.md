@@ -1,17 +1,19 @@
 ---
 name: user-pm-report
-description: Generate a project status report from pmo.yaml and decisions.md. Outputs CSV (always) and Notion page (if notion_page_id is set in pmo.yaml). Triggered by "レポート生成", "report", "週次報告", "status report".
+description: Generate a project status report from WBS.yaml and decisions.md. Outputs CSV (always) and Notion page (if notion_page_id is set in WBS.yaml). Triggered by "レポート生成", "report", "週次報告", "status report".
 argument-hint: [slug] [period]
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # PM Report — Status Report Generation
 
-Aggregate project data from pmo.yaml and decisions.md and produce a structured status report.
+Aggregate project data from WBS.yaml and decisions.md and produce a structured status report.
 
 ## Iron Law
 
-1. Read pmo.yaml and decisions.md before generating — never fabricate progress data
+1. Read WBS.yaml and decisions.md before generating — never fabricate progress data
 2. CSV is always saved — Notion output is best-effort (skip gracefully if notion_page_id not set or empty)
 3. Do not overwrite an existing report file — always use date-stamped filenames
 4. Always output the Team & Health section — write "None" or "No change" explicitly rather than omitting it
@@ -27,12 +29,12 @@ Arguments:
 ## Process
 
 1. Resolve slug:
-   - If exactly one `~/prj/*/pmo.yaml` exists: use that project automatically (announce it)
+   - If exactly one `~/prj/*/WBS.yaml` exists: use that project automatically (announce it)
    - If multiple: list slugs and ask "どのプロジェクトのレポートですか？"
    - If none: respond with `## Status: NEEDS_CONTEXT` — "~/prj/ にプロジェクトが見つかりません。"
 
-2. Read `~/prj/{slug}/pmo.yaml`
-   - If missing: `## Status: NEEDS_CONTEXT` — "pmo.yaml が見つかりません。"
+2. Read `~/prj/{slug}/WBS.yaml`
+   - If missing: `## Status: NEEDS_CONTEXT` — "WBS.yaml が見つかりません。"
 
 3. If `~/prj/{slug}/decisions.md` exists, read it; otherwise skip decisions sections
 
@@ -40,18 +42,18 @@ Arguments:
    - period_end = today
    - period_start = today - {period} days (default 7)
 
-5. Calculate progress from pmo.yaml:
+5. Calculate progress from WBS.yaml:
    - total_tasks = count of all items in tasks list
    - done_count = count of items where status = "done"
    - progress_pct = round(done_count / total_tasks * 100) if total_tasks > 0, else 0
-   - phase = project.phase from pmo.yaml
+   - phase = project.phase from WBS.yaml
    - days_remaining = project.deadline - today (negative = overdue)
 
 6. Extract from decisions.md (within reporting period only):
    - Completed action items: rows where Due date ≤ period_end (use as proxy for completed)
    - Open action items: rows where Due date > today or Due = "TBD"
    - Unresolved questions: all [U{n}] lines
-   - Active risks from pmo.yaml risks list + new risks from decisions.md
+   - Active risks from WBS.yaml risks list + new risks from decisions.md
 
 7. Generate report (see Report Format below) and display in chat
 
@@ -59,7 +61,7 @@ Arguments:
    - If file already exists (re-run same day), append `-2`, `-3` suffix until filename is free
 
 9. Notion output:
-   - Read `project.notion_page_id` from pmo.yaml
+   - Read `project.notion_page_id` from WBS.yaml
    - If set and non-empty string: output report content to Notion page via MCP
      - On any failure: print "⚠️ Notion への出力に失敗しました。CSVは保存済みです。" and continue
    - If empty string or field absent: skip silently (no warning)
@@ -87,7 +89,7 @@ Phase: {phase} | Progress: {progress_pct}% | Days remaining: {days_remaining}
 
 ## Completed This Period
 
-{List all pmo.yaml tasks with status=done (no date filter — all completed tasks are shown cumulatively), plus decisions.md action items where Due date ≤ period_end. Write "なし" if none}
+{List all WBS.yaml tasks with status=done (no date filter — all completed tasks are shown cumulatively), plus decisions.md action items where Due date ≤ period_end. Write "なし" if none}
 
 ## Issues & Blockers
 
@@ -103,7 +105,7 @@ Phase: {phase} | Progress: {progress_pct}% | Days remaining: {days_remaining}
 | ------ | ----- | --- |
 | {open action item} | {owner} | {date or TBD} |
 
-(Source: decisions.md open action items only — do not list pmo.yaml in_progress tasks here. Write "なし" if no open action items)
+(Source: decisions.md open action items only — do not list WBS.yaml in_progress tasks here. Write "なし" if no open action items)
 
 ## Risk Status
 
@@ -144,5 +146,5 @@ Use UTF-8 encoding. Escape commas in values with double-quotes.
 
 - `## Status: DONE` — report displayed in chat, CSV saved
 - `## Status: DONE_WITH_CONCERNS` — CSV saved, but Notion output failed (list the error)
-- `## Status: NEEDS_CONTEXT` — slug not found, pmo.yaml missing, or ambiguous project (specify what is missing)
+- `## Status: NEEDS_CONTEXT` — slug not found, WBS.yaml missing, or ambiguous project (specify what is missing)
 - `## Status: BLOCKED` — cannot read required files (add reason)

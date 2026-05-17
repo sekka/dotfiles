@@ -1,18 +1,18 @@
 ---
 name: user-pm-discover
-description: Run an AI-guided client hearing session and produce discovery.md + initial pmo.yaml. Triggered by "ヒアリング開始", "discovery", or "要件ヒアリング". Saves to ~/prj/{slug}/.
+description: Run an AI-guided client hearing session and produce discovery.md + initial WBS.yaml. Triggered by "ヒアリング開始", "discovery", or "要件ヒアリング". Saves to ~/prj/{slug}/.
 argument-hint: [project-name] [client-name] [deadline]
 effort: high
 ---
 
 # PM Discovery — Client Hearing
 
-Conduct a structured 7-question client hearing, classify answers, and generate `discovery.md` + `pmo.yaml` for the project.
+Conduct a structured 7-question client hearing, classify answers, and generate `discovery.md` + `WBS.yaml` for the project.
 
 ## Iron Law
 
 1. Create `~/prj/{slug}/` before writing any files
-2. Never skip to output without completing the full 7-question interview
+2. Never skip to output without completing the full 7-question interview (Why: Incomplete discovery yields incomplete spec; rework cost exceeds interview time)
 3. Never invent requirements — only classify what the PM explicitly states
 4. Ask all missing arguments in a single AskUserQuestion, not one at a time
 
@@ -170,9 +170,9 @@ Rules for filling in the template:
 - Every Open Question must have a `[deferred until YYYY-MM-DD]` tag based on the PM's answer to Q7
 - PM name: obtain from `git config user.name`. If the command returns empty, use `PM` as the placeholder name.
 
-### Step 7 — Generate initial pmo.yaml
+### Step 7 — Generate initial WBS.yaml
 
-Save to `~/prj/{slug}/pmo.yaml`:
+Save to `~/prj/{slug}/WBS.yaml`:
 
 ```yaml
 project:
@@ -197,7 +197,7 @@ risks: []
 Say:
 > "Discovery complete. Files saved:
 > - `~/prj/{slug}/discovery.md`
-> - `~/prj/{slug}/pmo.yaml`
+> - `~/prj/{slug}/WBS.yaml`
 >
 > Next step: run `user-pm-spec` to create the specification document."
 
@@ -209,7 +209,7 @@ Say:
 
 Add one of the following at the end of every response:
 
-- `## Status: DONE` — discovery.md and pmo.yaml generated, no unresolved open questions
+- `## Status: DONE` — discovery.md and WBS.yaml generated, no unresolved open questions
 - `## Status: DONE_WITH_CONCERNS` — generated, but open questions remain deferred (list them)
 - `## Status: NEEDS_CONTEXT` — missing required arguments (list what is needed)
 - `## Status: BLOCKED` — cannot proceed (add reason)

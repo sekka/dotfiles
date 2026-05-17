@@ -1,10 +1,9 @@
 ---
 name: user-dev-impl-review
 description: >
-  Implementation review gate before launch. Delegates visual regression (user-fe-vrt), HTML quality (user-fe-html),
-  and code review (user-dev-review) to those skills, then runs Phase 4 launch checks directly via Bash
-  (SSL, OG tags, robots.txt, sitemap, 404) plus manual items (forms, GA, favicon, page titles).
-  Triggered by "実装レビュー", "公開前チェック", "implementation review", or "launch check".
+  Pre-launch implementation review gate covering visual regression, HTML quality, code review, and
+  launch readiness (SSL, OG tags, robots.txt, sitemap, 404, forms, GA, favicon, page titles).
+  Use when the user says "実装レビュー", "公開前チェック", "implementation review", or "launch check".
 argument-hint: [target-url] [figma-url]
 allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion, mcp__figma__get_file
 effort: high

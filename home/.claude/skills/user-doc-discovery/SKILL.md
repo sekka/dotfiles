@@ -1,8 +1,10 @@
 ---
 name: user-doc-discovery
-description: Generate a customized client briefing questionnaire before the first meeting. Input: project type and industry. Output: structured Markdown briefing sheet with answer fields, saved to ~/prj/{slug}/discovery.md. Triggered by "briefing sheet", "ヒアリングシート", "discovery", or "client questionnaire". Also use proactively when a new project is being kicked off and no briefing sheet exists yet.
+description: Use when starting a new project and a client briefing questionnaire is needed before the first meeting. Generates a structured Markdown briefing sheet with answer fields, saved to ~/prj/{slug}/discovery.md. Triggered by "briefing sheet", "ヒアリングシート", "discovery", or "client questionnaire". Also use proactively when a new project is being kicked off and no briefing sheet exists yet.
 argument-hint: [project-type] [industry]
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # Client Discovery — Briefing Questionnaire Generator
@@ -11,7 +13,7 @@ Generate a tailored client briefing questionnaire before the first client meetin
 
 ## Iron Law
 
-1. Never begin Process step 3 without knowing: project type, industry, and client name. If any are missing, ask in one AskUserQuestion before proceeding.
+1. Never begin Process step 3 without knowing: project type, industry, and client name. If any are missing, ask in one AskUserQuestion before proceeding. (Why: Starting without context misclassifies the project; the wrong template triggers weeks of rework)
 2. Primary output is a file saved to `~/prj/{slug}/discovery.md`. After saving, respond in chat with the file path and next-step instruction only.
 3. Never invent answers — output answer fields (→) for the client to fill in
 

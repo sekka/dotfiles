@@ -3,6 +3,8 @@ name: user-pmo-checklist
 description: Generate a phase-gate checklist for a web project. Phases: kickoff / pre-launch / handoff. Asks for phase and project name if not provided. Output: Markdown checklist ready to paste into a project doc. Triggered by "チェックリスト", "checklist", "キックオフ確認", "公開前確認", or "納品確認". Also use proactively when entering any project phase — offer to generate the checklist without waiting for an explicit request.
 argument-hint: [phase]
 effort: low
+context: fork
+agent: Explore
 ---
 
 # Phase Gate Checklist
@@ -11,7 +13,7 @@ Generate a project phase checklist for kickoff, pre-launch, or handoff.
 
 ## Iron Law
 
-1. Do not skip checklist items — output all items for the requested phase
+1. Do not skip checklist items — output all items for the requested phase (Why: Skipped items hide missing phase deliverables until merge)
 2. Output is plain Markdown — ready to copy-paste into Notion, Google Docs, or a project file
 3. Never mix phases in one output — one checklist per invocation
 

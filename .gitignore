@@ -14,6 +14,7 @@ home/.claude/skills/*/
 .claude/sessions/
 .claude/worktrees/
 .claude/scheduled_tasks.lock
+.claude/hookify.*.local.md
 home/.claude/state/
 .superpowers/
 # デザインインテリジェンス参照ライブラリ（PNG・YAML・実行時データ。公開リポジトリに含めない）
@@ -180,3 +181,11 @@ firebase-debug.log
 # Build output
 target/
 .worktrees/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+.pytest_cache/

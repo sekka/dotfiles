@@ -1,6 +1,6 @@
 ---
 name: user-fe-knowledge
-description: Manage a knowledge base for frontend technologies (CSS, JavaScript, HTML, performance, accessibility). During web development tasks, consult the knowledge base proactively and apply best practices to improve accuracy and speed. Also summarizes and stores technical info from URLs and articles, and answers questions. Covers modern CSS (Grid, Flexbox, @scope, View Transitions), JavaScript patterns, Core Web Vitals, WCAG, and browser compatibility.
+description: Use when consulting, collecting, or organizing frontend technology knowledge. Proactively triggered during any web development task to apply best practices from the knowledge base. Also triggered by "Save this article", "Add to knowledge", a URL, or Q&A questions about CSS, JavaScript, HTML, performance, or accessibility. Covers modern CSS (Grid, Flexbox, @scope, View Transitions), JavaScript patterns, Core Web Vitals, WCAG, and browser compatibility.
 disable-model-invocation: false
 effort: medium
 ---

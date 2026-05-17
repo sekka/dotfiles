@@ -1,12 +1,14 @@
 ---
 name: user-design-md
 description: >
-  Manage DESIGN.md files for projects. Use this skill when the user says "create a DESIGN.md",
+  Manages DESIGN.md files for projects — creates, validates, and updates the machine-readable design
+  system spec (brand colors, typography, spacing tokens). Use when the user says "create a DESIGN.md",
   "add a design system", "lint DESIGN.md", "update the design tokens", "verify the design file",
   or when starting a new web project that needs brand/style definitions for AI-generated UI.
-  Three modes: Init (create from scratch), Lint/Verify (check existing), Update (edit tokens).
 disable-model-invocation: false
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # DESIGN.md Management Skill
@@ -22,7 +24,7 @@ CLI: `design.md lint`, `design.md diff`, `design.md export`, `design.md spec`
 ## Iron Law
 
 1. Always run `design.md lint` after creating or editing DESIGN.md before reporting done
-2. Never hardcode hex values in **style definitions** in prose — all colors used in component/style values must be defined as YAML tokens first and referenced as `{colors.name}`. Exception: color label lines in the Colors section (e.g., `**Primary (#2563EB):**`) are documentation and may include hex for human readability.
+2. Never hardcode hex values in **style definitions** in prose — all colors used in component/style values must be defined as YAML tokens first and referenced as `{colors.name}`. Exception: color label lines in the Colors section (e.g., `**Primary (#2563EB):**`) are documentation and may include hex for human readability. (Why: Hardcoded hex blocks single-point color updates and breaks design-system consistency)
 
 ## Mode Detection
 

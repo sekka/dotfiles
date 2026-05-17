@@ -1,11 +1,10 @@
 ---
 name: user-harness-rules
 description: >
-  Keep the harness (CLAUDE.md, rules, skills, memory) fresh and consistent.
-  Detect gaps between the codebase and documentation, then propose updates.
-  Apply changes only after user approval.
   Use when asked to "update rules", "check CLAUDE.md", "clean up memory",
   "check if docs are stale", "maintain rule files", or "review settings".
+  Audits the harness (CLAUDE.md, rules, skills, memory) for staleness and inconsistency,
+  proposes fixes, and applies them only after user approval.
 effort: medium
 ---
 
@@ -16,7 +15,7 @@ Apply fixes only after user approval.
 
 ## Iron Law
 
-1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace
+1. Do not change rule files without user approval — rules shape AI behavior globally; silent edits can introduce unintended behavior that is hard to trace (Why: Rules govern all future AI behavior; silent edits create undetectable drift)
 
 ## Flow
 
@@ -34,7 +33,10 @@ Structured report output → User approval → Apply fixes
 
 ## Phase 1: Check Rule Files
 
-Targets: `.claude/CLAUDE.md`, `home/.claude/CLAUDE.md`, `home/.claude/rules/*.md`
+Targets:
+- Global: `home/.claude/CLAUDE.md` (deploy source; resolves to `~/.claude/CLAUDE.md` after setup)
+- Project: `<repo-root>/.claude/CLAUDE.md` or `<repo-root>/CLAUDE.md` if it exists
+- Rules: `home/.claude/rules/*.md` (deploy source; resolves to `~/.claude/rules/*.md` after setup)
 Skip files that do not exist.
 
 ### Check Points
@@ -55,6 +57,8 @@ Read the full file only for skills that need a description gap check.
 1. **Gap between description and content** — Do the trigger conditions and features in the description match the workflow?
 2. **Invalid references** — Are allowed-tools and file paths valid?
 3. **Duplicate skills** — Report only pairs that have completely overlapping functionality
+
+**Large codebases:** If 20+ skills exist, delegate to a researcher subagent to extract all frontmatters in batch (more token-efficient than reading every SKILL.md from the main agent).
 
 ## Phase 3: Clean Up Memory
 
@@ -96,10 +100,11 @@ When repeated violation patterns are detected in Phases 1-3, propose escalation 
 
 ### Check Points
 
-1. **Feedback records in memory** — Has the same violation been recorded multiple times?
-2. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
-3. **Escalation proposal** — If 3+ repetitions are found, include a level upgrade recommendation in the report
-4. **FAILURES.md buffer** — Read `~/.claude/FAILURES.md` and apply the following filter:
+1. **Terminal level check** — Before proposing escalation, cross-reference `home/.claude/rules/escalation-ladder.md` Examples table. If the pattern is already at L4 (structural block — deny list, hook, validate-command), do NOT escalate further. Instead, switch from "escalate" to "investigate why the existing block did not fire."
+2. **Feedback records in memory** — Has the same violation been recorded multiple times?
+3. **Current level assessment** — Is the violation at L1 (documentation) / L2 (AI verification) / L3 (tool verification) / L4 (structural block)?
+4. **Escalation proposal** — If 3+ repetitions are found AND the pattern is not at terminal level (L4), include a level upgrade recommendation in the report
+5. **FAILURES.md buffer** — Read `~/.claude/FAILURES.md` and apply the following filter:
    - Include only entries with `status: OPEN` (skip `PROMOTED` and `TIL`)
    - Group by exact `pattern` string (entries are pre-normalized; no fuzzy matching)
    - Surface any group where count ≥ 3 as a promotion candidate

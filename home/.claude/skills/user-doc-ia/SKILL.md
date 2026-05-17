@@ -1,8 +1,10 @@
 ---
 name: user-doc-ia
-description: Generate an IA (information architecture) proposal from an RTM file. Input: RTM file path. Output: Mermaid sitemap + page list + navigation design + client-facing rationale + decision list, saved to ~/prj/{slug}/ia.md. Triggered by "IA作って", "サイトマップ", "information architecture", "ia plan", or "site structure". Also use proactively once the RTM is confirmed and design is about to start.
+description: Use when an RTM is confirmed and a site information architecture proposal is needed. Generates a Mermaid sitemap, page list, navigation design, client-facing rationale, and decision list, saved to ~/prj/{slug}/ia.md. Triggered by "IA作って", "サイトマップ", "information architecture", "ia plan", or "site structure". Also use proactively once the RTM is confirmed and design is about to start.
 argument-hint: [rtm-file-path]
 effort: medium
+context: fork
+agent: general-purpose
 ---
 
 # IA Planner — Information Architecture Generator
@@ -11,7 +13,7 @@ Generate a complete IA proposal from a Requirements Traceability Matrix (RTM).
 
 ## Iron Law
 
-1. Never invent pages not traceable to the RTM — every proposed page must cite a BINDING or SUPPLEMENTED requirement. Exception: TOP is always present as the structural root and does not require RTM traceability.
+1. Never invent pages not traceable to the RTM — every proposed page must cite a BINDING or SUPPLEMENTED requirement. Exception: TOP is always present as the structural root and does not require RTM traceability. (Why: Non-RTM-traceable pages are scope creep and fail client-agreement audit)
 2. Primary output is a file saved to `~/prj/{slug}/ia.md`. After saving, respond in chat with the file path only.
 3. Decision list must be explicit — never hide open questions in prose
 

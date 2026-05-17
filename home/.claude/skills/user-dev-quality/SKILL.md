@@ -8,6 +8,8 @@ description: >
   to ensure the code is clean before it moves to the next stage.
 allowed-tools: Bash, Read, Edit, Glob
 effort: low
+context: fork
+agent: general-purpose
 ---
 
 # Quality Loop
@@ -16,7 +18,7 @@ Automatically runs format → lint → typecheck. If a step fails, it fixes the 
 
 ## Iron Law
 
-1. Do not change existing logic with auto-fixes
+1. Do not change existing logic with auto-fixes (Why: Auto-fix intent may diverge from author intent and silently change behavior)
 
 ## Flow
 

@@ -1,8 +1,17 @@
 ---
 name: user-research-creative
-description: Research the latest Japanese creative work (web, ads, products, music videos, landing pages, typography, packaging, spaces, UI/UX, exhibitions, etc.) from awards and trends. Generates a curated Markdown report. Suggests related fields. Useful for team inspiration, client proposals, and design trend analysis.
+description: >
+  Use when the user wants to research and curate recent Japanese creative work — web design,
+  advertising, music videos, landing pages, typography, packaging, spatial design, UI/UX,
+  exhibitions, and more — from major award sites and specialized galleries. Triggered by requests
+  like "research Japanese creative trends", "find award-winning web design", "collect inspiration
+  cases", "create a creative case report", or "what are the latest Japanese creative works".
+  Produces a structured Markdown report with award info, production company/director, techniques,
+  and trend analysis. Useful for team inspiration, client proposals, and competitive research.
 disable-model-invocation: false
 effort: high
+context: fork
+agent: general-purpose
 ---
 
 <objective>
@@ -28,7 +37,7 @@ Collects 20 cases from the last 2 months and saves to `creative-cases/YYYYMMDD-[
 
 ## Iron Law
 
-1. Do not fill in information about inaccessible sites with guesswork.
+1. Do not fill in information about inaccessible sites with guesswork. (Why: Guesses become the source of truth and corrupt the design brief)
 
 <success_criteria>
 **Completeness:**

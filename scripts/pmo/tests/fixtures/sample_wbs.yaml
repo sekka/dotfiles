@@ -1,0 +1,19 @@
+project:
+  name: "Sample"
+  slug: "sample"
+  start: "2026-04-15"
+  end: "2026-06-30"
+
+excel:
+  file: "WBS.xlsx"
+
+tasks:
+  - id: T-001
+    phase_l1: "現状把握"
+    phase_l2: "事前ヒアリング"
+    name: "ヒアリング対象者選定"
+    assignee: "PM"
+    est_days: 1
+    start_date: null
+    end_date: null
+    status: null

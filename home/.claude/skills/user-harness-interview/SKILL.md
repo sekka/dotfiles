@@ -21,7 +21,7 @@ spec back to `$1`.
 
 1. Do not interpret or fill in the user's answers without permission.
 2. Do not start implementing before the spec is confirmed.
-3. Never ask obvious questions (e.g., "What is the goal?" if the plan already states it).
+3. Never ask obvious questions (e.g., "What is the goal?" if the plan already states it). (Why: Questions answerable by reading the plan waste interview time and surface nothing new)
 
 ## What Makes a Good Interview Question
 
