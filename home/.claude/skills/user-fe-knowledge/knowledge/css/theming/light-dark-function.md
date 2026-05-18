@@ -1,17 +1,19 @@
 ---
 title: light-dark() 関数
 category: css/theming
-tags: [light-dark, dark-mode, theming, color-scheme, 2024]
-browser_support: Chrome 123+, Firefox 120+, Safari 17.5+
+tags: [light-dark, dark-mode, theming, color-scheme, image, 2024, 2026]
+browser_support: Chrome 123+ (色), Chrome 148+ (画像/フラグ), Firefox 120+, Safari 17.5+
 created: 2025-01-16
-updated: 2025-01-16
+updated: 2026-05-18
 ---
 
 # light-dark() 関数
 
-> 出典: https://coliss.com/articles/build-websites/operation/css/css-in-2024.html
-> 執筆日: 2024年
-> 追加日: 2025-12-17
+> 出典:
+> - https://coliss.com/articles/build-websites/operation/css/css-in-2024.html (2024)
+> - https://coliss.com/articles/build-websites/operation/css/light-dark-support-images.html (2026-03-26) — 画像サポート追加
+>
+> 追加日: 2025-12-17 / 更新: 2026-05-18
 
 ライト/ダークテーマの値を一括指定。
 
@@ -153,6 +155,51 @@ body {
   }
 }
 ```
+
+## 画像（`<image>`）サポート（2026 追加）
+
+Chrome 148+（フラグ有効時）から `light-dark()` が画像値も受け取れるようになった。Firefox は 150 で対応予定、Safari は未対応。
+
+### 従来パターン（CSS 変数 + メディアクエリ）
+
+```css
+:root { --bg-image: url(light-pattern.png); }
+@media (prefers-color-scheme: dark) {
+  :root { --bg-image: url(dark-pattern.png); }
+}
+.element { background-image: var(--bg-image); }
+```
+
+### 新パターン
+
+```css
+.element {
+  color-scheme: light dark;
+  background-image: light-dark(
+    url(light-pattern.png),
+    url(dark-pattern.png)
+  );
+}
+```
+
+### 制限事項
+
+- 2 つの引数は **同じ型** である必要がある（色×色、画像×画像のみ）
+- 色と画像の混在は不可（パーサーが事前に型を解決する必要があるため）
+
+### フォールバック検出
+
+```css
+@supports (background-image: light-dark(
+  linear-gradient(white, white),
+  linear-gradient(black, black))) {
+  /* 画像サポート環境のみ */
+}
+```
+
+### ローカル `color-scheme` の利点
+
+`@media (prefers-color-scheme)` 方式と違い、要素レベルの `color-scheme` 指定を正確に反映する。テーマトグルでルートだけ切り替えるような UI にも対応しやすい。
 
 ## 関連ナレッジ
 
