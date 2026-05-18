@@ -132,6 +132,26 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-18 — [フロントエンドのディレクトリ構成で再帰的な features 構成を推したい](https://zenn.dev/pksha/articles/recursive-features-directory-structure) — focus: TBD
 - [ ] 2026-05-18 — [CLAUDE.mdを設計するとClaude Codeの生産性が別物になる — 実際の設定と運用ワークフローを公開 #AI](https://qiita.com/nogataka/items/1ad4e4ccaf47816c63e0) — focus: TBD
 - [ ] 2026-05-18 — [【比較実験】AIにやさしいFigmaデザインとは？Claude Code×Figma MCPによるAIフロントコーディング「はじめの一歩」 #ClaudeCode](https://qiita.com/ta09nak/items/1190ec5575692f84e8cb) — focus: TBD
+- [ ] 2026-05-18 — [@oikon48: Claude Codeの大規模コードベースでのベストプラクティス ・コードベースを大規模でもナビゲートしやすくする…](https://x.com/oikon48/status/2056134414992888042?s=20) — focus: TBD
+- [ ] 2026-05-18 — https://x.com/Suryanshti777/status/2056022182560665602?s=20 — focus: TBD
+- [ ] 2026-05-18 — [@ats: Google社内で使われているIDEの歴史をまとめた記事を読むと、ソフトウエア開発もクラウドやAIという流れに則っている…](https://x.com/ats/status/2055887292489764970?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@BeLikeBumblebee: @weswinder This looks cool. I use it is also good check it out](https://x.com/BeLikeBumblebee/status/2055679219208954170?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@weswinder: this mac app is insanely good for databases > free > open source > beautiful > super fast…](https://x.com/weswinder/status/2055454800163078652?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@dingyi: 我现在都懒得用 tmux 了，直接用 或 更方便，适合懒人。](https://x.com/dingyi/status/2055528179830571472?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@tom_doerr: Generates Material Design 3 UI code for Claude Code](https://x.com/tom_doerr/status/2055325460783919293?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@haruruuun0405: ちょうど欲しかった情報](https://x.com/haruruuun0405/status/2055186900441506274?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@satty_5695: mobbinMCP使って、作ったUIをMobbinが持っているUIライブラリーから「何が課題・論点か」をレビューするという…](https://x.com/satty_5695/status/2055159479210311851?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@benhylak: we built the first sane way to debug your agent locally. you can see your traces…](https://x.com/benhylak/status/2054987683928383872?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@dorisukeone: (link-only post)](https://x.com/dorisukeone/status/2055075443838214299?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@GitHub_Daily: 用 Claude Code 开发项目，代码库一大，每次探索代码结构都要扫一堆文件，工具调用多、速度慢…](https://x.com/GitHub_Daily/status/2054917184158318628?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@shingo2000: (link-only post)](https://x.com/shingo2000/status/2055166126846296122) — focus: TBD
+- [ ] 2026-05-18 — [@gabriell_lab: Design Engineering Tip: Reduce backdrop blur while the user scrolls fast…](https://x.com/gabriell_lab/status/2054901923476607068?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@oikon48: API で長文プロンプトの初回トークン出力時間を短縮するTips： プロンプトキャッシュを事前に温めておく…](https://x.com/oikon48/status/2055086970079154369?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@tuturetom: 正式开源 html-anything 1:1 让你感受全网爆火 Claude code 作者提的 HTML 效果！…](https://x.com/tuturetom/status/2054860276088860819?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@vikingmute: handoff 最近用的越来越多了，是目前我最高频使用的 skill 了，发现 Codex 上下文一长…](https://x.com/vikingmute/status/2054843346070503693?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@0xfene: (link-only post)](https://x.com/0xfene/status/2054141757047320835) — focus: TBD
+- [ ] 2026-05-18 — [@mattpocockuk: /grill-me is my most popular skill ever. I get 5-10 messages a day about how it's changed…](https://x.com/mattpocockuk/status/2054808143041908936?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@obsidianstudio9: (link-only post)](https://x.com/obsidianstudio9/status/2045856830191243473) — focus: TBD
 
 ## Deep Research 待ち
 
