@@ -69,7 +69,8 @@
       "mcp__plugin_playwright_playwright__*",
       "Bash(git config *)",
       "WebFetch(domain:speakerdeck.com)",
-      "WebFetch(domain:efcl.info)"
+      "WebFetch(domain:efcl.info)",
+      "Read(//tmp/**)"
     ],
     "deny": [],
     "ask": [
