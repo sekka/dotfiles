@@ -98,6 +98,7 @@ brew "mole"                         # https://formulae.brew.sh/formula/mole     
 #cask "notion"                      # https://formulae.brew.sh/cask/notion                      # ノートツール
 #cask "notion-calendar"             # https://formulae.brew.sh/cask/notion-calendar             # カレンダー
 #cask "obsidian"                    # https://formulae.brew.sh/cask/obsidian                    # ノートツール
+#cask "raycast"                     # https://formulae.brew.sh/cask/raycast                     # ランチャー（Alfred代替）
 #cask "smoothcsv"                   # https://formulae.brew.sh/cask/smoothcsv                   # CSVエディタ
 
 # === システムユーティリティ ===
@@ -203,6 +204,7 @@ cask "font-udev-gothic"             # https://formulae.brew.sh/cask/font-udev-go
 
 # === CreativeCoding ===
 #cask "blender"                     # https://formulae.brew.sh/cask/blender                     # 3DCGツール
+#cask "cavalry"                     # https://formulae.brew.sh/cask/cavalry                     # プロシージャルモーションデザイン
 #cask "magicalvoxel"                # https://formulae.brew.sh/cask/magicalvoxel                # ボクセルエディタ
 #cask "openframeworks"              # https://openframeworks.cc/                                # クリエイティブコーディング
 #cask "p5"                          # https://formulae.brew.sh/cask/p5                          # p5.jsデスクトップ
