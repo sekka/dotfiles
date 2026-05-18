@@ -15,6 +15,7 @@ home/.claude/skills/*/
 .claude/worktrees/
 .claude/scheduled_tasks.lock
 .claude/hookify.*.local.md
+.claude/scan-outputs/
 home/.claude/state/
 .superpowers/
 # デザインインテリジェンス参照ライブラリ（PNG・YAML・実行時データ。公開リポジトリに含めない）

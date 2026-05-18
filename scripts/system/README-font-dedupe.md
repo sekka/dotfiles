@@ -4,11 +4,12 @@
 
 ## ツール構成
 
-| ツール                | 役割                                                                 |
-| --------------------- | -------------------------------------------------------------------- |
-| `dedupe-by-master.ts` | master と比較して target の重複ファイルを隔離ディレクトリに移動      |
-| `verify-by-hash.ts`   | 隔離ファイルが本当に master に存在するか独立検証（削除前の第二意見） |
-| `_font-hash.ts`       | 共通モジュール（SHA256 streaming, hashlist I/O 等）。直接実行不可    |
+| ツール                    | 役割                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `dedupe-by-master.ts`     | master と比較して target の重複ファイルを隔離ディレクトリに移動                              |
+| `verify-by-hash.ts`       | 隔離ファイルが本当に master に存在するか独立検証（削除前の第二意見）                         |
+| `scan-self-duplicates.ts` | 単一ディレクトリ内部の重複・フォーマット違い・異常を SHA256 で検出（分析専用、移動はしない） |
+| `_font-hash.ts`           | 共通モジュール（SHA256 streaming, hashlist I/O 等）。直接実行不可                            |
 
 ## 設計思想
 
@@ -319,6 +320,125 @@ rm -rf "$HOME/Dropbox/002_Applications/011_Font/.quarantine/fonts"
 3. **Dropbox 同期中の競合**: 大量移動は Dropbox 側の同期負荷になる。可能なら一時的に Dropbox 同期を停止して実行 → 完了後再開、を推奨
 4. **既存 `dedupe-report-full.tsv` (4.2 MB)**: 過去 run の残骸らしい。新規 run の前に確認・退避を
 
+## 自己重複スキャン (`scan-self-duplicates.ts`)
+
+master / target という 2 ディレクトリ比較ではなく、**1 つのフォントライブラリ内部に同一内容のファイルが何個あるか**を調べるための分析専用ツール。`--apply` フラグは意図的に持たず、移動・削除は別フェーズで手動実行する設計。
+
+### こういうときに使う
+
+- Dropbox の `Foo/` と `Foo 2/` のような numbered-suffix フォルダで重複が増えた疑い
+- RightFont / FontExplorer ライブラリ内部に同一 SHA256 のファイルが複数ある疑い
+- `.icloud` プレースホルダや 0 バイトファイルの混入確認
+- 同じ basename で `.otf` と `.ttf` が両方ある（FORMAT_PAIR）構成の棚卸し
+
+### 使い方
+
+```bash
+# RightFont ライブラリの自己重複スキャン
+bun scripts/system/scan-self-duplicates.ts \
+  --root "$HOME/Dropbox/application/RightFont/RightFont.rightfontlibrary/fonts" \
+  --report "$HOME/Dropbox/002_Applications/011_Font/.reports/self-dups-rightfont.tsv"
+
+# FontExplorer の小ロット試走
+bun scripts/system/scan-self-duplicates.ts \
+  --root "$HOME/Dropbox/002_Applications/011_Font/FontExplorer/fonts" \
+  --limit 500
+```
+
+### CLI フラグ
+
+| フラグ            | 説明                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| `--root <dir>`    | スキャン対象ディレクトリ（必須）                             |
+| `--report <path>` | TSV レポートパス（デフォルト: `./font-self-duplicates.tsv`） |
+| `--limit N`       | 先頭 N ファイルだけ処理（デバッグ用）                        |
+
+### レポート TSV のカラム
+
+| カラム           | 内容                                                          |
+| ---------------- | ------------------------------------------------------------- |
+| `relpath`        | `--root` からの相対パス                                       |
+| `kind`           | `DUP_GROUP` / `FORMAT_PAIR` / `ANOMALY` / `SOLO`              |
+| `group_id`       | 同じグループの判別 ID（DUP_GROUP / FORMAT_PAIR で意味を持つ） |
+| `role`           | `keeper` / `candidate`（DUP_GROUP のみ）                      |
+| `sha256`         | data fork + resource fork を結合した SHA256                   |
+| `data_bytes`     | data fork サイズ                                              |
+| `rsrc_bytes`     | resource fork サイズ                                          |
+| `anomaly_reason` | ANOMALY 時の理由（複数あればカンマ区切り）                    |
+
+### kind の意味
+
+- **`DUP_GROUP`**: 2 個以上が同じ SHA256。1 つを `keeper`、残りを `candidate` としてマーク
+- **`FORMAT_PAIR`**: 同じ basename で拡張子だけ違う（例: `Foo.otf` と `Foo.ttf`）。ハッシュは別物。意図的な多形式共存か重複かを目視で判断する
+- **`ANOMALY`**: クラウドプレースホルダ、Dropbox conflicted copy 名、0 バイト、データ／リソースフォーク異常など
+- **`SOLO`**: 重複なし。レポートには載らない（出力されるのは上記 3 種のみ）
+
+### keeper 選択ロジック（3 段階タイブレーク）
+
+`DUP_GROUP` の中から残す 1 個を決めるルール。`role=keeper` 以外は `candidate` で、隔離・削除の対象候補になる。
+
+1. **パスが浅い方が勝ち**（`/a/b/Foo.otf` > `/a/b/c/d/Foo.otf`）
+2. 同じ深さなら **conflict marker を含まない方が勝ち**:
+   - `(N)` / `copy` / `Copy` / `(conflicted copy ...)` を含むセグメント
+   - `Foo 2` / `Foo 3` / `Foo 10` のような **末尾が空白 + 数字** のフォルダ名（Dropbox 同期競合の典型）
+3. それでも決まらなければ **辞書順最小**
+
+> 末尾 numbered-suffix の判定は「セグメント全体が `\s\d+$` で終わるか」で見るので、`Foo 2 Bold` のような途中に数字を含む正当な名前は誤検知しない。
+
+### ANOMALY の reason 一覧
+
+| reason                     | 意味                                                  |
+| -------------------------- | ----------------------------------------------------- |
+| `cloud_placeholder`        | `.icloud` 末尾 or `com.apple.fileprovider` xattr 持ち |
+| `conflicted_name`          | ファイル名に `(conflicted copy ...)` パターンを含む   |
+| `zero_byte_data`           | data fork が 0 バイト                                 |
+| `suspect_size_mismatch`    | ハッシュ計算中にサイズが変化（同期中の可能性）        |
+| `suspect_both_forks_empty` | data fork も resource fork も空                       |
+| `hash_error`               | SHA256 計算が失敗                                     |
+
+### 典型的な分析フロー
+
+```bash
+# 1. スキャン
+bun scripts/system/scan-self-duplicates.ts --root "$ROOT" --report "$REPORT"
+
+# 2. サマリ
+awk -F'\t' 'NR>1 {print $2}' "$REPORT" | sort | uniq -c
+
+# 3. DUP_GROUP の candidate だけ抜き出して回収可能サイズを試算
+awk -F'\t' 'NR>1 && $2=="DUP_GROUP" && $4=="candidate" {sum+=$6+$7} END {print sum, "bytes reclaimable"}' "$REPORT"
+
+# 4. ANOMALY を目視
+awk -F'\t' 'NR>1 && $2=="ANOMALY"' "$REPORT"
+
+# 5. FORMAT_PAIR の拡張子分布
+awk -F'\t' 'NR>1 && $2=="FORMAT_PAIR" {print $1}' "$REPORT" | sed -E 's/.*\.//' | sort | uniq -c | sort -rn
+```
+
+### candidate を実際に処分する
+
+scan-self-duplicates 自体は移動しない。candidate のパス一覧を抽出して、`mv` でゴミ箱（`~/.Trash`）に送るのが推奨フロー:
+
+```bash
+TS=$(date +%Y%m%dT%H%M%S)
+TRASH="$HOME/.Trash/self-dups-$TS"
+mkdir -p "$TRASH"
+
+awk -F'\t' -v root="$ROOT" 'NR>1 && $2=="DUP_GROUP" && $4=="candidate" {print root "/" $1}' "$REPORT" \
+  | while IFS= read -r f; do
+      mkdir -p "$TRASH/$(dirname "${f#$ROOT/}")"
+      mv -v "$f" "$TRASH/${f#$ROOT/}"
+    done
+```
+
+> **`~/.Trash` の TCC 制限**: macOS の Transparency, Consent and Control によりターミナルから `ls ~/.Trash/` は "Operation not permitted" になるが、**`mv` で送る分には可**。中身確認は Finder GUI から「ゴミ箱を開く」で見る。
+
+### 注意点
+
+- **TTC ファイル**: TrueType Collection は 1 ファイルに複数ウェイトを内包するが、RightFont は各「ウェイト」フォルダに **物理コピー** を置く実装になっている。スキャン上は明確な DUP_GROUP として検出される（リンクではなく実体重複）。`/usr/bin/stat -f "%i %l"` で inode と link count を見ると、別 inode・link=1 で本当に複製されていることが確認できる
+- **SHA256 値は shasum と一致しない**: 本スキャンは `data fork + 長さプレフィックス + resource fork` の連結に対する SHA256 を計算するため、data fork だけの `shasum file` とは一致しない。スキャン内部の同一性比較にのみ使う ID
+- **削減量の見方**: 「`446.6 MB (8 files)` 回収可能」は `(候補数 - 1) × ファイルサイズ` の合計（MiB）であって keeper 自身は残る
+
 ## トラブルシューティング
 
 | 症状                                   | 対処                                                                    |
@@ -334,11 +454,13 @@ rm -rf "$HOME/Dropbox/002_Applications/011_Font/.quarantine/fonts"
 ## 開発・テスト
 
 ```bash
-# 単体テスト（31 cases）
+# 単体テスト
 bun test scripts/system/_font-hash.test.ts
+bun test scripts/system/scan-self-duplicates.test.ts
 
 # Lint/Format
 bun scripts/development/lint-format.ts -f scripts/system/_font-hash.ts
 bun scripts/development/lint-format.ts -f scripts/system/dedupe-by-master.ts
 bun scripts/development/lint-format.ts -f scripts/system/verify-by-hash.ts
+bun scripts/development/lint-format.ts -f scripts/system/scan-self-duplicates.ts
 ```
