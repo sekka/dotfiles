@@ -33,6 +33,7 @@ import {
   hashlistToMap,
   listFiles,
   Progress,
+  pruneEmptyDirs,
   readHashlist,
   realpathAllowMissing,
   writeHashlist,
@@ -48,6 +49,7 @@ type Args = {
   strict: boolean;
   report: string;
   limit: number;
+  keepEmptyDirs: boolean;
 };
 
 type Action = "MOVE" | "KEEP" | "ERROR" | "SUSPECT";
@@ -77,6 +79,7 @@ function parseArgsOrExit(): Args {
       strict: { type: "boolean", default: false },
       report: { type: "string" },
       limit: { type: "string" },
+      "keep-empty-dirs": { type: "boolean", default: false },
       help: { type: "boolean", default: false },
     },
     allowPositionals: false,
@@ -99,6 +102,8 @@ function parseArgsOrExit(): Args {
     [--save-master-hashlist <f>]  After indexing, write a hashlist that --master-hashlist
                                   can later consume (only valid with --master)
     [--limit <N>]                 Process at most N files per directory (master and each target, for testing)
+    [--keep-empty-dirs]           Skip post-apply cleanup of empty subdirectories under each target
+                                  (default: prune empty subdirs and .DS_Store-only subdirs after --apply)
 
 Safety:
   - Default is dry-run. Re-run with --apply to actually move files.
@@ -217,6 +222,7 @@ Safety:
     strict: values.strict ?? false,
     report,
     limit,
+    keepEmptyDirs: values["keep-empty-dirs"] ?? false,
   };
 }
 
@@ -673,6 +679,25 @@ async function main() {
     totalFailed += failed;
     console.error(`  ${basename(dir)}: moved=${moved} failed=${failed} collisions=${collisions}`);
   }
+
+  if (!args.keepEmptyDirs) {
+    console.error("\nPruning empty subdirectories under each target...");
+    for (const { dir } of targetResults) {
+      const { removedDirs, removedJunk, errors } = await pruneEmptyDirs(dir);
+      console.error(
+        `  ${basename(dir)}: removed_dirs=${removedDirs.length} removed_junk=${removedJunk.length} errors=${errors.length}`,
+      );
+      if (errors.length > 0) {
+        for (const e of errors.slice(0, 5)) {
+          console.error(`    ! ${e.path}: ${e.reason}`);
+        }
+        if (errors.length > 5) {
+          console.error(`    ... and ${errors.length - 5} more (see stderr above)`);
+        }
+      }
+    }
+  }
+
   console.error("\nDone. Verify backup directory before deleting.");
   if (totalFailed > 0) {
     console.error(`\n${totalFailed} file(s) failed to move. See ${moveLogPath} for details.`);

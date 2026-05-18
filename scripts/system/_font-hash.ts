@@ -13,7 +13,7 @@
 
 import { createHash } from "node:crypto";
 import { createReadStream, existsSync, realpathSync, statSync } from "node:fs";
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { readdir, readFile, rmdir, unlink, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 
 export const SKIP_NAMES = new Set([".DS_Store", "Icon\r"]);
@@ -58,6 +58,74 @@ export async function listFiles(root: string): Promise<string[]> {
   const out: string[] = [];
   for await (const p of walk(root)) out.push(p);
   return out;
+}
+
+export type PruneResult = {
+  removedDirs: string[];
+  removedJunk: string[];
+  errors: { path: string; reason: string }[];
+};
+
+// Bottom-up removal of empty subdirectories under `root`. A directory is
+// considered empty when it contains nothing, or only macOS metadata
+// (.DS_Store, AppleDouble ._* sidecars). The metadata files are removed
+// as part of the prune. `root` itself is never removed. Symlinks are not
+// followed. readdir failures and rmdir/unlink failures are collected
+// into `errors` rather than thrown, so a single problem dir does not
+// abort cleanup of its siblings.
+export async function pruneEmptyDirs(root: string): Promise<PruneResult> {
+  const removedDirs: string[] = [];
+  const removedJunk: string[] = [];
+  const errors: { path: string; reason: string }[] = [];
+
+  async function visit(dir: string, isRoot: boolean): Promise<void> {
+    let entries;
+    try {
+      entries = await readdir(dir, { withFileTypes: true });
+    } catch (err) {
+      errors.push({ path: dir, reason: `readdir: ${(err as Error).message}` });
+      return;
+    }
+    for (const e of entries) {
+      if (e.isSymbolicLink()) continue;
+      if (e.isDirectory()) {
+        await visit(join(dir, e.name), false);
+      }
+    }
+    if (isRoot) return;
+
+    let post;
+    try {
+      post = await readdir(dir, { withFileTypes: true });
+    } catch (err) {
+      errors.push({ path: dir, reason: `readdir: ${(err as Error).message}` });
+      return;
+    }
+    const junkOnly = post.every(
+      (e) => e.isFile() && (SKIP_NAMES.has(e.name) || e.name.startsWith("._")),
+    );
+    if (!junkOnly) return;
+
+    for (const e of post) {
+      const p = join(dir, e.name);
+      try {
+        await unlink(p);
+        removedJunk.push(p);
+      } catch (err) {
+        errors.push({ path: p, reason: `unlink: ${(err as Error).message}` });
+        return;
+      }
+    }
+    try {
+      await rmdir(dir);
+      removedDirs.push(dir);
+    } catch (err) {
+      errors.push({ path: dir, reason: `rmdir: ${(err as Error).message}` });
+    }
+  }
+
+  await visit(root, true);
+  return { removedDirs, removedJunk, errors };
 }
 
 export async function streamHash(path: string, h: ReturnType<typeof createHash>): Promise<number> {

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   chmodSync,
+  existsSync,
   mkdirSync,
   mkdtempSync,
   realpathSync,
@@ -18,6 +19,7 @@ import {
   type Hashlist,
   hashlistToMap,
   listFiles,
+  pruneEmptyDirs,
   readHashlist,
   realpathAllowMissing,
   unescapeTsv,
@@ -443,5 +445,99 @@ describe("hashlistToMap", () => {
     const m = hashlistToMap(hl);
     expect(m.size).toBe(1);
     expect(m.get("dup")).toBe("/master/first.ttf");
+  });
+});
+
+describe("pruneEmptyDirs", () => {
+  test("removes empty subdirectories bottom-up", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-empty-")));
+    try {
+      mkdirSync(join(tmp, "a", "b", "c"), { recursive: true });
+      mkdirSync(join(tmp, "x"), { recursive: true });
+      const res = await pruneEmptyDirs(tmp);
+      expect(res.removedDirs.sort()).toEqual(
+        [join(tmp, "a", "b", "c"), join(tmp, "a", "b"), join(tmp, "a"), join(tmp, "x")].sort(),
+      );
+      expect(res.errors).toEqual([]);
+      // root itself must remain
+      expect(existsSync(tmp)).toBe(true);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test("removes directories containing only .DS_Store", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-ds-")));
+    try {
+      mkdirSync(join(tmp, "a"));
+      writeFileSync(join(tmp, "a", ".DS_Store"), "junk");
+      mkdirSync(join(tmp, "b"));
+      writeFileSync(join(tmp, "b", "._sidecar"), "junk");
+      const res = await pruneEmptyDirs(tmp);
+      expect(res.removedDirs.sort()).toEqual([join(tmp, "a"), join(tmp, "b")].sort());
+      expect(res.removedJunk.sort()).toEqual(
+        [join(tmp, "a", ".DS_Store"), join(tmp, "b", "._sidecar")].sort(),
+      );
+      expect(res.errors).toEqual([]);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test("keeps directories containing real files", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-keep-")));
+    try {
+      mkdirSync(join(tmp, "keep"));
+      writeFileSync(join(tmp, "keep", "real.ttf"), "data");
+      mkdirSync(join(tmp, "drop"));
+      const res = await pruneEmptyDirs(tmp);
+      expect(res.removedDirs).toEqual([join(tmp, "drop")]);
+      expect(existsSync(join(tmp, "keep", "real.ttf"))).toBe(true);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test("cascades: removing leaves makes parents removable", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-cascade-")));
+    try {
+      mkdirSync(join(tmp, "p", "q"), { recursive: true });
+      writeFileSync(join(tmp, "p", "q", ".DS_Store"), "x");
+      writeFileSync(join(tmp, "p", ".DS_Store"), "x");
+      const res = await pruneEmptyDirs(tmp);
+      expect(res.removedDirs.sort()).toEqual([join(tmp, "p", "q"), join(tmp, "p")].sort());
+      expect(res.removedJunk.length).toBe(2);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test("never removes the root itself even if it is empty", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-root-")));
+    try {
+      const res = await pruneEmptyDirs(tmp);
+      expect(res.removedDirs).toEqual([]);
+      expect(existsSync(tmp)).toBe(true);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test("does not follow symlinks", async () => {
+    const tmp = realpathSync(mkdtempSync(join(tmpdir(), "prune-link-")));
+    const outside = realpathSync(mkdtempSync(join(tmpdir(), "prune-outside-")));
+    try {
+      mkdirSync(join(outside, "real"));
+      symlinkSync(join(outside, "real"), join(tmp, "link"));
+      const res = await pruneEmptyDirs(tmp);
+      // Symlink is not followed; the link entry is not a real dir to prune
+      // and the symlink itself is not unlinked (only junk files are removed).
+      // Root contains a symlink so root is not "junk-only" → root keeps it.
+      expect(res.removedDirs).toEqual([]);
+      expect(existsSync(join(outside, "real"))).toBe(true);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+      rmSync(outside, { recursive: true, force: true });
+    }
   });
 });

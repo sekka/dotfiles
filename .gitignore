@@ -189,3 +189,6 @@ __pycache__/
 *.egg-info/
 .venv/
 .pytest_cache/
+
+# scripts/system/dedupe-by-master.ts runtime output
+dedupe-report-*.tsv
