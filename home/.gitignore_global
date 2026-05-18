@@ -11,4 +11,9 @@
 node_modules/
 bower_components/
 
+# Microsoft Office / LibreOffice 一時ファイル
+# Word/Excel/PowerPoint/Visio/Project などのロックファイルを一括対応
+~$*
+.~lock.*#
+
 # AI Tools
