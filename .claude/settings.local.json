@@ -70,7 +70,8 @@
       "Bash(git config *)",
       "WebFetch(domain:speakerdeck.com)",
       "WebFetch(domain:efcl.info)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Skill(using-superpowers)"
     ],
     "deny": [],
     "ask": [
