@@ -152,6 +152,9 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-18 — [@0xfene: (link-only post)](https://x.com/0xfene/status/2054141757047320835) — focus: TBD
 - [ ] 2026-05-18 — [@mattpocockuk: /grill-me is my most popular skill ever. I get 5-10 messages a day about how it's changed…](https://x.com/mattpocockuk/status/2054808143041908936?s=20) — focus: TBD
 - [ ] 2026-05-18 — [@obsidianstudio9: (link-only post)](https://x.com/obsidianstudio9/status/2045856830191243473) — focus: TBD
+- [ ] 2026-05-18 — [@1osabori: Anthropic公式が数百体のAIエージェントを量産する方法、普通にバラしててもう次元違うんやがwww](https://x.com/1osabori/status/2055941714561613896?s=20) — focus: TBD
+- [ ] 2026-05-18 — [@nemuiasaa: UIデザインするとき、Figma mcpでClaudeに枠組みだけまず作ってもらって、そこをいじってく](https://x.com/nemuiasaa/status/2055550655650308234?s=20) — focus: TBD
+- [ ] 2026-05-18 — [ClaudeにMarkdownで返させるのはもう古い -- HTMLで返してもらうと体験が一気に変わる — Qurated Journal](https://quratedlab.com/journal/ai-output-as-html/) — focus: TBD
 
 ## Deep Research 待ち
 
