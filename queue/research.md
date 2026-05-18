@@ -98,6 +98,10 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-18 — [AIに「4人の架空キャラ」を作って会議参加してもらったら、一人企画会議が最高に楽しくなった｜あきらパパ](https://note.com/akira_papa_ai/n/nc789792da859) — focus: TBD
 - [ ] 2026-05-18 — [Skill Create スキルを使用したスキルの作成と改善](https://azukiazusa.dev/blog/skill-create-skill-creation-and-improvement/) — focus: TBD
 - [ ] 2026-05-18 — [アーキテクチャ図、コードで書こう - C4モデル入門](https://zenn.dev/uniquevision/articles/625e00137b75af) — focus: TBD
+- [ ] 2026-05-18 — [AIによる実装の品質が微妙で毎回自分で指摘しまくる必要があったので、確認前に自動で品質を上げさせるようにした - $shibayu36->blog;](https://blog.shibayu36.org/entry/2026/03/23/173000) — focus: TBD
+- [ ] 2026-05-18 — [Claude Codeに長期記憶を持たせたら、壁打ちの質が変わった](https://zenn.dev/noprogllama/articles/7c24b2c2410213) — focus: TBD
+- [ ] 2026-05-18 — [Git worktreeの運用をスキルに委ねる ―複雑さを隠蔽するClaude Codeスキル設計の実践― - Findy Tech Blog](https://tech.findy.co.jp/entry/2026/03/23/070000) — focus: TBD
+- [ ] 2026-05-18 — [Everything Claude Codeを眺めてみる | oikon48](https://oikon48.dev/ja/blog/everything-claude-code/) — focus: TBD
 - [ ] 2026-05-18 — [ClaudeCodeでマーケターの課題を解決する](https://speakerdeck.com/kenichiota0711/claudecodedemaketanoke-ti-wojie-jue-suru) — focus: TBD
 - [ ] 2026-05-18 — [Claude Code の 便利コマンド8選](https://zenn.dev/kusaaagi/articles/claude-code-hidden-commands) — focus: TBD
 - [ ] 2026-05-18 — [システムのメモリ・CPU・GPUに合わせて適切なAIモデルを教えてくれるターミナルツール「llmfit」](https://gigazine.net/news/20260308-llmfit/) — focus: TBD
@@ -116,6 +120,18 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-18 — [Findyの爆速開発を支えるセルフレビュー自動化の仕組み](https://tech.findy.co.jp/entry/2026/03/13/070000) — focus: TBD
 - [ ] 2026-05-18 — [コーディングガイドライン運用をAIで自動化し、レビュー知見を資産化する](https://developers.cyberagent.co.jp/blog/archives/62639/) — focus: TBD
 - [ ] 2026-05-18 — [スタートアップのマーケターがClaude Codeを使い倒したら、事業が4ヶ月で300%成長した話](https://note.com/tsukky739/n/n40f4ec2b506a) — focus: TBD
+- [ ] 2026-05-18 — [ハーネスエンジニアリングを自分のプロジェクトで実装してみた #ClaudeCode](https://qiita.com/nogataka/items/a8306067788798975fa7) — focus: TBD
+- [ ] 2026-05-18 — [Claude CodeやCodexのスキルの管理を楽にするツール「faceted-prompting」](https://zenn.dev/nrs/articles/88f158aca0505b) — focus: TBD
+- [ ] 2026-05-18 — [Claude Codeのエージェントチームを使うだけで大抵のことが出来るようになった](https://zenn.dev/n314/articles/e06f189f093902) — focus: TBD
+- [ ] 2026-05-18 — [Coding Agent時代の開発ワークフローについてのまとめ](https://nyosegawa.com/posts/coding-agent-workflow-2026/) — focus: TBD
+- [ ] 2026-05-18 — [【入門記事】ClaudeCodeの中級者になりたい人は集合してください #ClaudeCode](https://qiita.com/K5K/items/72cc4282819ace823524) — focus: TBD
+- [ ] 2026-05-18 — [【2026年最新版】Claude Codeで行うべきセキュリティ設定 10選 #AWS](https://qiita.com/miruky/items/51db293a7a7d0d277a5d) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code to Figmaを試して、UI/UXデザイナーの役割について考えたこと](https://note.com/miteo/n/n91b288c75214) — focus: TBD
+- [ ] 2026-05-18 — [新登場したVite+が速すぎる！— ESLint 100倍、しかも Next.js でも動く](https://zenn.dev/ashunar0/articles/26d33059997e38) — focus: TBD
+- [ ] 2026-05-18 — [Vite+ の異常なタスクランナー: vite-task は如何にしてキャッシュの手動依存管理をなくしたか](https://zenn.dev/herp_inc/articles/strange-task-runner) — focus: TBD
+- [ ] 2026-05-18 — [フロントエンドのディレクトリ構成で再帰的な features 構成を推したい](https://zenn.dev/pksha/articles/recursive-features-directory-structure) — focus: TBD
+- [ ] 2026-05-18 — [CLAUDE.mdを設計するとClaude Codeの生産性が別物になる — 実際の設定と運用ワークフローを公開 #AI](https://qiita.com/nogataka/items/1ad4e4ccaf47816c63e0) — focus: TBD
+- [ ] 2026-05-18 — [【比較実験】AIにやさしいFigmaデザインとは？Claude Code×Figma MCPによるAIフロントコーディング「はじめの一歩」 #ClaudeCode](https://qiita.com/ta09nak/items/1190ec5575692f84e8cb) — focus: TBD
 
 ## Deep Research 待ち
 
