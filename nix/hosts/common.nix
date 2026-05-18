@@ -307,6 +307,8 @@
   nixpkgs.hostPlatform = "aarch64-darwin";
 
   # cli-helpers のテストが上流で壊れているため doCheck=false（mycli の依存）
+  # mycli は sqlglot==27.* を pin するが nixpkgs は 28.x のため pythonRelaxDeps で緩和
+  # mycli は top-level の Python application のため pythonPackagesExtensions では効かない
   nixpkgs.overlays = [
     (final: prev: {
       pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
@@ -314,6 +316,9 @@
           cli-helpers = python-prev.cli-helpers.overridePythonAttrs (_: { doCheck = false; });
         })
       ];
+      mycli = prev.mycli.overridePythonAttrs (old: {
+        pythonRelaxDeps = (old.pythonRelaxDeps or [ ]) ++ [ "sqlglot" ];
+      });
     })
   ];
 
