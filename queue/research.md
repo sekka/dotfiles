@@ -57,6 +57,65 @@ Deep research backlog. Two-stage pipeline:
 - [ ] 2026-05-17 — [デザイナーはアクセシビリティチェックツールの夢を見るか — Claude Codeでつくる3エンジン評価ツール - enechain Tech Blog](https://techblog.enechain.com/entry/a11ychecker-claudecode) — focus: TBD
 - [ ] 2026-05-17 — [PRを出すだけでスクショ付き動作確認レポートが自動生成される仕組みを作る（Claude × Playwright）](https://zenn.dev/datum_studio/articles/ebefce70f39a0d) — focus: TBD
 - [ ] 2026-05-17 — [【有料級】Claude Codeで1人マーケ部門を作った全記録｜KAWAI](https://note.com/kawaidesign/n/n229818b75aa1) — focus: TBD
+- [ ] 2026-05-17 — [AVFを利用し、Mac上に開発やAIエージェントなどを動作させるのに最適なセキュアなmacOS仮想マシンを作成できるアプリ「GhostVM」が…](https://applech2.com/archives/20260414-ghostvm-mac-virtual-machine-app.html) — focus: TBD
+- [ ] 2026-05-17 — [Spec-Driven Presentation Maker — 伝えたいことを先に設計し、スライド構築は AI に任せる | Amazon Web Services ブログ](https://aws.amazon.com/jp/blogs/news/spec-driven-presentation-maker-ja/) — focus: TBD
+- [ ] 2026-05-17 — [ブラウザ操作を録画して、AIにPlaywrightテストを書いてもらう](https://zenn.dev/booost/articles/7dcac5e518b637) — focus: TBD
+- [ ] 2026-05-17 — [DESIGN.mdを日本語UIで本当に使える形へ｜hirokaji](https://note.com/tasty_dunlin998/n/nf1b04ebc7600) — focus: TBD
+- [ ] 2026-05-17 — [AI検索対策は、SEOと別物か？](https://note.com/daishiro_taira/n/nb08a9e29e2d2) — focus: TBD
+- [ ] 2026-05-17 — [【徳丸本まとめ】Webアプリの脆弱性と対策を一気に整理する #JavaScript - Qiita](https://qiita.com/nkngtic/items/6ac857cdbbd13a363f4d) — focus: TBD
+- [ ] 2026-05-17 — [仕様通り動くの先へ。Claude Codeで「使える」を検証する - Speaker Deck](https://speakerdeck.com/gotalab555/shi-yang-tong-ridong-kunoxian-he-claude-codede-shi-eru-wojian-zheng-suru) — focus: TBD
+- [ ] 2026-05-17 — [認知科学でAI秘書の記憶を再設計したら別人になった話【プロンプト付き】](https://note.com/hatakejp/n/naae38195e8d8) — focus: TBD
+- [ ] 2026-05-17 — [マークダウン記法は奥深く、楽しい — テキストだけで「伝わるドキュメント」を作る技術 #新人プログラマ応援 - Qiita](https://qiita.com/teppei19980914/items/36404f9ec9c786cde671) — focus: TBD
+- [ ] 2026-05-17 — [Claude Code + Obsidian — Daily Note の下書きを自動生成し、週次・月次レビューまで積み上げる仕組みを作った](https://zenn.dev/dely_jp/articles/b8da42a57bbc39) — focus: TBD
+- [ ] 2026-05-17 — [PMが本来やるべき仕事の時間を取り戻す — Claude Codeで変わった3つのPM業務](https://zenn.dev/medirom_tech/articles/4a61491a6b5059) — focus: TBD
+- [ ] 2026-05-17 — [Claude Codeのメモリを3階層にしたら「覚えてる」が「学んでる」に変わった](https://zenn.dev/tokium_dev/articles/claude-code-evolutionary-memory) — focus: TBD
+- [ ] 2026-05-17 — [PjMとPdMですれ違っている人たちへ。お互いが「PL」と「BS」という別の景色を見ていることに気づいてほしい。｜まっさん | TOKIUM](https://zenn.dev/tokium_dev/articles/524ac5889e442e) — focus: TBD
+- [ ] 2026-05-17 — [The Git Commands I Run Before Reading Any Code](https://piechowski.io/post/git-commands-before-reading-code/) — focus: TBD
+- [ ] 2026-05-17 — [kzhrknt/awesome-design-md-jp — 日本語UIをAIエージェントに正しくつくらせるためのDESIGN.md集。Japanese DESIGN.md collection for AI agents…](https://github.com/kzhrknt/awesome-design-md-jp) — focus: TBD
+- [ ] 2026-05-18 — [あなたの Claude Code/Cursor/Codex/Gemini、5LLM 横断して記憶する方法](https://zenn.dev/kanseilink/articles/linksee-memory-claude-cross-llm-20260511) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code を大規模コードベースで使うベストプラクティス](https://izanami.dev/post/af045ef8-eff9-4317-b05a-abce17e14f55) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code を社内導入する時の最低限ガードレール5項目 — 機密情報を漏らさない設定パターン](https://qiita.com/ennagara128/items/aeaee3e64e75076503fe) — focus: TBD
+- [ ] 2026-05-18 — [AIモデルでブラウザを自動操作できる「Browser-Use」、オープンソースで開発され自然言語で簡単に指示可能](https://gigazine.net/news/20260517-browser-use/) — focus: TBD
+- [ ] 2026-05-18 — [GitHub PRをレビューするTUIをつくった](https://zenn.dev/kawarimidoll/articles/1796ede41ed640) — focus: TBD
+- [ ] 2026-05-18 — [git worktree を Worktrunk で管理したら手放せなくなった](https://zenn.dev/edash_tech_blog/articles/69d01f875dcccd) — focus: TBD
+- [ ] 2026-05-18 — [CSSのデバッグやスキルアップに役立つ！ グラデーションや背景など複雑に記述されたCSSを読みやすくし、デバッグ・編集できる無料ツール -bg.layers](https://coliss.com/articles/build-websites/operation/css/visualize-and-edit-css-background-layers.html) — focus: TBD
+- [ ] 2026-05-18 — https://ota2000.com/blog/dashboard-design-guidebook-as-skill/ — focus: TBD
+- [ ] 2026-05-18 — [一度始めたらやめられない開発効率向上術 / Findy あなたのdotfilesを教えて！](https://speakerdeck.com/k0kubun/findy-dotfiles-event) — focus: TBD
+- [ ] 2026-05-18 — [長年の悩みがこれで解決！ CSSのposition: stickyの仕様が変わり、上部固定と左端固定が同時に実装できるようなります](https://coliss.com/articles/build-websites/operation/css/css-sticky-per-axis-basis.html) — focus: TBD
+- [ ] 2026-05-18 — [画面設計書を Markdown で書く文化を浸透させたい](https://zenn.dev/au/articles/d829eaa4951167) — focus: TBD
+- [ ] 2026-05-18 — [なぜ、基準に満たない低スキルのメンバーをPJに加えることが管理職最大の罪なのか？](https://zenn.dev/pdfractal/articles/fbf3537ce52e2a) — focus: TBD
+- [ ] 2026-05-18 — [【Claude Code】Agentに入れるべきSkills 20選｜skills.sh活用ガイド](https://qiita.com/yamamoto0/items/17817dc09a78078fa132) — focus: TBD
+- [ ] 2026-05-18 — [AGENTS.md Complete Guide — The De Facto Standard Format Adopted by 60,000 Repositories](https://qiita.com/nogataka/items/ad15bfa383c98ae5cc36) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code Review より"自作 Skill"の方がレビュー精度が高かった件](https://zenn.dev/zozotech/articles/93d318a99d329e?redirected=1) — focus: TBD
+- [ ] 2026-05-18 — [ハーネスエンジニアリングで人間のコードレビューをやめる](https://zenn.dev/theaktky/articles/1c6c3b9333117c) — focus: TBD
+- [ ] 2026-05-18 — [DDD×仕様駆動で回す高品質開発のプロセス設計](https://speakerdeck.com/littlehands/dddxshi-yang-qu-dong-dehui-sugao-pin-zhi-kai-fa-nopurosesushe-ji) — focus: TBD
+- [ ] 2026-05-18 — [人間のコードレビュー辞めにしたくてコードレビューエージェント作ってみた](https://zenn.dev/gvatech_blog/articles/8f0be815036eaa) — focus: TBD
+- [ ] 2026-05-18 — [【社内勉強会】新年度からコーディングエージェントを使いこなす - 構造と制約で引き出すClaude Codeの実践知](https://speakerdeck.com/nwiizo/she-nei-mian-qiang-hui-xin-nian-du-karakodeinguezientowoshi-ikonasu-gou-zao-tozhi-yue-deyin-kichu-suclaude-codenoshi-jian-zhi) — focus: TBD
+- [ ] 2026-05-18 — [Claude Codeですべての日常業務を爆速化しよう！](https://qiita.com/minorun365/items/114f53def8cb0db60f47) — focus: TBD
+- [ ] 2026-05-18 — [Claude Codeで「第二の脳」を作り、最終的にAIが自律運用するようになった話](https://qiita.com/yamapiiii/items/cc2450f410b64329d275) — focus: TBD
+- [ ] 2026-05-18 — [要求定義・仕様記述・設計・検証の手引き - 理論から学ぶ明確で統一された成果物定義](https://speakerdeck.com/orgachem/guidelines-for-requirements-definition-specification-writing-design-and-verification) — focus: TBD
+- [ ] 2026-05-18 — [マネージャー版 "提案のレベル" を上げる](https://speakerdeck.com/konifar/maneziyaban-ti-an-noreberu-woshang-geru) — focus: TBD
+- [ ] 2026-05-18 — [AIに「4人の架空キャラ」を作って会議参加してもらったら、一人企画会議が最高に楽しくなった｜あきらパパ](https://note.com/akira_papa_ai/n/nc789792da859) — focus: TBD
+- [ ] 2026-05-18 — [Skill Create スキルを使用したスキルの作成と改善](https://azukiazusa.dev/blog/skill-create-skill-creation-and-improvement/) — focus: TBD
+- [ ] 2026-05-18 — [アーキテクチャ図、コードで書こう - C4モデル入門](https://zenn.dev/uniquevision/articles/625e00137b75af) — focus: TBD
+- [ ] 2026-05-18 — [ClaudeCodeでマーケターの課題を解決する](https://speakerdeck.com/kenichiota0711/claudecodedemaketanoke-ti-wojie-jue-suru) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code の 便利コマンド8選](https://zenn.dev/kusaaagi/articles/claude-code-hidden-commands) — focus: TBD
+- [ ] 2026-05-18 — [システムのメモリ・CPU・GPUに合わせて適切なAIモデルを教えてくれるターミナルツール「llmfit」](https://gigazine.net/news/20260308-llmfit/) — focus: TBD
+- [ ] 2026-05-18 — [デザイナーがClaudeとFigma MCPで試したこと（VibeCoding実践記）](https://note.com/20191201yiping/n/ne38e9bd31786) — focus: TBD
+- [ ] 2026-05-18 — [並列開発を支えるtmux, git, zsh設定集](https://zenn.dev/r57ty7/articles/879db0530ad899) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code / Codex ユーザーのための誰でもわかるHarness Engineeringベストプラクティス](https://nyosegawa.com/posts/harness-engineering-best-practices-2026/) — focus: TBD
+- [ ] 2026-05-18 — [Claude Code / Codexの弱点を解決するOSS「GSD」の設計が良かった](https://zenn.dev/komlock_lab/articles/gsd-guide-handson) — focus: TBD
+- [ ] 2026-05-18 — [カンリー社内Claude Code勉強会の資料を公開します](https://zenn.dev/canly/articles/cc0891517e45cc) — focus: TBD
+- [ ] 2026-05-18 — [Markdown ドキュメント間の整合性を検証する contextlint を作っている話](https://zenn.dev/nozomi_cobo/articles/contextlint-introduction) — focus: TBD
+- [ ] 2026-05-18 — [デバッグはもう人間の仕事ではなくなった](https://zenn.dev/dinii/articles/debugging-is-solved) — focus: TBD
+- [ ] 2026-05-18 — [Claude Codeを加速させる私の推しスキル・ツール・設定（Findyイベント登壇資料）](https://zenn.dev/ubie_dev/articles/claude-code-tips-findy-2026) — focus: TBD
+- [ ] 2026-05-18 — [LLMに長期記憶を実装する](https://zenn.dev/j_m/articles/efcc4f224cc8ca?redirected=1) — focus: TBD
+- [ ] 2026-05-18 — [Claude CodeでYouTube動画の内容をまるごと構造化する — NotebookLM MCP活用](https://zenn.dev/o2wsu9/articles/7da1fef05b6634) — focus: TBD
+- [ ] 2026-05-18 — https://tellme.tokyo/post/2026/03/12/ai-coding-agent-rules/ — focus: TBD
+- [ ] 2026-05-18 — [Claude Code のコード品質がばらつくので AI に品質保証させる仕組みを作った話](https://speakerdeck.com/nrslib/a-story-about-building-a-mechanism-to-have-ai-ensure-quality-because-the-code-quality-from-claude-code-was-inconsistent) — focus: TBD
+- [ ] 2026-05-18 — [Findyの爆速開発を支えるセルフレビュー自動化の仕組み](https://tech.findy.co.jp/entry/2026/03/13/070000) — focus: TBD
+- [ ] 2026-05-18 — [コーディングガイドライン運用をAIで自動化し、レビュー知見を資産化する](https://developers.cyberagent.co.jp/blog/archives/62639/) — focus: TBD
+- [ ] 2026-05-18 — [スタートアップのマーケターがClaude Codeを使い倒したら、事業が4ヶ月で300%成長した話](https://note.com/tsukky739/n/n40f4ec2b506a) — focus: TBD
 
 ## Deep Research 待ち
 
